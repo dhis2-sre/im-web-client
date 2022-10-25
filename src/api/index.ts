@@ -13,3 +13,13 @@ export const getInstances = () => {
     },
   });
 };
+
+export const getToken = (username, password) => {
+  return axios( {
+    method: 'post',
+    url: `${IM_HOST}/signIn`,
+    headers: {
+      Authorization: btoa(`${username}:${password}`),
+    },
+  });
+}
