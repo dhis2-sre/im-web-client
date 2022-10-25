@@ -1,58 +1,61 @@
 {
-  "name": "instance-manager",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@dhis2/app-runtime": "^3.6.1",
-    "@dhis2/d2-i18n": "^1.1.0",
-    "@dhis2/ui": "^8.6.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.0",
-    "@types/react": "^18.0.22",
-    "@types/react-dom": "^18.0.7",
-    "@types/react-router-dom": "^5.3.3",
-    "axios": "^1.1.3",
-    "react": "^18.2.0",
-    "react-auth-kit": "^2.6.0",
-    "react-dom": "^18.2.0",
-    "react-router": "^6.4.2",
-    "react-router-dom": "^6.4.2",
-    "react-scripts": "5.0.1",
-    "styled-jsx": "^5.1.0",
-    "typescript": "^4.8.4",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "concurrently \"yarn run start:app\" \"yarn run start:proxy\"",
-    "start:app": "react-scripts start",
-    "start:proxy": "lcp --port 8010 --proxyUrl ${IM_HOST:=https://api.im.dev.test.c.dhis2.org} --credentials",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "concurrently": "^7.5.0",
-    "local-cors-proxy": "^1.1.0"
-  }
+    "name": "instance-manager",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@dhis2/app-runtime": "^3.6.1",
+        "@dhis2/d2-i18n": "^1.1.0",
+        "@dhis2/ui": "^8.6.0",
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "@types/jest": "^27.5.2",
+        "@types/node": "^16.18.0",
+        "@types/react": "^18.0.22",
+        "@types/react-dom": "^18.0.7",
+        "@types/react-router-dom": "^5.3.3",
+        "axios": "^1.1.3",
+        "react": "^18.2.0",
+        "react-auth-kit": "^2.6.0",
+        "react-dom": "^18.2.0",
+        "react-router": "^6.4.2",
+        "react-router-dom": "^6.4.2",
+        "react-scripts": "5.0.1",
+        "styled-jsx": "^5.1.0",
+        "typescript": "^4.8.4",
+        "web-vitals": "^2.1.4"
+    },
+    "scripts": {
+        "start": "concurrently \"yarn run start:app\" \"yarn run start:proxy\"",
+        "start:app": "react-scripts start",
+        "start:proxy": "lcp --port 8010 --proxyUrl ${IM_HOST:=https://api.im.dev.test.c.dhis2.org} --credentials",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "lint": "yarn d2-style check",
+        "format": "yarn d2-style apply"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@dhis2/cli-style": "^10.4.2",
+        "concurrently": "^7.5.0",
+        "local-cors-proxy": "^1.1.0"
+    }
 }
