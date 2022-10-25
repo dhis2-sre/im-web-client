@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useAuthHeader } from "react-auth-kit";
+import { useAuthHeader, useIsAuthenticated } from "react-auth-kit";
+import { useNavigate } from "react-router";
 import { getInstances } from "../api";
 import { InstancesGroup } from "../types";
 
 const InstancesList = () => {
+  const navigate = useNavigate();
+  const isAuthenticated = useIsAuthenticated()
   const getAuthHeader = useAuthHeader()
   const [instances, setInstances] = useState<InstancesGroup>();
 
   useEffect(() => {
+    if (isAuthenticated()) {
+
+
     const authHeader = getAuthHeader()
-    console.log(authHeader)
     const fetchInstances = async () => {
       const result = await getInstances(authHeader);
       setInstances(result.data);
     };
-    if (authHeader && !instances) {
+    if (!instances) {
       fetchInstances();
     }
-
-  },[getAuthHeader, instances]);
+  } else {
+    navigate('/')
+  }
+  },[getAuthHeader, isAuthenticated, instances, navigate]);
   return (
     <div>
       <h1>List of instances</h1>
