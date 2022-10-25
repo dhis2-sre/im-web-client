@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { CssReset } from '@dhis2/ui'
 import InstancesList from "./components/Lists";
 import LoginPage from "./components/Login";
+import { IM_HOST, refreshApi } from "./api";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,7 +21,13 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <AuthProvider authType="cookie" authName="_auth" cookieDomain="https://api.im.dev.test.c.dhis2.org/" cookieSecure={true}>
+  <AuthProvider
+    authType="cookie"
+    authName="_auth"
+    cookieDomain={IM_HOST}
+    cookieSecure={true}
+    refresh={refreshApi}
+  >
     <React.StrictMode>
       <CssReset/>
       <RouterProvider router={router} />
