@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { AuthProvider } from 'react-auth-kit'
 import { createRoutesFromElements, Route } from 'react-router'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { CssReset } from '@dhis2/ui'
+import { CssReset, CssVariables } from '@dhis2/ui'
 import InstancesList from './components/Lists'
 import LoginPage from './components/Login'
 import { IM_HOST, refreshApi } from './api'
@@ -28,6 +28,7 @@ root.render(
     >
         <React.StrictMode>
             <CssReset />
+            <CssVariables colors theme layers spacers elevations />
             <RouterProvider router={router} />
         </React.StrictMode>
     </AuthProvider>

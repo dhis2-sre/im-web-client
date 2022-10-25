@@ -3,9 +3,18 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
+    background-color: var(--colors-grey100);
 }
 
-.box {
+.container .box {
     width: 400px;
-    height: 400px;
+    height: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp16)
+}
+
+.header {
+    margin: 0;
 }
