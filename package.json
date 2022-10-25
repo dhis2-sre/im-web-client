@@ -24,7 +24,7 @@
   "scripts": {
     "start": "concurrently \"yarn run start:app\" \"yarn run start:proxy\"",
     "start:app": "react-scripts start",
-    "start:proxy": "lcp --port 8010 --proxyUrl ${IM_HOST:=https://api.im.dev.test.c.dhis2.org}",
+    "start:proxy": "lcp --port 8010 --proxyUrl ${IM_HOST:=https://api.im.dev.test.c.dhis2.org} --credentials",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

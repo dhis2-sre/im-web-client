@@ -10,7 +10,7 @@ const InstancesList = () => {
       setInstances(result.data);
     };
     fetchInstances();
-  });
+  }, []);
   return (
     <div>
       <h1>List of instances</h1>
