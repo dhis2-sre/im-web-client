@@ -7,6 +7,7 @@ import { CssReset, CssVariables } from '@dhis2/ui'
 import InstancesList from './components/Lists'
 import LoginPage from './components/Login'
 import { IM_HOST, refreshApi } from './api'
+import './index.module.css'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
