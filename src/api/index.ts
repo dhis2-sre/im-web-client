@@ -5,7 +5,6 @@ import { InstancesGroup } from '../types'
 export const IM_HOST = 'http://localhost:8010/proxy'
 
 export const getInstances = (authHeader) => {
-    console.log('getInstances', authHeader)
     return axios.get<InstancesGroup>('/instances', {
         baseURL: IM_HOST,
         headers: {
