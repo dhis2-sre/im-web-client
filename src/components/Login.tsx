@@ -17,7 +17,8 @@ const LoginPage = () => {
       signIn({
         token: result.data.access_token,
         expiresIn: result.data.expires_in,
-        tokenType: result.data.token_type,
+        // tokenType: result.data.token_type,
+        tokenType: 'Bearer',
         authState: {
           username,
           password
