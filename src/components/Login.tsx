@@ -11,6 +11,8 @@ const LoginPage = () => {
     const [username, setUsername] = useState('hackathon@dhis2.org')
     const [password, setPassword] = useState('dhis2-hackathon-dhis2')
 
+    console.log('LoginPage')
+
     const getToken = useCallback(() => {
         const fetchToken = async () => {
             const result = await getTokeAsync(username, password)

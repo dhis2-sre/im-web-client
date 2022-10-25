@@ -10,6 +10,8 @@ const InstancesList = () => {
     const getAuthHeader = useAuthHeader()
     const [instances, setInstances] = useState<InstancesGroup>()
 
+    console.log('InstancesList - isAuthenticated: ', isAuthenticated())
+
     useEffect(() => {
         if (isAuthenticated()) {
             const authHeader = getAuthHeader()
