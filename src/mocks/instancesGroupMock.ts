@@ -1,6 +1,6 @@
 import { InstancesGroup } from "../types";
 
-const result: Array<InstancesGroup> = [
+const result: InstancesGroup = [
   {
     Name: "whoami",
     Hostname: "whoami.im.prod.test.c.dhis2.org",
