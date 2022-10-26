@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { RequireAuth } from 'react-auth-kit'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import styles from './Layout.module.css'
+import {Link} from "react-router-dom";
 
 export const Layout = () => {
     const navigate = useNavigate()
@@ -22,6 +23,11 @@ export const Layout = () => {
                         <LogoIconWhite className={styles.logo} />
                         Instance Manager
                     </h1>
+                    <Link to="/login">Login</Link>
+                    <br />
+                    <Link to="/stacks">Stacks</Link>
+                    <br />
+                    <Link to="/instances">Instances</Link>
                 </div>
                 <div>
                     <Outlet />

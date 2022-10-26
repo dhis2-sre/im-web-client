@@ -40,8 +40,8 @@ const InstancesList = () => {
                                 <DataTableRow>
                                     <DataTableCell>Status</DataTableCell>
                                     <DataTableCell>Name</DataTableCell>
-                                    <DataTableCell>Lifetime</DataTableCell>
-                                    <DataTableCell>Started</DataTableCell>
+                                    <DataTableCell>Created</DataTableCell>
+                                    <DataTableCell>Updated</DataTableCell>
                                     <DataTableCell>Owner</DataTableCell>
                                 </DataTableRow>
                             </TableHead>
@@ -51,7 +51,7 @@ const InstancesList = () => {
                                     return (
                                         <DataTableRow>
                                             <DataTableCell>
-                                                <Tag positive>todo</Tag>
+                                                <Tag positive>Running</Tag>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.Name}

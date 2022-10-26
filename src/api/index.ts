@@ -27,7 +27,7 @@ export const getToken = (username, password) => {
 }
 
 export const refreshApi = createRefresh({
-    interval: 15, // Refreshs the token in every 15 minutes
+    interval: 5, // Refreshs the token in every 5 minutes
     refreshApiCallback: ({
         authToken,
         authTokenExpireAt,
