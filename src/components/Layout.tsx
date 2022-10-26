@@ -5,6 +5,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import styles from './Layout.module.css'
 import { NavLink } from 'react-router-dom'
 import StackSubNav from './StacksSubNav'
+import { LogoutButton } from './LogoutButton'
 
 export const Layout = () => {
     const navigate = useNavigate()
@@ -31,6 +32,7 @@ export const Layout = () => {
                         </NavLink>
                         <StackSubNav />
                     </nav>
+                    <LogoutButton />
                 </div>
                 <div className={styles.mainArea}>
                     <Outlet />

@@ -8,7 +8,7 @@
     flex: 1;
 }
 .nav {
-    background-color: #212934;
+    background-color: var(--colors-grey900);
     min-width: 200px;
 }
 
