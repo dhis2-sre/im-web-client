@@ -8,13 +8,17 @@ import InstancesList from './components/Lists'
 import LoginPage from './components/Login'
 import { IM_HOST, refreshApi } from './api'
 import './index.module.css'
+import { Layout } from './components/Layout'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route path="/">
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/instances" element={<InstancesList />} />
-        </Route>
+        <>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Layout />}>
+                <Route path="/instances" element={<InstancesList />} />
+                <Route path="/new" element={<h1>new</h1>} />
+            </Route>
+        </>
     )
 )
 
