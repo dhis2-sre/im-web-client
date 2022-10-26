@@ -4,7 +4,7 @@ import { createRefresh } from "react-auth-kit";
 
 export const IM_HOST = "https://api.im.dev.test.c.dhis2.org";
 
-const getTokenFromLocalStorage = () => {
+export const getTokenFromLocalStorage = () => {
   return localStorage.getItem("_auth");
 };
 
