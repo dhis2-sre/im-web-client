@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { RequireAuth } from 'react-auth-kit'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import styles from './Layout.module.css'
-import {Link} from "react-router-dom";
+import { Link } from 'react-router-dom'
 
 export const Layout = () => {
     const navigate = useNavigate()
@@ -29,9 +29,7 @@ export const Layout = () => {
                     <br />
                     <Link to="/instances">Instances</Link>
                 </div>
-                <div>
-                    <Outlet />
-                </div>
+                <Outlet />
             </div>
         </RequireAuth>
     )

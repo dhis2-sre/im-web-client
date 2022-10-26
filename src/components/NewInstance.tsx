@@ -1,9 +1,10 @@
 import { SingleSelectField, SingleSelectOption, Card } from '@dhis2/ui'
-import { getStacks } from '../../api/stacks'
-import { Stacks } from '../../types/stack'
-import { useApi } from '../../api/useApi'
+import { getStacks } from '../api/stacks'
+import { Stacks } from '../types/stack'
+import { useApi } from '../api/useApi'
 import { useEffect, useState } from 'react'
 import { StackConfigurator } from './StackConfigurator'
+import styles from './NewInstance.module.css'
 
 export const NewInstance = () => {
     const { result: stacks, isLoading } = useApi<Stacks>(getStacks)
@@ -20,7 +21,7 @@ export const NewInstance = () => {
     }
 
     return (
-        <Card>
+        <Card className={styles.container}>
             <SingleSelectField
                 selected={selectedStack?.name}
                 onChange={({ selected }) => {

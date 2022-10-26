@@ -1,0 +1,5 @@
+.container {
+    display: block !important;
+    margin: var(--spacers-dp24);
+    padding: var(--spacers-dp16);
+}

@@ -12,7 +12,7 @@ import StackList from './components/Stacks'
 import StackDetails from './components/Stack'
 import { ErrorView } from './components/ErrorView'
 import './index.module.css'
-import { NewInstance } from './components/NewInstance/NewInstance'
+import { NewInstance } from './components/NewInstance'
 
 const router = createBrowserRouter(
     createRoutesFromElements(

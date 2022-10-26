@@ -1,12 +1,12 @@
 import axios from 'axios'
 import { InputField, Button } from '@dhis2/ui'
-import { getStack } from '../../api/stacks'
-import { Stack } from '../../types/stack'
-import { useApi } from '../../api/useApi'
+import { getStack } from '../api/stacks'
+import { Stack } from '../types/stack'
+import { useApi } from '../api/useApi'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuthHeader } from 'react-auth-kit'
-import { IM_HOST } from '../../api'
+import { IM_HOST } from '../api'
 
 const toTitleCase = (string) =>
     string
@@ -44,7 +44,6 @@ export const StackConfigurator = ({ name }) => {
             requiredStackParameters: toArray(requiredStackParameters),
             optionalStackParameters: toArray(optionalStackParameters),
         }
-        console.log(authHeader)
         axios({
             url: `${IM_HOST}/instances`,
             method: 'post',
@@ -53,7 +52,12 @@ export const StackConfigurator = ({ name }) => {
             },
             data,
         })
-        navigate('/instances')
+            .then(() => {
+                navigate('/instances')
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     }, [
         name,
         instanceName,
