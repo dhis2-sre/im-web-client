@@ -9,7 +9,7 @@ export function useApi<T = any, R = any>(
     ) => Promise<AxiosResponse<T>>,
     payload?: R
 ) {
-    const [isLoading, setLoading] = useState<boolean>(false)
+    const [isLoading, setLoading] = useState<boolean>(true)
     const [result, setResult] = useState<T>()
     const getAuthHeader = useAuthHeader()
 

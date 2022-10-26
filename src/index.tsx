@@ -12,6 +12,7 @@ import StackList from './components/Stacks'
 import StackDetails from './components/Stack'
 import { ErrorView } from './components/ErrorView'
 import './index.module.css'
+import { NewInstance } from './components/NewInstance/NewInstance'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -21,7 +22,7 @@ const router = createBrowserRouter(
                 <Route path="/stacks" element={<StackList />} />
                 <Route path="/stacks/:name" element={<StackDetails />} />
                 <Route path="/instances" element={<InstancesList />} />
-                <Route path="/new" element={<h1>new</h1>} />
+                <Route path="/new" element={<NewInstance />} />
             </Route>
         </>
     )
@@ -29,17 +30,17 @@ const router = createBrowserRouter(
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-    <AuthProvider
-        authType="localstorage"
-        authName="_auth"
-        cookieDomain={IM_HOST}
-        cookieSecure={true}
-        refresh={refreshApi}
-    >
-        <React.StrictMode>
+    <React.StrictMode>
+        <AuthProvider
+            authType="localstorage"
+            authName="_auth"
+            cookieDomain={IM_HOST}
+            cookieSecure={true}
+            refresh={refreshApi}
+        >
             <CssReset />
             <CssVariables colors theme layers spacers elevations />
             <RouterProvider router={router} />
-        </React.StrictMode>
-    </AuthProvider>
+        </AuthProvider>
+    </React.StrictMode>
 )
