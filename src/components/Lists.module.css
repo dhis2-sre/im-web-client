@@ -8,5 +8,7 @@
     font-weight: 400;
     font-size: 28px;
     line-height: 40px;
+}
+.wrapper {
     margin-left: var(--spacers-dp16);
 }

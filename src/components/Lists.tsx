@@ -1,4 +1,14 @@
-import { Button, IconAdd24 } from '@dhis2/ui'
+import {
+    Button,
+    IconAdd24,
+    DataTableToolbar as TableToolbar,
+    DataTable,
+    DataTableHead as TableHead,
+    DataTableRow,
+    DataTableCell,
+    Tag,
+    DataTableBody as TableBody,
+} from '@dhis2/ui'
 import { useNavigate } from 'react-router'
 import { getInstances } from '../api'
 import { useApi } from '../api/useApi'
@@ -11,29 +21,59 @@ const InstancesList = () => {
     const { result: instancesGroups } = useApi<InstancesGroup>(getInstances)
 
     return (
-        <div>
+        <div className={styles.wrapper}>
             <div className={styles.heading}>
                 <h1>All instances</h1>
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/new')}>
                     New instance
                 </Button>
             </div>
+
             {instancesGroups?.map((group) => {
                 return (
-                    <div key={group.Name}>
-                        <h1>{group.Name}</h1>
-                        {group.Instances?.map((instance) => {
-                            return (
-                                <div key={instance.ID}>
-                                    <h2>{instance.Name}</h2>
-                                    <p>Created at: {instance.CreatedAt}</p>
-                                    <p>Group name: {instance.GroupName}</p>
-                                    <p>Stack name: {instance.StackName}</p>
-                                </div>
-                            )
-                        })}
-                        {!group.Instances && <p>no instances</p>}
-                    </div>
+                    <>
+                        <TableToolbar>
+                            <p>{group.Name}</p>
+                        </TableToolbar>
+                        <DataTable>
+                            <TableHead>
+                                <DataTableRow>
+                                    <DataTableCell>Status</DataTableCell>
+                                    <DataTableCell>Name</DataTableCell>
+                                    <DataTableCell>Lifetime</DataTableCell>
+                                    <DataTableCell>Started</DataTableCell>
+                                    <DataTableCell>Owner</DataTableCell>
+                                </DataTableRow>
+                            </TableHead>
+
+                            <TableBody>
+                                {group.Instances?.map((instance) => {
+                                    return (
+                                        <DataTableRow>
+                                            <DataTableCell>
+                                                <Tag positive>todo</Tag>
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                {instance.Name}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                {instance.CreatedAt}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                {instance.UpdatedAt}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                {instance.UserID}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                Actions - Open
+                                            </DataTableCell>
+                                        </DataTableRow>
+                                    )
+                                })}
+                            </TableBody>
+                        </DataTable>
+                    </>
                 )
             })}
         </div>
