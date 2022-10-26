@@ -9,9 +9,7 @@ export const Layout = () => {
             <div className={styles.container}>
                 <div className={styles.nav}>
                     <h1 className={styles.header}>
-                        <span className={styles.logobox}>
-                            <LogoIconWhite />
-                        </span>
+                        <LogoIconWhite className={styles.logo} />
                         Instance Manager
                     </h1>
                 </div>

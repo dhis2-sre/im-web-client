@@ -16,4 +16,13 @@
 
 .header {
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    font-weight: 400;
+}
+
+.header .logo {
+    width: 30px;
+    height: 30px;
 }

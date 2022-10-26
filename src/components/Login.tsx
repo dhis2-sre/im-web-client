@@ -1,4 +1,4 @@
-import { InputField, Button, Card, Help } from '@dhis2/ui'
+import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useSignIn } from 'react-auth-kit'
 import { useNavigate } from 'react-router-dom'
@@ -40,7 +40,10 @@ const LoginPage = () => {
     return (
         <div className={styles.container}>
             <Card className={styles.box}>
-                <h2 className={styles.header}>Intance manager login</h2>
+                <h2 className={styles.header}>
+                    <LogoIcon className={styles.logo} />
+                    Intance manager login
+                </h2>
                 <InputField
                     name="username"
                     label="username"
