@@ -1,0 +1,28 @@
+.card {
+    width: 25% !important;
+    margin: 20px !important;
+    padding: 20px !important;
+}
+
+@media only screen and (max-width: 960px) {
+    .card {
+        width: 100% !important;
+        margin: 5px !important;
+        padding: 20px !important;
+    }
+}
+
+.card :global(a) {
+    color: var(--colors-blue700);
+    font-size: 1.4em;
+    text-decoration: none;
+}
+
+.card :global(a):hover {
+    color: var(--colors-blue900);
+}
+
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
