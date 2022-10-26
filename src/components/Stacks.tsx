@@ -1,7 +1,9 @@
+import { Card } from '@dhis2/ui'
 import { Link } from 'react-router-dom'
 import { getStacks } from '../api/stacks'
 import { Stacks } from '../types/stack'
 import { useApi } from '../api/useApi'
+import styles from './Stacks.module.css'
 
 const StackList = () => {
     const { result: stacks } = useApi<Stacks>(getStacks)
@@ -11,9 +13,9 @@ const StackList = () => {
             <h1>List of stacks</h1>
             {stacks?.map((stack) => {
                 return (
-                    <div key={stack.name}>
+                    <Card className={styles.card} key={stack.name}>
                         <Link to={`/stacks/${stack.name}`}>{stack.name}</Link>
-                    </div>
+                    </Card>
                 )
             })}
         </div>
