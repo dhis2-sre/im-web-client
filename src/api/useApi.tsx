@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
 import { useNavigate } from 'react-router'
 
@@ -17,12 +17,12 @@ export function useApi<T = any, R = any>(
 
     const token = getAuthHeader()
 
-    useEffect(() => {
-        const performOperation = async () => {
+    const performOperation = useCallback(() => {
+        const localPerformOperation = async () => {
+            setLoading(true)
             try {
                 const apiResult = await operation(token, payload)
                 setResult(apiResult.data)
-                setLoading(false)
             } catch (err) {
                 console.warn(err)
                 // fixme: we're getting a CORS error when the token expires rather than a 401 so this is a temporary way (that is not very correct) to detect it
@@ -32,8 +32,14 @@ export function useApi<T = any, R = any>(
                 if (isCorsError || isAuthError) {
                     navigate('/login')
                 }
+            } finally {
+                setLoading(false)
             }
         }
+        localPerformOperation()
+    }, [navigate, operation, payload, token])
+
+    useEffect(() => {
         setLoading(true)
         performOperation()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,5 +48,6 @@ export function useApi<T = any, R = any>(
     return {
         isLoading,
         result,
+        refetch: performOperation,
     }
 }

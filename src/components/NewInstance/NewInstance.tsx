@@ -15,7 +15,7 @@ export const NewInstance = () => {
         }
     }, [stacks, setSelectedStack])
 
-    if (isLoading) {
+    if (isLoading || !selectedStack.name) {
         return null
     }
 
