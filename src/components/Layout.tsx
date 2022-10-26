@@ -1,4 +1,4 @@
-import { LogoIconWhite } from '@dhis2/ui'
+import { LogoIconWhite, Divider } from '@dhis2/ui'
 import { useEffect } from 'react'
 import { RequireAuth } from 'react-auth-kit'
 import { Outlet, useLocation, useNavigate } from 'react-router'
@@ -23,13 +23,14 @@ export const Layout = () => {
                         <LogoIconWhite className={styles.logo} />
                         Instance Manager
                     </h1>
-                    <Link to="/login">Login</Link>
                     <br />
                     <Link to="/stacks">Stacks</Link>
-                    <br />
+                    <Divider />
                     <Link to="/instances">Instances</Link>
                 </div>
-                <Outlet />
+                <div className={styles.mainArea}>
+                    <Outlet />
+                </div>
             </div>
         </RequireAuth>
     )

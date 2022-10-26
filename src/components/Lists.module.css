@@ -10,5 +10,5 @@
     line-height: 40px;
 }
 .wrapper {
-    margin-left: var(--spacers-dp16);
+    width: 100%;
 }

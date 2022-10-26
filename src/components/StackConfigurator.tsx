@@ -6,7 +6,7 @@ import { useApi } from '../api/useApi'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuthHeader } from 'react-auth-kit'
-import { IM_HOST } from '../api'
+import { API_HOST } from '../api'
 
 const toTitleCase = (string) =>
     string
@@ -45,7 +45,7 @@ export const StackConfigurator = ({ name }) => {
             optionalStackParameters: toArray(optionalStackParameters),
         }
         axios({
-            url: `${IM_HOST}/instances`,
+            url: `${API_HOST}/instances`,
             method: 'post',
             headers: {
                 Authorization: authHeader,

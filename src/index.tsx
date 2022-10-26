@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { CssReset, CssVariables } from '@dhis2/ui'
 import InstancesList from './components/Lists'
 import LoginPage from './components/Login'
-import { IM_HOST, refreshApi } from './api'
+import { API_HOST, refreshApi } from './api'
 import { Layout } from './components/Layout'
 import StackList from './components/Stacks'
 import StackDetails from './components/Stack'
@@ -34,7 +34,7 @@ root.render(
         <AuthProvider
             authType="localstorage"
             authName="_auth"
-            cookieDomain={IM_HOST}
+            cookieDomain={API_HOST}
             cookieSecure={true}
             refresh={refreshApi}
         >
