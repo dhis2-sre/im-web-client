@@ -1,0 +1,23 @@
+apiVersion: skaffold/v2beta25
+kind: Config
+build:
+  artifacts:
+    - image: dhis2/im-web-client
+  tagPolicy:
+    inputDigest: { }
+deploy:
+  statusCheckDeadlineSeconds: 180
+  helm:
+    releases:
+      - name: im-web-client-{{ .ENVIRONMENT }}
+        namespace: instance-manager-{{ .ENVIRONMENT }}
+        createNamespace: true
+        chartPath: helm/chart
+        artifactOverrides:
+          image: dhis2/im-web-client
+        imageStrategy:
+          helm: { }
+        setValueTemplates:
+          instanceManagerHost: "{{ .IM_HOST }}"
+        valuesFiles:
+          - helm/data/values.yaml
