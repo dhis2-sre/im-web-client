@@ -12,7 +12,7 @@ import {
 import { useNavigate } from 'react-router'
 import { getInstances } from '../api'
 import { useApi } from '../api/useApi'
-import { InstancesGroup } from '../types'
+import { InstancesGroup, Instance } from '../types'
 import styles from './Lists.module.css'
 
 const InstancesList = () => {
@@ -20,6 +20,24 @@ const InstancesList = () => {
 
     const { result: instancesGroups } = useApi<InstancesGroup>(getInstances)
 
+    const getUrl = (instance: Instance, hostName: string) => {
+        return `https://${hostName}/${instance.Name}`
+    }
+
+    const getRelativeDate = (dateString: string) => {
+        try {
+            const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+
+            const hours = Math.ceil(
+                Math.abs(Date.parse(dateString) - Date.now()) / (1000 * 60 * 60)
+            )
+
+            return rtf.format(-hours, 'hours')
+        } catch (err) {
+            console.error(err)
+            return dateString
+        }
+    }
     return (
         <div className={styles.wrapper}>
             <div className={styles.heading}>
@@ -31,7 +49,7 @@ const InstancesList = () => {
 
             {instancesGroups?.map((group) => {
                 return (
-                    <>
+                    <div key={group.Name}>
                         <TableToolbar>
                             <p>{group.Name}</p>
                         </TableToolbar>
@@ -41,14 +59,17 @@ const InstancesList = () => {
                                     <DataTableCell>Status</DataTableCell>
                                     <DataTableCell>Name</DataTableCell>
                                     <DataTableCell>Created</DataTableCell>
+                                    <DataTableCell>Updated</DataTableCell>
                                     <DataTableCell>Owner</DataTableCell>
+                                    <DataTableCell>Type</DataTableCell>
+                                    <DataTableCell></DataTableCell>
                                 </DataTableRow>
                             </TableHead>
 
                             <TableBody>
                                 {group.Instances?.map((instance) => {
                                     return (
-                                        <DataTableRow>
+                                        <DataTableRow key={instance.ID}>
                                             <DataTableCell>
                                                 <Tag positive>Running</Tag>
                                             </DataTableCell>
@@ -56,20 +77,39 @@ const InstancesList = () => {
                                                 {instance.Name}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.CreatedAt}
+                                                {getRelativeDate(
+                                                    instance.CreatedAt
+                                                )}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.UserID}
+                                                {getRelativeDate(
+                                                    instance.UpdatedAt
+                                                )}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                Actions - Open
+                                                hacker-{instance.UserID}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                {instance.StackName}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                <a
+                                                    target="_blank"
+                                                    href={getUrl(
+                                                        instance,
+                                                        group.Hostname
+                                                    )}
+                                                    rel="noreferrer"
+                                                >
+                                                    Open
+                                                </a>
                                             </DataTableCell>
                                         </DataTableRow>
                                     )
                                 })}
                             </TableBody>
                         </DataTable>
-                    </>
+                    </div>
                 )
             })}
         </div>

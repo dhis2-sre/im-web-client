@@ -2,15 +2,21 @@
     display: flex;
     min-height: 100vh;
 }
+.mainArea {
+    padding-left: var(--spacers-dp16);
+    padding-right: var(--spacers-dp16);
+    flex: 1;
+}
 .nav {
     background-color: #212934;
     min-width: 200px;
+    width: 20%;
 }
 .header {
     display: flex;
     align-items: center;
     gap: 15px;
-    background-color: #0C0F13;
+    background-color: #0c0f13;
     margin: 0;
     color: white;
     font-size: 14px;
@@ -21,4 +27,16 @@
 .logo {
     width: 25px;
     height: 25px;
+}
+
+:global a {
+    color: var(--colors-blue700);
+}
+
+.nav :global a {
+    margin: var(--spacers-dp16);
+    line-height: var(--spacers-dp32);
+    font-size: large;
+    color: var(--colors-white);
+    text-decoration: none;
 }

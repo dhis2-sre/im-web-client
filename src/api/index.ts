@@ -2,11 +2,12 @@ import axios from 'axios'
 import { createRefresh } from 'react-auth-kit'
 import { InstancesGroup } from '../types'
 
-export const IM_HOST = 'https://api.im.dev.test.c.dhis2.org'
+export const BASE_HOST = '.im.dev.test.c.dhis2.org'
+export const API_HOST = `https://api${BASE_HOST}`
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
-        baseURL: IM_HOST,
+        baseURL: API_HOST,
         headers: {
             Authorization: authHeader,
         },
@@ -15,7 +16,7 @@ export const getInstances = (authHeader) => {
 
 export const getToken = (username, password) => {
     return axios.post(
-        `${IM_HOST}/tokens`,
+        `${API_HOST}/tokens`,
         {},
         {
             auth: {
@@ -27,7 +28,7 @@ export const getToken = (username, password) => {
 }
 
 export const refreshApi = createRefresh({
-    interval: 5, // Refreshs the token in every 5 minutes
+    interval: 1, // Refreshs the token in every 5 minutes
     refreshApiCallback: ({
         authToken,
         authTokenExpireAt,
@@ -36,15 +37,16 @@ export const refreshApi = createRefresh({
         authUserState,
     }) => {
         return axios
-            .post(`${IM_HOST}/refresh`, {
+            .post(`${API_HOST}/refresh`, {
                 refreshToken: refreshToken,
                 oldAuthToken: authToken,
             })
             .then(({ data }) => {
                 return {
                     isSuccess: true, // For successful network request isSuccess is true
-                    newAuthToken: data.newAuthToken,
-                    newAuthTokenExpireIn: data.newAuthTokenExpireIn,
+                    newAuthToken: data.access_token,
+                    newRefreshToken: data.refresh_token,
+                    newAuthTokenExpireIn: data.expires_in,
                     // You can also add new refresh token ad new user state
                 }
             })
