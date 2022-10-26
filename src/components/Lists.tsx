@@ -40,8 +40,8 @@ const InstancesList = () => {
                                 <DataTableRow>
                                     <DataTableCell>Status</DataTableCell>
                                     <DataTableCell>Name</DataTableCell>
-                                    <DataTableCell>Lifetime</DataTableCell>
-                                    <DataTableCell>Started</DataTableCell>
+                                    <DataTableCell>Created</DataTableCell>
+                                    <DataTableCell>Updated</DataTableCell>
                                     <DataTableCell>Owner</DataTableCell>
                                 </DataTableRow>
                             </TableHead>
