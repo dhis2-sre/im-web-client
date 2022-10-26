@@ -21,21 +21,30 @@ export const NewInstance = () => {
     }
 
     return (
-        <Card className={styles.container}>
-            <SingleSelectField
-                selected={selectedStack?.name}
-                onChange={({ selected }) => {
-                    setSelectedStack(
-                        stacks.find(({ name }) => name === selected)
-                    )
-                }}
-                label="Select a stack"
-            >
-                {stacks.map(({ name }) => (
-                    <SingleSelectOption key={name} label={name} value={name} />
-                ))}
-            </SingleSelectField>
-            <StackConfigurator name={selectedStack.name} />
-        </Card>
+        <>
+            <h1 className={styles.header}>New instance</h1>
+            <Card className={styles.container}>
+                <SingleSelectField
+                    className={styles.select}
+                    selected={selectedStack?.name}
+                    onChange={({ selected }) => {
+                        setSelectedStack(
+                            stacks.find(({ name }) => name === selected)
+                        )
+                    }}
+                    label="Select a stack"
+                >
+                    {stacks.map(({ name }) => (
+                        <SingleSelectOption
+                            key={name}
+                            label={name}
+                            value={name}
+                        />
+                    ))}
+                </SingleSelectField>
+                <h4 className={styles.subheader}>Stack configuration</h4>
+                <StackConfigurator name={selectedStack.name} />
+            </Card>
+        </>
     )
 }

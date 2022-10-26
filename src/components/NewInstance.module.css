@@ -1,5 +1,18 @@
+.header {
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 40px;
+}
+.subheader {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 26px;
+    margin-bottom: 4px;
+}
 .container {
     display: block !important;
-    margin: var(--spacers-dp24);
     padding: var(--spacers-dp16);
+}
+.select {
+    max-width: 250px;
 }

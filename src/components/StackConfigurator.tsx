@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuthHeader } from 'react-auth-kit'
 import { API_HOST } from '../api'
+import styles from './StackConfigurator.module.css'
 
 const toTitleCase = (string) =>
     string
@@ -99,39 +100,45 @@ export const StackConfigurator = ({ name }) => {
     }
 
     return (
-        <>
-            <InputField
-                label="Name"
-                value={instanceName}
-                onChange={({ value }) => setInstanceName(value)}
-                required
-            />
-            {Object.entries(requiredStackParameters).map(
-                ([name, defaultValue]: any) => (
-                    <InputField
-                        key={name}
-                        name={name}
-                        label={toTitleCase(name)}
-                        value={defaultValue}
-                        onChange={onRequiredInputChange}
-                        required
-                    />
-                )
-            )}
-            {Object.entries(optionalStackParameters).map(
-                ([name, defaultValue]: any) => (
-                    <InputField
-                        key={name}
-                        name={name}
-                        label={toTitleCase(name)}
-                        value={defaultValue}
-                        onChange={onOptionalInputChange}
-                    />
-                )
-            )}
+        <div>
+            <div className={styles.container}>
+                <InputField
+                    className={styles.field}
+                    label="Name"
+                    value={instanceName}
+                    onChange={({ value }) => setInstanceName(value)}
+                    required
+                />
+                {Object.entries(requiredStackParameters).map(
+                    ([name, defaultValue]: any) => (
+                        <InputField
+                            className={styles.field}
+                            key={name}
+                            name={name}
+                            label={toTitleCase(name)}
+                            value={defaultValue}
+                            onChange={onRequiredInputChange}
+                            required
+                        />
+                    )
+                )}
+                {Object.entries(optionalStackParameters).map(
+                    ([name, defaultValue]: any) => (
+                        <InputField
+                            className={styles.field}
+                            key={name}
+                            name={name}
+                            label={toTitleCase(name)}
+                            value={defaultValue}
+                            onChange={onOptionalInputChange}
+                        />
+                    )
+                )}
+            </div>
+            <br />
             <Button primary onClick={createInstance}>
                 Create instance
             </Button>
-        </>
+        </div>
     )
 }
