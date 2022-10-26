@@ -12,3 +12,6 @@
 .wrapper {
     width: 100%;
 }
+.tabletoolbar {
+    background-color: var(--colors-white);
+}

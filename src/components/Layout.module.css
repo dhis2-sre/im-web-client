@@ -12,14 +12,6 @@
     min-width: 200px;
 }
 
-@media only screen and (max-width: 960px) {
-    .container {
-        flex-direction: column;
-    }
-    .nav {
-        padding-bottom: 20px;
-    }
-}
 .header {
     display: flex;
     align-items: center;
@@ -36,15 +28,23 @@
     width: 25px;
     height: 25px;
 }
-
-:global a {
-    color: var(--colors-blue700);
+.navlist {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--spacers-dp16);
 }
 
-.nav :global a {
-    margin: var(--spacers-dp16);
-    line-height: var(--spacers-dp32);
-    font-size: large;
+.navlist :global(a) {
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 18px;
+    padding: 9px 8px 9px 12px;
     color: var(--colors-white);
     text-decoration: none;
+    border-left: 4px solid transparent;
+}
+
+.navlist :global(a.active) {
+    background-color: #040506;
+    border-color: var(--colors-teal500);
 }

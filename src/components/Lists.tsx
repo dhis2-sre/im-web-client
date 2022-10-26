@@ -6,6 +6,7 @@ import {
     DataTableHead as TableHead,
     DataTableRow,
     DataTableCell,
+    DataTableColumnHeader,
     Tag,
     DataTableBody as TableBody,
 } from '@dhis2/ui'
@@ -50,19 +51,31 @@ const InstancesList = () => {
             {instancesGroups?.map((group) => {
                 return (
                     <div key={group.Name}>
-                        <TableToolbar>
-                            <p>{group.Name}</p>
+                        <TableToolbar className={styles.tabletoolbar}>
+                            {group.Name}
                         </TableToolbar>
                         <DataTable>
                             <TableHead>
                                 <DataTableRow>
-                                    <DataTableCell>Status</DataTableCell>
-                                    <DataTableCell>Name</DataTableCell>
-                                    <DataTableCell>Created</DataTableCell>
-                                    <DataTableCell>Updated</DataTableCell>
-                                    <DataTableCell>Owner</DataTableCell>
-                                    <DataTableCell>Type</DataTableCell>
-                                    <DataTableCell></DataTableCell>
+                                    <DataTableColumnHeader>
+                                        Status
+                                    </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Name
+                                    </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Created
+                                    </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Updated
+                                    </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Owner
+                                    </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Type
+                                    </DataTableColumnHeader>
+                                    <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
 

@@ -4,42 +4,66 @@ import {
     DataTableHead as TableHead,
     DataTableRow,
     DataTableCell,
+    DataTableColumnHeader,
     DataTableBody as TableBody,
 } from '@dhis2/ui'
-import React from 'react'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useParams } from 'react-router'
 import { useApi } from '../api/useApi'
+import styles from './StackDetails.module.css'
+import { useEffect } from 'react'
 
 const StackDetails = () => {
     const { name } = useParams()
-    const { result: stack } = useApi<Stack>(getStack, { name })
+    const {
+        result: stack,
+        isLoading,
+        refetch,
+    } = useApi<Stack>(getStack, { name })
+
+    useEffect(() => {
+        if (stack && name !== stack.name) {
+            refetch()
+        }
+    }, [name, stack, refetch])
+
+    if (isLoading) {
+        return null
+    }
 
     return (
-        <div key={stack?.name}>
-            <h1>{stack?.name}</h1>
+        <div key={stack.name}>
+            <h1>{stack.name}</h1>
 
             <>
-                <TableToolbar>
-                    <p>Required parameters</p>
+                <TableToolbar className={styles.tabletoolbar}>
+                    Required parameters
                 </TableToolbar>
-                <DataTable>
+                <DataTable className={styles.datatable}>
                     <TableHead>
                         <DataTableRow>
-                            <DataTableCell>Name</DataTableCell>
-                            <DataTableCell>Consumed</DataTableCell>
-                            <DataTableCell>Stack</DataTableCell>
+                            <DataTableColumnHeader>Name</DataTableColumnHeader>
+                            <DataTableColumnHeader>
+                                Consumed
+                            </DataTableColumnHeader>
+                            <DataTableColumnHeader>Stack</DataTableColumnHeader>
                         </DataTableRow>
                     </TableHead>
 
                     <TableBody>
-                        {stack?.requiredParameters?.map((parameter) => {
+                        {stack.requiredParameters?.map((parameter) => {
                             return (
-                                <DataTableRow>
-                                    <DataTableCell>{parameter.Name}</DataTableCell>
-                                    <DataTableCell>{parameter.Consumed.toString()}</DataTableCell>
-                                    <DataTableCell>{parameter.StackName}</DataTableCell>
+                                <DataTableRow key={parameter.Name}>
+                                    <DataTableCell>
+                                        {parameter.Name}
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        {parameter.Consumed.toString()}
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        {parameter.StackName}
+                                    </DataTableCell>
                                 </DataTableRow>
                             )
                         })}
@@ -48,27 +72,39 @@ const StackDetails = () => {
             </>
 
             <>
-                <TableToolbar>
-                    <p>Required parameters</p>
+                <TableToolbar className={styles.tabletoolbar}>
+                    Optional parameters
                 </TableToolbar>
-                <DataTable>
+                <DataTable className={styles.datatable}>
                     <TableHead>
                         <DataTableRow>
-                            <DataTableCell>Name</DataTableCell>
-                            <DataTableCell>Default value</DataTableCell>
-                            <DataTableCell>Consumed</DataTableCell>
-                            <DataTableCell>Stack</DataTableCell>
+                            <DataTableColumnHeader>Name</DataTableColumnHeader>
+                            <DataTableColumnHeader>
+                                Default value
+                            </DataTableColumnHeader>
+                            <DataTableColumnHeader>
+                                Consumed
+                            </DataTableColumnHeader>
+                            <DataTableColumnHeader>Stack</DataTableColumnHeader>
                         </DataTableRow>
                     </TableHead>
 
                     <TableBody>
-                        {stack?.optionalParameters?.map((parameter) => {
+                        {stack.optionalParameters?.map((parameter) => {
                             return (
-                                <DataTableRow>
-                                    <DataTableCell>{parameter.Name}</DataTableCell>
-                                    <DataTableCell>{parameter.DefaultValue}</DataTableCell>
-                                    <DataTableCell>{parameter.Consumed.toString()}</DataTableCell>
-                                    <DataTableCell>{parameter.StackName}</DataTableCell>
+                                <DataTableRow key={parameter.Name}>
+                                    <DataTableCell>
+                                        {parameter.Name}
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        {parameter.DefaultValue}
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        {parameter.Consumed.toString()}
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        {parameter.StackName}
+                                    </DataTableCell>
                                 </DataTableRow>
                             )
                         })}

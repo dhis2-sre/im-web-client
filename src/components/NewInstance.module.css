@@ -11,6 +11,7 @@
 }
 .container {
     display: block !important;
+    height: auto !important;
     padding: var(--spacers-dp16);
 }
 .select {

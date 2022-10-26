@@ -1,9 +1,10 @@
-import { LogoIconWhite, Divider } from '@dhis2/ui'
+import { LogoIconWhite } from '@dhis2/ui'
 import { useEffect } from 'react'
 import { RequireAuth } from 'react-auth-kit'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import styles from './Layout.module.css'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import StackSubNav from './StacksSubNav'
 
 export const Layout = () => {
     const navigate = useNavigate()
@@ -23,10 +24,13 @@ export const Layout = () => {
                         <LogoIconWhite className={styles.logo} />
                         Instance Manager
                     </h1>
-                    <br />
-                    <Link to="/stacks">Stacks</Link>
-                    <Divider />
-                    <Link to="/instances">Instances</Link>
+                    <nav className={styles.navlist}>
+                        <NavLink to="/instances">Instances</NavLink>
+                        <NavLink to="/stacks" end>
+                            Stacks
+                        </NavLink>
+                        <StackSubNav />
+                    </nav>
                 </div>
                 <div className={styles.mainArea}>
                     <Outlet />

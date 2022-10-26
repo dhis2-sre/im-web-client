@@ -42,7 +42,7 @@ const LoginPage = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Intance manager login
+                    Instance manager login
                 </h2>
                 <InputField
                     name="username"
