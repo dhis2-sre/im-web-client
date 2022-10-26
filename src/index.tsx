@@ -9,8 +9,8 @@ import LoginPage from './components/Login'
 import { IM_HOST, refreshApi } from './api'
 import './index.module.css'
 import { Layout } from './components/Layout'
-import StackList from "./components/Stacks";
-import StackDetails from "./components/Stack";
+import StackList from './components/Stacks'
+import StackDetails from './components/Stack'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
