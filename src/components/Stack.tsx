@@ -2,17 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useParams } from 'react-router'
+import { useApi } from '../api/useApi'
 
 const StackDetails = () => {
     const { name } = useParams()
-    const [stack, setStack] = useState<Stack>()
-    useEffect(() => {
-        const fetchStack = async () => {
-            const result = await getStack(name)
-            setStack(result.data)
-        }
-        fetchStack()
-    }, [name])
+    const { result: stack } = useApi<Stack>(getStack, { name })
+
     return (
         // TODO: Why do I need "stack?." everywhere?
         <div key={stack?.name}>

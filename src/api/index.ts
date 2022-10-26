@@ -4,10 +4,6 @@ import { InstancesGroup } from '../types'
 
 export const IM_HOST = 'https://api.im.dev.test.c.dhis2.org'
 
-export const getTokenFromLocalStorage = () => {
-    return localStorage.getItem('_auth')
-}
-
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
         baseURL: IM_HOST,
