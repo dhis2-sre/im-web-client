@@ -7,16 +7,17 @@ import { CssReset, CssVariables } from '@dhis2/ui'
 import InstancesList from './components/Lists'
 import LoginPage from './components/Login'
 import { IM_HOST, refreshApi } from './api'
-import './index.module.css'
 import { Layout } from './components/Layout'
 import StackList from './components/Stacks'
 import StackDetails from './components/Stack'
+import { ErrorView } from './components/ErrorView'
+import './index.module.css'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<Layout />}>
+            <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
                 <Route path="/stacks" element={<StackList />} />
                 <Route path="/stacks/:name" element={<StackDetails />} />
                 <Route path="/instances" element={<InstancesList />} />
