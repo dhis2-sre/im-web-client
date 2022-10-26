@@ -25,7 +25,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <AuthProvider
-        authType="cookie"
+        authType="localstorage"
         authName="_auth"
         cookieDomain={IM_HOST}
         cookieSecure={true}
