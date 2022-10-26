@@ -41,8 +41,8 @@ export const StackConfigurator = ({ name }) => {
             name: instanceName,
             groupName: 'whoami',
             stackName: name,
-            requiredStackParameters: toArray(requiredStackParameters),
-            optionalStackParameters: toArray(optionalStackParameters),
+            requiredParameters: toArray(requiredStackParameters),
+            optionalParameters: toArray(optionalStackParameters),
         }
         axios({
             url: `${API_HOST}/instances`,
