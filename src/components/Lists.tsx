@@ -41,7 +41,6 @@ const InstancesList = () => {
                                     <DataTableCell>Status</DataTableCell>
                                     <DataTableCell>Name</DataTableCell>
                                     <DataTableCell>Created</DataTableCell>
-                                    <DataTableCell>Updated</DataTableCell>
                                     <DataTableCell>Owner</DataTableCell>
                                 </DataTableRow>
                             </TableHead>
@@ -58,9 +57,6 @@ const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.CreatedAt}
-                                            </DataTableCell>
-                                            <DataTableCell>
-                                                {instance.UpdatedAt}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.UserID}
