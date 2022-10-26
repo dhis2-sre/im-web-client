@@ -49,8 +49,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "concurrently": "^7.5.0",
-    "local-cors-proxy": "^1.1.0"
-  }
+  "devDependencies": {}
 }
