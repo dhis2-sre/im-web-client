@@ -6,6 +6,8 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: cert-issuer-prod
     ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      try_files $uri $uri/ /index.html;
   hosts:
     - host: im.dev.test.c.dhis2.org
       paths:
