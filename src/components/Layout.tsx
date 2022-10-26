@@ -23,6 +23,8 @@ export const Layout = () => {
                         <LogoIconWhite className={styles.logo} />
                         Instance Manager
                     </h1>
+                    <Link to="/login">Login</Link>
+                    <br />
                     <Link to="/stacks">Stacks</Link>
                     <br />
                     <Link to="/instances">Instances</Link>
