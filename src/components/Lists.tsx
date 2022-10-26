@@ -51,7 +51,7 @@ const InstancesList = () => {
                                     return (
                                         <DataTableRow>
                                             <DataTableCell>
-                                                <Tag positive>todo</Tag>
+                                                <Tag positive>Running</Tag>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.Name}
