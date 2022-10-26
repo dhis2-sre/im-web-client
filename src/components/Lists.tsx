@@ -4,6 +4,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { useNavigate } from 'react-router'
 import { getInstances } from '../api'
 import { InstancesGroup } from '../types'
+import styles from './Lists.module.css'
 
 const InstancesList = () => {
     const navigate = useNavigate()
@@ -23,10 +24,13 @@ const InstancesList = () => {
 
     return (
         <div>
-            <h1>List of instances</h1>
-            <Button icon={<IconAdd24 />} onClick={() => navigate('/new')}>
-                New instance
-            </Button>
+            <div className={styles.heading}>
+                <h1>All instances</h1>
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/new')}>
+                    New instance
+                </Button>
+            </div>
+
             {JSON.stringify(instances)}
         </div>
     )
