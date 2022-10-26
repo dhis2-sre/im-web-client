@@ -1,5 +1,5 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
 import { useNavigate } from 'react-router'
 import { getInstances } from '../api'
@@ -9,7 +9,7 @@ import styles from './Lists.module.css'
 const InstancesList = () => {
     const navigate = useNavigate()
     const getAuthHeader = useAuthHeader()
-    const [instances, setInstances] = useState<InstancesGroup>()
+    const [instancesGroups, setInstances] = useState<InstancesGroup>()
 
     useEffect(() => {
         const authHeader = getAuthHeader()
@@ -17,10 +17,10 @@ const InstancesList = () => {
             const result = await getInstances(authHeader)
             setInstances(result.data)
         }
-        if (!instances) {
+        if (!instancesGroups) {
             fetchInstances()
         }
-    }, [getAuthHeader, instances])
+    }, [getAuthHeader, instancesGroups])
 
     return (
         <div>
@@ -30,8 +30,24 @@ const InstancesList = () => {
                     New instance
                 </Button>
             </div>
-
-            {JSON.stringify(instances)}
+            {instancesGroups?.map((group) => {
+                return (
+                    <div key={group.Name}>
+                        <h1>{group.Name}</h1>
+                        {group.Instances?.map((instance) => {
+                            return (
+                                <div key={instance.ID}>
+                                    <h2>{instance.Name}</h2>
+                                    <p>Created at: {instance.CreatedAt}</p>
+                                    <p>Group name: {instance.GroupName}</p>
+                                    <p>Stack name: {instance.StackName}</p>
+                                </div>
+                            )
+                        })}
+                        {!group.Instances && <p>no instances</p>}
+                    </div>
+                )
+            })}
         </div>
     )
 }

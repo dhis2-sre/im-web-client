@@ -26,8 +26,8 @@ export type Instance = {
     DeployLog: string
 }
 
-export type InstancesGroup = {
+export type InstancesGroup = Array<{
     Name: string
     Hostname: string
     Instances: Array<Instance> | null
-}
+}>

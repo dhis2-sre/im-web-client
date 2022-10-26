@@ -2,7 +2,11 @@ import axios from 'axios'
 import { createRefresh } from 'react-auth-kit'
 import { InstancesGroup } from '../types'
 
-export const IM_HOST = 'http://localhost:8010/proxy'
+export const IM_HOST = 'https://api.im.dev.test.c.dhis2.org'
+
+// const getTokenFromLocalStorage = () => {
+//   return localStorage.getItem("_auth");
+// };
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
@@ -28,7 +32,13 @@ export const getToken = (username, password) => {
 
 export const refreshApi = createRefresh({
     interval: 15, // Refreshs the token in every 15 minutes
-    refreshApiCallback: ({ authToken, refreshToken }) => {
+    refreshApiCallback: ({
+        authToken,
+        authTokenExpireAt,
+        refreshToken,
+        refreshTokenExpiresAt,
+        authUserState,
+    }) => {
         return axios
             .post(`${IM_HOST}/refresh`, {
                 refreshToken: refreshToken,
