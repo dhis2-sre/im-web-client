@@ -14,6 +14,15 @@ export const getInstances = (authHeader) => {
     })
 }
 
+export const deleteInstance = (token, id) => {
+    return axios.delete('/instances/' + id, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: token,
+        },
+    })
+}
+
 export const getToken = (username, password) => {
     return axios.post(
         `${API_HOST}/tokens`,

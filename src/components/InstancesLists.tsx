@@ -1,6 +1,7 @@
 import {
     Button,
     IconAdd24,
+    IconLaunch16,
     DataTableToolbar as TableToolbar,
     DataTable,
     DataTableHead as TableHead,
@@ -15,6 +16,7 @@ import { getInstances } from '../api'
 import { useApi } from '../api/useApi'
 import { InstancesGroup, Instance } from '../types'
 import styles from './InstancesLists.module.css'
+import DeleteInstance from './DeleteInstance'
 
 export const getRelativeDate = (dateString: string, format = 'hours') => {
     try {
@@ -42,7 +44,8 @@ export const getRelativeDate = (dateString: string, format = 'hours') => {
 const InstancesList = () => {
     const navigate = useNavigate()
 
-    const { result: instancesGroups } = useApi<InstancesGroup>(getInstances)
+    const { result: instancesGroups, refetch } =
+        useApi<InstancesGroup>(getInstances)
 
     const getUrl = (instance: Instance, hostName: string) => {
         return `https://${hostName}/${instance.Name}`
@@ -115,16 +118,25 @@ const InstancesList = () => {
                                                 {instance.StackName}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                <a
-                                                    target="_blank"
-                                                    href={getUrl(
-                                                        instance,
-                                                        group.Hostname
-                                                    )}
-                                                    rel="noreferrer"
+                                                <Button
+                                                    small
+                                                    primary
+                                                    icon={<IconLaunch16 />}
+                                                    onClick={() =>
+                                                        window?.open(
+                                                            getUrl(
+                                                                instance,
+                                                                group.Hostname
+                                                            )
+                                                        )
+                                                    }
                                                 >
                                                     Open
-                                                </a>
+                                                </Button>
+                                                <DeleteInstance
+                                                    instanceId={instance.ID}
+                                                    onDelete={refetch}
+                                                />
                                             </DataTableCell>
                                         </DataTableRow>
                                     )

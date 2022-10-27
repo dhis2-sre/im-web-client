@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { InputField, Button } from '@dhis2/ui'
+import { Divider, InputField, Button } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
@@ -122,7 +122,11 @@ export const StackConfigurator = ({ name }) => {
                         />
                     )
                 )}
-                {Object.entries(optionalStackParameters).map(
+            </div>
+            <Divider />
+            <h4 className={styles.subheader}>Optional parameters</h4>
+            <div className={styles.container}>
+            {Object.entries(optionalStackParameters).map(
                     ([name, defaultValue]: any) => (
                         <InputField
                             className={styles.field}
