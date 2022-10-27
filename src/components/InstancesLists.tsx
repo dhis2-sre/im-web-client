@@ -14,7 +14,30 @@ import { useNavigate } from 'react-router'
 import { getInstances } from '../api'
 import { useApi } from '../api/useApi'
 import { InstancesGroup, Instance } from '../types'
-import styles from './Lists.module.css'
+import styles from './InstancesLists.module.css'
+
+export const getRelativeDate = (dateString: string, format = 'hours') => {
+    try {
+        const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+
+        const hours = Math.ceil(
+            Math.abs(Date.parse(dateString) - Date.now()) / (1000 * 60 * 60)
+        )
+
+        const days = Math.ceil(
+            Math.abs(Date.parse(dateString) - Date.now()) /
+                (1000 * 60 * 60 * 24)
+        )
+
+        if (format === 'days') {
+            return rtf.format(-days, 'days')
+        }
+        return rtf.format(-hours, 'hours')
+    } catch (err) {
+        console.error(err)
+        return dateString
+    }
+}
 
 const InstancesList = () => {
     const navigate = useNavigate()
@@ -25,20 +48,6 @@ const InstancesList = () => {
         return `https://${hostName}/${instance.Name}`
     }
 
-    const getRelativeDate = (dateString: string) => {
-        try {
-            const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
-
-            const hours = Math.ceil(
-                Math.abs(Date.parse(dateString) - Date.now()) / (1000 * 60 * 60)
-            )
-
-            return rtf.format(-hours, 'hours')
-        } catch (err) {
-            console.error(err)
-            return dateString
-        }
-    }
     return (
         <div className={styles.wrapper}>
             <div className={styles.heading}>
