@@ -2,7 +2,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacers-dp16);
+    margin-bottom: var(--spacers-dp12);
+}
+.subheader {
+    margin-top: var(--spacers-dp12);
 }
 .field {
-    width: 350px;
+    width: 340px;
 }

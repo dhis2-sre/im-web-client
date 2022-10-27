@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Divider, InputField, Button } from '@dhis2/ui'
+import { Divider, InputField, ButtonStrip, Button } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
@@ -126,7 +126,7 @@ export const StackConfigurator = ({ name }) => {
             <Divider />
             <h4 className={styles.subheader}>Optional parameters</h4>
             <div className={styles.container}>
-            {Object.entries(optionalStackParameters).map(
+                {Object.entries(optionalStackParameters).map(
                     ([name, defaultValue]: any) => (
                         <InputField
                             className={styles.field}
@@ -140,9 +140,12 @@ export const StackConfigurator = ({ name }) => {
                 )}
             </div>
             <br />
-            <Button primary onClick={createInstance}>
-                Create instance
-            </Button>
+            <ButtonStrip>
+                <Button primary onClick={createInstance}>
+                    Create instance
+                </Button>
+                <Button onClick={() => navigate('/instances')}>Cancel</Button>
+            </ButtonStrip>
         </div>
     )
 }
