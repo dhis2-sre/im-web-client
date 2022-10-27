@@ -15,3 +15,8 @@
 .tabletoolbar {
     background-color: var(--colors-white);
 }
+.opendeletewrap {
+    min-width: 180px;
+    display: flex;
+    gap: var(--spacers-dp8);
+}

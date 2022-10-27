@@ -118,25 +118,31 @@ const InstancesList = () => {
                                                 {instance.StackName}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                <Button
-                                                    small
-                                                    primary
-                                                    icon={<IconLaunch16 />}
-                                                    onClick={() =>
-                                                        window?.open(
-                                                            getUrl(
-                                                                instance,
-                                                                group.Hostname
-                                                            )
-                                                        )
+                                                <span
+                                                    className={
+                                                        styles.opendeletewrap
                                                     }
                                                 >
-                                                    Open
-                                                </Button>
-                                                <DeleteInstance
-                                                    instanceId={instance.ID}
-                                                    onDelete={refetch}
-                                                />
+                                                    <Button
+                                                        small
+                                                        primary
+                                                        icon={<IconLaunch16 />}
+                                                        onClick={() =>
+                                                            window?.open(
+                                                                getUrl(
+                                                                    instance,
+                                                                    group.Hostname
+                                                                )
+                                                            )
+                                                        }
+                                                    >
+                                                        Open
+                                                    </Button>
+                                                    <DeleteInstance
+                                                        instanceId={instance.ID}
+                                                        onDelete={refetch}
+                                                    />
+                                                </span>
                                             </DataTableCell>
                                         </DataTableRow>
                                     )
