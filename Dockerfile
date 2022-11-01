@@ -6,6 +6,7 @@ COPY . .
 RUN yarn build
 
 FROM nginxinc/nginx-unprivileged:alpine
+COPY nginx.conf /etc/nginx/nginx.conf
 WORKDIR /usr/share/nginx/html
 COPY --from=builder /app/build .
 USER nginx
