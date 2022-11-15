@@ -33,7 +33,7 @@ keys:
 	echo cicd
 
 smoke-test:
-	echo cicd
+	IMAGE_TAG=$(tag) docker compose up -d prod
 
 test:
 	echo cicd
