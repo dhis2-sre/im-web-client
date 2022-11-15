@@ -7,10 +7,10 @@ ingress:
     cert-manager.io/cluster-issuer: cert-issuer-prod
     ingress.kubernetes.io/ssl-redirect: "true"
   hosts:
-    - host: im.dev.test.c.dhis2.org
+    - host: im.prod.test.c.dhis2.org
       paths:
         - /
   tls:
-    - secretName: im-dev-test-c-dhis2-org-tls
+    - secretName: im-prod-test-c-dhis2-org-tls
       hosts:
-        - im.dev.test.c.dhis2.org
+        - im.prod.test.c.dhis2.org
