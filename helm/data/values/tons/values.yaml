@@ -1,0 +1,16 @@
+image:
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: cert-issuer-prod
+    ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: im.tons.test.c.dhis2.org
+      paths:
+        - /
+  tls:
+  - secretName: im-tons-test-c-dhis2-org-tls
+    hosts:
+      - im.tons.test.c.dhis2.org

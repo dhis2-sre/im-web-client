@@ -2,8 +2,7 @@ import axios from 'axios'
 import { createRefresh } from 'react-auth-kit'
 import { InstancesGroup } from '../types'
 
-export const BASE_HOST = '.im.dev.test.c.dhis2.org'
-export const API_HOST = `https://api${BASE_HOST}`
+export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
@@ -37,7 +36,7 @@ export const getToken = (username, password) => {
 }
 
 export const refreshApi = createRefresh({
-    interval: 1, // Refreshs the token in every 5 minutes
+    interval: 14, // Refresh the token every 5 minutes
     refreshApiCallback: ({
         authToken,
         authTokenExpireAt,

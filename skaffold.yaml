@@ -3,6 +3,9 @@ kind: Config
 build:
   artifacts:
     - image: dhis2/im-web-client
+      docker:
+        buildArgs:
+          REACT_APP_IM_API: "{{ .IM_API }}"
   tagPolicy:
     inputDigest: { }
 deploy:
@@ -17,7 +20,5 @@ deploy:
           image: dhis2/im-web-client
         imageStrategy:
           helm: { }
-        setValueTemplates:
-          instanceManagerHost: "{{ .IM_HOST }}"
         valuesFiles:
-          - helm/data/values.yaml
+          - helm/data/values/{{ .ENVIRONMENT }}/values.yaml

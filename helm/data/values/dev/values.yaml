@@ -6,18 +6,10 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: cert-issuer-prod
     ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-#    nginx.ingress.kubernetes.io/configuration-snippet: |
-#      try_files $uri /index.html$is_args$args;
   hosts:
     - host: im.dev.test.c.dhis2.org
       paths:
-#        - /
-        - /(.*)
-        - /login
-        - /instances
-        - /stacks
-        - /new
+        - /
   tls:
   - secretName: im-dev-test-c-dhis2-org-tls
     hosts:

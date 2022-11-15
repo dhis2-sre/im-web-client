@@ -1,4 +1,5 @@
 FROM node:19-alpine AS builder
+ARG REACT_APP_IM_API
 WORKDIR /app
 COPY package*.json ./
 RUN yarn install --check-files --immutable
