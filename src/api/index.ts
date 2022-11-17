@@ -36,7 +36,8 @@ export const getToken = (username, password) => {
 }
 
 export const refreshApi = createRefresh({
-    interval: 14, // Refresh the token every 5 minutes
+    // TODO: this expiration value should read from the token... egg/chicken?
+    interval: 14, // Refresh the token every 14 minutes
     refreshApiCallback: ({
         authToken,
         authTokenExpireAt,
@@ -47,7 +48,8 @@ export const refreshApi = createRefresh({
         return axios
             .post(`${API_HOST}/refresh`, {
                 refreshToken: refreshToken,
-                oldAuthToken: authToken,
+// TODO: no old auth token... https://api.im.dev.test.c.dhis2.org/users/docs#operation/refreshToken
+//                oldAuthToken: authToken,
             })
             .then(({ data }) => {
                 return {

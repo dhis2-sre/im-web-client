@@ -31,15 +31,15 @@ push-helm:
 
 ## CI/CD
 check:
-	echo cicd
+	echo TODO
 
 keys:
-	echo cicd
+	echo TODO
 
 smoke-test:
 	IMAGE_TAG=$(tag) docker compose up -d prod
 
 test:
-	echo cicd
+	echo TODO
 
 .PHONY: check keys smoke-test test
