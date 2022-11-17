@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 tag ?= latest
 version ?= $(shell yq e '.version' helm/chart/Chart.yaml)
 clean-cmd = docker compose down --remove-orphans --volumes
