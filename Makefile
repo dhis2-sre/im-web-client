@@ -3,6 +3,7 @@ version ?= $(shell yq e '.version' helm/chart/Chart.yaml)
 clean-cmd = docker compose down --remove-orphans --volumes
 
 docker-image:
+	@[[ -f env/${ENVIRONMENT}.env ]] && source env/${ENVIRONMENT}.env; \
 	IMAGE_TAG=$(tag) docker compose build prod
 
 push-docker-image:
