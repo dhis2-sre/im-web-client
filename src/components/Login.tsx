@@ -8,8 +8,8 @@ import styles from './LoginPage.module.css'
 const LoginPage = () => {
     const signIn = useSignIn()
     const navigate = useNavigate()
-    const [username, setUsername] = useState('hackathon@dhis2.org')
-    const [password, setPassword] = useState('dhis2-hackathon-dhis2')
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
     const [loginError, setLoginError] = useState('')
 
     const getToken = useCallback(() => {
