@@ -29,7 +29,7 @@ export const LogoutButton = () => {
             }
             className={styles.logout}
         >
-            logout
+            Logout
         </button>
     )
 }
