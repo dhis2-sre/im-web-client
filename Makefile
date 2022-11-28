@@ -15,6 +15,12 @@ push-docker-image:
 dev:
 	docker compose up --build dev
 
+test:
+	docker compose run test
+
+cypress:
+	yarn run cypress open
+
 clean:
 	$(clean-cmd)
 
@@ -26,7 +32,7 @@ push-helm:
         -F "chart=@im-web-client-$(version).tgz" \
         https://helm-charts.fitfit.dk/api/charts
 
-.PHONY: docker-image push-docker-image helm-chart push-helm
+.PHONY: docker-image push-docker-image test cypress helm-chart push-helm
 
 
 ## CI/CD
@@ -39,7 +45,4 @@ keys:
 smoke-test:
 	IMAGE_TAG=$(tag) docker compose up -d prod
 
-test:
-	echo TODO
-
-.PHONY: check keys smoke-test test
+.PHONY: check keys smoke-test

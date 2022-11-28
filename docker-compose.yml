@@ -23,3 +23,13 @@ services:
     command: yarn start
     ports:
       - "3000:3000"
+
+  test:
+    image: cypress/included:11.2.0
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/e2e
+    working_dir: /e2e
+    env_file:
+      - .env
