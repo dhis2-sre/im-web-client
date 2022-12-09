@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router'
 import { useAuthHeader } from 'react-auth-kit'
 import { API_HOST } from '../api'
 import styles from './StackConfigurator.module.css'
+import {StackParameter, StackParameterSourceId} from "./StackParameter";
 
 const toTitleCase = (string) =>
     string
@@ -28,6 +29,8 @@ export const StackConfigurator = ({ name }) => {
     const navigate = useNavigate()
     const getAuthHeader = useAuthHeader()
     const [instanceName, setInstanceName] = useState('')
+    const [sourceInstance, setSourceInstance] = useState(0)
+    const [presetInstance, setPresetInstance] = useState(0)
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
     const {
@@ -44,6 +47,8 @@ export const StackConfigurator = ({ name }) => {
             stackName: name,
             requiredParameters: toArray(requiredStackParameters),
             optionalParameters: toArray(optionalStackParameters),
+            presetInstance: presetInstance ,
+            sourceInstance: sourceInstance,
         }
         axios({
             url: `${API_HOST}/instances`,
@@ -62,6 +67,8 @@ export const StackConfigurator = ({ name }) => {
     }, [
         name,
         instanceName,
+        presetInstance,
+        sourceInstance,
         requiredStackParameters,
         optionalStackParameters,
         getAuthHeader,
@@ -85,37 +92,76 @@ export const StackConfigurator = ({ name }) => {
         return null
     }
 
-    const onRequiredInputChange = ({ name, value }) => {
+    const onRequiredInputChange = (key, value) => {
+        if ('selected' in value) {
+            value = value.selected
+        } else {
+            value = key.value
+            key = key.name
+        }
+
         setRequiredStackParameters({
             ...requiredStackParameters,
-            [name]: value,
+            [key]: value,
         })
     }
 
-    const onOptionalInputChange = ({ name, value }) => {
+    const onOptionalInputChange = (key, value) => {
+        if ('selected' in value) {
+            value = value.selected
+        } else {
+                value = key.value
+                key = key.name
+        }
+
         setOptionalStackParameters({
             ...optionalStackParameters,
-            [name]: value,
+            [key]: value,
         })
     }
 
     return (
-        <div>
+        <>
             <div className={styles.container}>
                 <InputField
                     className={styles.field}
                     label="Name"
                     value={instanceName}
-                    onChange={({ value }) => setInstanceName(value)}
+                    onChange={({ value }) => {
+                        setInstanceName(value)
+                    }}
                     required
                 />
+                <StackParameterSourceId
+                    className={styles.field}
+                    name="SOURCE_ID"
+                    label="Source"
+                    value="0"
+                    onChange={(e) => {
+                        setSourceInstance(e.selected)
+                    }}
+                />
+
+                <StackParameter
+                    className={styles.field}
+                    name="PRESET_ID"
+                    label="Preset"
+                    value="0"
+                    onChange={(e) => {
+                        setPresetInstance(e.selected)
+                    }}
+                />
+
+            </div>
+            <Divider />
+            <h4 className={styles.subheader}>Required parameters</h4>
+            <div>
                 {Object.entries(requiredStackParameters).map(
                     ([name, defaultValue]: any) => (
-                        <InputField
+                        <StackParameter
                             className={styles.field}
-                            key={name}
                             name={name}
-                            label={toTitleCase(name)}
+                            label={toTitleCase(name) + "*"}
                             value={defaultValue}
                             onChange={onRequiredInputChange}
                             required
@@ -128,9 +174,8 @@ export const StackConfigurator = ({ name }) => {
             <div className={styles.container}>
                 {Object.entries(optionalStackParameters).map(
                     ([name, defaultValue]: any) => (
-                        <InputField
+                        <StackParameter
                             className={styles.field}
-                            key={name}
                             name={name}
                             label={toTitleCase(name)}
                             value={defaultValue}
@@ -146,6 +191,6 @@ export const StackConfigurator = ({ name }) => {
                 </Button>
                 <Button onClick={() => navigate('/instances')}>Cancel</Button>
             </ButtonStrip>
-        </div>
+        </>
     )
 }
