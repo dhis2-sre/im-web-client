@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router'
 import { useAuthHeader } from 'react-auth-kit'
 import { API_HOST } from '../api'
 import styles from './StackConfigurator.module.css'
-import {StackParameter, StackParameterSourceId} from "./StackParameter";
+import {StackParameter} from "./StackParameter"
 
 const toTitleCase = (string) =>
     string
@@ -29,8 +29,6 @@ export const StackConfigurator = ({ name }) => {
     const navigate = useNavigate()
     const getAuthHeader = useAuthHeader()
     const [instanceName, setInstanceName] = useState('')
-    const [sourceInstance, setSourceInstance] = useState(0)
-    const [presetInstance, setPresetInstance] = useState(0)
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
     const {
@@ -47,8 +45,6 @@ export const StackConfigurator = ({ name }) => {
             stackName: name,
             requiredParameters: toArray(requiredStackParameters),
             optionalParameters: toArray(optionalStackParameters),
-            presetInstance: presetInstance ,
-            sourceInstance: sourceInstance,
         }
         axios({
             url: `${API_HOST}/instances`,
@@ -67,8 +63,6 @@ export const StackConfigurator = ({ name }) => {
     }, [
         name,
         instanceName,
-        presetInstance,
-        sourceInstance,
         requiredStackParameters,
         optionalStackParameters,
         getAuthHeader,
@@ -132,26 +126,6 @@ export const StackConfigurator = ({ name }) => {
                     }}
                     required
                 />
-                <StackParameterSourceId
-                    className={styles.field}
-                    name="SOURCE_ID"
-                    label="Source"
-                    value="0"
-                    onChange={(e) => {
-                        setSourceInstance(e.selected)
-                    }}
-                />
-
-                <StackParameter
-                    className={styles.field}
-                    name="PRESET_ID"
-                    label="Preset"
-                    value="0"
-                    onChange={(e) => {
-                        setPresetInstance(e.selected)
-                    }}
-                />
-
             </div>
             <Divider />
             <h4 className={styles.subheader}>Required parameters</h4>
