@@ -51,6 +51,6 @@
         ]
     },
     "devDependencies": {
-        "@dhis2/cli-style": "^10.4.3"
+        "@dhis2/cli-style": "^10.5.0"
     }
 }
