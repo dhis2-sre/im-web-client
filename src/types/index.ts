@@ -31,3 +31,5 @@ export type InstancesGroup = Array<{
     Hostname: string
     Instances: Array<Instance> | null
 }>
+
+export type Integrations = Array<any>
