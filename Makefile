@@ -18,15 +18,7 @@ dev:
 clean:
 	$(clean-cmd)
 
-helm-chart:
-	@helm package helm/chart
-
-push-helm:
-	@curl --user "$(CHART_AUTH_USER):$(CHART_AUTH_PASS)" \
-        -F "chart=@im-web-client-$(version).tgz" \
-        https://helm-charts.fitfit.dk/api/charts
-
-.PHONY: docker-image push-docker-image helm-chart push-helm
+.PHONY: docker-image push-docker-image
 
 
 ## CI/CD
