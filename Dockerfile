@@ -2,7 +2,7 @@ FROM node:19-alpine AS builder
 ARG REACT_APP_IM_API
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --check-files --immutable --frozen-lockfile
+RUN yarn install --frozen-lockfile
 COPY . .
 RUN yarn build
 
