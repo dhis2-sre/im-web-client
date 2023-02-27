@@ -30,6 +30,9 @@ push-helm:
 
 
 ## CI/CD
+init:
+	echo TODO
+
 check:
 	echo TODO
 
@@ -42,4 +45,4 @@ smoke-test:
 test:
 	echo TODO
 
-.PHONY: check keys smoke-test test
+.PHONY: init check keys smoke-test test
