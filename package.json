@@ -5,7 +5,7 @@
     "dependencies": {
         "@dhis2/app-runtime": "^3.8.0",
         "@dhis2/d2-i18n": "^1.1.1",
-        "@dhis2/ui": "^8.7.7",
+        "@dhis2/ui": "^8.13.3",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^14.4.3",
