@@ -1,7 +1,7 @@
 import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useSignIn } from 'react-auth-kit'
-import { useNavigate } from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { getToken as getTokeAsync } from '../api'
 import styles from './LoginPage.module.css'
 
@@ -65,6 +65,7 @@ const LoginPage = () => {
                 <Button primary onClick={getToken}>
                     Login
                 </Button>
+                <Link to={`/sign-up`}>Sign up?</Link>
             </Card>
         </div>
     )

@@ -35,6 +35,16 @@ export const getToken = (username, password) => {
     )
 }
 
+export const postSignUp = (username, password) => {
+    return axios.post(
+        `${API_HOST}/users`,
+        {
+            email: username,
+            password: password,
+        },
+    )
+}
+
 export const refreshApi = createRefresh({
     // TODO: this expiration value should read from the token... egg/chicken?
     interval: 14, // Refresh the token every 14 minutes
