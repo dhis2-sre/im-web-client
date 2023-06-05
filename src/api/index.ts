@@ -2,7 +2,8 @@ import axios from 'axios'
 import { createRefresh } from 'react-auth-kit'
 import { InstancesGroup } from '../types'
 
-export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
+export const API_HOST =
+    process.env.REACT_APP_IM_API || 'https://api.im.prod.test.c.dhis2.org'
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
@@ -48,8 +49,8 @@ export const refreshApi = createRefresh({
         return axios
             .post(`${API_HOST}/refresh`, {
                 refreshToken: refreshToken,
-// TODO: no old auth token... https://api.im.dev.test.c.dhis2.org/users/docs#operation/refreshToken
-//                oldAuthToken: authToken,
+                // TODO: no old auth token... https://api.im.prod.test.c.dhis2.org/users/docs#operation/refreshToken
+                //                oldAuthToken: authToken,
             })
             .then(({ data }) => {
                 return {
