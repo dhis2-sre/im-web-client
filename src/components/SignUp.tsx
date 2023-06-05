@@ -26,7 +26,16 @@ const SignUpPage = () => {
     }, [username, password, navigate])
 
     return (
-        <div className={styles.container}>
+        <form
+            className={styles.container}
+            action="login"
+            autoComplete="on"
+            onSubmit={(event) => {
+                event.stopPropagation()
+                event.preventDefault()
+                doSignUp()
+            }}
+        >
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo}/>
@@ -50,9 +59,20 @@ const SignUpPage = () => {
                     }}
                 />
                 {signUpError && <Help error>{signUpError}</Help>}
-                <Button primary onClick={doSignUp}>Sign up</Button>
+                <Button
+                    primary
+                    onClick={(_, event) => {
+                        event.stopPropagation()
+                        event.preventDefault()
+                        doSignUp()
+                    }}
+                    type="submit"
+                    value="Sign up"
+                >
+                    Sign up
+                </Button>
             </Card>
-        </div>
+        </form>
     )
 }
 
