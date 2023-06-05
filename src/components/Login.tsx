@@ -1,5 +1,5 @@
 import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import jwtDecode from 'jwt-decode'
 import { useSignIn } from 'react-auth-kit'
 import { useNavigate } from 'react-router-dom'
@@ -33,7 +33,6 @@ const computeSignInOptions = (data) => {
 }
 
 const LoginPage = () => {
-    const formRef = useRef(null)
     const signIn = useSignIn()
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
@@ -68,7 +67,6 @@ const LoginPage = () => {
 
     return (
         <form
-            ref={formRef}
             className={styles.container}
             action="login"
             autoComplete="on"
