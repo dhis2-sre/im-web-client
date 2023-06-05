@@ -1,21 +1,32 @@
 import { LogoIconWhite } from '@dhis2/ui'
-import { useEffect } from 'react'
-import { RequireAuth } from 'react-auth-kit'
+import { RequireAuth, useIsAuthenticated } from 'react-auth-kit'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import styles from './Layout.module.css'
 import { NavLink } from 'react-router-dom'
 import StackSubNav from './StacksSubNav'
 import { LogoutButton } from './LogoutButton'
+import { useEffect } from 'react'
 
 export const Layout = () => {
     const navigate = useNavigate()
     const location = useLocation()
+    const isAuthenticatedFn = useIsAuthenticated()
+    const isAtHomePage = location.pathname === '/'
+    const isAuthenticated = isAuthenticatedFn()
 
     useEffect(() => {
-        if (location.pathname === '/') {
-            navigate('/instances')
+        if (isAtHomePage) {
+            if (isAuthenticated) {
+                navigate('/instances')
+            } else {
+                navigate('/login')
+            }
         }
-    }, [location, navigate])
+    }, [isAtHomePage, isAuthenticated, navigate])
+
+    if (!isAuthenticated) {
+        return null
+    }
 
     return (
         <RequireAuth loginPath={'/login'}>
