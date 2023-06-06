@@ -10,19 +10,15 @@ const SignUpPage = () => {
     const [password, setPassword] = useState('')
     const [signUpError, setSignUpError] = useState('')
 
-    const doSignUp = useCallback(() => {
-        const signUp = async () => {
-            try {
-                const result = await postSignUp(username, password)
-                if (result.status === 201) {
-                    window.requestAnimationFrame(() => navigate('/login'))
-                }
-            } catch (error) {
-                setSignUpError(error.response.data)
+    const doSignUp = useCallback(async () => {
+        try {
+            const result = await postSignUp(username, password)
+            if (result.status === 201) {
+                window.requestAnimationFrame(() => navigate('/login'))
             }
+        } catch (error) {
+            setSignUpError(error.response.data)
         }
-
-        signUp()
     }, [username, password, navigate])
 
     return (
