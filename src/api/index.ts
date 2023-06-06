@@ -101,15 +101,7 @@ export const refreshApi = createRefresh({
     interval: getRefreshIntervalFromLocalStorage(),
     refreshApiCallback: ({ refreshToken }) => {
         return axios
-<<<<<<< HEAD
             .post(`${API_HOST}/refresh`, { refreshToken })
-=======
-            .post(`${API_HOST}/refresh`, {
-                refreshToken: refreshToken,
-                // TODO: no old auth token... https://api.im.dev.test.c.dhis2.org/users/docs#operation/refreshToken
-                //                oldAuthToken: authToken,
-            })
->>>>>>> 5d9bba8 (chore: update config variables)
             .then(({ data }) => {
                 const {
                     expiryDurationInMinutes: newAuthTokenExpireIn,
