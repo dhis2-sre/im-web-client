@@ -23,7 +23,6 @@ function reducer(
 ) {
     switch (action.type) {
         case 'REQUEST_INIT':
-            console.log('init', state)
             return {
                 ...state,
                 isCalled: true,
@@ -31,7 +30,6 @@ function reducer(
                 isFetching: true,
             }
         case 'REQUEST_SUCCESS':
-            console.log('succes', state)
             return {
                 ...state,
                 isLoading: false,
@@ -40,7 +38,6 @@ function reducer(
                 error: undefined,
             }
         case 'REQUEST_ERROR':
-            console.log('error', state)
             return {
                 ...state,
                 isLoading: false,
