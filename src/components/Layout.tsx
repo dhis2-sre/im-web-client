@@ -22,7 +22,7 @@ export const Layout = () => {
         }
     }, [location.pathname, isAuthenticated, navigate])
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated()) {
         return null
     }
 
