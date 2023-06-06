@@ -7,3 +7,6 @@
 .subheader {
     margin-top: var(--spacers-dp12);
 }
+.field {
+    width: 340px;
+}

@@ -8,12 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthHeader } from 'react-auth-kit'
 import { API_HOST } from '../api'
 import styles from './StackConfigurator.module.css'
-
-const toTitleCase = (string) =>
-    string
-        .toLowerCase()
-        .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase())
-        .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase())
+import { ParameterField } from './ParameterField'
 
 const toKeyedObject = (array) =>
     array.reduce((acc, { Name: name, DefaultValue: defaultValue }) => {
@@ -112,12 +107,10 @@ export const StackConfigurator = ({ name }) => {
                 />
                 {Object.entries(requiredStackParameters).map(
                     ([name, defaultValue]: any) => (
-                        <InputField
-                            className={styles.field}
+                        <ParameterField
                             key={name}
                             name={name}
-                            label={toTitleCase(name)}
-                            value={defaultValue}
+                            defaultValue={defaultValue}
                             onChange={onRequiredInputChange}
                             required
                         />
@@ -129,12 +122,10 @@ export const StackConfigurator = ({ name }) => {
             <div className={styles.container}>
                 {Object.entries(optionalStackParameters).map(
                     ([name, defaultValue]: any) => (
-                        <InputField
-                            className={styles.field}
+                        <ParameterField
                             key={name}
                             name={name}
-                            label={toTitleCase(name)}
-                            value={defaultValue}
+                            defaultValue={defaultValue}
                             onChange={onOptionalInputChange}
                         />
                     )
