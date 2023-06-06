@@ -106,7 +106,7 @@ export const refreshApi = createRefresh({
 =======
             .post(`${API_HOST}/refresh`, {
                 refreshToken: refreshToken,
-                // TODO: no old auth token... https://api.im.prod.test.c.dhis2.org/users/docs#operation/refreshToken
+                // TODO: no old auth token... https://api.im.dev.test.c.dhis2.org/users/docs#operation/refreshToken
                 //                oldAuthToken: authToken,
             })
 >>>>>>> 5d9bba8 (chore: update config variables)
