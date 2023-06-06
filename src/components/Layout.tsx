@@ -10,19 +10,17 @@ import { useEffect } from 'react'
 export const Layout = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    const isAuthenticatedFn = useIsAuthenticated()
-    const isAtHomePage = location.pathname === '/'
-    const isAuthenticated = isAuthenticatedFn()
+    const isAuthenticated = useIsAuthenticated()
 
     useEffect(() => {
-        if (isAtHomePage) {
-            if (isAuthenticated) {
+        if (isAuthenticated()) {
+            if (location.pathname === '/') {
                 navigate('/instances')
-            } else {
-                navigate('/login')
             }
+        } else {
+            navigate('/login')
         }
-    }, [isAtHomePage, isAuthenticated, navigate])
+    }, [location.pathname, isAuthenticated, navigate])
 
     if (!isAuthenticated) {
         return null
