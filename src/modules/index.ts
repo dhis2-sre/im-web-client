@@ -1,0 +1,1 @@
+export { clearAuthItemsFromLocalStorage } from './clearAuthItemsFromLocalStorage'

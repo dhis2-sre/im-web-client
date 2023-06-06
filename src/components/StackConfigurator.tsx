@@ -31,7 +31,7 @@ export const StackConfigurator = ({ name }) => {
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
     const {
-        result: stack,
+        data: stack,
         isLoading,
         refetch,
     } = useApi<Stack>(getStack, { name })

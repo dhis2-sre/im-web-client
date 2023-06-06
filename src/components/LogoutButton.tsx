@@ -3,6 +3,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { useNavigate } from 'react-router'
 import { API_HOST } from '../api'
 import styles from './LogoutButton.module.css'
+import { clearAuthItemsFromLocalStorage } from '../modules'
 
 const logout = (authHeader) =>
     axios
@@ -13,7 +14,7 @@ const logout = (authHeader) =>
             },
         })
         .then(() => {
-            localStorage.removeItem('_auth')
+            clearAuthItemsFromLocalStorage()
         })
         .catch((error) => {
             console.error(error)

@@ -5,7 +5,7 @@ import { useApi } from '../api/useApi'
 import styles from './StackSubNav.module.css'
 
 const StackSubNav = () => {
-    const { result: stacks, isLoading } = useApi<Stacks>(getStacks)
+    const { data: stacks, isLoading } = useApi<Stacks>(getStacks)
 
     if (isLoading) {
         return null

@@ -15,7 +15,7 @@ import styles from './Stacks.module.css'
 import { getRelativeDate } from './InstancesLists'
 
 const StackList = () => {
-    const { result: stacks, isLoading } = useApi<Stacks>(getStacks)
+    const { data: stacks, isLoading } = useApi<Stacks>(getStacks)
 
     if (isLoading) {
         return null

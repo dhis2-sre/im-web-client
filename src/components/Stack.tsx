@@ -17,7 +17,7 @@ import { useEffect } from 'react'
 const StackDetails = () => {
     const { name } = useParams()
     const {
-        result: stack,
+        data: stack,
         isLoading,
         refetch,
     } = useApi<Stack>(getStack, { name })
