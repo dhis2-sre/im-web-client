@@ -55,13 +55,13 @@ export function useApi<T = any, R = any>(
         payload?: any
     ) => Promise<AxiosResponse<T>>,
     payload?: R,
-    options: {
+    options?: {
         lazy?: boolean
-    } = {}
+    }
 ) {
     const [state, dispatch] = useReducer(reducer, {
         isCalled: false,
-        isLoading: !options.lazy,
+        isLoading: !options?.lazy,
         isFetching: false,
         error: undefined,
         data: undefined,
@@ -96,10 +96,10 @@ export function useApi<T = any, R = any>(
     }, [navigate, operation, payload, token])
 
     useEffect(() => {
-        if (!state.isCalled && !options.lazy) {
+        if (!state.isCalled && !options?.lazy) {
             performOperation()
         }
-    }, [state.isCalled, performOperation, options.lazy])
+    }, [state.isCalled, performOperation, options?.lazy])
 
     return {
         ...state,

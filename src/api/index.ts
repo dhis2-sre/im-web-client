@@ -41,9 +41,19 @@ const getRefreshIntervalFromLocalStorage = () => {
     const refreshToken = localStorage.getItem('_auth_refresh')
 
     if (!refreshToken) {
-        throw new Error(
+        /* This will happen when a user first visits the app,
+         * or after clearing the local storage. It will cause the
+         * app to refetch a refresh token every 14 minutes, which
+         * currently is the correct value, see:
+         * https://github.com/dhis2-sre/im-manager/blob/master/helm/chart/values.yaml#L6
+         * But it would be nicer if this could be tackled in a
+         * different way so that we can always infer the refresh
+         * interval duration on the refresh token itself. See:
+         * https://github.com/react-auth-kit/react-auth-kit/issues/1336 */
+        console.error(
             'Tried to read refresh token expiry from local storage but found no token'
         )
+        return 14
     }
 
     const { expiryDurationInMinutes } = parseToken(refreshToken)
