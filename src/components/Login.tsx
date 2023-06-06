@@ -1,34 +1,24 @@
 import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import jwtDecode from 'jwt-decode'
 import { useSignIn } from 'react-auth-kit'
 import { useNavigate } from 'react-router-dom'
 import { getToken as getTokenAsync } from '../api'
 import styles from './LoginPage.module.css'
-
-type AccessToken = {
-    exp: number
-    iat: number
-    user?: any
-}
+import { parseToken } from '../modules'
 
 const computeSignInOptions = (data) => {
-    const decodedAccessToken: AccessToken = jwtDecode(data.access_token)
-    const decodedRefreshToken: AccessToken = jwtDecode(data.refresh_token)
-    const expiresIn = data.expires_in / 60
-    const refreshTokenExpireIn = Math.floor(
-        (decodedRefreshToken.exp - decodedRefreshToken.iat) / 60
-    )
+    const parsedAccessToken = parseToken(data.access_token)
+    const parsedRefreshToken = parseToken(data.refresh_token)
     const tokenType =
         data.token_type.charAt(0).toUpperCase() + data.token_type.slice(1)
 
     return {
         token: data.access_token,
-        expiresIn,
+        expiresIn: parsedAccessToken.expiryDurationInMinutes,
         tokenType,
-        authState: decodedAccessToken.user,
+        authState: parsedAccessToken.user,
         refreshToken: data.refresh_token,
-        refreshTokenExpireIn,
+        refreshTokenExpireIn: parsedRefreshToken.expiryDurationInMinutes,
     }
 }
 
