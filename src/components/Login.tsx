@@ -1,7 +1,7 @@
 import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useIsAuthenticated, useSignIn } from 'react-auth-kit'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { getToken as getTokenAsync } from '../api'
 import styles from './LoginPage.module.css'
 import { parseToken } from '../modules'
@@ -22,12 +22,23 @@ const computeSignInOptions = (data) => {
     }
 }
 
+const getRedirectPath = (location) => {
+    const { redirectPath } = location.state
+
+    if (!redirectPath || redirectPath === '/login') {
+        return '/instances'
+    }
+
+    return redirectPath
+}
+
 const LoginPage = () => {
     const signIn = useSignIn()
     const isAuthenticated = useIsAuthenticated()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [loginError, setLoginError] = useState('')
+    const location = useLocation()
 
     const getToken = useCallback(async () => {
         try {
@@ -50,7 +61,7 @@ const LoginPage = () => {
     }, [username, password, signIn])
 
     if (isAuthenticated()) {
-        return <Navigate to="/instances" />
+        return <Navigate to={getRedirectPath(location)} />
     }
 
     return (

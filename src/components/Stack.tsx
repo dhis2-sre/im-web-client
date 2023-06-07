@@ -19,14 +19,15 @@ const StackDetails = () => {
     const {
         data: stack,
         isLoading,
+        isFetching,
         refetch,
     } = useApi<Stack>(getStack, { name })
 
     useEffect(() => {
-        if (stack && name !== stack.name) {
+        if (!isFetching && stack && name !== stack.name) {
             refetch()
         }
-    }, [name, stack, refetch])
+    }, [name, stack, isFetching, refetch])
 
     if (isLoading) {
         return null

@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
-import { useEffect, useReducer, useCallback } from 'react'
+import { useEffect, useReducer, useCallback, useRef } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { clearAuthItemsFromLocalStorage } from '../modules'
 
 function reducer(
@@ -12,7 +12,6 @@ function reducer(
         /* Will toggle to true on every request,
          * whenever a request is pending */
         isFetching: boolean
-        isCalled: boolean
         data: any
         error: Error
     },
@@ -25,7 +24,6 @@ function reducer(
         case 'REQUEST_INIT':
             return {
                 ...state,
-                isCalled: true,
                 isLoading: !state.data,
                 isFetching: true,
             }
@@ -59,8 +57,8 @@ export function useApi<T = any, R = any>(
         lazy?: boolean
     }
 ) {
+    const isCalledRef = useRef(false)
     const [state, dispatch] = useReducer(reducer, {
-        isCalled: false,
         isLoading: !options?.lazy,
         isFetching: false,
         error: undefined,
@@ -69,40 +67,37 @@ export function useApi<T = any, R = any>(
 
     const getAuthHeader = useAuthHeader()
     const navigate = useNavigate()
+    const location = useLocation()
 
-    const token = getAuthHeader()
+    const performOperation = useCallback(async () => {
+        dispatch({ type: 'REQUEST_INIT' })
 
-    const performOperation = useCallback(() => {
-        const localPerformOperation = async () => {
-            dispatch({ type: 'REQUEST_INIT' })
-
-            try {
-                const apiResult = await operation(token, payload)
-                dispatch({ type: 'REQUEST_SUCCESS', payload: apiResult.data })
-            } catch (error) {
-                const isTokenInvalidError =
-                    error?.response?.data === 'token not valid' &&
-                    error?.response?.status === 401
-
-                if (isTokenInvalidError) {
-                    clearAuthItemsFromLocalStorage()
-                    navigate('/login')
-                } else {
-                    dispatch({ type: 'REQUEST_ERROR', payload: error })
-                }
+        try {
+            const apiResult = await operation(getAuthHeader(), payload)
+            dispatch({ type: 'REQUEST_SUCCESS', payload: apiResult.data })
+        } catch (error) {
+            if (error?.response?.status === 401) {
+                clearAuthItemsFromLocalStorage()
+                navigate('/login', {
+                    state: { redirectPath: location.pathname },
+                })
+            } else {
+                dispatch({ type: 'REQUEST_ERROR', payload: error })
             }
         }
-        localPerformOperation()
-    }, [navigate, operation, payload, token])
+    }, [navigate, operation, payload, getAuthHeader, location.pathname])
 
     useEffect(() => {
-        if (!state.isCalled && !options?.lazy) {
+        if (!isCalledRef.current && !options?.lazy) {
+            // Ugly hack to prevent multiple requests during mount
+            isCalledRef.current = true
             performOperation()
         }
-    }, [state.isCalled, performOperation, options?.lazy])
+    }, [performOperation, options?.lazy])
 
     return {
         ...state,
         refetch: performOperation,
+        isCalled: isCalledRef.current,
     }
 }

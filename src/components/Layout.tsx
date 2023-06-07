@@ -11,7 +11,9 @@ export const Layout = () => {
     const isAuthenticated = useIsAuthenticated()
 
     if (!isAuthenticated()) {
-        return <Navigate to="/login" />
+        return (
+            <Navigate to="/login" state={{ redirectPath: location.pathname }} />
+        )
     }
 
     if (location.pathname === '/') {
