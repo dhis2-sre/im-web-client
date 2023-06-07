@@ -29,37 +29,29 @@ const LoginPage = () => {
     const [password, setPassword] = useState('')
     const [loginError, setLoginError] = useState('')
 
-    const getToken = useCallback(() => {
-        const fetchToken = async () => {
-            try {
-                const response = await getTokenAsync(username, password)
+    const getToken = useCallback(async () => {
+        try {
+            const response = await getTokenAsync(username, password)
 
-                if (response.status !== 201) {
-                    throw new Error('Authentication token request failed')
-                }
-
-                if (signIn(computeSignInOptions(response.data))) {
-                    navigate('/instances')
-                } else {
-                    throw new Error('Sign in failed')
-                }
-            } catch (error) {
-                setLoginError(
-                    error.response?.data ??
-                        error.message ??
-                        'Unknown login error'
-                )
+            if (response.status !== 201) {
+                throw new Error('Authentication token request failed')
             }
-        }
 
-        fetchToken()
+            if (signIn(computeSignInOptions(response.data))) {
+                navigate('/instances')
+            } else {
+                throw new Error('Sign in failed')
+            }
+        } catch (error) {
+            setLoginError(
+                error.response?.data ?? error.message ?? 'Unknown login error'
+            )
+        }
     }, [username, password, signIn, navigate])
 
     return (
         <form
             className={styles.container}
-            action="login"
-            autoComplete="on"
             onSubmit={(event) => {
                 event.stopPropagation()
                 event.preventDefault()
