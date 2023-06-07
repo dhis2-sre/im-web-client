@@ -1,29 +1,21 @@
 import { LogoIconWhite } from '@dhis2/ui'
 import { RequireAuth, useIsAuthenticated } from 'react-auth-kit'
-import { Outlet, useLocation, useNavigate } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router'
 import styles from './Layout.module.css'
 import { NavLink } from 'react-router-dom'
 import StackSubNav from './StacksSubNav'
 import { LogoutButton } from './LogoutButton'
-import { useEffect } from 'react'
 
 export const Layout = () => {
-    const navigate = useNavigate()
     const location = useLocation()
     const isAuthenticated = useIsAuthenticated()
 
-    useEffect(() => {
-        if (isAuthenticated()) {
-            if (location.pathname === '/') {
-                navigate('/instances')
-            }
-        } else {
-            navigate('/login')
-        }
-    }, [location.pathname, isAuthenticated, navigate])
-
     if (!isAuthenticated()) {
-        return null
+        return <Navigate to="/login" />
+    }
+
+    if (location.pathname === '/') {
+        return <Navigate to="/instances" />
     }
 
     return (

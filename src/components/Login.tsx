@@ -1,7 +1,7 @@
 import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useSignIn } from 'react-auth-kit'
-import { useNavigate } from 'react-router-dom'
+import { useIsAuthenticated, useSignIn } from 'react-auth-kit'
+import { Navigate } from 'react-router-dom'
 import { getToken as getTokenAsync } from '../api'
 import styles from './LoginPage.module.css'
 import { parseToken } from '../modules'
@@ -24,7 +24,7 @@ const computeSignInOptions = (data) => {
 
 const LoginPage = () => {
     const signIn = useSignIn()
-    const navigate = useNavigate()
+    const isAuthenticated = useIsAuthenticated()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [loginError, setLoginError] = useState('')
@@ -37,9 +37,9 @@ const LoginPage = () => {
                 throw new Error('Authentication token request failed')
             }
 
-            if (signIn(computeSignInOptions(response.data))) {
-                navigate('/instances')
-            } else {
+            const signinResult = signIn(computeSignInOptions(response.data))
+
+            if (!signinResult) {
                 throw new Error('Sign in failed')
             }
         } catch (error) {
@@ -47,7 +47,11 @@ const LoginPage = () => {
                 error.response?.data ?? error.message ?? 'Unknown login error'
             )
         }
-    }, [username, password, signIn, navigate])
+    }, [username, password, signIn])
+
+    if (isAuthenticated()) {
+        return <Navigate to="/instances" />
+    }
 
     return (
         <form

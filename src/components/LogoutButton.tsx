@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useAuthHeader } from 'react-auth-kit'
+import { useAuthHeader, useSignOut } from 'react-auth-kit'
 import { useNavigate } from 'react-router'
 import { API_HOST } from '../api'
 import styles from './LogoutButton.module.css'
@@ -21,12 +21,16 @@ const logout = (authHeader) =>
         })
 
 export const LogoutButton = () => {
+    const signOut = useSignOut()
     const getAuthHeader = useAuthHeader()
     const navigate = useNavigate()
     return (
         <button
             onClick={() =>
-                logout(getAuthHeader()).then(() => navigate('/login'))
+                logout(getAuthHeader()).then(() => {
+                    signOut()
+                    navigate('/login')
+                })
             }
             className={styles.logout}
         >
