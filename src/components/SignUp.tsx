@@ -30,8 +30,6 @@ const SignUpPage = () => {
     return (
         <form
             className={styles.container}
-            action="login"
-            autoComplete="on"
             onSubmit={(event) => {
                 event.stopPropagation()
                 event.preventDefault()
