@@ -7,7 +7,7 @@ import { StackConfigurator } from './StackConfigurator'
 import styles from './NewInstance.module.css'
 
 export const NewInstance = () => {
-    const { result: stacks, isLoading } = useApi<Stacks>(getStacks)
+    const { data: stacks, isLoading } = useApi<Stacks>(getStacks)
     const [selectedStack, setSelectedStack] = useState({ name: '' })
 
     useEffect(() => {
