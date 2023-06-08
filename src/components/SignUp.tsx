@@ -14,7 +14,7 @@ const SignUpPage = () => {
 
     const doSignUp = useCallback(async () => {
         if (password !== confirmPassword) {
-            setSignUpError("passwords doesn't match")
+            setSignUpError(passwordsUnequalMsg)
             return
         }
 
