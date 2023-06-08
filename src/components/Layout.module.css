@@ -6,6 +6,8 @@
     padding-left: var(--spacers-dp16);
     padding-right: var(--spacers-dp16);
     flex: 1;
+    max-height: 100vh;
+    overflow: auto;
 }
 .nav {
     background-color: var(--colors-grey900);

@@ -1,53 +1,103 @@
 import { AxiosResponse } from 'axios'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useReducer, useCallback, useRef } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
+import { clearAuthItemsFromLocalStorage } from '../modules'
+
+function reducer(
+    state: {
+        /* Will only toggle to true on first request,
+         * when no data is available yet */
+        isLoading: boolean
+        /* Will toggle to true on every request,
+         * whenever a request is pending */
+        isFetching: boolean
+        data: any
+        error: Error
+    },
+    action: {
+        type: 'REQUEST_INIT' | 'REQUEST_SUCCESS' | 'REQUEST_ERROR'
+        payload?: any
+    }
+) {
+    switch (action.type) {
+        case 'REQUEST_INIT':
+            return {
+                ...state,
+                isLoading: !state.data,
+                isFetching: true,
+            }
+        case 'REQUEST_SUCCESS':
+            return {
+                ...state,
+                isLoading: false,
+                isFetching: false,
+                data: action.payload,
+                error: undefined,
+            }
+        case 'REQUEST_ERROR':
+            return {
+                ...state,
+                isLoading: false,
+                isFetching: false,
+                error: action.payload,
+            }
+        default:
+            return state
+    }
+}
 
 export function useApi<T = any, R = any>(
     operation: (
         header: string | undefined,
         payload?: any
     ) => Promise<AxiosResponse<T>>,
-    payload?: R
+    payload?: R,
+    options?: {
+        lazy?: boolean
+    }
 ) {
-    const [isLoading, setLoading] = useState<boolean>(true)
-    const [result, setResult] = useState<T>()
+    const isCalledRef = useRef(false)
+    const [state, dispatch] = useReducer(reducer, {
+        isLoading: !options?.lazy,
+        isFetching: false,
+        error: undefined,
+        data: undefined,
+    })
+
     const getAuthHeader = useAuthHeader()
     const navigate = useNavigate()
+    const location = useLocation()
 
-    const token = getAuthHeader()
+    const performOperation = useCallback(async () => {
+        dispatch({ type: 'REQUEST_INIT' })
 
-    const performOperation = useCallback(() => {
-        const localPerformOperation = async () => {
-            setLoading(true)
-            try {
-                const apiResult = await operation(token, payload)
-                setResult(apiResult.data)
-            } catch (err) {
-                console.warn(err)
-                // fixme: we're getting a CORS error when the token expires rather than a 401 so this is a temporary way (that is not very correct) to detect it
-                const isCorsError = err?.code === 'ERR_NETWORK'
-                const status = err?.response?.status
-                const isAuthError = status > 400 && status < 500
-                if (isCorsError || isAuthError) {
-                    navigate('/login')
-                }
-            } finally {
-                setLoading(false)
+        try {
+            const apiResult = await operation(getAuthHeader(), payload)
+            dispatch({ type: 'REQUEST_SUCCESS', payload: apiResult.data })
+        } catch (error) {
+            if (error?.response?.status === 401) {
+                clearAuthItemsFromLocalStorage()
+                navigate('/login', {
+                    state: { redirectPath: location.pathname },
+                })
+            } else {
+                dispatch({ type: 'REQUEST_ERROR', payload: error })
             }
         }
-        localPerformOperation()
-    }, [navigate, operation, payload, token])
+    }, [navigate, operation, payload, getAuthHeader, location.pathname])
 
     useEffect(() => {
-        setLoading(true)
-        performOperation()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        if (!isCalledRef.current && !options?.lazy) {
+            // Ugly hack to prevent multiple requests during mount
+            isCalledRef.current = true
+            performOperation()
+        }
+    }, [performOperation, options?.lazy])
 
     return {
-        isLoading,
-        result,
+        ...state,
         refetch: performOperation,
+        isCalled: isCalledRef.current,
     }
 }

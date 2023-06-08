@@ -31,8 +31,9 @@ export const StackConfigurator = ({ name }) => {
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
     const {
-        result: stack,
+        data: stack,
         isLoading,
+        isFetching,
         refetch,
     } = useApi<Stack>(getStack, { name })
 
@@ -69,10 +70,10 @@ export const StackConfigurator = ({ name }) => {
     ])
 
     useEffect(() => {
-        if (stack && stack.name !== name) {
+        if (!isFetching && stack && stack.name !== name) {
             refetch()
         }
-    }, [name, refetch, stack])
+    }, [name, refetch, stack, isFetching])
 
     useEffect(() => {
         if (stack) {

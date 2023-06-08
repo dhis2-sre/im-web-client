@@ -1,54 +1,89 @@
-import { InputField, Button, Card, Help, LogoIcon } from '@dhis2/ui'
-import { useCallback, useState } from 'react'
-import { useSignIn } from 'react-auth-kit'
-import {Link, useNavigate} from 'react-router-dom'
-import { getToken as getTokeAsync } from '../api'
+import {Button, Card, Help, InputField, LogoIcon} from '@dhis2/ui'
+import {useCallback, useState} from 'react'
+import {useIsAuthenticated, useSignIn} from 'react-auth-kit'
+import {Link, Navigate, useLocation} from 'react-router-dom'
+import {getToken as getTokenAsync} from '../api'
 import styles from './LoginPage.module.css'
+import {parseToken} from '../modules'
+
+const computeSignInOptions = (data) => {
+    const parsedAccessToken = parseToken(data.access_token)
+    const parsedRefreshToken = parseToken(data.refresh_token)
+    const tokenType =
+        data.token_type.charAt(0).toUpperCase() + data.token_type.slice(1)
+
+    return {
+        token: data.access_token,
+        expiresIn: parsedAccessToken.expiryDurationInMinutes,
+        tokenType,
+        authState: parsedAccessToken.user,
+        refreshToken: data.refresh_token,
+        refreshTokenExpireIn: parsedRefreshToken.expiryDurationInMinutes,
+    }
+}
+
+const getRedirectPath = (location) => {
+    const {redirectPath} = location.state
+
+    if (!redirectPath || redirectPath === '/login') {
+        return '/instances'
+    }
+
+    return redirectPath
+}
 
 const LoginPage = () => {
     const signIn = useSignIn()
-    const navigate = useNavigate()
+    const isAuthenticated = useIsAuthenticated()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [loginError, setLoginError] = useState('')
+    const location = useLocation()
 
-    const getToken = useCallback(() => {
-        const fetchToken = async () => {
-            try {
-                const result = await getTokeAsync(username, password)
-                signIn({
-                    token: result.data.access_token,
-                    expiresIn: result.data.expires_in,
-                    // tokenType: result.data.token_type,
-                    tokenType: 'Bearer',
-                    authState: {
-                        username,
-                        password,
-                    },
-                    refreshToken: result.data.refresh_token,
-                    refreshTokenExpireIn: 15,
-                })
-                window.requestAnimationFrame(() => navigate('/instances'))
-            } catch (error) {
-                setLoginError(error.response.data)
+    const getToken = useCallback(async () => {
+        try {
+            const response = await getTokenAsync(username, password)
+
+            if (response.status !== 201) {
+                throw new Error('Authentication token request failed')
             }
-        }
 
-        fetchToken()
-    }, [username, password, signIn, navigate])
+            const signinResult = signIn(computeSignInOptions(response.data))
+
+            if (!signinResult) {
+                throw new Error('Sign in failed')
+            }
+        } catch (error) {
+            setLoginError(
+                error.response?.data ?? error.message ?? 'Unknown login error'
+            )
+        }
+    }, [username, password, signIn])
+
+    if (isAuthenticated()) {
+        return <Navigate to={getRedirectPath(location)}/>
+    }
 
     return (
-        <div className={styles.container}>
+        <form
+            className={styles.container}
+            onSubmit={(event) => {
+                event.stopPropagation()
+                event.preventDefault()
+                getToken()
+            }}
+        >
             <Card className={styles.box}>
                 <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
+                    <LogoIcon className={styles.logo}/>
                     Instance manager login
                 </h2>
                 <InputField
                     name="username"
                     label="username"
                     value={username}
-                    onChange={({ value }) => {
+                    autoComplete="username email"
+                    onChange={({value}) => {
                         setUsername(value)
                     }}
                 />
@@ -57,17 +92,27 @@ const LoginPage = () => {
                     name="password"
                     label="password"
                     value={password}
-                    onChange={({ value }) => {
+                    autoComplete="current-password"
+                    onChange={({value}) => {
                         setPassword(value)
                     }}
                 />
                 {loginError && <Help error>{loginError}</Help>}
-                <Button primary onClick={getToken}>
+                <Button
+                    primary
+                    onClick={(_, event) => {
+                        event.stopPropagation()
+                        event.preventDefault()
+                        getToken()
+                    }}
+                    type="submit"
+                    value="login"
+                >
                     Login
                 </Button>
                 <Link to={`/sign-up`}>Sign up?</Link>
             </Card>
-        </div>
+        </form>
     )
 }
 
