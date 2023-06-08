@@ -22,6 +22,8 @@ const SignUpPage = () => {
             const result = await postSignUp(username, password)
             if (result.status === 201) {
                 setIsCreated(true)
+            } else {
+                setSignUpError(result.data)
             }
         } catch (error) {
             setSignUpError(error.response.data)
