@@ -7,10 +7,16 @@ import {Navigate} from "react-router";
 const SignUpPage = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [isCreated, setIsCreated] = useState(false)
     const [signUpError, setSignUpError] = useState('')
 
     const doSignUp = useCallback(async () => {
+        if (password !== confirmPassword) {
+            setSignUpError("passwords doesn't match")
+            return
+        }
+
         try {
             const result = await postSignUp(username, password)
             if (result.status === 201) {
@@ -19,7 +25,7 @@ const SignUpPage = () => {
         } catch (error) {
             setSignUpError(error.response.data)
         }
-    }, [username, password])
+    }, [username, password, confirmPassword])
 
     if (isCreated) {
         return <Navigate to="/login" />
@@ -56,6 +62,16 @@ const SignUpPage = () => {
                     autoComplete="new-password"
                     onChange={({value}) => {
                         setPassword(value)
+                    }}
+                />
+                <InputField
+                    type="password"
+                    name="confirm-password"
+                    label="confirm-password"
+                    value={confirmPassword}
+                    autoComplete="new-password"
+                    onChange={({value}) => {
+                        setConfirmPassword(value)
                     }}
                 />
                 {signUpError && <Help error>{signUpError}</Help>}
