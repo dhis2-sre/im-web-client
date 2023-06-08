@@ -72,6 +72,9 @@ const SignUpPage = () => {
                     value={confirmPassword}
                     autoComplete="new-password"
                     onChange={({value}) => {
+                        if (signUpError === passwordsUnequalMsg && value === password) {
+                            setSignUpError('')
+                        }
                         setConfirmPassword(value)
                     }}
                 />
