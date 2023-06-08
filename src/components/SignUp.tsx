@@ -55,6 +55,7 @@ const SignUpPage = () => {
                     name="password"
                     label="password"
                     value={password}
+                    autoComplete="new-password"
                     onChange={({value}) => {
                         setPassword(value)
                     }}
