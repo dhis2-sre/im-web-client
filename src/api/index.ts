@@ -3,8 +3,7 @@ import { createRefresh } from 'react-auth-kit'
 import { InstancesGroup } from '../types'
 import { parseToken } from '../modules'
 
-export const API_HOST =
-    process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
+export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
@@ -34,6 +33,16 @@ export const getToken = (username, password) => {
                 password,
             },
         }
+    )
+}
+
+export const postSignUp = (username, password) => {
+    return axios.post(
+        `${API_HOST}/users`,
+        {
+            email: username,
+            password: password,
+        },
     )
 }
 
