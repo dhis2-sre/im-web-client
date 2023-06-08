@@ -1,12 +1,10 @@
 import {Button, Card, Help, InputField, LogoIcon} from '@dhis2/ui'
 import {useCallback, useState} from 'react'
-import {useNavigate} from 'react-router-dom'
 import {postSignUp} from '../api'
 import styles from './SignUpPage.module.css'
 import {Navigate} from "react-router";
 
 const SignUpPage = () => {
-    const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [isCreated, setIsCreated] = useState(false)
@@ -21,7 +19,7 @@ const SignUpPage = () => {
         } catch (error) {
             setSignUpError(error.response.data)
         }
-    }, [username, password, navigate])
+    }, [username, password])
 
     if (isCreated) {
         return <Navigate to="/login" />
