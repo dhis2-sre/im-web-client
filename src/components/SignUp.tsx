@@ -3,23 +3,29 @@ import {useCallback, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {postSignUp} from '../api'
 import styles from './SignUpPage.module.css'
+import {Navigate} from "react-router";
 
 const SignUpPage = () => {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [isCreated, setIsCreated] = useState(false)
     const [signUpError, setSignUpError] = useState('')
 
     const doSignUp = useCallback(async () => {
         try {
             const result = await postSignUp(username, password)
             if (result.status === 201) {
-                window.requestAnimationFrame(() => navigate('/login'))
+                setIsCreated(true)
             }
         } catch (error) {
             setSignUpError(error.response.data)
         }
     }, [username, password, navigate])
+
+    if (isCreated) {
+        return <Navigate to="/login" />
+    }
 
     return (
         <form
