@@ -5,6 +5,7 @@ import styles from './SignUpPage.module.css'
 import {Navigate} from "react-router";
 
 const SignUpPage = () => {
+    const passwordsUnequalMsg = 'Passwords do not match'
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
