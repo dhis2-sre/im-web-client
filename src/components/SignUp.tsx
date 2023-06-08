@@ -44,6 +44,7 @@ const SignUpPage = () => {
                 <InputField
                     name="username"
                     label="username"
+                    type="email"
                     value={username}
                     onChange={({value}) => {
                         setUsername(value)
