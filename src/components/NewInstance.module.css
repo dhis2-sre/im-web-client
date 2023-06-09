@@ -17,3 +17,6 @@
 .select {
     max-width: 250px;
 }
+.error {
+    margin-bottom: var(--spacers-dp16);
+}
