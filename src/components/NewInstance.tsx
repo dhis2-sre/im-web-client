@@ -67,7 +67,6 @@ export const NewInstance = () => {
         }
     )
     const createInstance = useCallback(() => {
-        console.log('called ')
         dispatch({ type: 'POST_INIT' })
         const authHeader = getAuthHeader()
         const data = {
