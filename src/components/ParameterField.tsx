@@ -89,12 +89,22 @@ const getAsyncParameterFieldOptions = (key: ParameterName, repository) => {
     }
 }
 
-const getOptions = (value, data) => {
-    if (data) {
-        return Object.values(data)
-    } else {
-        return value ? [value] : []
+const getOptions = (name: ParameterName, value, data) => {
+    if (!data) {
+        return value ? [{ value, label: value }] : []
     }
+
+    if (name === 'DATABASE_ID') {
+        /* For this field the API returns an object where the
+         * key is the ID and the value is the label */
+        return Object.entries(data).map(([value, label]) => ({
+            value,
+            label,
+        }))
+    }
+
+    // Normally the API returns an array of strings
+    return data.map((value) => ({ value, label: value }))
 }
 
 const AsyncParameterDropdownField = ({
@@ -129,8 +139,8 @@ const AsyncParameterDropdownField = ({
             error={!!error}
             validationText={error ? 'Could not load options' : undefined}
         >
-            {getOptions(value, data).map((value) => (
-                <SingleSelectOption key={value} value={value} label={value} />
+            {getOptions(name, value, data).map(({ value, label }) => (
+                <SingleSelectOption key={value} value={value} label={label} />
             ))}
         </SingleSelectField>
     )
