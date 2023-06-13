@@ -10,50 +10,31 @@ import { useApi } from '../api/useApi'
 import { getIntergrations } from '../api/intergrations'
 import { useEffect, useRef } from 'react'
 
-export type ParameterName =
-    | 'CHART_VERSION'
-    | 'COMMAND'
-    | 'CORE_RESOURCES_REQUESTS_CPU'
-    | 'CORE_RESOURCES_REQUESTS_MEMORY'
-    | 'DATABASE_HOSTNAME'
-    | 'DATABASE_ID'
-    | 'DATABASE_NAME'
-    | 'DATABASE_PASSWORD'
-    | 'DATABASE_SIZE'
-    | 'DATABASE_USERNAME'
-    | 'DATABASE_VERSION'
-    | 'DB_RESOURCES_REQUESTS_CPU'
-    | 'DB_RESOURCES_REQUESTS_MEMORY'
-    | 'DHIS2_DATABASE_DATABASE'
-    | 'DHIS2_DATABASE_HOSTNAME'
-    | 'DHIS2_DATABASE_PASSWORD'
-    | 'DHIS2_DATABASE_PORT'
-    | 'DHIS2_DATABASE_USERNAME'
-    | 'DHIS2_HOME'
-    | 'DHIS2_HOSTNAME'
-    | 'FLYWAY_MIGRATE_OUT_OF_ORDER'
-    | 'FLYWAY_REPAIR_BEFORE_MIGRATION'
-    | 'IMAGE_PULL_POLICY'
-    | 'IMAGE_REPOSITORY'
-    | 'IMAGE_TAG'
-    | 'INSTALL_REDIS'
-    | 'INSTANCE_TTL'
-    | 'JAVA_OPTS'
-    | 'LIVENESS_PROBE_TIMEOUT_SECONDS'
-    | 'PAYLOAD'
-    | 'PGADMIN_PASSWORD'
-    | 'PGADMIN_USERNAME'
-    | 'READINESS_PROBE_TIMEOUT_SECONDS'
-    | 'REPLICA_COUNT'
-    | 'RESOURCES_REQUESTS_CPU'
-    | 'RESOURCES_REQUESTS_MEMORY'
-    | 'SOURCE_ID'
-    | 'PRESET_ID'
-    | 'STARTUP_PROBE_FAILURE_THRESHOLD'
-    | 'STARTUP_PROBE_PERIOD_SECONDS'
+export const DATABASE_ID = 'DATABASE_ID'
+export const FLYWAY_MIGRATE_OUT_OF_ORDER = 'FLYWAY_MIGRATE_OUT_OF_ORDER'
+export const FLYWAY_REPAIR_BEFORE_MIGRATION = 'FLYWAY_REPAIR_BEFORE_MIGRATION'
+export const IMAGE_REPOSITORY = 'IMAGE_REPOSITORY'
+export const IMAGE_TAG = 'IMAGE_TAG'
+export const INSTALL_REDIS = 'INSTALL_REDIS'
+export const SOURCE_ID = 'SOURCE_ID'
+export const PRESET_ID = 'PRESET_ID'
+
+export const DROPDOWN_PARAMETER_NAMES = new Set([
+    DATABASE_ID,
+    IMAGE_REPOSITORY,
+    IMAGE_TAG,
+    SOURCE_ID,
+    PRESET_ID,
+])
+
+export const CHECKBOX_PARAMETER_NAMES = new Set([
+    INSTALL_REDIS,
+    FLYWAY_MIGRATE_OUT_OF_ORDER,
+    FLYWAY_REPAIR_BEFORE_MIGRATION,
+])
 
 type ParameterFieldProps = {
-    name: ParameterName
+    name: string
     onChange: Function
     value: string
     disabled?: boolean
@@ -67,9 +48,9 @@ const toTitleCase = (string) =>
         .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase())
         .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase())
 
-const getAsyncParameterFieldOptions = (key: ParameterName, repository) => {
+const getAsyncParameterFieldOptions = (key, repository) => {
     switch (key) {
-        case 'IMAGE_TAG':
+        case IMAGE_TAG:
             return {
                 key,
                 payload: {
@@ -77,7 +58,7 @@ const getAsyncParameterFieldOptions = (key: ParameterName, repository) => {
                     repository,
                 },
             }
-        case 'IMAGE_REPOSITORY':
+        case IMAGE_REPOSITORY:
             return {
                 key,
                 payload: {
@@ -89,12 +70,12 @@ const getAsyncParameterFieldOptions = (key: ParameterName, repository) => {
     }
 }
 
-const getOptions = (name: ParameterName, value, data) => {
+const getOptions = (name: string, value, data) => {
     if (!data) {
         return value ? [{ value, label: value }] : []
     }
 
-    if (name === 'DATABASE_ID') {
+    if (name === DATABASE_ID) {
         /* For this field the API returns an object where the
          * key is the ID and the value is the label */
         return Object.entries(data).map(([value, label]) => ({
@@ -154,52 +135,43 @@ export const ParameterField = ({
     repository,
     required,
 }: ParameterFieldProps) => {
-    switch (name) {
-        case 'DATABASE_ID':
-        case 'IMAGE_REPOSITORY':
-        case 'IMAGE_TAG':
-        case 'SOURCE_ID':
-        case 'PRESET_ID':
-            return (
-                <AsyncParameterDropdownField
-                    name={name}
-                    onChange={onChange}
-                    value={value}
-                    disabled={disabled}
-                    required={required}
-                    repository={repository}
-                />
-            )
-
-        case 'INSTALL_REDIS':
-        case 'FLYWAY_MIGRATE_OUT_OF_ORDER':
-        case 'FLYWAY_REPAIR_BEFORE_MIGRATION':
-            return (
-                <CheckboxField
-                    className={cx(styles.field, styles.checkboxfield)}
-                    name={name}
-                    label={toTitleCase(name)}
-                    value={value}
-                    onChange={({ checked }) =>
-                        onChange({ name, value: checked ? 'true' : 'false' })
-                    }
-                    required={required}
-                    checked={value === 'true'}
-                    disabled={disabled}
-                />
-            )
-
-        default:
-            return (
-                <InputField
-                    className={styles.field}
-                    name={name}
-                    label={toTitleCase(name)}
-                    value={value}
-                    onChange={onChange}
-                    required={required}
-                    disabled={disabled}
-                />
-            )
+    if (DROPDOWN_PARAMETER_NAMES.has(name)) {
+        return (
+            <AsyncParameterDropdownField
+                name={name}
+                onChange={onChange}
+                value={value}
+                disabled={disabled}
+                required={required}
+                repository={repository}
+            />
+        )
+    } else if (CHECKBOX_PARAMETER_NAMES.has(name)) {
+        return (
+            <CheckboxField
+                className={cx(styles.field, styles.checkboxfield)}
+                name={name}
+                label={toTitleCase(name)}
+                value={value}
+                onChange={({ checked }) =>
+                    onChange({ name, value: checked ? 'true' : 'false' })
+                }
+                required={required}
+                checked={value === 'true'}
+                disabled={disabled}
+            />
+        )
+    } else {
+        return (
+            <InputField
+                className={styles.field}
+                name={name}
+                label={toTitleCase(name)}
+                value={value}
+                onChange={onChange}
+                required={required}
+                disabled={disabled}
+            />
+        )
     }
 }

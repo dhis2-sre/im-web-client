@@ -4,7 +4,7 @@ import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import styles from './StackConfigurator.module.css'
-import { ParameterField, ParameterName } from './ParameterField'
+import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './ParameterField'
 
 // type ParameterRecord = Record<ParameterName, string>
 type ParameterRecord = any
@@ -19,18 +19,18 @@ const toKeyedObject = (array): ParameterRecord =>
     }, {})
 
 const getRepositoryValueForImageTag = (
-    name: ParameterName,
+    name: string,
     requiredParameters,
     optionalParameters
 ) =>
-    name === 'IMAGE_TAG'
-        ? requiredParameters['IMAGE_REPOSITORY'] ??
-          optionalParameters['IMAGE_REPOSITORY']
+    name === IMAGE_TAG
+        ? requiredParameters[IMAGE_REPOSITORY] ??
+          optionalParameters[IMAGE_REPOSITORY]
         : undefined
 
 const computeNewParameters = (
     currentParameters: ParameterRecord,
-    { name, value }: { name: ParameterName; value: string }
+    { name, value }: { name: string; value: string }
 ): ParameterRecord => {
     /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
      * the `IMAGE_TAG` value needs to be cleared when
@@ -40,8 +40,8 @@ const computeNewParameters = (
      * interdependencies between optional and required parameters,
      * because it is called inside the setRequiredStackParameters
      * and setOptionalStackParameters callbacks. */
-    if (name === 'IMAGE_REPOSITORY' && currentParameters['IMAGE_TAG']) {
-        currentParameters['IMAGE_TAG'] = ''
+    if (name === IMAGE_REPOSITORY && currentParameters[IMAGE_TAG]) {
+        currentParameters[IMAGE_TAG] = ''
     }
 
     return {
