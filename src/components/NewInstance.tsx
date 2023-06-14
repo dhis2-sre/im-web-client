@@ -8,7 +8,7 @@ import {
 } from '@dhis2/ui'
 import axios from 'axios'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuthHeader } from 'react-auth-kit'
 import { API_HOST } from '../api'
 import { getStacks } from '../api/stacks'
