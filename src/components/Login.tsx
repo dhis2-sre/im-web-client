@@ -23,7 +23,7 @@ const computeSignInOptions = (data) => {
 }
 
 const getRedirectPath = (location) => {
-    const {redirectPath} = location.state
+    const redirectPath = location.state?.redirectPath
 
     if (!redirectPath || redirectPath === '/login') {
         return '/instances'
