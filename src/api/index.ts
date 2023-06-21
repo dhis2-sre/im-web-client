@@ -14,6 +14,15 @@ export const getDatabases = (authHeader) => {
     })
 }
 
+export const postDatabase = (authHeader, formData) => {
+    return axios.post<GroupWithDatabases>('/databases', formData,{
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
+        },
+    })
+}
+
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
         baseURL: API_HOST,

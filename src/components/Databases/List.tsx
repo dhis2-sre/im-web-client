@@ -7,31 +7,58 @@ import {
     DataTableHead as TableHead,
     DataTableRow,
     DataTableToolbar as TableToolbar,
+    Help,
     IconAdd24,
 } from '@dhis2/ui'
-import {useNavigate} from 'react-router-dom'
 import {useApi} from '../../api/useApi'
 import styles from './List.module.css'
 import {GroupWithDatabases} from "../../types";
-import {getDatabases} from "../../api";
+import {getDatabases, postDatabase} from "../../api";
 import Moment from "react-moment";
+import {useCallback, useState} from "react";
+import {useAuthHeader} from "react-auth-kit";
 
 const ListDatabases = () => {
-    const navigate = useNavigate()
+    const {data: groupWithDatabases, refetch} = useApi<GroupWithDatabases>(getDatabases)
+    const [signUpError, setSignUpError] = useState('')
+    const getAuthHeader = useAuthHeader()
 
-    const {data: groupWithDatabases} = useApi<GroupWithDatabases>(getDatabases)
+    const upload = useCallback(async (event, group) => {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append("group", group)
+        formData.append("database", file, file.name)
+        const authHeader = getAuthHeader()
+        try {
+            const result = await postDatabase(authHeader, formData)
+            if (result.status === 201) {
+                await refetch()
+            } else {
+                setSignUpError(result.data.toString())
+            }
+        } catch (error) {
+            setSignUpError(error.response.data)
+        }
+    }, [getAuthHeader, refetch])
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.heading}>
                 <h1>All databases</h1>
-                <Button icon={<IconAdd24/>} onClick={() => navigate('/new')}>Upload databases</Button>
             </div>
+            {signUpError && <Help error>{signUpError}</Help>}
 
             {groupWithDatabases?.map((group) => {
                 return (
                     <div key={group.Name}>
-                        <TableToolbar className={styles.tabletoolbar}>{group.Name}</TableToolbar>
+                        <TableToolbar className={styles.tabletoolbar}>
+                            <span>{group.Name}</span>
+                            <Button icon={<IconAdd24/>}>
+                                <label htmlFor="upload">Upload database</label>
+                            </Button>
+                            <input id="upload" type="file" onChange={(event) => upload(event, group.Name)}
+                                   hidden={true}/>
+                        </TableToolbar>
                         <DataTable>
                             <TableHead>
                                 <DataTableRow>
