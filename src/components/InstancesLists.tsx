@@ -11,7 +11,7 @@ import {
     Tag,
     DataTableBody as TableBody,
 } from '@dhis2/ui'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { getInstances } from '../api'
 import { useApi } from '../api/useApi'
 import { InstancesGroup, Instance } from '../types'

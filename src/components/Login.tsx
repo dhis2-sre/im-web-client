@@ -1,10 +1,10 @@
-import {Button, Card, Help, InputField, LogoIcon} from '@dhis2/ui'
-import {useCallback, useState} from 'react'
-import {useIsAuthenticated, useSignIn} from 'react-auth-kit'
-import {Link, Navigate, useLocation} from 'react-router-dom'
-import {getToken as getTokenAsync} from '../api'
+import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { useCallback, useState } from 'react'
+import { useIsAuthenticated, useSignIn } from 'react-auth-kit'
+import { Link, Navigate, useLocation } from 'react-router-dom'
+import { getToken as getTokenAsync } from '../api'
 import styles from './LoginPage.module.css'
-import {parseToken} from '../modules'
+import { parseToken } from '../modules'
 
 const computeSignInOptions = (data) => {
     const parsedAccessToken = parseToken(data.access_token)
@@ -61,7 +61,7 @@ const LoginPage = () => {
     }, [username, password, signIn])
 
     if (isAuthenticated()) {
-        return <Navigate to={getRedirectPath(location)}/>
+        return <Navigate to={getRedirectPath(location)} />
     }
 
     return (
@@ -75,7 +75,7 @@ const LoginPage = () => {
         >
             <Card className={styles.box}>
                 <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo}/>
+                    <LogoIcon className={styles.logo} />
                     Instance manager login
                 </h2>
                 <InputField
@@ -83,7 +83,7 @@ const LoginPage = () => {
                     label="username"
                     value={username}
                     autoComplete="username email"
-                    onChange={({value}) => {
+                    onChange={({ value }) => {
                         setUsername(value)
                     }}
                 />
@@ -93,7 +93,7 @@ const LoginPage = () => {
                     label="password"
                     value={password}
                     autoComplete="current-password"
-                    onChange={({value}) => {
+                    onChange={({ value }) => {
                         setPassword(value)
                     }}
                 />

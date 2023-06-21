@@ -1,5 +1,5 @@
 import { NoticeBox, Button } from '@dhis2/ui'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { useRouteError } from 'react-router-dom'
 import styles from './ErrorView.module.css'
 

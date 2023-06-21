@@ -1,6 +1,6 @@
 import { LogoIconWhite } from '@dhis2/ui'
 import { RequireAuth, useIsAuthenticated } from 'react-auth-kit'
-import { Navigate, Outlet, useLocation } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import styles from './Layout.module.css'
 import { NavLink } from 'react-router-dom'
 import StackSubNav from './StacksSubNav'

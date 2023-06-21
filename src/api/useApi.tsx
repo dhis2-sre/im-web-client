@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import { useEffect, useReducer, useCallback, useRef } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { clearAuthItemsFromLocalStorage } from '../modules'
 
 function reducer(
