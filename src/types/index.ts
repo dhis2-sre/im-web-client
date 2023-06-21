@@ -31,3 +31,24 @@ export type InstancesGroup = Array<{
     Hostname: string
     Instances: Array<Instance> | null
 }>
+
+export type Lock = {
+    DatabaseID: number,
+    InstanceID: number,
+    UserID: number
+}
+
+export type Database = {
+    ID: number
+    CreatedAt: string
+    UpdatedAt: string
+    Name: string
+    GroupName: string
+    Lock: Lock
+}
+
+export type GroupWithDatabases = Array<{
+    Name: string
+    Hostname: string
+    Databases: Array<Database> | null
+}>

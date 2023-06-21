@@ -1,9 +1,18 @@
 import axios from 'axios'
 import { createRefresh } from 'react-auth-kit'
-import { InstancesGroup } from '../types'
+import {GroupWithDatabases, InstancesGroup} from '../types'
 import { parseToken } from '../modules'
 
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
+
+export const getDatabases = (authHeader) => {
+    return axios.get<GroupWithDatabases>('/databases', {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
+        },
+    })
+}
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {

@@ -13,7 +13,8 @@ import StackDetails from './components/Stack'
 import { ErrorView } from './components/ErrorView'
 import './index.module.css'
 import { NewInstance } from './components/NewInstance'
-import SignUpPage from "./components/SignUp";
+import SignUpPage from './components/SignUp'
+import ListDatabases from "./components/Databases/List";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
                 <Route path="/stacks" element={<StackList />} />
                 <Route path="/stacks/:name" element={<StackDetails />} />
                 <Route path="/instances" element={<InstancesList />} />
+                <Route path="/databases" element={<ListDatabases />} />
                 <Route path="/new" element={<NewInstance />} />
             </Route>
         </>
