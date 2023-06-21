@@ -100,7 +100,9 @@ const ListDatabases = () => {
                                             <DataTableCell>
                                                 <Moment date={database.CreatedAt} durationFromNow/>
                                             </DataTableCell>
-                                            <DataTableCell>{database.UpdatedAt}</DataTableCell>
+                                            <DataTableCell>
+                                                <Moment date={database.UpdatedAt} durationFromNow/>
+                                            </DataTableCell>
                                             <DataTableCell>
                                                 <Button small destructive loading={isDeleting}
                                                         disabled={isDeleting} icon={<IconDelete16/>}
