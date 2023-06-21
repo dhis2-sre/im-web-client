@@ -23,6 +23,15 @@ export const postDatabase = (authHeader, formData) => {
     })
 }
 
+export const deleteDatabase = (authHeader, id) => {
+    return axios.delete('/databases/' + id, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
+        },
+    })
+}
+
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
         baseURL: API_HOST,
