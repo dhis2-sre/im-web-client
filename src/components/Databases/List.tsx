@@ -14,6 +14,7 @@ import {useApi} from '../../api/useApi'
 import styles from './List.module.css'
 import {GroupWithDatabases} from "../../types";
 import {getDatabases} from "../../api";
+import Moment from "react-moment";
 
 const ListDatabases = () => {
     const navigate = useNavigate()
@@ -45,7 +46,9 @@ const ListDatabases = () => {
                                     return (
                                         <DataTableRow key={database.ID}>
                                             <DataTableCell>{database.Name}</DataTableCell>
-                                            <DataTableCell>{database.CreatedAt}</DataTableCell>
+                                            <DataTableCell>
+                                                <Moment date={database.CreatedAt} durationFromNow/>
+                                            </DataTableCell>
                                             <DataTableCell>{database.UpdatedAt}</DataTableCell>
                                         </DataTableRow>
                                     )
