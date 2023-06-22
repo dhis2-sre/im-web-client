@@ -10,6 +10,7 @@ import {
     Help,
     IconAdd24,
     IconDelete16,
+    LinearLoader
 } from '@dhis2/ui'
 import {useApi} from '../../api/useApi'
 import styles from './List.module.css'
@@ -21,9 +22,11 @@ import {useAuthHeader} from "react-auth-kit"
 
 const ListDatabases = () => {
     const {data: groupWithDatabases, refetch} = useApi<GroupWithDatabases>(getDatabases)
-    const [signUpError, setSignUpError] = useState('')
+    const [databaseError, setDatabaseError] = useState('')
     const [isDeleting, setIsDeleting] = useState(false)
     const getAuthHeader = useAuthHeader()
+    const [uploadAmount, setUploadAmount] = useState(0);
+    const [showUploadProgress, setShowUploadProgress] = useState(false);
 
     const upload = useCallback(async (event, group) => {
         const file = event.target.files[0]
@@ -32,14 +35,20 @@ const ListDatabases = () => {
         formData.append("database", file, file.name)
         const authHeader = getAuthHeader()
         try {
-            const result = await postDatabase(authHeader, formData)
+            setShowUploadProgress(true)
+            const result = await postDatabase(authHeader, formData, (progressEvent) => {
+                console.log(progressEvent.loaded / file.size * 100)
+                setUploadAmount(progressEvent.loaded / file.size * 100)
+            })
             if (result.status === 201) {
                 await refetch()
             } else {
-                setSignUpError(result.data.toString())
+                setDatabaseError(result.data.toString())
             }
         } catch (error) {
-            setSignUpError(error.response.data)
+            setDatabaseError(error.response.data)
+        } finally {
+            setShowUploadProgress(false)
         }
     }, [getAuthHeader, refetch])
 
@@ -55,10 +64,10 @@ const ListDatabases = () => {
                 if (result.status === 202) {
                     await refetch()
                 } else {
-                    setSignUpError(result.data.toString())
+                    setDatabaseError(result.data)
                 }
             } catch (error) {
-                setSignUpError(error.response.data)
+                setDatabaseError(error.response.data)
             } finally {
                 setIsDeleting(false)
             }
@@ -67,10 +76,11 @@ const ListDatabases = () => {
 
     return (
         <div className={styles.wrapper}>
+            { showUploadProgress ? <LinearLoader className={styles.loader} amount={uploadAmount}/> : null }
             <div className={styles.heading}>
                 <h1>All databases</h1>
             </div>
-            {signUpError && <Help error>{signUpError}</Help>}
+            {databaseError && <Help error>{databaseError}</Help>}
 
             {groupWithDatabases?.map((group) => {
                 return (

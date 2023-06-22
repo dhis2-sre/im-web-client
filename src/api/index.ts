@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { createRefresh } from 'react-auth-kit'
+import {createRefresh} from 'react-auth-kit'
 import {GroupWithDatabases, InstancesGroup} from '../types'
-import { parseToken } from '../modules'
+import {parseToken} from '../modules'
 
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
 
@@ -14,12 +14,13 @@ export const getDatabases = (authHeader) => {
     })
 }
 
-export const postDatabase = (authHeader, formData) => {
-    return axios.post<GroupWithDatabases>('/databases', formData,{
+export const postDatabase = (authHeader, formData, onUploadProgress) => {
+    return axios.post<GroupWithDatabases>('/databases', formData, {
         baseURL: API_HOST,
         headers: {
             Authorization: authHeader,
         },
+        onUploadProgress: onUploadProgress
     })
 }
 
@@ -29,6 +30,14 @@ export const deleteDatabase = (authHeader, id) => {
         headers: {
             Authorization: authHeader,
         },
+    })
+}
+
+export const downloadDatabase = (authHeader, id) => {
+    return axios.get(`/databases/${id}/download`, {
+        baseURL: API_HOST,
+        headers: {Authorization: authHeader},
+        responseType: 'blob'
     })
 }
 
@@ -92,22 +101,22 @@ const getRefreshIntervalFromLocalStorage = () => {
         return 14
     }
 
-    const { expiryDurationInMinutes } = parseToken(refreshToken)
+    const {expiryDurationInMinutes} = parseToken(refreshToken)
 
     return expiryDurationInMinutes
 }
 
 export const refreshApi = createRefresh({
     interval: getRefreshIntervalFromLocalStorage(),
-    refreshApiCallback: ({ refreshToken }) => {
+    refreshApiCallback: ({refreshToken}) => {
         return axios
-            .post(`${API_HOST}/refresh`, { refreshToken })
-            .then(({ data }) => {
+            .post(`${API_HOST}/refresh`, {refreshToken})
+            .then(({data}) => {
                 const {
                     expiryDurationInMinutes: newAuthTokenExpireIn,
                     user: newAuthUserState,
                 } = parseToken(data.access_token)
-                const { expiryDurationInMinutes: newRefreshTokenExpiresIn } =
+                const {expiryDurationInMinutes: newRefreshTokenExpiresIn} =
                     parseToken(data.refresh_token)
 
                 return {
