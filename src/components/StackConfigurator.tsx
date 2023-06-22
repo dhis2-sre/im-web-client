@@ -1,32 +1,59 @@
-import axios from 'axios'
-import { Divider, InputField, ButtonStrip, Button } from '@dhis2/ui'
+import { Divider, InputField } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuthHeader } from 'react-auth-kit'
-import { API_HOST } from '../api'
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import styles from './StackConfigurator.module.css'
+import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './ParameterField'
 
-const toTitleCase = (string) =>
-    string
-        .toLowerCase()
-        .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase())
-        .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase())
-
-const toKeyedObject = (array) =>
-    array.reduce((acc, { Name: name, DefaultValue: defaultValue }) => {
-        acc[name] = defaultValue ?? ''
-        return acc
-    }, {})
+// type ParameterRecord = Record<ParameterName, string>
+type ParameterRecord = any
 
 const toArray = (object) =>
     Object.entries(object).map(([name, value]) => ({ name, value }))
 
-export const StackConfigurator = ({ name }) => {
-    const navigate = useNavigate()
-    const getAuthHeader = useAuthHeader()
+const toKeyedObject = (array): ParameterRecord =>
+    array.reduce((acc, { Name: name, DefaultValue: value }) => {
+        acc[name] = value ?? ''
+        return acc
+    }, {})
+
+const getRepositoryValueForImageTag = (
+    name: string,
+    requiredParameters,
+    optionalParameters
+) =>
+    name === IMAGE_TAG
+        ? requiredParameters[IMAGE_REPOSITORY] ??
+          optionalParameters[IMAGE_REPOSITORY]
+        : undefined
+
+const computeNewParameters = (
+    currentParameters: ParameterRecord,
+    { name, value }: { name: string; value: string }
+): ParameterRecord => {
+    /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
+     * the `IMAGE_TAG` value needs to be cleared when
+     * `IMAGE_REPOSITORY` changes.
+     * Note: we can add more if clauses for dependent fields
+     * here, but the current implementation does not support
+     * interdependencies between optional and required parameters,
+     * because it is called inside the setRequiredStackParameters
+     * and setOptionalStackParameters callbacks. */
+    if (name === IMAGE_REPOSITORY && currentParameters[IMAGE_TAG]) {
+        currentParameters[IMAGE_TAG] = ''
+    }
+
+    return {
+        ...currentParameters,
+        [name]: value,
+    }
+}
+
+export const StackConfigurator = forwardRef(function StackConfigurator(
+    { name, disabled }: { name: string; disabled: boolean },
+    ref
+) {
     const [instanceName, setInstanceName] = useState('')
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
@@ -37,37 +64,19 @@ export const StackConfigurator = ({ name }) => {
         refetch,
     } = useApi<Stack>(getStack, { name })
 
-    const createInstance = useCallback(() => {
-        const authHeader = getAuthHeader()
-        const data = {
-            name: instanceName,
-            groupName: 'whoami',
-            stackName: name,
-            requiredParameters: toArray(requiredStackParameters),
-            optionalParameters: toArray(optionalStackParameters),
-        }
-        axios({
-            url: `${API_HOST}/instances`,
-            method: 'post',
-            headers: {
-                Authorization: authHeader,
+    useImperativeHandle(
+        ref,
+        () => ({
+            getStackParameters() {
+                return {
+                    name: instanceName,
+                    requiredParameters: toArray(requiredStackParameters),
+                    optionalParameters: toArray(optionalStackParameters),
+                }
             },
-            data,
-        })
-            .then(() => {
-                navigate('/instances')
-            })
-            .catch((error) => {
-                console.error(error)
-            })
-    }, [
-        name,
-        instanceName,
-        requiredStackParameters,
-        optionalStackParameters,
-        getAuthHeader,
-        navigate,
-    ])
+        }),
+        [instanceName, optionalStackParameters, requiredStackParameters]
+    )
 
     useEffect(() => {
         if (!isFetching && stack && stack.name !== name) {
@@ -86,18 +95,16 @@ export const StackConfigurator = ({ name }) => {
         return null
     }
 
-    const onRequiredInputChange = ({ name, value }) => {
-        setRequiredStackParameters({
-            ...requiredStackParameters,
-            [name]: value,
-        })
+    const onRequiredInputChange = (parameter) => {
+        setRequiredStackParameters((currentParameters) =>
+            computeNewParameters(currentParameters, parameter)
+        )
     }
 
-    const onOptionalInputChange = ({ name, value }) => {
-        setOptionalStackParameters({
-            ...optionalStackParameters,
-            [name]: value,
-        })
+    const onOptionalInputChange = (parameter) => {
+        setOptionalStackParameters((currentParameters) =>
+            computeNewParameters(currentParameters, parameter)
+        )
     }
 
     return (
@@ -109,17 +116,22 @@ export const StackConfigurator = ({ name }) => {
                     value={instanceName}
                     onChange={({ value }) => setInstanceName(value)}
                     required
+                    disabled={disabled}
                 />
                 {Object.entries(requiredStackParameters).map(
-                    ([name, defaultValue]: any) => (
-                        <InputField
-                            className={styles.field}
+                    ([name, value]: any) => (
+                        <ParameterField
                             key={name}
                             name={name}
-                            label={toTitleCase(name)}
-                            value={defaultValue}
+                            value={value}
+                            repository={getRepositoryValueForImageTag(
+                                name,
+                                requiredStackParameters,
+                                optionalStackParameters
+                            )}
                             onChange={onRequiredInputChange}
                             required
+                            disabled={disabled}
                         />
                     )
                 )}
@@ -128,25 +140,22 @@ export const StackConfigurator = ({ name }) => {
             <h4 className={styles.subheader}>Optional parameters</h4>
             <div className={styles.container}>
                 {Object.entries(optionalStackParameters).map(
-                    ([name, defaultValue]: any) => (
-                        <InputField
-                            className={styles.field}
+                    ([name, value]: any) => (
+                        <ParameterField
                             key={name}
                             name={name}
-                            label={toTitleCase(name)}
-                            value={defaultValue}
+                            value={value}
+                            repository={getRepositoryValueForImageTag(
+                                name,
+                                requiredStackParameters,
+                                optionalStackParameters
+                            )}
                             onChange={onOptionalInputChange}
+                            disabled={disabled}
                         />
                     )
                 )}
             </div>
-            <br />
-            <ButtonStrip>
-                <Button primary onClick={createInstance}>
-                    Create instance
-                </Button>
-                <Button onClick={() => navigate('/instances')}>Cancel</Button>
-            </ButtonStrip>
         </div>
     )
-}
+})
