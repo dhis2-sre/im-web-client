@@ -116,15 +116,15 @@ export const refreshApi = createRefresh({
                 const {
                     expiryDurationInMinutes: newAuthTokenExpireIn,
                     user: newAuthUserState,
-                } = parseToken(data.access_token)
+                } = parseToken(data.accessToken)
                 const {expiryDurationInMinutes: newRefreshTokenExpiresIn} =
-                    parseToken(data.refresh_token)
+                    parseToken(data.refreshToken)
 
                 return {
                     isSuccess: true, // For successful network request isSuccess is true
-                    newAuthToken: data.access_token,
+                    newAuthToken: data.accessToken,
                     newAuthTokenExpireIn,
-                    newRefreshToken: data.refresh_token,
+                    newRefreshToken: data.refreshToken,
                     newRefreshTokenExpiresIn,
                     newAuthUserState,
                 }
