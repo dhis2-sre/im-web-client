@@ -33,14 +33,6 @@ export const deleteDatabase = (authHeader, id) => {
     })
 }
 
-export const downloadDatabase = (authHeader, id) => {
-    return axios.get(`/databases/${id}/download`, {
-        baseURL: API_HOST,
-        headers: {Authorization: authHeader},
-        responseType: 'blob'
-    })
-}
-
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
         baseURL: API_HOST,
