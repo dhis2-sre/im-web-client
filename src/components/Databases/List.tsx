@@ -37,7 +37,6 @@ const ListDatabases = () => {
         try {
             setShowUploadProgress(true)
             const result = await postDatabase(authHeader, formData, (progressEvent) => {
-                console.log(progressEvent.loaded / file.size * 100)
                 setUploadAmount(progressEvent.loaded / file.size * 100)
             })
             if (result.status === 201) {
