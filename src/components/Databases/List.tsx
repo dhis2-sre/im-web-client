@@ -21,10 +21,10 @@ import {useCallback, useState} from "react"
 import {useAuthHeader} from "react-auth-kit"
 
 const ListDatabases = () => {
+    const getAuthHeader = useAuthHeader()
     const {data: groupWithDatabases, refetch} = useApi<GroupWithDatabases>(getDatabases)
     const [databaseError, setDatabaseError] = useState('')
     const [isDeleting, setIsDeleting] = useState(false)
-    const getAuthHeader = useAuthHeader()
     const [uploadAmount, setUploadAmount] = useState(0);
     const [showUploadProgress, setShowUploadProgress] = useState(false);
 
