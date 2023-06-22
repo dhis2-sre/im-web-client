@@ -9,7 +9,7 @@ import {
 } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { useApi } from '../api/useApi'
 import styles from './StackDetails.module.css'
 import { useEffect } from 'react'
