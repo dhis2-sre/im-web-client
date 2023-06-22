@@ -7,17 +7,16 @@ import styles from './LoginPage.module.css'
 import { parseToken } from '../modules'
 
 const computeSignInOptions = (data) => {
-    const parsedAccessToken = parseToken(data.access_token)
-    const parsedRefreshToken = parseToken(data.refresh_token)
-    const tokenType =
-        data.token_type.charAt(0).toUpperCase() + data.token_type.slice(1)
+    const parsedAccessToken = parseToken(data.accessToken)
+    const parsedRefreshToken = parseToken(data.refreshToken)
+    const tokenType = data.tokenType.charAt(0).toUpperCase() + data.tokenType.slice(1)
 
     return {
-        token: data.access_token,
+        token: data.accessToken,
         expiresIn: parsedAccessToken.expiryDurationInMinutes,
         tokenType,
         authState: parsedAccessToken.user,
-        refreshToken: data.refresh_token,
+        refreshToken: data.refreshToken,
         refreshTokenExpireIn: parsedRefreshToken.expiryDurationInMinutes,
     }
 }
