@@ -10,12 +10,13 @@ import {
     Help,
     IconAdd24,
     IconDelete16,
+    IconLaunch16,
     LinearLoader
 } from '@dhis2/ui'
 import {useApi} from '../../api/useApi'
 import styles from './List.module.css'
 import {GroupWithDatabases} from "../../types"
-import {deleteDatabase, getDatabases, postDatabase} from "../../api"
+import {API_HOST, createExternalDownloadDatabase, deleteDatabase, getDatabases, postDatabase} from "../../api"
 import Moment from "react-moment"
 import {useCallback, useState} from "react"
 import {useAuthHeader} from "react-auth-kit"
@@ -73,6 +74,22 @@ const ListDatabases = () => {
         }, [getAuthHeader, refetch]
     )
 
+    const download = useCallback(async (id) => {
+        try {
+            setIsDeleting(true)
+            const authHeader = getAuthHeader()
+            const response = await createExternalDownloadDatabase(authHeader, id, 5)
+            const link = document.createElement('a')
+            link.href = API_HOST + "/databases/external/" + response.data.UUID
+            link.target = "_blank"
+            link.click()
+        } catch (error) {
+            setDatabaseError(error.toString())
+        } finally {
+            setIsDeleting(false)
+        }
+    }, [getAuthHeader])
+
     return (
         <div className={styles.wrapper}>
             { showUploadProgress ? <LinearLoader className={styles.loader} amount={uploadAmount}/> : null }
@@ -99,6 +116,7 @@ const ListDatabases = () => {
                                     <DataTableColumnHeader>Created</DataTableColumnHeader>
                                     <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
+                                    <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
                             <TableBody>
@@ -111,6 +129,11 @@ const ListDatabases = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <Moment date={database.UpdatedAt} durationFromNow/>
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                <Button small loading={isDeleting}
+                                                        disabled={isDeleting} icon={<IconLaunch16/>}
+                                                        onClick={() => download(database.ID)}>Download</Button>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <Button small destructive loading={isDeleting}

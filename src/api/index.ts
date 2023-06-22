@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {createRefresh} from 'react-auth-kit'
-import {GroupWithDatabases, InstancesGroup} from '../types'
+import {ExternalDownload, GroupWithDatabases, InstancesGroup} from '../types'
 import {parseToken} from '../modules'
 
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
@@ -31,6 +31,15 @@ export const deleteDatabase = (authHeader, id) => {
             Authorization: authHeader,
         },
     })
+}
+
+export const createExternalDownloadDatabase = (authHeader, id, expiration) => {
+    return axios.post<ExternalDownload>(`/databases/${id}/external`,
+        {expiration: expiration},
+        {
+            baseURL: API_HOST,
+            headers: {Authorization: authHeader},
+        })
 }
 
 export const getInstances = (authHeader) => {

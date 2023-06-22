@@ -52,3 +52,9 @@ export type GroupWithDatabases = Array<{
     Hostname: string
     Databases: Array<Database> | null
 }>
+
+export type ExternalDownload = {
+    DatabaseID: number,
+    Expiration: number,
+    UUID: string
+}
