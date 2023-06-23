@@ -86,7 +86,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
 
     useEffect(() => {
         if (stack) {
-            setRequiredStackParameters(toKeyedObject(stack.requiredParameters))
+            setRequiredStackParameters(toKeyedObject(stack.requiredParameters.filter(parameter => !parameter.consumed)))
             setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])
