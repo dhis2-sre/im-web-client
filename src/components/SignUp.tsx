@@ -26,7 +26,7 @@ const SignUpPage = () => {
                 setSignUpError(result.data)
             }
         } catch (error) {
-            setSignUpError(error.response.data)
+            setSignUpError(error.response?.data ?? error.message ?? 'Unknown login error')
         }
     }, [username, password, confirmPassword])
 
