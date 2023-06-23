@@ -44,7 +44,7 @@ export const getRelativeDate = (dateString: string, format = 'hours') => {
 const InstancesList = () => {
     const navigate = useNavigate()
     const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
-    const getUrl = (instance: Instance, hostName: string) => `https://${hostName}/${instance.name}`
+    const getUrl = (instance: Instance, hostname: string) => `https://${hostname}/${instance.name}`
 
     return (
         <div className={styles.wrapper}>
