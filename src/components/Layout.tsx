@@ -1,10 +1,8 @@
-import { LogoIconWhite } from '@dhis2/ui'
-import { RequireAuth, useIsAuthenticated } from 'react-auth-kit'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import {LogoIconWhite} from '@dhis2/ui'
+import {RequireAuth, useIsAuthenticated} from 'react-auth-kit'
+import {Navigate, NavLink, Outlet, useLocation} from 'react-router-dom'
 import styles from './Layout.module.css'
-import { NavLink } from 'react-router-dom'
-import StackSubNav from './StacksSubNav'
-import { LogoutButton } from './LogoutButton'
+import {LogoutButton} from './LogoutButton'
 
 export const Layout = () => {
     const location = useLocation()
@@ -31,10 +29,7 @@ export const Layout = () => {
                     <nav className={styles.navlist}>
                         <NavLink to="/instances">Instances</NavLink>
                         <NavLink to="/databases">Databases</NavLink>
-                        <NavLink to="/stacks" end>
-                            Stacks
-                        </NavLink>
-                        <StackSubNav />
+                        <NavLink to="/stacks" end>Stacks</NavLink>
                     </nav>
                     <LogoutButton />
                 </div>

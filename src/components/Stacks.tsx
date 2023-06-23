@@ -1,21 +1,21 @@
 import {
     DataTable,
-    DataTableHead as TableHead,
-    DataTableRow,
+    DataTableBody as TableBody,
     DataTableCell,
     DataTableColumnHeader,
-    DataTableBody as TableBody,
+    DataTableHead as TableHead,
+    DataTableRow,
 } from '@dhis2/ui'
 
-import { Link } from 'react-router-dom'
-import { getStacks } from '../api/stacks'
-import { Stacks } from '../types/stack'
-import { useApi } from '../api/useApi'
+import {Link} from 'react-router-dom'
+import {getStacks} from '../api/stacks'
+import {Stacks} from '../types/stack'
+import {useApi} from '../api/useApi'
 import styles from './Stacks.module.css'
-import { getRelativeDate } from './InstancesLists'
+import Moment from "react-moment"
 
 const StackList = () => {
-    const { data: stacks, isLoading } = useApi<Stacks>(getStacks)
+    const {data: stacks, isLoading} = useApi<Stacks>(getStacks)
 
     if (isLoading) {
         return null
@@ -44,7 +44,7 @@ const StackList = () => {
                                     </Link>
                                 </DataTableCell>
                                 <DataTableCell>
-                                    {getRelativeDate(stack.CreatedAt, 'days')}
+                                    <Moment date={stack.createdAt} fromNow/>
                                 </DataTableCell>
                             </DataTableRow>
                         )

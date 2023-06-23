@@ -13,7 +13,7 @@ const toArray = (object) =>
     Object.entries(object).map(([name, value]) => ({ name, value }))
 
 const toKeyedObject = (array): ParameterRecord =>
-    array.reduce((acc, { Name: name, DefaultValue: value }) => {
+    array.reduce((acc, { name, defaultValue: value }) => {
         acc[name] = value ?? ''
         return acc
     }, {})
@@ -86,7 +86,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
 
     useEffect(() => {
         if (stack) {
-            setRequiredStackParameters(toKeyedObject(stack.requiredParameters))
+            setRequiredStackParameters(toKeyedObject(stack.requiredParameters.filter(parameter => !parameter.consumed)))
             setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])

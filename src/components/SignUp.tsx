@@ -2,7 +2,7 @@ import {Button, Card, Help, InputField, LogoIcon} from '@dhis2/ui'
 import {useCallback, useState} from 'react'
 import {postSignUp} from '../api'
 import styles from './SignUpPage.module.css'
-import {Navigate} from "react-router";
+import {Navigate} from "react-router-dom";
 
 const SignUpPage = () => {
     const passwordsUnequalMsg = 'Passwords do not match'
@@ -26,7 +26,7 @@ const SignUpPage = () => {
                 setSignUpError(result.data)
             }
         } catch (error) {
-            setSignUpError(error.response.data)
+            setSignUpError(error.response?.data ?? error.message ?? 'Unknown login error')
         }
     }, [username, password, confirmPassword])
 

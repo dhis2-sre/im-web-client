@@ -17,39 +17,12 @@ import { useApi } from '../api/useApi'
 import { InstancesGroup, Instance } from '../types'
 import styles from './InstancesLists.module.css'
 import DeleteInstance from './DeleteInstance'
-
-export const getRelativeDate = (dateString: string, format = 'hours') => {
-    try {
-        const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
-
-        const hours = Math.ceil(
-            Math.abs(Date.parse(dateString) - Date.now()) / (1000 * 60 * 60)
-        )
-
-        const days = Math.ceil(
-            Math.abs(Date.parse(dateString) - Date.now()) /
-                (1000 * 60 * 60 * 24)
-        )
-
-        if (format === 'days') {
-            return rtf.format(-days, 'days')
-        }
-        return rtf.format(-hours, 'hours')
-    } catch (err) {
-        console.error(err)
-        return dateString
-    }
-}
+import Moment from "react-moment"
 
 const InstancesList = () => {
     const navigate = useNavigate()
-
-    const { data: instancesGroups, refetch } =
-        useApi<InstancesGroup>(getInstances)
-
-    const getUrl = (instance: Instance, hostName: string) => {
-        return `https://${hostName}/${instance.Name}`
-    }
+    const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
+    const getUrl = (instance: Instance, hostname: string) => `https://${hostname}/${instance.name}`
 
     return (
         <div className={styles.wrapper}>
@@ -62,9 +35,9 @@ const InstancesList = () => {
 
             {instancesGroups?.map((group) => {
                 return (
-                    <div key={group.Name}>
+                    <div key={group.name}>
                         <TableToolbar className={styles.tabletoolbar}>
-                            {group.Name}
+                            {group.name}
                         </TableToolbar>
                         <DataTable>
                             <TableHead>
@@ -92,30 +65,26 @@ const InstancesList = () => {
                             </TableHead>
 
                             <TableBody>
-                                {group.Instances?.map((instance) => {
+                                {group.instances?.map((instance) => {
                                     return (
-                                        <DataTableRow key={instance.ID}>
+                                        <DataTableRow key={instance.id}>
                                             <DataTableCell>
                                                 <Tag positive>Running</Tag>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.Name}
+                                                {instance.name}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {getRelativeDate(
-                                                    instance.CreatedAt
-                                                )}
+                                                <Moment date={instance.createdAt} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {getRelativeDate(
-                                                    instance.UpdatedAt
-                                                )}
+                                                <Moment date={instance.updatedAt} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                hacker-{instance.UserID}
+                                                hacker-{instance.userId}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.StackName}
+                                                {instance.stackName}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span
@@ -131,7 +100,7 @@ const InstancesList = () => {
                                                             window?.open(
                                                                 getUrl(
                                                                     instance,
-                                                                    group.Hostname
+                                                                    group.hostname
                                                                 )
                                                             )
                                                         }
@@ -139,7 +108,7 @@ const InstancesList = () => {
                                                         Open
                                                     </Button>
                                                     <DeleteInstance
-                                                        instanceId={instance.ID}
+                                                        instanceId={instance.id}
                                                         onDelete={refetch}
                                                     />
                                                 </span>
