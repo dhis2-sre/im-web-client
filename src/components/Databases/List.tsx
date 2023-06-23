@@ -53,14 +53,14 @@ const ListDatabases = () => {
     }, [getAuthHeader, refetch])
 
     const deleteDatabaseCallback = useCallback(async (database) => {
-            if (!window.confirm(`Are you sure you wish to delete "${database.GroupName}/${database.Name}"?`)) {
+            if (!window.confirm(`Are you sure you wish to delete "${database.groupName}/${database.name}"?`)) {
                 return
             }
 
             const authHeader = getAuthHeader()
             try {
                 setIsDeleting(true)
-                const result = await deleteDatabase(authHeader, database.ID)
+                const result = await deleteDatabase(authHeader, database.id)
                 if (result.status === 202) {
                     await refetch()
                 } else {
@@ -80,7 +80,7 @@ const ListDatabases = () => {
             const authHeader = getAuthHeader()
             const response = await createExternalDownloadDatabase(authHeader, id, 5)
             const link = document.createElement('a')
-            link.href = API_HOST + "/databases/external/" + response.data.UUID
+            link.href = API_HOST + "/databases/external/" + response.data.uuid
             link.target = "_blank"
             link.click()
         } catch (error) {
@@ -98,15 +98,15 @@ const ListDatabases = () => {
             </div>
             {databaseError && <Help error>{databaseError}</Help>}
 
-            {groupWithDatabases?.map((group) => {
+            {groupWithDatabases?.map(group => {
                 return (
-                    <div key={group.Name}>
+                    <div key={group.name}>
                         <TableToolbar className={styles.tabletoolbar}>
-                            <span>{group.Name}</span>
+                            <span>{group.name}</span>
                             <Button icon={<IconAdd24/>}>
                                 <label htmlFor="upload">Upload database</label>
                             </Button>
-                            <input id="upload" type="file" onChange={(event) => upload(event, group.Name)}
+                            <input id="upload" type="file" onChange={(event) => upload(event, group.name)}
                                    hidden={true}/>
                         </TableToolbar>
                         <DataTable>
@@ -120,20 +120,20 @@ const ListDatabases = () => {
                                 </DataTableRow>
                             </TableHead>
                             <TableBody>
-                                {group.Databases?.map(database => {
+                                {group.databases?.map(database => {
                                     return (
-                                        <DataTableRow key={database.ID}>
-                                            <DataTableCell>{database.Name}</DataTableCell>
+                                        <DataTableRow key={database.id}>
+                                            <DataTableCell>{database.name}</DataTableCell>
                                             <DataTableCell>
-                                                <Moment date={database.CreatedAt} durationFromNow/>
+                                                <Moment date={database.createdAt} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                <Moment date={database.UpdatedAt} durationFromNow/>
+                                                <Moment date={database.updatedAt} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <Button small loading={isDeleting}
                                                         disabled={isDeleting} icon={<IconLaunch16/>}
-                                                        onClick={() => download(database.ID)}>Download</Button>
+                                                        onClick={() => download(database.id)}>Download</Button>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <Button small destructive loading={isDeleting}

@@ -1,12 +1,12 @@
 export type Instance = {
-    ID: number
-    CreatedAt: string
-    UpdatedAt: string
-    DeletedAt: null
-    UserID: number
-    Name: string
-    GroupName: string
-    StackName: string
+    id: number
+    createdAt: string
+    updatedAt: string
+    deletedAt: null
+    userId: number
+    name: string
+    groupName: string
+    stackName: string
     requiredParameters:
         | [
               {
@@ -23,38 +23,38 @@ export type Instance = {
               }
           ]
         | []
-    DeployLog: string
+    deployLog: string
 }
 
 export type InstancesGroup = Array<{
-    Name: string
-    Hostname: string
-    Instances: Array<Instance> | null
+    name: string
+    hostname: string
+    instances: Array<Instance> | null
 }>
 
 export type Lock = {
-    DatabaseID: number,
-    InstanceID: number,
-    UserID: number
+    databaseId: number,
+    instanceId: number,
+    userId: number
 }
 
 export type Database = {
-    ID: number
-    CreatedAt: string
-    UpdatedAt: string
-    Name: string
-    GroupName: string
-    Lock: Lock
+    id: number
+    createdAt: string
+    updatedAt: string
+    name: string
+    groupName: string
+    lock: Lock
 }
 
 export type GroupWithDatabases = Array<{
-    Name: string
-    Hostname: string
-    Databases: Array<Database> | null
+    name: string
+    hostname: string
+    databases: Array<Database> | null
 }>
 
 export type ExternalDownload = {
-    DatabaseID: number,
-    Expiration: number,
-    UUID: string
+    databaseId: number,
+    expiration: number,
+    uuid: string
 }

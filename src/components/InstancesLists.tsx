@@ -43,13 +43,8 @@ export const getRelativeDate = (dateString: string, format = 'hours') => {
 
 const InstancesList = () => {
     const navigate = useNavigate()
-
-    const { data: instancesGroups, refetch } =
-        useApi<InstancesGroup>(getInstances)
-
-    const getUrl = (instance: Instance, hostName: string) => {
-        return `https://${hostName}/${instance.Name}`
-    }
+    const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
+    const getUrl = (instance: Instance, hostName: string) => `https://${hostName}/${instance.name}`
 
     return (
         <div className={styles.wrapper}>
@@ -62,9 +57,9 @@ const InstancesList = () => {
 
             {instancesGroups?.map((group) => {
                 return (
-                    <div key={group.Name}>
+                    <div key={group.name}>
                         <TableToolbar className={styles.tabletoolbar}>
-                            {group.Name}
+                            {group.name}
                         </TableToolbar>
                         <DataTable>
                             <TableHead>
@@ -92,30 +87,30 @@ const InstancesList = () => {
                             </TableHead>
 
                             <TableBody>
-                                {group.Instances?.map((instance) => {
+                                {group.instances?.map((instance) => {
                                     return (
-                                        <DataTableRow key={instance.ID}>
+                                        <DataTableRow key={instance.id}>
                                             <DataTableCell>
                                                 <Tag positive>Running</Tag>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.Name}
+                                                {instance.name}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {getRelativeDate(
-                                                    instance.CreatedAt
+                                                    instance.createdAt
                                                 )}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {getRelativeDate(
-                                                    instance.UpdatedAt
+                                                    instance.updatedAt
                                                 )}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                hacker-{instance.UserID}
+                                                hacker-{instance.userId}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.StackName}
+                                                {instance.stackName}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span
@@ -131,7 +126,7 @@ const InstancesList = () => {
                                                             window?.open(
                                                                 getUrl(
                                                                     instance,
-                                                                    group.Hostname
+                                                                    group.hostname
                                                                 )
                                                             )
                                                         }
@@ -139,7 +134,7 @@ const InstancesList = () => {
                                                         Open
                                                     </Button>
                                                     <DeleteInstance
-                                                        instanceId={instance.ID}
+                                                        instanceId={instance.id}
                                                         onDelete={refetch}
                                                     />
                                                 </span>

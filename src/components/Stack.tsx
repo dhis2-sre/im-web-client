@@ -55,15 +55,15 @@ const StackDetails = () => {
                     <TableBody>
                         {stack.requiredParameters?.map((parameter) => {
                             return (
-                                <DataTableRow key={parameter.Name}>
+                                <DataTableRow key={parameter.name}>
                                     <DataTableCell>
-                                        {parameter.Name}
+                                        {parameter.name}
                                     </DataTableCell>
                                     <DataTableCell>
-                                        {parameter.Consumed.toString()}
+                                        {parameter.consumed.toString()}
                                     </DataTableCell>
                                     <DataTableCell>
-                                        {parameter.StackName}
+                                        {parameter.stackName}
                                     </DataTableCell>
                                 </DataTableRow>
                             )
@@ -93,18 +93,18 @@ const StackDetails = () => {
                     <TableBody>
                         {stack.optionalParameters?.map((parameter) => {
                             return (
-                                <DataTableRow key={parameter.Name}>
+                                <DataTableRow key={parameter.name}>
                                     <DataTableCell>
-                                        {parameter.Name}
+                                        {parameter.name}
                                     </DataTableCell>
                                     <DataTableCell>
-                                        {parameter.DefaultValue}
+                                        {parameter.defaultValue}
                                     </DataTableCell>
                                     <DataTableCell>
-                                        {parameter.Consumed.toString()}
+                                        {parameter.consumed.toString()}
                                     </DataTableCell>
                                     <DataTableCell>
-                                        {parameter.StackName}
+                                        {parameter.stackName}
                                     </DataTableCell>
                                 </DataTableRow>
                             )

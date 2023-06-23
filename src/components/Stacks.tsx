@@ -44,7 +44,7 @@ const StackList = () => {
                                     </Link>
                                 </DataTableCell>
                                 <DataTableCell>
-                                    {getRelativeDate(stack.CreatedAt, 'days')}
+                                    {getRelativeDate(stack.createdAt, 'days')}
                                 </DataTableCell>
                             </DataTableRow>
                         )
