@@ -81,7 +81,7 @@ const InstancesList = () => {
                                                 <Moment date={instance.updatedAt} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                hacker-{instance.userId}
+                                                {instance.user.email}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.stackName}
