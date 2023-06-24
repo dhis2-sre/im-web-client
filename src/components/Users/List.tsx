@@ -8,10 +8,10 @@ import {
 } from '@dhis2/ui'
 import {useApi} from '../../api/useApi'
 import styles from './List.module.css'
-import {User} from "../../types"
-import {getUsers} from "../../api"
 import Moment from "react-moment"
-import {Link} from "react-router-dom";
+import {Link} from "react-router-dom"
+import {getUsers} from "./api"
+import {User} from "./types"
 
 const ListUsers = () => {
     const {data: users, refetch} = useApi<User>(getUsers)
