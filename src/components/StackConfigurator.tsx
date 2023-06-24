@@ -1,10 +1,12 @@
-import { Divider, InputField } from '@dhis2/ui'
-import { getStack } from '../api/stacks'
-import { Stack } from '../types/stack'
-import { useApi } from '../api/useApi'
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
+import {Divider, InputField, SingleSelectField, SingleSelectOption} from '@dhis2/ui'
+import {getStack} from '../api/stacks'
+import {Stack} from '../types/stack'
+import {useApi} from '../api/useApi'
+import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import styles from './StackConfigurator.module.css'
-import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './ParameterField'
+import {IMAGE_REPOSITORY, IMAGE_TAG, ParameterField} from './ParameterField'
+import {Group} from "../types";
+import {getGroups} from "../api";
 
 // type ParameterRecord = Record<ParameterName, string>
 type ParameterRecord = any
@@ -64,6 +66,10 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
         refetch,
     } = useApi<Stack>(getStack, { name })
 
+    const { data: groups, isLoading: isLoadingGroups } = useApi<Group[]>(getGroups)
+    const [group, setGroup] = useState('')
+
+
     useImperativeHandle(
         ref,
         () => ({
@@ -74,8 +80,11 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                     optionalParameters: toArray(optionalStackParameters),
                 }
             },
+            getGroup() {
+                return group
+            }
         }),
-        [instanceName, optionalStackParameters, requiredStackParameters]
+        [instanceName, group, optionalStackParameters, requiredStackParameters]
     )
 
     useEffect(() => {
@@ -91,7 +100,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])
 
-    if (isLoading) {
+    if (isLoading || isLoadingGroups) {
         return null
     }
 
@@ -118,6 +127,21 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                     required
                     disabled={disabled}
                 />
+                <SingleSelectField
+                    className={styles.select}
+                    selected={group}
+                    onChange={({ selected }) => {setGroup(selected)}}
+                    label="Select group"
+                >
+                    {groups.map(group => (
+                        <SingleSelectOption
+                            key={group.name}
+                            label={group.name}
+                            value={group.name}
+                        />
+                    ))}
+                </SingleSelectField>
+
                 {Object.entries(requiredStackParameters).map(
                     ([name, value]: any) => (
                         <ParameterField
