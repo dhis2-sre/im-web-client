@@ -116,7 +116,6 @@ const ListDatabases = () => {
                                     <DataTableColumnHeader>Created</DataTableColumnHeader>
                                     <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
                             <TableBody>
@@ -134,8 +133,7 @@ const ListDatabases = () => {
                                                 <Button small loading={isDeleting}
                                                         disabled={isDeleting} icon={<IconLaunch16/>}
                                                         onClick={() => download(database.id)}>Download</Button>
-                                            </DataTableCell>
-                                            <DataTableCell>
+                                                &nbsp;
                                                 <Button small destructive loading={isDeleting}
                                                         disabled={isDeleting} icon={<IconDelete16/>}
                                                         onClick={() => deleteDatabaseCallback(database)}>Delete</Button>
