@@ -14,7 +14,7 @@ import {
     Tag,
 } from '@dhis2/ui'
 import {useNavigate} from 'react-router-dom'
-import {getInstances, resetInstance} from '../api'
+import {getInstances, resetInstance, restartInstance} from '../api'
 import {useApi} from '../api/useApi'
 import {Instance, InstancesGroup} from '../types'
 import styles from './InstancesLists.module.css'
@@ -41,6 +41,24 @@ const InstancesList = () => {
             try {
                 setIsUpdating(true)
                 await resetInstance(authHeader, instance.id)
+                await refetch()
+            } catch (error) {
+                setError(error.response?.data ?? error.message ?? 'Unknown login error')
+            } finally {
+                setIsUpdating(false)
+            }
+        }, [getAuthHeader, refetch]
+    )
+
+    const restartInstanceCallback = useCallback(async (instance) => {
+            if (!window.confirm(`Are you sure you wish to restart "${instance.groupName}/${instance.name}"?`)) {
+                return
+            }
+
+            const authHeader = getAuthHeader()
+            try {
+                setIsUpdating(true)
+                await restartInstance(authHeader, instance.id)
                 await refetch()
             } catch (error) {
                 setError(error.response?.data ?? error.message ?? 'Unknown login error')
@@ -142,6 +160,9 @@ const InstancesList = () => {
                                                     <Button small destructive loading={isUpdating}
                                                             disabled={isUpdating} icon={<IconDelete16/>}
                                                             onClick={() => resetInstanceCallback(instance)}>Reset</Button>
+                                                    <Button small destructive loading={isUpdating}
+                                                            disabled={isUpdating} icon={<IconDelete16/>}
+                                                            onClick={() => restartInstanceCallback(instance)}>Restart</Button>
                                                 </span>
                                             </DataTableCell>
                                         </DataTableRow>

@@ -69,6 +69,15 @@ export const resetInstance = (authHeader, id) => {
     })
 }
 
+export const restartInstance = (authHeader, id) => {
+    return axios.put(`/instances/${id}/restart`, {}, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
+        },
+    })
+}
+
 export const getToken = (username, password) => {
     return axios.post(
         `${API_HOST}/tokens`,
