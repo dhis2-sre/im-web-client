@@ -43,7 +43,7 @@ const InstancesList = () => {
                 await resetInstance(authHeader, instance.id)
                 await refetch()
             } catch (error) {
-                setError(error.response?.data ?? error.message ?? 'Unknown login error')
+                setError(error.response?.data ?? error.message ?? 'Unknown error')
             } finally {
                 setIsUpdating(false)
             }
@@ -61,7 +61,7 @@ const InstancesList = () => {
                 await restartInstance(authHeader, instance.id)
                 await refetch()
             } catch (error) {
-                setError(error.response?.data ?? error.message ?? 'Unknown login error')
+                setError(error.response?.data ?? error.message ?? 'Unknown error')
             } finally {
                 setIsUpdating(false)
             }
