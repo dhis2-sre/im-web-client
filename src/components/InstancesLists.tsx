@@ -9,7 +9,7 @@ import {
     DataTableToolbar as TableToolbar,
     Help,
     IconAdd24,
-    IconDelete16,
+    IconBlock16,
     IconLaunch16,
     Tag,
 } from '@dhis2/ui'
@@ -158,10 +158,10 @@ const InstancesList = () => {
                                                         onDelete={refetch}
                                                     />
                                                     <Button small destructive loading={isUpdating}
-                                                            disabled={isUpdating} icon={<IconDelete16/>}
+                                                            disabled={isUpdating} icon={<IconBlock16/>}
                                                             onClick={() => resetInstanceCallback(instance)}>Reset</Button>
-                                                    <Button small destructive loading={isUpdating}
-                                                            disabled={isUpdating} icon={<IconDelete16/>}
+                                                    <Button small primary loading={isUpdating}
+                                                            disabled={isUpdating} icon={<IconBlock16/>}
                                                             onClick={() => restartInstanceCallback(instance)}>Restart</Button>
                                                 </span>
                                             </DataTableCell>
