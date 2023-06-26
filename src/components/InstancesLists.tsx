@@ -20,8 +20,8 @@ import {Instance, InstancesGroup} from '../types'
 import styles from './InstancesLists.module.css'
 import DeleteInstance from './DeleteInstance'
 import Moment from "react-moment"
-import {useCallback, useState} from "react";
-import {useAuthHeader} from "react-auth-kit";
+import {useCallback, useState} from "react"
+import {useAuthHeader} from "react-auth-kit"
 
 const InstancesList = () => {
     const navigate = useNavigate()
@@ -32,7 +32,7 @@ const InstancesList = () => {
     const [error, setError] = useState('')
     const [isUpdating, setIsUpdating] = useState(false)
 
-    const resetInstanceCallback = useCallback(async (instance) => {
+    const reset = useCallback(async (instance) => {
             if (!window.confirm(`Are you sure you wish to reset "${instance.groupName}/${instance.name}"?`)) {
                 return
             }
@@ -50,7 +50,7 @@ const InstancesList = () => {
         }, [getAuthHeader, refetch]
     )
 
-    const restartInstanceCallback = useCallback(async (instance) => {
+    const restart = useCallback(async (instance) => {
             if (!window.confirm(`Are you sure you wish to restart "${instance.groupName}/${instance.name}"?`)) {
                 return
             }
@@ -157,12 +157,12 @@ const InstancesList = () => {
                                                         instanceId={instance.id}
                                                         onDelete={refetch}
                                                     />
-                                                    <Button small destructive loading={isUpdating}
-                                                            disabled={isUpdating} icon={<IconBlock16/>}
-                                                            onClick={() => resetInstanceCallback(instance)}>Reset</Button>
-                                                    <Button small primary loading={isUpdating}
-                                                            disabled={isUpdating} icon={<IconBlock16/>}
-                                                            onClick={() => restartInstanceCallback(instance)}>Restart</Button>
+                                                    <Button small destructive loading={isUpdating} disabled={isUpdating}
+                                                            icon={<IconBlock16/>}
+                                                            onClick={() => reset(instance)}>Reset</Button>
+                                                    <Button small primary loading={isUpdating} disabled={isUpdating}
+                                                            icon={<IconBlock16/>}
+                                                            onClick={() => restart(instance)}>Restart</Button>
                                                 </span>
                                             </DataTableCell>
                                         </DataTableRow>
