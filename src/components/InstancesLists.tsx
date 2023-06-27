@@ -24,6 +24,8 @@ const InstancesList = () => {
     const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
     const getUrl = (instance: Instance, hostname: string) => `https://${hostname}/${instance.name}`
 
+    const addNow = (ttl) => new Date().getTime() + ttl * 1000
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.heading}>
@@ -60,6 +62,9 @@ const InstancesList = () => {
                                     <DataTableColumnHeader>
                                         Type
                                     </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Expires
+                                    </DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
@@ -85,6 +90,9 @@ const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.stackName}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                <Moment date={addNow(instance.ttl)} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span

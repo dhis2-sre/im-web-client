@@ -7,6 +7,7 @@ export type Instance = {
     name: string
     groupName: string
     stackName: string
+    ttl: number
     requiredParameters:
         | [
               {
