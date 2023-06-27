@@ -58,11 +58,29 @@ export const getInstances = (authHeader) => {
     })
 }
 
-export const deleteInstance = (token, id) => {
+export const deleteInstance = (authHeader, id) => {
     return axios.delete('/instances/' + id, {
         baseURL: API_HOST,
         headers: {
-            Authorization: token,
+            Authorization: authHeader,
+        },
+    })
+}
+
+export const resetInstance = (authHeader, id) => {
+    return axios.put(`/instances/${id}/reset`, {}, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
+        },
+    })
+}
+
+export const restartInstance = (authHeader, id) => {
+    return axios.put(`/instances/${id}/restart`, {}, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
         },
     })
 }
