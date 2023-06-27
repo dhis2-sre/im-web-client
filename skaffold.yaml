@@ -21,4 +21,4 @@ deploy:
         imageStrategy:
           helm: { }
         valuesFiles:
-          - helm/data/values/{{ .ENVIRONMENT }}/values.yaml
+          - helm/data/values/{{ .CLASSIFICATION }}/values.yaml
