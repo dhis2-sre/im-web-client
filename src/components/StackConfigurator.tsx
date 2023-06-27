@@ -2,7 +2,7 @@ import {Divider, InputField, SingleSelectField, SingleSelectOption} from '@dhis2
 import {getStack} from '../api/stacks'
 import {Stack} from '../types/stack'
 import {useApi} from '../api/useApi'
-import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useMemo, useState} from 'react'
 import styles from './StackConfigurator.module.css'
 import {IMAGE_REPOSITORY, IMAGE_TAG, ParameterField} from './ParameterField'
 import {Group} from "../types";
@@ -69,6 +69,18 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
     const { data: groups, isLoading: isLoadingGroups } = useApi<Group[]>(getGroups)
     const [group, setGroup] = useState('')
 
+    const ttlMap = useMemo(() => new Map<string, number>([
+        ["1 hour", 60 * 60],
+        ["6 hours", 60 * 60 * 6],
+        ["12 hours", 60 * 60 * 12],
+        ["1 day", 60 * 60 * 24],
+        ["2 days", 60 * 60 * 24 * 2],
+        ["5 days", 60 * 60 * 24 * 5],
+        ["1 week", 60 * 60 * 24 * 7],
+        ["2 weeks", 60 * 60 * 24 * 7 * 2],
+        ["1 month", 60 * 60 * 24 * 7 * 4],
+    ]), [])
+    const [ttl, setTtl] = useState('')
 
     useImperativeHandle(
         ref,
@@ -82,9 +94,12 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
             },
             getGroup() {
                 return group
+            },
+            getTtl() {
+                return ttlMap.get(ttl)
             }
         }),
-        [instanceName, group, optionalStackParameters, requiredStackParameters]
+        [instanceName, group, ttlMap, ttl, optionalStackParameters, requiredStackParameters]
     )
 
     useEffect(() => {
@@ -138,6 +153,20 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                             key={group.name}
                             label={group.name}
                             value={group.name}
+                        />
+                    ))}
+                </SingleSelectField>
+                <SingleSelectField
+                    className={styles.select}
+                    selected={ttl}
+                    onChange={({ selected }) => setTtl(selected)}
+                    label="Select TTL"
+                >
+                    {Array.from(ttlMap.keys()).map(key => (
+                        <SingleSelectOption
+                            key={key}
+                            label={key}
+                            value={key}
                         />
                     ))}
                 </SingleSelectField>
