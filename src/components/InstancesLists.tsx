@@ -68,6 +68,8 @@ const InstancesList = () => {
         }, [getAuthHeader, refetch]
     )
 
+    const calculateExpiration = (instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.heading}>
@@ -106,6 +108,9 @@ const InstancesList = () => {
                                     <DataTableColumnHeader>
                                         Type
                                     </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Expires
+                                    </DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
@@ -131,6 +136,9 @@ const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 {instance.stackName}
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                <Moment date={calculateExpiration(instance)} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span
