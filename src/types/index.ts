@@ -59,3 +59,10 @@ export type ExternalDownload = {
     expiration: number,
     uuid: string
 }
+
+export type Group = {
+    createdAt: string,
+    hostname: string,
+    name: string,
+    updatedAt: string,
+}
