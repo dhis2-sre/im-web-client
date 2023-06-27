@@ -1,20 +1,13 @@
-import {
-    SingleSelectField,
-    SingleSelectOption,
-    Card,
-    ButtonStrip,
-    Button,
-    NoticeBox,
-} from '@dhis2/ui'
+import {Button, ButtonStrip, Card, NoticeBox, SingleSelectField, SingleSelectOption,} from '@dhis2/ui'
 import axios from 'axios'
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
-import { useAuthHeader } from 'react-auth-kit'
-import { API_HOST } from '../api'
-import { getStacks } from '../api/stacks'
-import { useApi } from '../api/useApi'
-import { Stacks } from '../types/stack'
-import { StackConfigurator } from './StackConfigurator'
+import {useCallback, useEffect, useReducer, useRef, useState} from 'react'
+import {Navigate, useNavigate} from 'react-router-dom'
+import {useAuthHeader} from 'react-auth-kit'
+import {API_HOST} from '../api'
+import {getStacks} from '../api/stacks'
+import {useApi} from '../api/useApi'
+import {Stacks} from '../types/stack'
+import {StackConfigurator} from './StackConfigurator'
 import styles from './NewInstance.module.css'
 
 const postReducer = (
@@ -66,11 +59,12 @@ export const NewInstance = () => {
             postError: null,
         }
     )
+
     const createInstance = useCallback(() => {
         dispatch({ type: 'POST_INIT' })
         const authHeader = getAuthHeader()
         const data = {
-            groupName: 'whoami',
+            groupName: stackConfiguratorRef.current.getGroup(),
             stackName: selectedStack.name,
             ...stackConfiguratorRef.current.getStackParameters(),
         }
