@@ -24,7 +24,7 @@ const InstancesList = () => {
     const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
     const getUrl = (instance: Instance, hostname: string) => `https://${hostname}/${instance.name}`
 
-    const addNow = (ttl) => new Date().getTime() + ttl * 1000
+    const calculateExpiration = (instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
     return (
         <div className={styles.wrapper}>
@@ -92,7 +92,7 @@ const InstancesList = () => {
                                                 {instance.stackName}
                                             </DataTableCell>
                                             <DataTableCell>
-                                                <Moment date={addNow(instance.ttl)} fromNow/>
+                                                <Moment date={calculateExpiration(instance)} fromNow/>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span
