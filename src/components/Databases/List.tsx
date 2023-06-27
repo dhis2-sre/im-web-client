@@ -98,54 +98,50 @@ const ListDatabases = () => {
             </div>
             {databaseError && <Help error>{databaseError}</Help>}
 
-            {groupWithDatabases?.map(group => {
-                return (
-                    <div key={group.name}>
-                        <TableToolbar className={styles.tabletoolbar}>
-                            <span>{group.name}</span>
-                            <Button icon={<IconAdd24/>}>
-                                <label htmlFor="upload">Upload database</label>
-                            </Button>
-                            <input id="upload" type="file" onChange={(event) => upload(event, group.name)}
-                                   hidden={true}/>
-                        </TableToolbar>
-                        <DataTable>
-                            <TableHead>
-                                <DataTableRow>
-                                    <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Created</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
+            {groupWithDatabases?.map(group =>
+                <div key={group.name}>
+                    <TableToolbar className={styles.tabletoolbar}>
+                        <span>{group.name}</span>
+                        <Button icon={<IconAdd24/>}>
+                            <label htmlFor="upload">Upload database</label>
+                        </Button>
+                        <input id="upload" type="file" onChange={(event) => upload(event, group.name)}
+                               hidden={true}/>
+                    </TableToolbar>
+                    <DataTable>
+                        <TableHead>
+                            <DataTableRow>
+                                <DataTableColumnHeader>Name</DataTableColumnHeader>
+                                <DataTableColumnHeader>Created</DataTableColumnHeader>
+                                <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                                <DataTableColumnHeader></DataTableColumnHeader>
+                            </DataTableRow>
+                        </TableHead>
+                        <TableBody>
+                            {group.databases?.map(database =>
+                                <DataTableRow key={database.id}>
+                                    <DataTableCell>{database.name}</DataTableCell>
+                                    <DataTableCell>
+                                        <Moment date={database.createdAt} fromNow/>
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        <Moment date={database.updatedAt} fromNow/>
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        <Button small loading={isDeleting}
+                                                disabled={isDeleting} icon={<IconLaunch16/>}
+                                                onClick={() => download(database.id)}>Download</Button>
+                                        &nbsp;
+                                        <Button small destructive loading={isDeleting}
+                                                disabled={isDeleting} icon={<IconDelete16/>}
+                                                onClick={() => deleteDatabaseCallback(database)}>Delete</Button>
+                                    </DataTableCell>
                                 </DataTableRow>
-                            </TableHead>
-                            <TableBody>
-                                {group.databases?.map(database => {
-                                    return (
-                                        <DataTableRow key={database.id}>
-                                            <DataTableCell>{database.name}</DataTableCell>
-                                            <DataTableCell>
-                                                <Moment date={database.createdAt} fromNow/>
-                                            </DataTableCell>
-                                            <DataTableCell>
-                                                <Moment date={database.updatedAt} fromNow/>
-                                            </DataTableCell>
-                                            <DataTableCell>
-                                                <Button small loading={isDeleting}
-                                                        disabled={isDeleting} icon={<IconLaunch16/>}
-                                                        onClick={() => download(database.id)}>Download</Button>
-                                                &nbsp;
-                                                <Button small destructive loading={isDeleting}
-                                                        disabled={isDeleting} icon={<IconDelete16/>}
-                                                        onClick={() => deleteDatabaseCallback(database)}>Delete</Button>
-                                            </DataTableCell>
-                                        </DataTableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </DataTable>
-                    </div>
-                )
-            })}
+                            )}
+                        </TableBody>
+                    </DataTable>
+                </div>
+            )}
         </div>
     )
 }
