@@ -1,15 +1,22 @@
 import axios from 'axios'
 import {createRefresh} from 'react-auth-kit'
-import {ExternalDownload, GroupWithDatabases, InstancesGroup} from '../types'
+import {ExternalDownload, Group, GroupWithDatabases, InstancesGroup} from '../types'
 import {parseToken} from '../modules'
 
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
+
+export const getGroups = (authHeader) => {
+    return axios.get<Group[]>('/groups', {
+        baseURL: API_HOST,
+        headers: {Authorization: authHeader},
+    })
+}
 
 export const getDatabases = (authHeader) => {
     return axios.get<GroupWithDatabases>('/databases', {
         baseURL: API_HOST,
         headers: {
-            Authorization: authHeader,
+            Authorization: authHeader
         },
     })
 }
@@ -51,11 +58,29 @@ export const getInstances = (authHeader) => {
     })
 }
 
-export const deleteInstance = (token, id) => {
+export const deleteInstance = (authHeader, id) => {
     return axios.delete('/instances/' + id, {
         baseURL: API_HOST,
         headers: {
-            Authorization: token,
+            Authorization: authHeader,
+        },
+    })
+}
+
+export const resetInstance = (authHeader, id) => {
+    return axios.put(`/instances/${id}/reset`, {}, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
+        },
+    })
+}
+
+export const restartInstance = (authHeader, id) => {
+    return axios.put(`/instances/${id}/restart`, {}, {
+        baseURL: API_HOST,
+        headers: {
+            Authorization: authHeader,
         },
     })
 }
