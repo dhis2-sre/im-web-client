@@ -1,12 +1,17 @@
-import {Divider, InputField, SingleSelectField, SingleSelectOption} from '@dhis2/ui'
-import {getStack} from '../api/stacks'
-import {Stack} from '../types/stack'
-import {useApi} from '../api/useApi'
-import {forwardRef, useEffect, useImperativeHandle, useMemo, useState} from 'react'
+import {
+    Divider,
+    InputField,
+    SingleSelectField,
+    SingleSelectOption,
+} from '@dhis2/ui'
+import { getStack } from '../api/stacks'
+import { Stack } from '../types/stack'
+import { useApi } from '../api/useApi'
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import styles from './StackConfigurator.module.css'
-import {IMAGE_REPOSITORY, IMAGE_TAG, ParameterField} from './ParameterField'
-import {Group} from "../types";
-import {getGroups} from "../api";
+import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './ParameterField'
+import { Group } from '../types'
+import { getGroups } from '../api'
 
 // type ParameterRecord = Record<ParameterName, string>
 type ParameterRecord = any
@@ -52,6 +57,18 @@ const computeNewParameters = (
     }
 }
 
+const ttlMap = new Map<string, number>([
+    ['1 hour', 60 * 60],
+    ['6 hours', 60 * 60 * 6],
+    ['12 hours', 60 * 60 * 12],
+    ['1 day', 60 * 60 * 24],
+    ['2 days', 60 * 60 * 24 * 2],
+    ['5 days', 60 * 60 * 24 * 5],
+    ['1 week', 60 * 60 * 24 * 7],
+    ['2 weeks', 60 * 60 * 24 * 7 * 2],
+    ['1 month', 60 * 60 * 24 * 7 * 4],
+])
+
 export const StackConfigurator = forwardRef(function StackConfigurator(
     { name, disabled }: { name: string; disabled: boolean },
     ref
@@ -66,20 +83,9 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
         refetch,
     } = useApi<Stack>(getStack, { name })
 
-    const { data: groups, isLoading: isLoadingGroups } = useApi<Group[]>(getGroups)
+    const { data: groups, isLoading: isLoadingGroups } =
+        useApi<Group[]>(getGroups)
     const [group, setGroup] = useState('')
-
-    const ttlMap = useMemo(() => new Map<string, number>([
-        ["1 hour", 60 * 60],
-        ["6 hours", 60 * 60 * 6],
-        ["12 hours", 60 * 60 * 12],
-        ["1 day", 60 * 60 * 24],
-        ["2 days", 60 * 60 * 24 * 2],
-        ["5 days", 60 * 60 * 24 * 5],
-        ["1 week", 60 * 60 * 24 * 7],
-        ["2 weeks", 60 * 60 * 24 * 7 * 2],
-        ["1 month", 60 * 60 * 24 * 7 * 4],
-    ]), [])
     const [ttl, setTtl] = useState('')
 
     useImperativeHandle(
@@ -97,9 +103,15 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
             },
             getTtl() {
                 return ttlMap.get(ttl)
-            }
+            },
         }),
-        [instanceName, group, ttlMap, ttl, optionalStackParameters, requiredStackParameters]
+        [
+            instanceName,
+            group,
+            ttl,
+            optionalStackParameters,
+            requiredStackParameters,
+        ]
     )
 
     useEffect(() => {
@@ -110,7 +122,13 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
 
     useEffect(() => {
         if (stack) {
-            setRequiredStackParameters(toKeyedObject(stack.requiredParameters.filter(parameter => !parameter.consumed)))
+            setRequiredStackParameters(
+                toKeyedObject(
+                    stack.requiredParameters.filter(
+                        (parameter) => !parameter.consumed
+                    )
+                )
+            )
             setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])
@@ -145,10 +163,12 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                 <SingleSelectField
                     className={styles.select}
                     selected={group}
-                    onChange={({ selected }) => {setGroup(selected)}}
+                    onChange={({ selected }) => {
+                        setGroup(selected)
+                    }}
                     label="Select group"
                 >
-                    {groups.map(group => (
+                    {groups.map((group) => (
                         <SingleSelectOption
                             key={group.name}
                             label={group.name}
@@ -162,12 +182,8 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                     onChange={({ selected }) => setTtl(selected)}
                     label="Select TTL"
                 >
-                    {Array.from(ttlMap.keys()).map(key => (
-                        <SingleSelectOption
-                            key={key}
-                            label={key}
-                            value={key}
-                        />
+                    {Array.from(ttlMap.keys()).map((key) => (
+                        <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
 
