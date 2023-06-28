@@ -10,6 +10,7 @@ import {
     Help,
     IconAdd24,
     IconBlock16,
+    IconSync16,
     IconLaunch16,
     Tag,
 } from '@dhis2/ui'
@@ -131,7 +132,7 @@ const InstancesList = () => {
                                                     <Button small destructive loading={isUpdating} disabled={isUpdating} icon={<IconBlock16 />} onClick={() => reset(instance)}>
                                                         Reset
                                                     </Button>
-                                                    <Button small primary loading={isUpdating} disabled={isUpdating} icon={<IconBlock16 />} onClick={() => restart(instance)}>
+                                                    <Button small primary loading={isUpdating} disabled={isUpdating} icon={<IconSync16 />} onClick={() => restart(instance)}>
                                                         Restart
                                                     </Button>
                                                 </span>
