@@ -9523,10 +9523,10 @@ react-app-polyfill@^3.0.0:
     regenerator-runtime "^0.13.9"
     whatwg-fetch "^3.6.2"
 
-react-auth-kit@^2.12.2:
-  version "2.12.2"
-  resolved "https://registry.yarnpkg.com/react-auth-kit/-/react-auth-kit-2.12.2.tgz#930afaffe39256537e446e7b4b035543eb0e9a7a"
-  integrity sha512-mRSHo1iMN80XzEKyZi74VDwOWtPEKK0PEgJEyHtpRFEGK63mtvYLrHKHr9T8PIjismla6/fUGat4sre7hQa0cw==
+react-auth-kit@^2.12.3:
+  version "2.12.3"
+  resolved "https://registry.yarnpkg.com/react-auth-kit/-/react-auth-kit-2.12.3.tgz#7ee9820ad3094b01f59f4d6dda3ec3467573e9e3"
+  integrity sha512-L4Psz0CMWgpUCYjHwix2B1OV/dMcS629J+wrBV5MJIbCnV8RAsnv+EkAOc4Ke62IDKJQGFwDbz0ldNX5Su0eGw==
   dependencies:
     js-cookie "^3.0.1"
     jwt-decode "^3.1.2"
