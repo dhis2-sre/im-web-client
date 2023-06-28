@@ -16,9 +16,10 @@ deploy:
         namespace: instance-manager-{{ .ENVIRONMENT }}
         createNamespace: true
         chartPath: helm/chart
-        artifactOverrides:
-          image: dhis2/im-web-client
-        imageStrategy:
-          helm: { }
+        setValueTemplates:
+          ingress:
+            enabled: true
+            hostname: "{{ .HOSTNAME }}"
+            certIssuer: cert-issuer-prod
         valuesFiles:
           - helm/data/values/{{ .CLASSIFICATION }}/values.yaml
