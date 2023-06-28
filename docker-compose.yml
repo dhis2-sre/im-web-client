@@ -1,25 +1,25 @@
-version: '3.6'
+version: "3.6"
 services:
-  prod:
-    image: dhis2/im-web-client:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      args:
-        REACT_APP_IM_API: ${IM_API}
-    ports:
-      - '8080:8080'
+    prod:
+        image: dhis2/im-web-client:${IMAGE_TAG:-latest}
+        build:
+            context: .
+            args:
+                REACT_APP_IM_API: ${IM_API}
+        ports:
+            - "8080:8080"
 
-  dev:
-    build:
-      context: .
-      target: builder
-      args:
-        REACT_APP_IM_API: ${IM_API}
-    stdin_open: true
-    tty: true
-    volumes:
-      - .:/src
-    working_dir: /src
-    command: yarn start
-    ports:
-      - "3000:3000"
+    dev:
+        build:
+            context: .
+            target: builder
+            args:
+                REACT_APP_IM_API: ${IM_API}
+        stdin_open: true
+        tty: true
+        volumes:
+            - .:/src
+        working_dir: /src
+        command: yarn start
+        ports:
+            - "3000:3000"

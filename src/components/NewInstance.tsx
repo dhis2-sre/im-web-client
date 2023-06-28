@@ -1,13 +1,13 @@
-import {Button, ButtonStrip, Card, NoticeBox, SingleSelectField, SingleSelectOption,} from '@dhis2/ui'
+import { Button, ButtonStrip, Card, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import axios from 'axios'
-import {useCallback, useEffect, useReducer, useRef, useState} from 'react'
-import {Navigate, useNavigate} from 'react-router-dom'
-import {useAuthHeader} from 'react-auth-kit'
-import {API_HOST} from '../api'
-import {getStacks} from '../api/stacks'
-import {useApi} from '../api/useApi'
-import {Stacks} from '../types/stack'
-import {StackConfigurator} from './StackConfigurator'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { useAuthHeader } from 'react-auth-kit'
+import { API_HOST } from '../api'
+import { getStacks } from '../api/stacks'
+import { useApi } from '../api/useApi'
+import { Stacks } from '../types/stack'
+import { StackConfigurator } from './StackConfigurator'
 import styles from './NewInstance.module.css'
 
 const postReducer = (
@@ -51,14 +51,11 @@ export const NewInstance = () => {
     const navigate = useNavigate()
     const { data: stacks, isLoading } = useApi<Stacks>(getStacks)
     const [selectedStack, setSelectedStack] = useState({ name: '' })
-    const [{ isPosting, postSuccess, postError }, dispatch] = useReducer(
-        postReducer,
-        {
-            isPosting: false,
-            postSuccess: false,
-            postError: null,
-        }
-    )
+    const [{ isPosting, postSuccess, postError }, dispatch] = useReducer(postReducer, {
+        isPosting: false,
+        postSuccess: false,
+        postError: null,
+    })
 
     const createInstance = useCallback(() => {
         dispatch({ type: 'POST_INIT' })
@@ -109,49 +106,27 @@ export const NewInstance = () => {
                         className={styles.select}
                         selected={selectedStack?.name}
                         onChange={({ selected }) => {
-                            setSelectedStack(
-                                stacks.find(({ name }) => name === selected)
-                            )
+                            setSelectedStack(stacks.find(({ name }) => name === selected))
                         }}
                         label="Select a stack"
                         disabled={isPosting}
                     >
                         {stacks.map(({ name }) => (
-                            <SingleSelectOption
-                                key={name}
-                                label={name}
-                                value={name}
-                            />
+                            <SingleSelectOption key={name} label={name} value={name} />
                         ))}
                     </SingleSelectField>
                     <h4 className={styles.subheader}>Stack configuration</h4>
-                    <StackConfigurator
-                        name={selectedStack.name}
-                        ref={stackConfiguratorRef}
-                        disabled={isPosting}
-                    />
+                    <StackConfigurator name={selectedStack.name} ref={stackConfiguratorRef} disabled={isPosting} />
                     {postError && (
-                        <NoticeBox
-                            error
-                            title="Save error"
-                            className={styles.error}
-                        >
+                        <NoticeBox error title="Save error" className={styles.error}>
                             An error occurred while saving the new instance
                         </NoticeBox>
                     )}
                     <ButtonStrip>
-                        <Button
-                            primary
-                            disabled={isPosting}
-                            loading={isPosting}
-                            onClick={createInstance}
-                        >
+                        <Button primary disabled={isPosting} loading={isPosting} onClick={createInstance}>
                             Create instance
                         </Button>
-                        <Button
-                            disabled={isPosting}
-                            onClick={() => navigate('/instances')}
-                        >
+                        <Button disabled={isPosting} onClick={() => navigate('/instances')}>
                             Cancel
                         </Button>
                     </ButtonStrip>

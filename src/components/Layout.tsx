@@ -1,17 +1,15 @@
-import {LogoIconWhite} from '@dhis2/ui'
-import {RequireAuth, useIsAuthenticated} from 'react-auth-kit'
-import {Navigate, NavLink, Outlet, useLocation} from 'react-router-dom'
+import { LogoIconWhite } from '@dhis2/ui'
+import { RequireAuth, useIsAuthenticated } from 'react-auth-kit'
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import styles from './Layout.module.css'
-import {LogoutButton} from './LogoutButton'
+import { LogoutButton } from './LogoutButton'
 
 export const Layout = () => {
     const location = useLocation()
     const isAuthenticated = useIsAuthenticated()
 
     if (!isAuthenticated()) {
-        return (
-            <Navigate to="/login" state={{ redirectPath: location.pathname }} />
-        )
+        return <Navigate to="/login" state={{ redirectPath: location.pathname }} />
     }
 
     if (location.pathname === '/') {
@@ -29,7 +27,9 @@ export const Layout = () => {
                     <nav className={styles.navlist}>
                         <NavLink to="/instances">Instances</NavLink>
                         <NavLink to="/databases">Databases</NavLink>
-                        <NavLink to="/stacks" end>Stacks</NavLink>
+                        <NavLink to="/stacks" end>
+                            Stacks
+                        </NavLink>
                     </nav>
                     <LogoutButton />
                 </div>

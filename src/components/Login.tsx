@@ -53,9 +53,7 @@ const LoginPage = () => {
                 throw new Error('Sign in failed')
             }
         } catch (error) {
-            setLoginError(
-                error.response?.data ?? error.message ?? 'Unknown login error'
-            )
+            setLoginError(error.response?.data ?? error.message ?? 'Unknown login error')
         }
     }, [username, password, signIn])
 

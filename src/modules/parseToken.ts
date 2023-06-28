@@ -14,8 +14,6 @@ export const parseToken = (token: string): ParsedToken => {
 
     return {
         ...decodedToken,
-        expiryDurationInMinutes: Math.floor(
-            (decodedToken.exp - decodedToken.iat) / 60
-        ),
+        expiryDurationInMinutes: Math.floor((decodedToken.exp - decodedToken.iat) / 60),
     }
 }

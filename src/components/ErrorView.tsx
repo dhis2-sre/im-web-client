@@ -15,11 +15,7 @@ export const ErrorView = () => {
 
     return (
         <div className={styles.container}>
-            <NoticeBox
-                className={styles.noticebox}
-                error
-                title="Sorry, an unexpected error has occurred"
-            >
+            <NoticeBox className={styles.noticebox} error title="Sorry, an unexpected error has occurred">
                 {error.statusText || error.message}
             </NoticeBox>
             <Button onClick={() => navigate('/')}>Go home</Button>

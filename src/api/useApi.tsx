@@ -48,10 +48,7 @@ function reducer(
 }
 
 export function useApi<T = any, R = any>(
-    operation: (
-        header: string | undefined,
-        payload?: any
-    ) => Promise<AxiosResponse<T>>,
+    operation: (header: string | undefined, payload?: any) => Promise<AxiosResponse<T>>,
     payload?: R,
     options?: {
         lazy?: boolean
