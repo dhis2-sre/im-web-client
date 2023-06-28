@@ -65,6 +65,7 @@ export const NewInstance = () => {
         const authHeader = getAuthHeader()
         const data = {
             groupName: stackConfiguratorRef.current.getGroup(),
+            ttl: stackConfiguratorRef.current.getTtl(),
             stackName: selectedStack.name,
             ...stackConfiguratorRef.current.getStackParameters(),
         }
