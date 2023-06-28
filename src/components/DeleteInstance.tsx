@@ -34,14 +34,7 @@ const DeleteInstance: React.FC<DeleteInstanceProps> = (props) => {
     }, [token, instanceId, onDelete])
 
     return (
-        <Button
-            small
-            destructive
-            loading={isSending}
-            disabled={isSending}
-            icon={<IconDelete16 />}
-            onClick={deleteInstanceRequest}
-        >
+        <Button small destructive loading={isSending} disabled={isSending} icon={<IconDelete16 />} onClick={deleteInstanceRequest}>
             Delete
         </Button>
     )

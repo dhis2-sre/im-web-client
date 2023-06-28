@@ -1,14 +1,14 @@
 import axios from 'axios'
-import {createRefresh} from 'react-auth-kit'
-import {ExternalDownload, Group, GroupWithDatabases, InstancesGroup} from '../types'
-import {parseToken} from '../modules'
+import { createRefresh } from 'react-auth-kit'
+import { ExternalDownload, Group, GroupWithDatabases, InstancesGroup } from '../types'
+import { parseToken } from '../modules'
 
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
 
 export const getGroups = (authHeader) => {
     return axios.get<Group[]>('/groups', {
         baseURL: API_HOST,
-        headers: {Authorization: authHeader},
+        headers: { Authorization: authHeader },
     })
 }
 
@@ -16,7 +16,7 @@ export const getDatabases = (authHeader) => {
     return axios.get<GroupWithDatabases>('/databases', {
         baseURL: API_HOST,
         headers: {
-            Authorization: authHeader
+            Authorization: authHeader,
         },
     })
 }
@@ -27,7 +27,7 @@ export const postDatabase = (authHeader, formData, onUploadProgress) => {
         headers: {
             Authorization: authHeader,
         },
-        onUploadProgress: onUploadProgress
+        onUploadProgress: onUploadProgress,
     })
 }
 
@@ -41,12 +41,14 @@ export const deleteDatabase = (authHeader, id) => {
 }
 
 export const createExternalDownloadDatabase = (authHeader, id, expiration) => {
-    return axios.post<ExternalDownload>(`/databases/${id}/external`,
-        {expiration: expiration},
+    return axios.post<ExternalDownload>(
+        `/databases/${id}/external`,
+        { expiration: expiration },
         {
             baseURL: API_HOST,
-            headers: {Authorization: authHeader},
-        })
+            headers: { Authorization: authHeader },
+        }
+    )
 }
 
 export const getInstances = (authHeader) => {
@@ -68,21 +70,29 @@ export const deleteInstance = (authHeader, id) => {
 }
 
 export const resetInstance = (authHeader, id) => {
-    return axios.put(`/instances/${id}/reset`, {}, {
-        baseURL: API_HOST,
-        headers: {
-            Authorization: authHeader,
-        },
-    })
+    return axios.put(
+        `/instances/${id}/reset`,
+        {},
+        {
+            baseURL: API_HOST,
+            headers: {
+                Authorization: authHeader,
+            },
+        }
+    )
 }
 
 export const restartInstance = (authHeader, id) => {
-    return axios.put(`/instances/${id}/restart`, {}, {
-        baseURL: API_HOST,
-        headers: {
-            Authorization: authHeader,
-        },
-    })
+    return axios.put(
+        `/instances/${id}/restart`,
+        {},
+        {
+            baseURL: API_HOST,
+            headers: {
+                Authorization: authHeader,
+            },
+        }
+    )
 }
 
 export const getToken = (username, password) => {
@@ -99,13 +109,10 @@ export const getToken = (username, password) => {
 }
 
 export const postSignUp = (username, password) => {
-    return axios.post(
-        `${API_HOST}/users`,
-        {
-            email: username,
-            password: password,
-        },
-    )
+    return axios.post(`${API_HOST}/users`, {
+        email: username,
+        password: password,
+    })
 }
 
 const getRefreshIntervalFromLocalStorage = () => {
@@ -121,29 +128,23 @@ const getRefreshIntervalFromLocalStorage = () => {
          * different way so that we can always infer the refresh
          * interval duration on the refresh token itself. See:
          * https://github.com/react-auth-kit/react-auth-kit/issues/1336 */
-        console.error(
-            'Tried to read refresh token expiry from local storage but found no token'
-        )
+        console.error('Tried to read refresh token expiry from local storage but found no token')
         return 14
     }
 
-    const {expiryDurationInMinutes} = parseToken(refreshToken)
+    const { expiryDurationInMinutes } = parseToken(refreshToken)
 
     return expiryDurationInMinutes
 }
 
 export const refreshApi = createRefresh({
     interval: getRefreshIntervalFromLocalStorage(),
-    refreshApiCallback: ({refreshToken}) => {
+    refreshApiCallback: ({ refreshToken }) => {
         return axios
-            .post(`${API_HOST}/refresh`, {refreshToken})
-            .then(({data}) => {
-                const {
-                    expiryDurationInMinutes: newAuthTokenExpireIn,
-                    user: newAuthUserState,
-                } = parseToken(data.accessToken)
-                const {expiryDurationInMinutes: newRefreshTokenExpiresIn} =
-                    parseToken(data.refreshToken)
+            .post(`${API_HOST}/refresh`, { refreshToken })
+            .then(({ data }) => {
+                const { expiryDurationInMinutes: newAuthTokenExpireIn, user: newAuthUserState } = parseToken(data.accessToken)
+                const { expiryDurationInMinutes: newRefreshTokenExpiresIn } = parseToken(data.refreshToken)
 
                 return {
                     isSuccess: true, // For successful network request isSuccess is true

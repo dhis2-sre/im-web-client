@@ -1,8 +1,8 @@
-import {Button, Card, Help, InputField, LogoIcon} from '@dhis2/ui'
-import {useCallback, useState} from 'react'
-import {postSignUp} from '../api'
+import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { useCallback, useState } from 'react'
+import { postSignUp } from '../api'
 import styles from './SignUpPage.module.css'
-import {Navigate} from "react-router-dom";
+import { Navigate } from 'react-router-dom'
 
 const SignUpPage = () => {
     const passwordsUnequalMsg = 'Passwords do not match'
@@ -45,7 +45,7 @@ const SignUpPage = () => {
         >
             <Card className={styles.box}>
                 <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo}/>
+                    <LogoIcon className={styles.logo} />
                     Instance manager sign up
                 </h2>
                 <InputField
@@ -53,7 +53,7 @@ const SignUpPage = () => {
                     label="username"
                     type="email"
                     value={username}
-                    onChange={({value}) => {
+                    onChange={({ value }) => {
                         setUsername(value)
                     }}
                 />
@@ -63,7 +63,7 @@ const SignUpPage = () => {
                     label="password"
                     value={password}
                     autoComplete="new-password"
-                    onChange={({value}) => {
+                    onChange={({ value }) => {
                         setPassword(value)
                     }}
                 />
@@ -73,7 +73,7 @@ const SignUpPage = () => {
                     label="confirm-password"
                     value={confirmPassword}
                     autoComplete="new-password"
-                    onChange={({value}) => {
+                    onChange={({ value }) => {
                         if (signUpError === passwordsUnequalMsg && value === password) {
                             setSignUpError('')
                         }

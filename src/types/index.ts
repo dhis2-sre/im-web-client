@@ -34,8 +34,8 @@ export type InstancesGroup = Array<{
 }>
 
 export type Lock = {
-    databaseId: number,
-    instanceId: number,
+    databaseId: number
+    instanceId: number
     userId: number
 }
 
@@ -55,14 +55,14 @@ export type GroupWithDatabases = Array<{
 }>
 
 export type ExternalDownload = {
-    databaseId: number,
-    expiration: number,
+    databaseId: number
+    expiration: number
     uuid: string
 }
 
 export type Group = {
-    createdAt: string,
-    hostname: string,
-    name: string,
-    updatedAt: string,
+    createdAt: string
+    hostname: string
+    name: string
+    updatedAt: string
 }

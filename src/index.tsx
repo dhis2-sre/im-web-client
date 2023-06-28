@@ -1,12 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from 'react-auth-kit'
-import {
-    createRoutesFromElements,
-    Route,
-    createBrowserRouter,
-    RouterProvider,
-} from 'react-router-dom'
+import { createRoutesFromElements, Route, createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { CssReset, CssVariables } from '@dhis2/ui'
 import InstancesList from './components/InstancesLists'
 import LoginPage from './components/Login'
@@ -39,13 +34,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
-        <AuthProvider
-            authType="localstorage"
-            authName="_auth"
-            cookieDomain={API_HOST}
-            cookieSecure={true}
-            refresh={refreshApi}
-        >
+        <AuthProvider authType="localstorage" authName="_auth" cookieDomain={API_HOST} cookieSecure={true} refresh={refreshApi}>
             <CssReset />
             <CssVariables colors theme layers spacers elevations />
             <RouterProvider router={router} />
