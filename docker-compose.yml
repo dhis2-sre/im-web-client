@@ -1,4 +1,4 @@
-version: '3.6'
+version: "3.6"
 services:
     prod:
         image: dhis2/im-web-client:${IMAGE_TAG:-latest}
@@ -7,7 +7,7 @@ services:
             args:
                 REACT_APP_IM_API: ${IM_API}
         ports:
-            - '8080:8080'
+            - "8080:8080"
 
     dev:
         build:
@@ -22,4 +22,4 @@ services:
         working_dir: /src
         command: yarn start
         ports:
-            - '3000:3000'
+            - "3000:3000"
