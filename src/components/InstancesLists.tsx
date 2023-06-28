@@ -1,28 +1,74 @@
 import {
     Button,
-    IconAdd24,
-    IconLaunch16,
-    DataTableToolbar as TableToolbar,
     DataTable,
-    DataTableHead as TableHead,
-    DataTableRow,
+    DataTableBody as TableBody,
     DataTableCell,
     DataTableColumnHeader,
+    DataTableHead as TableHead,
+    DataTableRow,
+    DataTableToolbar as TableToolbar,
+    Help,
+    IconAdd24,
+    IconBlock16,
+    IconLaunch16,
     Tag,
-    DataTableBody as TableBody,
 } from '@dhis2/ui'
-import { useNavigate } from 'react-router-dom'
-import { getInstances } from '../api'
-import { useApi } from '../api/useApi'
-import { InstancesGroup, Instance } from '../types'
+import {useNavigate} from 'react-router-dom'
+import {getInstances, resetInstance, restartInstance} from '../api'
+import {useApi} from '../api/useApi'
+import {Instance, InstancesGroup} from '../types'
 import styles from './InstancesLists.module.css'
 import DeleteInstance from './DeleteInstance'
 import Moment from "react-moment"
+import {useCallback, useState} from "react"
+import {useAuthHeader} from "react-auth-kit"
 
 const InstancesList = () => {
     const navigate = useNavigate()
     const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
     const getUrl = (instance: Instance, hostname: string) => `https://${hostname}/${instance.name}`
+    const getAuthHeader = useAuthHeader()
+
+    const [error, setError] = useState('')
+    const [isUpdating, setIsUpdating] = useState(false)
+
+    const reset = useCallback(async (instance) => {
+            if (!window.confirm(`Are you sure you wish to reset "${instance.groupName}/${instance.name}"?`)) {
+                return
+            }
+
+            const authHeader = getAuthHeader()
+            try {
+                setIsUpdating(true)
+                await resetInstance(authHeader, instance.id)
+                await refetch()
+            } catch (error) {
+                setError(error.response?.data ?? error.message ?? 'Unknown error')
+            } finally {
+                setIsUpdating(false)
+            }
+        }, [getAuthHeader, refetch]
+    )
+
+    const restart = useCallback(async (instance) => {
+            if (!window.confirm(`Are you sure you wish to restart "${instance.groupName}/${instance.name}"?`)) {
+                return
+            }
+
+            const authHeader = getAuthHeader()
+            try {
+                setIsUpdating(true)
+                await restartInstance(authHeader, instance.id)
+                await refetch()
+            } catch (error) {
+                setError(error.response?.data ?? error.message ?? 'Unknown error')
+            } finally {
+                setIsUpdating(false)
+            }
+        }, [getAuthHeader, refetch]
+    )
+
+    const calculateExpiration = (instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
     return (
         <div className={styles.wrapper}>
@@ -32,6 +78,8 @@ const InstancesList = () => {
                     New instance
                 </Button>
             </div>
+
+            {error && <Help error>{error}</Help>}
 
             {instancesGroups?.map((group) => {
                 return (
@@ -60,6 +108,9 @@ const InstancesList = () => {
                                     <DataTableColumnHeader>
                                         Type
                                     </DataTableColumnHeader>
+                                    <DataTableColumnHeader>
+                                        Expires
+                                    </DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
@@ -87,6 +138,9 @@ const InstancesList = () => {
                                                 {instance.stackName}
                                             </DataTableCell>
                                             <DataTableCell>
+                                                <Moment date={calculateExpiration(instance)} fromNow/>
+                                            </DataTableCell>
+                                            <DataTableCell>
                                                 <span
                                                     className={
                                                         styles.opendeletewrap
@@ -111,6 +165,12 @@ const InstancesList = () => {
                                                         instanceId={instance.id}
                                                         onDelete={refetch}
                                                     />
+                                                    <Button small destructive loading={isUpdating} disabled={isUpdating}
+                                                            icon={<IconBlock16/>}
+                                                            onClick={() => reset(instance)}>Reset</Button>
+                                                    <Button small primary loading={isUpdating} disabled={isUpdating}
+                                                            icon={<IconBlock16/>}
+                                                            onClick={() => restart(instance)}>Restart</Button>
                                                 </span>
                                             </DataTableCell>
                                         </DataTableRow>

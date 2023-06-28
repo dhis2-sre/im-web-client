@@ -7,6 +7,7 @@ export type Instance = {
     name: string
     groupName: string
     stackName: string
+    ttl: number
     requiredParameters:
         | [
               {
@@ -57,4 +58,11 @@ export type ExternalDownload = {
     databaseId: number,
     expiration: number,
     uuid: string
+}
+
+export type Group = {
+    createdAt: string,
+    hostname: string,
+    name: string,
+    updatedAt: string,
 }
