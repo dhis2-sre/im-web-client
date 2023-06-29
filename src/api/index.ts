@@ -6,7 +6,7 @@ import { parseToken } from '../modules'
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
 
 export const getGroups = (authHeader) => {
-    return axios.get<Group[]>('/groups', {
+    return axios.get<Group[]>('/groups?deployable=true', {
         baseURL: API_HOST,
         headers: { Authorization: authHeader },
     })
