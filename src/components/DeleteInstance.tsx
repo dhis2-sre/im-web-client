@@ -1,5 +1,5 @@
 import { Button, IconDelete16 } from '@dhis2/ui'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { deleteInstance } from '../api'
 import { useAuthHeader } from 'react-auth-kit'
 
@@ -8,7 +8,7 @@ type DeleteInstanceProps = {
     onDelete?: () => void
 }
 
-const DeleteInstance: React.FC<DeleteInstanceProps> = (props) => {
+const DeleteInstance: FC<DeleteInstanceProps> = (props) => {
     const [isSending, setIsSending] = useState(false)
     const isMounted = useRef(true)
     useEffect(() => {
