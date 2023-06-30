@@ -5,6 +5,14 @@ import { parseToken } from '../modules'
 
 export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
 
+export const streamLogs = (authHeader, id, onDownloadProgress) => {
+    return axios.get(`/instances/${id}/logs`, {
+        baseURL: API_HOST,
+        headers: { Authorization: authHeader },
+        onDownloadProgress: (progressEvent) => onDownloadProgress(progressEvent),
+    })
+}
+
 export const getGroups = (authHeader) => {
     return axios.get<Group[]>('/groups?deployable=true', {
         baseURL: API_HOST,

@@ -12,7 +12,7 @@ import {
     Tag,
 } from '@dhis2/ui'
 import { useNavigate } from 'react-router-dom'
-import { getInstances, resetInstance, restartInstance } from '../api'
+import { getInstances, resetInstance, restartInstance, streamLogs } from '../api'
 import { useApi } from '../api/useApi'
 import { Instance, InstancesGroup } from '../types'
 import styles from './InstancesLists.module.css'
@@ -48,6 +48,19 @@ const InstancesList = () => {
             }
         },
         [getAuthHeader, refetch]
+    )
+
+    const [log, setLog] = useState('')
+    const logs = useCallback(
+        async (id) => {
+            const authHeader = getAuthHeader()
+            await streamLogs(authHeader, id, (progressEvent) => {
+                const response = progressEvent.event.currentTarget.response
+                console.log(response)
+                setLog(response)
+            })
+        },
+        [getAuthHeader, setLog]
     )
 
     const restart = useCallback(
@@ -133,6 +146,9 @@ const InstancesList = () => {
                                                     <Button small secondary loading={isUpdating} disabled={isUpdating} onClick={() => reset(instance)}>
                                                         Reset
                                                     </Button>
+                                                    <Button small secondary loading={isUpdating} disabled={isUpdating} onClick={() => logs(instance.id)}>
+                                                        Logs
+                                                    </Button>
                                                 </span>
                                             </DataTableCell>
                                         </DataTableRow>
@@ -140,6 +156,7 @@ const InstancesList = () => {
                                 })}
                             </TableBody>
                         </DataTable>
+                        <pre>{log}</pre>
                     </div>
                 )
             })}
