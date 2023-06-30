@@ -9,9 +9,6 @@ import {
     DataTableToolbar as TableToolbar,
     Help,
     IconAdd24,
-    IconBlock16,
-    IconSync16,
-    IconLaunch16,
     Tag,
 } from '@dhis2/ui'
 import { useNavigate } from 'react-router-dom'
@@ -125,19 +122,16 @@ const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span className={styles.opendeletewrap}>
-                                                    <Button small icon={<IconLaunch16 />} onClick={() => window?.open(getUrl(instance, group.hostname))}>
+                                                    <Button small onClick={() => window?.open(getUrl(instance, group.hostname))}>
                                                         Open
                                                     </Button>
-                                                    <Button small loading={isUpdating} disabled={isUpdating} icon={<IconSync16 />} onClick={() => restart(instance)}>
+                                                    <Button small loading={isUpdating} disabled={isUpdating} onClick={() => restart(instance)}>
                                                         Restart
                                                     </Button>
                                                     <div className={styles.buttonSeparator}>&nbsp;</div>
                                                     <DeleteInstance instanceId={instance.id} onDelete={refetch} />
-                                                    <Button small secondary loading={isUpdating} disabled={isUpdating} icon={<IconBlock16 />} onClick={() => reset(instance)}>
+                                                    <Button small secondary loading={isUpdating} disabled={isUpdating} onClick={() => reset(instance)}>
                                                         Reset
-                                                    </Button>
-                                                    <Button small primary loading={isUpdating} disabled={isUpdating} icon={<IconSync16 />} onClick={() => restart(instance)}>
-                                                        Restart
                                                     </Button>
                                                 </span>
                                             </DataTableCell>
