@@ -112,12 +112,12 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name, d
         <div>
             <div className={styles.container}>
                 <InputField className={styles.field} label="Name" value={instanceName} onChange={({ value }) => setInstanceName(value)} required disabled={disabled} />
-                <SingleSelectField className={styles.select} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Select group">
+                <SingleSelectField className={styles.select} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <SingleSelectField className={styles.select} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Select TTL">
+                <SingleSelectField className={styles.select} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
                     {Array.from(ttlMap.keys()).map((key) => (
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
