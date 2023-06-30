@@ -129,7 +129,7 @@ const InstancesList = () => {
                                                         Restart
                                                     </Button>
                                                     <div className={styles.buttonSeparator}>&nbsp;</div>
-                                                    <DeleteInstance instanceId={instance.id} onDelete={refetch} />
+                                                    <DeleteInstance instance={instance} onDelete={refetch} />
                                                     <Button small secondary loading={isUpdating} disabled={isUpdating} onClick={() => reset(instance)}>
                                                         Reset
                                                     </Button>
