@@ -87,6 +87,7 @@ const AsyncParameterDropdownField = ({ name, onChange, value, disabled, reposito
     return (
         <SingleSelectField
             label={toTitleCase(name)}
+            filterable={true}
             className={styles.field}
             disabled={disabled || isFetching}
             selected={value}
