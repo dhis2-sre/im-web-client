@@ -146,7 +146,6 @@ const InstancesList = () => {
                                 })}
                             </TableBody>
                         </DataTable>
-                        <pre>{log}</pre>
                     </div>
                 )
             })}
