@@ -3926,13 +3926,12 @@ axios-hooks@^4.0.0:
     dequal "2.0.3"
     lru-cache "^7.14.0"
 
-axios-jwt@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/axios-jwt/-/axios-jwt-3.0.2.tgz#e64e9335f9d21d3f3b0b2a6dea5aa1709526f944"
-  integrity sha512-PguxL2tcTXKsLoMpEi5db2j1mtqUk+xyDIajk97s9OrFDjnC++M1UiIBA1Zf95RdUZWcACt4EGUK90wFRNDjYw==
+axios-jwt@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/axios-jwt/-/axios-jwt-3.0.0.tgz#97000031ab842642779ac59502b3e2451bc04a42"
+  integrity sha512-aHpxX8jULtUnHprshDDh+8Z8ZXDec3a0MDAhBPHdzEgBH0jDMQkGtmibqfy594G7jFKHsM4FEX4/sPgiRIW8Fg==
   dependencies:
     jwt-decode "3.1.2"
-    ms "^3.0.0-canary.1"
 
 axios@^1.4.0:
   version "1.4.0"
@@ -8460,11 +8459,6 @@ ms@2.1.3, ms@^2.1.1:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
-
-ms@^3.0.0-canary.1:
-  version "3.0.0-canary.1"
-  resolved "https://registry.yarnpkg.com/ms/-/ms-3.0.0-canary.1.tgz#c7b34fbce381492fd0b345d1cf56e14d67b77b80"
-  integrity sha512-kh8ARjh8rMN7Du2igDRO9QJnqCb2xYTJxyQYK7vJJS4TvLLmsbyhiKpSW+t+y26gyOyMd0riphX0GeWKU3ky5g==
 
 multicast-dns@^7.2.5:
   version "7.2.5"
