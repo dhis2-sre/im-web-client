@@ -20,3 +20,6 @@
     display: flex;
     gap: var(--spacers-dp8);
 }
+.button-separator {
+    border-left: 1px solid var(--colors-grey300);
+}

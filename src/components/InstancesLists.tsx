@@ -125,11 +125,15 @@ const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span className={styles.opendeletewrap}>
-                                                    <Button small primary icon={<IconLaunch16 />} onClick={() => window?.open(getUrl(instance, group.hostname))}>
+                                                    <Button small icon={<IconLaunch16 />} onClick={() => window?.open(getUrl(instance, group.hostname))}>
                                                         Open
                                                     </Button>
+                                                    <Button small loading={isUpdating} disabled={isUpdating} icon={<IconSync16 />} onClick={() => restart(instance)}>
+                                                        Restart
+                                                    </Button>
+                                                    <div className={styles.buttonSeparator}>&nbsp;</div>
                                                     <DeleteInstance instanceId={instance.id} onDelete={refetch} />
-                                                    <Button small destructive loading={isUpdating} disabled={isUpdating} icon={<IconBlock16 />} onClick={() => reset(instance)}>
+                                                    <Button small secondary loading={isUpdating} disabled={isUpdating} icon={<IconBlock16 />} onClick={() => reset(instance)}>
                                                         Reset
                                                     </Button>
                                                     <Button small primary loading={isUpdating} disabled={isUpdating} icon={<IconSync16 />} onClick={() => restart(instance)}>
@@ -142,6 +146,7 @@ const InstancesList = () => {
                                 })}
                             </TableBody>
                         </DataTable>
+                        <pre>{log}</pre>
                     </div>
                 )
             })}
