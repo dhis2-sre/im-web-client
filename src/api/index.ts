@@ -3,7 +3,7 @@ import { createRefresh } from 'react-auth-kit'
 import { ExternalDownload, Group, GroupWithDatabases, InstancesGroup } from '../types'
 import { parseToken } from '../modules'
 
-export const API_URL = process.env.REACT_APP_API_URL || 'https://api.im.dev.test.c.dhis2.org'
+export const API_URL = process.env.REACT_APP_API_URL
 
 export const streamLogs = (authHeader, id, onDownloadProgress) => {
     return axios.get(`/instances/${id}/logs`, {
