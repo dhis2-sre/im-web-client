@@ -4,7 +4,7 @@ import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor, clearAuthT
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const baseURL = process.env.REACT_APP_IM_API || 'https://api.im.prod.test.c.dhis2.org'
+export const baseURL = process.env.REACT_APP_IM_API
 
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL })
