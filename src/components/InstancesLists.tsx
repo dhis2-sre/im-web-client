@@ -13,21 +13,19 @@ import {
     Tag,
 } from '@dhis2/ui'
 import { useNavigate } from 'react-router-dom'
-import { getInstances, resetInstance, restartInstance, streamLogs } from '../api'
-import { useApi } from '../api/useApi'
+import { resetInstance, restartInstance } from '../api'
 import { Instance, InstancesGroup } from '../types'
 import styles from './InstancesLists.module.css'
 import DeleteInstance from './DeleteInstance'
 import Moment from 'react-moment'
 import { useCallback, useState } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
+import { useAuthAxios } from '../hooks'
 
 const InstancesList = () => {
     const navigate = useNavigate()
-    const { data: instancesGroups, refetch } = useApi<InstancesGroup>(getInstances)
-    const getUrl = (instance: Instance, hostname: string) => `https://${hostname}/${instance.name}`
-    const getAuthHeader = useAuthHeader()
-
+    const [{ data: instancesGroups }, fetchInstances] = useAuthAxios<InstancesGroup>('instances')
+    const resp =
     const [error, setError] = useState('')
     const [isUpdating, setIsUpdating] = useState(false)
 
@@ -40,8 +38,8 @@ const InstancesList = () => {
             const authHeader = getAuthHeader()
             try {
                 setIsUpdating(true)
-                await resetInstance(authHeader, instance.id)
-                await refetch()
+                await resetInstance(instance.id)
+                await fetchInstances()
             } catch (error) {
                 setError(error.response?.data ?? error.message ?? 'Unknown error')
             } finally {
@@ -139,13 +137,14 @@ const InstancesList = () => {
                                             <DataTableCell>
                                                 <span className={styles.opendeletewrap}>
                                                     <Button small onClick={() => window?.open(getUrl(instance, group.hostname))}>
+                                                    <Button small icon={<IconLaunch16 />} onClick={() => window?.open(`https://${instance}/${group.hostname}`)}>
                                                         Open
                                                     </Button>
                                                     <Button small loading={isUpdating} disabled={isUpdating} onClick={() => restart(instance)}>
                                                         Restart
                                                     </Button>
                                                     <div className={styles.buttonSeparator}>&nbsp;</div>
-                                                    <DeleteInstance instance={instance} onDelete={refetch} />
+                                                    <DeleteInstance instanceId={instance.id} onDelete={refetch} />
                                                     <Button small secondary loading={isUpdating} disabled={isUpdating} onClick={() => reset(instance)}>
                                                         Reset
                                                     </Button>

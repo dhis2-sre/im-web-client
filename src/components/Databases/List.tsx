@@ -20,9 +20,10 @@ import { API_URL, createExternalDownloadDatabase, deleteDatabase, getDatabases, 
 import Moment from 'react-moment'
 import { useCallback, useState } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
+import { useAuthAxios } from '../../hooks'
 
 const ListDatabases = () => {
-    const { data: groupWithDatabases, refetch } = useApi<GroupWithDatabases>(getDatabases)
+    const [{ data: groupWithDatabases }, fetchGroupWithDatabases] = useAuthAxios<GroupWithDatabases>('databases')
     const [databaseError, setDatabaseError] = useState('')
     const [isDeleting, setIsDeleting] = useState(false)
     const getAuthHeader = useAuthHeader()
@@ -42,7 +43,7 @@ const ListDatabases = () => {
                     setUploadAmount((progressEvent.loaded / file.size) * 100)
                 })
                 if (result.status === 201) {
-                    await refetch()
+                    await fetchGroupWithDatabases()
                 } else {
                     setDatabaseError(result.data.toString())
                 }
@@ -52,7 +53,7 @@ const ListDatabases = () => {
                 setShowUploadProgress(false)
             }
         },
-        [getAuthHeader, refetch]
+        [getAuthHeader, fetchGroupWithDatabases]
     )
 
     const deleteDatabaseCallback = useCallback(
@@ -66,7 +67,7 @@ const ListDatabases = () => {
                 setIsDeleting(true)
                 const result = await deleteDatabase(authHeader, database.id)
                 if (result.status === 202) {
-                    await refetch()
+                    await fetchGroupWithDatabases()
                 } else {
                     setDatabaseError(result.data)
                 }
@@ -76,7 +77,7 @@ const ListDatabases = () => {
                 setIsDeleting(false)
             }
         },
-        [getAuthHeader, refetch]
+        [getAuthHeader, fetchGroupWithDatabases]
     )
 
     const download = useCallback(
@@ -89,6 +90,7 @@ const ListDatabases = () => {
                 link.href = API_URL + '/databases/external/' + response.data.uuid
                 link.target = '_blank'
                 link.click()
+                link.parentElement.removeChild(link)
             } catch (error) {
                 setDatabaseError(error.toString())
             } finally {

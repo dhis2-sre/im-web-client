@@ -1,44 +1,31 @@
 import { Button, IconDelete16 } from '@dhis2/ui'
-import { FC, useCallback, useEffect, useRef, useState } from 'react'
-import { deleteInstance } from '../api'
-import { useAuthHeader } from 'react-auth-kit'
-import { Instance } from '../types'
+import { useEffect } from 'react'
+import { useAuthAxios } from '../hooks'
 
 type DeleteInstanceProps = {
-    instance: Instance
+    instanceId: string
     onDelete?: () => void
 }
 
-const DeleteInstance: FC<DeleteInstanceProps> = (props) => {
-    const [isSending, setIsSending] = useState(false)
-    const isMounted = useRef(true)
+const DeleteInstance: React.FC<DeleteInstanceProps> = ({ instanceId, onDelete }) => {
+    const [{ loading, response }, deleteInstance] = useAuthAxios(
+        {
+            method: 'DELETE',
+            url: `instances/${instanceId}`,
+        },
+        {
+            manual: true,
+        }
+    )
+
     useEffect(() => {
-        return () => {
-            isMounted.current = false
+        if (response?.status === 201 && onDelete) {
+            onDelete()
         }
-    }, [])
-
-    const getAuthHeader = useAuthHeader()
-    const token = getAuthHeader()
-    const { instance, onDelete } = props
-
-    const deleteInstanceRequest = useCallback(async () => {
-        if (!window.confirm(`Are you sure you wish to delete "${instance.groupName}/${instance.name}"?`)) {
-            return
-        }
-        try {
-            setIsSending(true)
-            await deleteInstance(token, instance.id)
-            onDelete?.()
-        } catch (err) {
-            console.error(err)
-        } finally {
-            setIsSending(false)
-        }
-    }, [token, instance, onDelete])
+    }, [response, onDelete])
 
     return (
-        <Button small secondary loading={isSending} disabled={isSending} icon={<IconDelete16 />} onClick={deleteInstanceRequest}>
+        <Button small secondary loading={loading} disabled={loading} icon={<IconDelete16 />} onClick={deleteInstance}>
             Delete
         </Button>
     )
