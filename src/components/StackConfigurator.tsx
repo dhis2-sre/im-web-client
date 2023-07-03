@@ -109,7 +109,8 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
         <div>
             <div className={styles.container}>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
-                <TextArea value={description} onChange={({ value }) => setDescription(value)}></TextArea>
+                <label htmlFor="description">Description</label>
+                <TextArea id="description" value={description} onChange={({ value }) => setDescription(value)}></TextArea>
                 <SingleSelectField className={styles.select} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
