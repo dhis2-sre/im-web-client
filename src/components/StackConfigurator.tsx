@@ -41,6 +41,7 @@ const computeNewParameters = (currentParameters: ParameterRecord, { name, value 
     }
 }
 
+const defaultTTL = '1 day'
 const ttlMap = new Map<string, number>([
     ['1 hour', 60 * 60],
     ['6 hours', 60 * 60 * 6],
@@ -92,6 +93,16 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
             setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])
+
+    useEffect(() => {
+        setTtl(defaultTTL)
+    }, [])
+
+    useEffect(() => {
+        if (groups && groups.length > 0) {
+            setGroup(groups[0].name)
+        }
+    }, [groups])
 
     if (isLoading || isLoadingGroups) {
         return null
