@@ -141,7 +141,6 @@ const ListDatabases = () => {
                                         &nbsp;
                                         <Button
                                             small
-                                            destructive
                                             loading={isDeleting}
                                             disabled={isDeleting}
                                             icon={<IconDelete16 />}
