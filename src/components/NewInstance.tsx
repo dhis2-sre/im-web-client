@@ -114,7 +114,7 @@ export const NewInstance = () => {
                         ))}
                     </SingleSelectField>
                     <h4 className={styles.subheader}>Stack configuration</h4>
-                    <StackConfigurator stackName={selectedStack.name} ref={stackConfiguratorRef} disabled={isPosting} />
+                    <StackConfigurator name={selectedStack.name} ref={stackConfiguratorRef} disabled={isPosting} />
                     {postError && (
                         <NoticeBox error title="Save error" className={styles.error}>
                             An error occurred while saving the new instance

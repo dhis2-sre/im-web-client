@@ -1,4 +1,4 @@
-import { Divider, InputField, TextArea, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { Divider, InputField, SingleSelectField, SingleSelectOption, TextArea } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
@@ -53,7 +53,7 @@ const ttlMap = new Map<string, number>([
     ['1 month', 60 * 60 * 24 * 7 * 4],
 ])
 
-export const StackConfigurator = forwardRef(function StackConfigurator({ stackName, disabled }: { stackName: string; disabled: boolean }, ref) {
+export const StackConfigurator = forwardRef(function StackConfigurator({ name: stackName, disabled }: { name: string; disabled: boolean }, ref) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
@@ -81,10 +81,10 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ stackNa
     )
 
     useEffect(() => {
-        if (!isFetching && stack && stack.name !== name) {
+        if (!isFetching && stack && stack.name !== stackName) {
             refetch()
         }
-    }, [name, refetch, stack, isFetching])
+    }, [stackName, refetch, stack, isFetching])
 
     useEffect(() => {
         if (stack) {
