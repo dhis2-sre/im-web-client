@@ -1,4 +1,4 @@
-import { Divider, InputField, SingleSelectField, SingleSelectOption, TextArea } from '@dhis2/ui'
+import { Divider, InputField, SingleSelectField, SingleSelectOption, TextAreaField } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
@@ -117,34 +117,40 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
     }
 
     return (
-        <div>
-            <div className={styles.container}>
+        <>
+            <div className={styles.basics}>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
-                <label htmlFor="description">Description</label>
-                <TextArea id="description" value={description} onChange={({ value }) => setDescription(value)}></TextArea>
-                <SingleSelectField className={styles.select} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
+                <TextAreaField className={styles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
+                <SingleSelectField className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <SingleSelectField className={styles.select} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
+                <SingleSelectField className={styles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
                     {Array.from(ttlMap.keys()).map((key) => (
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
-
-                {Object.entries(requiredStackParameters).map(([name, value]: any) => (
-                    <ParameterField
-                        key={name}
-                        name={name}
-                        value={value}
-                        repository={getRepositoryValueForImageTag(name, requiredStackParameters, optionalStackParameters)}
-                        onChange={onRequiredInputChange}
-                        required
-                        disabled={disabled}
-                    />
-                ))}
             </div>
+
+            {requiredStackParameters && (
+                <>
+                    <Divider />
+                    <h4 className={styles.subheader}>Required parameters</h4>
+                </>
+            )}
+            {Object.entries(requiredStackParameters).map(([name, value]: any) => (
+                <ParameterField
+                    key={name}
+                    name={name}
+                    value={value}
+                    repository={getRepositoryValueForImageTag(name, requiredStackParameters, optionalStackParameters)}
+                    onChange={onRequiredInputChange}
+                    required
+                    disabled={disabled}
+                />
+            ))}
+
             <Divider />
             <h4 className={styles.subheader}>Optional parameters</h4>
             <div className={styles.container}>
@@ -159,6 +165,6 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
                     />
                 ))}
             </div>
-        </div>
+        </>
     )
 })
