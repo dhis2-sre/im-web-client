@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 
 const StackDetails = () => {
     const { name } = useParams()
-    const { data: stack, isLoading, isFetching, refetch } = useApi<Stack>(getStack, { name })
+    const { data: stack, isLoading, isFetching, refetch } = useApi<Stack>(getStack, name)
 
     useEffect(() => {
         if (!isFetching && stack && name !== stack.name) {
@@ -31,7 +31,6 @@ const StackDetails = () => {
                         <DataTableRow>
                             <DataTableColumnHeader>Name</DataTableColumnHeader>
                             <DataTableColumnHeader>Consumed</DataTableColumnHeader>
-                            <DataTableColumnHeader>Stack</DataTableColumnHeader>
                         </DataTableRow>
                     </TableHead>
 
@@ -41,7 +40,6 @@ const StackDetails = () => {
                                 <DataTableRow key={parameter.name}>
                                     <DataTableCell>{parameter.name}</DataTableCell>
                                     <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                                    <DataTableCell>{parameter.stackName}</DataTableCell>
                                 </DataTableRow>
                             )
                         })}
@@ -57,7 +55,6 @@ const StackDetails = () => {
                             <DataTableColumnHeader>Name</DataTableColumnHeader>
                             <DataTableColumnHeader>Default value</DataTableColumnHeader>
                             <DataTableColumnHeader>Consumed</DataTableColumnHeader>
-                            <DataTableColumnHeader>Stack</DataTableColumnHeader>
                         </DataTableRow>
                     </TableHead>
 
@@ -68,7 +65,6 @@ const StackDetails = () => {
                                     <DataTableCell>{parameter.name}</DataTableCell>
                                     <DataTableCell>{parameter.defaultValue}</DataTableCell>
                                     <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                                    <DataTableCell>{parameter.stackName}</DataTableCell>
                                 </DataTableRow>
                             )
                         })}
