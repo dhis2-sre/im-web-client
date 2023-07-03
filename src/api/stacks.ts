@@ -11,7 +11,7 @@ export const getStacks = (token) => {
     })
 }
 
-export const getStack = (token, { name }) => {
+export const getStack = (token, name) => {
     return axios.get<Stack>('/stacks/' + name, {
         baseURL: API_HOST,
         headers: {

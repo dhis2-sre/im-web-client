@@ -61,8 +61,6 @@ export const NewInstance = () => {
         dispatch({ type: 'POST_INIT' })
         const authHeader = getAuthHeader()
         const data = {
-            groupName: stackConfiguratorRef.current.getGroup(),
-            ttl: stackConfiguratorRef.current.getTtl(),
             stackName: selectedStack.name,
             ...stackConfiguratorRef.current.getStackParameters(),
         }
@@ -116,7 +114,7 @@ export const NewInstance = () => {
                         ))}
                     </SingleSelectField>
                     <h4 className={styles.subheader}>Stack configuration</h4>
-                    <StackConfigurator name={selectedStack.name} ref={stackConfiguratorRef} disabled={isPosting} />
+                    <StackConfigurator stackName={selectedStack.name} ref={stackConfiguratorRef} disabled={isPosting} />
                     {postError && (
                         <NoticeBox error title="Save error" className={styles.error}>
                             An error occurred while saving the new instance

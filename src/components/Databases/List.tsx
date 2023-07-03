@@ -139,13 +139,7 @@ const ListDatabases = () => {
                                             Download
                                         </Button>
                                         &nbsp;
-                                        <Button
-                                            small
-                                            loading={isDeleting}
-                                            disabled={isDeleting}
-                                            icon={<IconDelete16 />}
-                                            onClick={() => deleteDatabaseCallback(database)}
-                                        >
+                                        <Button small loading={isDeleting} disabled={isDeleting} icon={<IconDelete16 />} onClick={() => deleteDatabaseCallback(database)}>
                                             Delete
                                         </Button>
                                     </DataTableCell>

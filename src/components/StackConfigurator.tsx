@@ -1,4 +1,4 @@
-import { Divider, InputField, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { Divider, InputField, TextArea, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
@@ -53,12 +53,12 @@ const ttlMap = new Map<string, number>([
     ['1 month', 60 * 60 * 24 * 7 * 4],
 ])
 
-export const StackConfigurator = forwardRef(function StackConfigurator({ name, disabled }: { name: string; disabled: boolean }, ref) {
-    const [instanceName, setInstanceName] = useState('')
+export const StackConfigurator = forwardRef(function StackConfigurator({ stackName, disabled }: { stackName: string; disabled: boolean }, ref) {
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
-    const { data: stack, isLoading, isFetching, refetch } = useApi<Stack>(getStack, { name })
-
+    const { data: stack, isLoading, isFetching, refetch } = useApi<Stack>(getStack, stackName)
     const { data: groups, isLoading: isLoadingGroups } = useApi<Group[]>(getGroups)
     const [group, setGroup] = useState('')
     const [ttl, setTtl] = useState('')
@@ -68,19 +68,16 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name, d
         () => ({
             getStackParameters() {
                 return {
-                    name: instanceName,
+                    name: name,
+                    description: description,
+                    groupName: group,
+                    ttl: ttlMap.get(ttl),
                     requiredParameters: toArray(requiredStackParameters),
                     optionalParameters: toArray(optionalStackParameters),
                 }
             },
-            getGroup() {
-                return group
-            },
-            getTtl() {
-                return ttlMap.get(ttl)
-            },
         }),
-        [instanceName, group, ttl, optionalStackParameters, requiredStackParameters]
+        [name, description, group, ttl, requiredStackParameters, optionalStackParameters]
     )
 
     useEffect(() => {
@@ -111,7 +108,8 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name, d
     return (
         <div>
             <div className={styles.container}>
-                <InputField className={styles.field} label="Name" value={instanceName} onChange={({ value }) => setInstanceName(value)} required disabled={disabled} />
+                <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
+                <TextArea value={description} onChange={({ value }) => setDescription(value)}></TextArea>
                 <SingleSelectField className={styles.select} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />

@@ -2,7 +2,7 @@ import { Button, IconDelete16 } from '@dhis2/ui'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { deleteInstance } from '../api'
 import { useAuthHeader } from 'react-auth-kit'
-import {Instance} from "../types"
+import { Instance } from '../types'
 
 type DeleteInstanceProps = {
     instance: Instance
