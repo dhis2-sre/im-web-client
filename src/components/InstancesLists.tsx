@@ -96,7 +96,7 @@ const InstancesList = () => {
 
             {error && <Help error>{error}</Help>}
 
-            {instancesGroups && <h3>No instances</h3>}
+            {instancesGroups.length < 1 && <h3>No instances</h3>}
 
             {instancesGroups?.map((group) => {
                 return (
