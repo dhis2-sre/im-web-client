@@ -44,6 +44,7 @@ export type Database = {
     createdAt: string
     updatedAt: string
     name: string
+    slug: string
     groupName: string
     lock: Lock
 }

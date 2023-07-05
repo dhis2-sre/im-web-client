@@ -121,6 +121,7 @@ const ListDatabases = () => {
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                                <DataTableColumnHeader>Slug</DataTableColumnHeader>
                                 <DataTableColumnHeader></DataTableColumnHeader>
                             </DataTableRow>
                         </TableHead>
@@ -134,6 +135,7 @@ const ListDatabases = () => {
                                     <DataTableCell>
                                         <Moment date={database.updatedAt} fromNow />
                                     </DataTableCell>
+                                    <DataTableCell>{database.slug}</DataTableCell>
                                     <DataTableCell>
                                         <Button small loading={isDeleting} disabled={isDeleting} icon={<IconLaunch16 />} onClick={() => download(database.id)}>
                                             Download
