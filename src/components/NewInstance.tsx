@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuthHeader } from 'react-auth-kit'
-import { API_HOST } from '../api'
+import { API_URL } from '../api'
 import { getStacks } from '../api/stacks'
 import { useApi } from '../api/useApi'
 import { Stacks } from '../types/stack'
@@ -65,7 +65,7 @@ export const NewInstance = () => {
             ...stackConfiguratorRef.current.getStackParameters(),
         }
         axios({
-            url: `${API_HOST}/instances`,
+            url: `${API_URL}/instances`,
             method: 'post',
             headers: {
                 Authorization: authHeader,

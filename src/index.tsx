@@ -5,7 +5,7 @@ import { createRoutesFromElements, Route, createBrowserRouter, RouterProvider } 
 import { CssReset, CssVariables } from '@dhis2/ui'
 import InstancesList from './components/InstancesLists'
 import LoginPage from './components/Login'
-import { API_HOST, refreshApi } from './api'
+import { API_URL, refreshApi } from './api'
 import { Layout } from './components/Layout'
 import StackList from './components/Stacks'
 import StackDetails from './components/Stack'
@@ -34,7 +34,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
-        <AuthProvider authType="localstorage" authName="_auth" cookieDomain={API_HOST} cookieSecure={true} refresh={refreshApi}>
+        <AuthProvider authType="localstorage" authName="_auth" cookieDomain={API_URL} cookieSecure={true} refresh={refreshApi}>
             <CssReset />
             <CssVariables colors theme layers spacers elevations />
             <RouterProvider router={router} />

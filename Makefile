@@ -5,8 +5,7 @@ clean-cmd = docker compose down --remove-orphans --volumes
 
 docker-image:
 	@echo "ENVIRONMENT: $$ENVIRONMENT"; \
-	[[ -f env/${ENVIRONMENT}.env ]] && source env/${ENVIRONMENT}.env; \
-	echo "IM_API: $$IM_API"; \
+	echo "API_URL: $$API_URL"; \
 	IMAGE_TAG=$(tag) docker compose build prod
 
 push-docker-image:

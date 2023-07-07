@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_HOST } from './index'
+import { API_URL } from './index'
 
 export const getIntergrations = (
     token,
@@ -10,7 +10,7 @@ export const getIntergrations = (
     }
 ) => {
     return axios.post<any>('/integrations', options, {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: {
             Authorization: token,
         },

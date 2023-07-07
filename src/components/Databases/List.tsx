@@ -16,7 +16,7 @@ import {
 import { useApi } from '../../api/useApi'
 import styles from './List.module.css'
 import { GroupWithDatabases } from '../../types'
-import { API_HOST, createExternalDownloadDatabase, deleteDatabase, getDatabases, postDatabase } from '../../api'
+import { API_URL, createExternalDownloadDatabase, deleteDatabase, getDatabases, postDatabase } from '../../api'
 import Moment from 'react-moment'
 import { useCallback, useState } from 'react'
 import { useAuthHeader } from 'react-auth-kit'
@@ -86,7 +86,7 @@ const ListDatabases = () => {
                 const authHeader = getAuthHeader()
                 const response = await createExternalDownloadDatabase(authHeader, id, 5)
                 const link = document.createElement('a')
-                link.href = API_HOST + '/databases/external/' + response.data.uuid
+                link.href = API_URL + '/databases/external/' + response.data.uuid
                 link.target = '_blank'
                 link.click()
             } catch (error) {

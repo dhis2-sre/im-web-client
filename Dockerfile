@@ -1,5 +1,5 @@
 FROM node:19-alpine AS builder
-ARG REACT_APP_IM_API
+ARG REACT_APP_API_URL
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile

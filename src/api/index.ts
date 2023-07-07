@@ -3,11 +3,11 @@ import { createRefresh } from 'react-auth-kit'
 import { ExternalDownload, Group, GroupWithDatabases, InstancesGroup } from '../types'
 import { parseToken } from '../modules'
 
-export const API_HOST = process.env.REACT_APP_IM_API || 'https://api.im.dev.test.c.dhis2.org'
+export const API_URL = process.env.REACT_APP_API_URL || 'https://api.im.dev.test.c.dhis2.org'
 
 export const streamLogs = (authHeader, id, onDownloadProgress) => {
     return axios.get(`/instances/${id}/logs`, {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: { Authorization: authHeader },
         onDownloadProgress: (progressEvent) => onDownloadProgress(progressEvent),
     })
@@ -15,14 +15,14 @@ export const streamLogs = (authHeader, id, onDownloadProgress) => {
 
 export const getGroups = (authHeader) => {
     return axios.get<Group[]>('/groups?deployable=true', {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: { Authorization: authHeader },
     })
 }
 
 export const getDatabases = (authHeader) => {
     return axios.get<GroupWithDatabases>('/databases', {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: {
             Authorization: authHeader,
         },
@@ -31,7 +31,7 @@ export const getDatabases = (authHeader) => {
 
 export const postDatabase = (authHeader, formData, onUploadProgress) => {
     return axios.post<GroupWithDatabases>('/databases', formData, {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: {
             Authorization: authHeader,
         },
@@ -41,7 +41,7 @@ export const postDatabase = (authHeader, formData, onUploadProgress) => {
 
 export const deleteDatabase = (authHeader, id) => {
     return axios.delete('/databases/' + id, {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: {
             Authorization: authHeader,
         },
@@ -53,7 +53,7 @@ export const createExternalDownloadDatabase = (authHeader, id, expiration) => {
         `/databases/${id}/external`,
         { expiration: expiration },
         {
-            baseURL: API_HOST,
+            baseURL: API_URL,
             headers: { Authorization: authHeader },
         }
     )
@@ -61,7 +61,7 @@ export const createExternalDownloadDatabase = (authHeader, id, expiration) => {
 
 export const getInstances = (authHeader) => {
     return axios.get<InstancesGroup>('/instances', {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: {
             Authorization: authHeader,
         },
@@ -70,7 +70,7 @@ export const getInstances = (authHeader) => {
 
 export const deleteInstance = (authHeader, id) => {
     return axios.delete('/instances/' + id, {
-        baseURL: API_HOST,
+        baseURL: API_URL,
         headers: {
             Authorization: authHeader,
         },
@@ -82,7 +82,7 @@ export const resetInstance = (authHeader, id) => {
         `/instances/${id}/reset`,
         {},
         {
-            baseURL: API_HOST,
+            baseURL: API_URL,
             headers: {
                 Authorization: authHeader,
             },
@@ -95,7 +95,7 @@ export const restartInstance = (authHeader, id) => {
         `/instances/${id}/restart`,
         {},
         {
-            baseURL: API_HOST,
+            baseURL: API_URL,
             headers: {
                 Authorization: authHeader,
             },
@@ -105,7 +105,7 @@ export const restartInstance = (authHeader, id) => {
 
 export const getToken = (username, password) => {
     return axios.post(
-        `${API_HOST}/tokens`,
+        `${API_URL}/tokens`,
         {},
         {
             auth: {
@@ -117,7 +117,7 @@ export const getToken = (username, password) => {
 }
 
 export const postSignUp = (username, password) => {
-    return axios.post(`${API_HOST}/users`, {
+    return axios.post(`${API_URL}/users`, {
         email: username,
         password: password,
     })
@@ -149,7 +149,7 @@ export const refreshApi = createRefresh({
     interval: getRefreshIntervalFromLocalStorage(),
     refreshApiCallback: ({ refreshToken }) => {
         return axios
-            .post(`${API_HOST}/refresh`, { refreshToken })
+            .post(`${API_URL}/refresh`, { refreshToken })
             .then(({ data }) => {
                 const { expiryDurationInMinutes: newAuthTokenExpireIn, user: newAuthUserState } = parseToken(data.accessToken)
                 const { expiryDurationInMinutes: newRefreshTokenExpiresIn } = parseToken(data.refreshToken)
