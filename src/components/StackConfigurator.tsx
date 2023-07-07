@@ -1,4 +1,5 @@
-import { Divider, InputField, SingleSelectField, SingleSelectOption, TextAreaField } from '@dhis2/ui'
+import { CheckboxField, Divider, InputField, SingleSelectField, SingleSelectOption, TextAreaField } from '@dhis2/ui'
+import cx from 'classnames'
 import { getStack } from '../api/stacks'
 import { Stack } from '../types/stack'
 import { useApi } from '../api/useApi'
@@ -63,6 +64,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
     const { data: groups, isLoading: isLoadingGroups } = useApi<Group[]>(getGroups)
     const [group, setGroup] = useState('')
     const [ttl, setTtl] = useState('')
+    const [publicity, setPublicity] = useState(false)
 
     useImperativeHandle(
         ref,
@@ -73,6 +75,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
                     description: description,
                     groupName: group,
                     ttl: ttlMap.get(ttl),
+                    public: publicity,
                     requiredParameters: toArray(requiredStackParameters),
                     optionalParameters: toArray(optionalStackParameters),
                 }
@@ -131,6 +134,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
+                <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
             </div>
 
             {requiredStackParameters && (

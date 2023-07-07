@@ -9,6 +9,7 @@ import {
     DataTableToolbar as TableToolbar,
     Help,
     IconAdd24,
+    IconWorld24,
     Tag,
 } from '@dhis2/ui'
 import { useNavigate } from 'react-router-dom'
@@ -123,7 +124,7 @@ const InstancesList = () => {
                                             <DataTableCell>
                                                 <Tag positive>Running</Tag>
                                             </DataTableCell>
-                                            <DataTableCell>{instance.name}</DataTableCell>
+                                            <DataTableCell>{instance.name} {instance.public === true ? <IconWorld24/> : <></>}</DataTableCell>
                                             <DataTableCell>
                                                 <Moment date={instance.createdAt} fromNow />
                                             </DataTableCell>

@@ -8,6 +8,7 @@ export type Instance = {
     groupName: string
     stackName: string
     ttl: number
+    public: boolean
     requiredParameters:
         | [
               {
