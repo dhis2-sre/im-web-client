@@ -6,7 +6,7 @@ import { ConfirmationModal } from '../ConfirmationModal'
 import { useAlert } from '@dhis2/app-service-alerts'
 
 type DeletButtonProps = {
-    id: string
+    id: number
     databaseName: string
     groupName: string
     onDeleteComplete: Function

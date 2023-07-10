@@ -14,7 +14,7 @@ import { ErrorView } from './components/ErrorView'
 import './index.module.css'
 import { NewInstance } from './components/NewInstance'
 import SignUpPage from './components/SignUp'
-import ListDatabases from './components/Databases/List'
+import { GroupedDatabasesList } from './components/Databases/GroupedDatabasesList'
 import { Alerts } from './components/Alerts'
 
 const router = createBrowserRouter(
@@ -26,7 +26,7 @@ const router = createBrowserRouter(
                 <Route path="/stacks" element={<StackList />} />
                 <Route path="/stacks/:name" element={<StackDetails />} />
                 <Route path="/instances" element={<InstancesList />} />
-                <Route path="/databases" element={<ListDatabases />} />
+                <Route path="/databases" element={<GroupedDatabasesList />} />
                 <Route path="/new" element={<NewInstance />} />
             </Route>
         </>

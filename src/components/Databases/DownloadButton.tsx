@@ -1,47 +1,40 @@
-import { FileUploadField, LinearLoader, FileListItem } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { Button, IconLaunch16 } from '@dhis2/ui'
+import { useEffect } from 'react'
 import { useAuthAxios } from '../../hooks'
-import { GroupWithDatabases } from '../../types'
+import { ExternalDownload } from '../../types'
+import { baseURL } from '../../hooks/useAuthAxios'
 import { useAlert } from '@dhis2/app-service-alerts'
 
-export const UploadButton = ({ id }: { id: string }) => {
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
-    const [uploadProgress, setUploadProgress] = useState(0)
-    const onUploadProgress = useCallback((progressEvent) => {
-        const { loaded, total } = progressEvent
-        const percentage = Math.floor((loaded * 100) / total)
-        setUploadProgress(percentage)
-    }, [])
-    const [{ response, error, loading }, postDatabase] = useAuthAxios<GroupWithDatabases>(
+export const DownloadButton = ({ id }: { id: number }) => {
+    const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
+    const [{ response, error, loading }, fetchDownloadLink] = useAuthAxios<ExternalDownload>(
         {
-            url: `/databases`,
+            url: `/databases/${id}/external`,
             method: 'post',
-            onUploadProgress,
+            data: {
+                expiration: 5,
+            },
         },
-        { manual: true }
+        {
+            manual: true,
+        }
     )
-    const
 
     useEffect(() => {
         if (response.status === 201 && !loading) {
-            showAlert({
-                message: 'Database added successfully',
-                isCritical: false,
-            })
+            const link = document.createElement('a')
+            link.href = baseURL + '/databases/external/' + response.data.uuid
+            link.target = '_blank'
+            link.click()
+            link.parentElement.removeChild(link)
         }
-    }, [response, showAlert, loading])
+    }, [response, loading])
 
     useEffect(() => {
         if (error && !loading) {
-            showAlert({
-                message: 'There was a problem uploading the database',
-                isCritical: true,
-            })
+            showError()
         }
-    }, [error, loading, showAlert])
+    }, [error, loading, showError])
 
     return (
         <Button small loading={loading} icon={<IconLaunch16 />} onClick={fetchDownloadLink}>
