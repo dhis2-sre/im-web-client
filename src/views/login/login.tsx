@@ -1,63 +1,44 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
-import { useCallback, useState } from 'react'
-import { useIsAuthenticated, useSignIn } from 'react-auth-kit'
+import { isLoggedIn, setAuthTokens } from 'axios-jwt'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
-import { getToken as getTokenAsync } from '../api'
 import styles from './LoginPage.module.css'
-import { parseToken } from '../modules'
-
-const computeSignInOptions = (data) => {
-    const parsedAccessToken = parseToken(data.accessToken)
-    const parsedRefreshToken = parseToken(data.refreshToken)
-    const tokenType = data.tokenType.charAt(0).toUpperCase() + data.tokenType.slice(1)
-
-    return {
-        token: data.accessToken,
-        expiresIn: parsedAccessToken.expiryDurationInMinutes,
-        tokenType,
-        authState: parsedAccessToken.user,
-        refreshToken: data.refreshToken,
-        refreshTokenExpireIn: parsedRefreshToken.expiryDurationInMinutes,
-    }
-}
+import { useAuthAxios } from '../../hooks'
 
 const getRedirectPath = (location) => {
-    const redirectPath = location.state?.redirectPath
+    const referrerPath = location.state?.referrerPath
 
-    if (!redirectPath || redirectPath === '/login') {
+    if (!referrerPath || referrerPath === '/login') {
         return '/instances'
     }
 
-    return redirectPath
+    return referrerPath
 }
 
-const LoginPage = () => {
-    const signIn = useSignIn()
-    const isAuthenticated = useIsAuthenticated()
+export const Login = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [loginError, setLoginError] = useState('')
+    const [isAuthenticated, setIsAuthenticated] = useState(() => isLoggedIn())
     const location = useLocation()
+    const [{ data: tokens, loading, error }, getTokens] = useAuthAxios(
+        {
+            url: 'tokens',
+            method: 'POST',
+        },
+        { manual: true }
+    )
 
-    const getToken = useCallback(async () => {
-        try {
-            const response = await getTokenAsync(username, password)
-
-            if (response.status !== 201) {
-                throw new Error('Authentication token request failed')
-            }
-
-            const signinResult = signIn(computeSignInOptions(response.data))
-
-            if (!signinResult) {
-                throw new Error('Sign in failed')
-            }
-        } catch (error) {
-            setLoginError(error.response?.data ?? error.message ?? 'Unknown login error')
+    useEffect(() => {
+        if (tokens) {
+            setAuthTokens({
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+            })
+            setIsAuthenticated(isLoggedIn())
         }
-    }, [username, password, signIn])
+    }, [tokens])
 
-    if (isAuthenticated()) {
+    if (isAuthenticated) {
         return <Navigate to={getRedirectPath(location)} />
     }
 
@@ -67,7 +48,7 @@ const LoginPage = () => {
             onSubmit={(event) => {
                 event.stopPropagation()
                 event.preventDefault()
-                getToken()
+                getTokens({ auth: { username, password } })
             }}
         >
             <Card className={styles.box}>
@@ -83,6 +64,7 @@ const LoginPage = () => {
                     onChange={({ value }) => {
                         setUsername(value)
                     }}
+                    disabled={loading}
                 />
                 <InputField
                     type="password"
@@ -93,17 +75,23 @@ const LoginPage = () => {
                     onChange={({ value }) => {
                         setPassword(value)
                     }}
+                    disabled={loading}
                 />
-                {loginError && <Help error>{loginError}</Help>}
+                {error && (
+                    <Help error>
+                        {error?.response?.data ?? error?.message ?? 'Could not fetch authentication tokens'}
+                    </Help>
+                )}
                 <Button
                     primary
                     onClick={(_, event) => {
                         event.stopPropagation()
                         event.preventDefault()
-                        getToken()
+                        getTokens({ auth: { username, password } })
                     }}
                     type="submit"
                     value="login"
+                    loading={loading}
                 >
                     Login
                 </Button>
@@ -112,5 +100,3 @@ const LoginPage = () => {
         </form>
     )
 }
-
-export default LoginPage

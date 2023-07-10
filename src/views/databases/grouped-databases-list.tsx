@@ -1,14 +1,22 @@
-import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, DataTableToolbar as TableToolbar } from '@dhis2/ui'
+import {
+    DataTable,
+    DataTableCell,
+    DataTableColumnHeader,
+    DataTableRow,
+    DataTableBody as TableBody,
+    DataTableHead as TableHead,
+    DataTableToolbar as TableToolbar,
+} from '@dhis2/ui'
 import Moment from 'react-moment'
-import { GroupWithDatabases } from '../../types'
 import { useAuthAxios } from '../../hooks'
-import { UploadButton } from './UploadButton'
-import { DeleteButton } from './DeleteButton'
-import { DownloadButton } from './DownloadButton'
-import styles from './List.module.css'
+import { GroupWithDatabases } from '../../types'
+import { DeleteButton } from './delete-button'
+import { DownloadButton } from './download-button'
+import styles from './grouped-databases-list.module.css'
+import { UploadButton } from './upload-button'
 
 export const GroupedDatabasesList = () => {
-    const [{ data: groupWithDatabases }, fetchGroupWithDatabases] = useAuthAxios<GroupWithDatabases>('databases')
+    const [{ data: groupsWithDatabases }, fetchGroupsWithDatabases] = useAuthAxios<GroupWithDatabases[]>('databases')
 
     return (
         <div className={styles.wrapper}>
@@ -16,7 +24,7 @@ export const GroupedDatabasesList = () => {
                 <h1>All databases</h1>
             </div>
 
-            {groupWithDatabases?.map((group) => (
+            {groupsWithDatabases?.map((group) => (
                 <div key={group.name}>
                     <TableToolbar className={styles.tabletoolbar}>
                         <h2>{group.name}</h2>
@@ -46,7 +54,12 @@ export const GroupedDatabasesList = () => {
                                         <DownloadButton id={database.id} />
                                     </DataTableCell>
                                     <DataTableCell>
-                                        <DeleteButton id={database.id} databaseName={database.name} groupName={group.name} onDeleteComplete={fetchGroupWithDatabases} />
+                                        <DeleteButton
+                                            id={database.id}
+                                            databaseName={database.name}
+                                            groupName={group.name}
+                                            onComplete={fetchGroupsWithDatabases}
+                                        />
                                     </DataTableCell>
                                 </DataTableRow>
                             ))}

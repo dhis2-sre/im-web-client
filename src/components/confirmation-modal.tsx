@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalActions, ButtonStrip, Button } from '@dhis2/ui'
+import { Button, ButtonStrip, Modal, ModalActions, ModalContent } from '@dhis2/ui'
 
 type ConfirmationModalProps = {
     children: React.ReactNode

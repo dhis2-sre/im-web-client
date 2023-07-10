@@ -1,9 +1,9 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconLaunch16 } from '@dhis2/ui'
 import { useEffect } from 'react'
 import { useAuthAxios } from '../../hooks'
-import { ExternalDownload } from '../../types'
 import { baseURL } from '../../hooks/useAuthAxios'
-import { useAlert } from '@dhis2/app-service-alerts'
+import { ExternalDownload } from '../../types'
 
 export const DownloadButton = ({ id }: { id: number }) => {
     const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
@@ -21,7 +21,7 @@ export const DownloadButton = ({ id }: { id: number }) => {
     )
 
     useEffect(() => {
-        if (response.status === 201 && !loading) {
+        if (response?.status === 201 && !loading) {
             const link = document.createElement('a')
             link.href = baseURL + '/databases/external/' + response.data.uuid
             link.target = '_blank'

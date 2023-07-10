@@ -1,6 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
-import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor, clearAuthTokens, getBrowserLocalStorage } from 'axios-jwt'
+import {
+    IAuthTokens,
+    TokenRefreshRequest,
+    applyAuthTokenInterceptor,
+    clearAuthTokens,
+    getBrowserLocalStorage,
+} from 'axios-jwt'
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -47,7 +53,10 @@ const useAxiosWithJwt = makeUseAxios({
 const PUBLIC_PATHS = new Set(['/login', '/sign-up'])
 
 interface UseAuthAxios {
-    <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: Options): UseAxiosResult<TResponse, TBody, TError>
+    <TResponse = any, TBody = any, TError = any>(
+        config: AxiosRequestConfig<TBody> | string,
+        options?: Options
+    ): UseAxiosResult<TResponse, TBody, TError>
 }
 
 /* Add some redirect logic to the custom hooks so that users

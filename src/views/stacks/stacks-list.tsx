@@ -1,17 +1,37 @@
-import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
-
-import { Link } from 'react-router-dom'
-import { getStacks } from '../api/stacks'
-import { Stacks } from '../types/stack'
-import { useApi } from '../api/useApi'
-import styles from './Stacks.module.css'
+import {
+    Center,
+    CircularLoader,
+    DataTable,
+    DataTableBody,
+    DataTableCell,
+    DataTableColumnHeader,
+    DataTableHead,
+    DataTableRow,
+    NoticeBox,
+} from '@dhis2/ui'
 import Moment from 'react-moment'
+import { Link } from 'react-router-dom'
+import { useAuthAxios } from '../../hooks'
+import { Stack } from '../../types'
+import styles from './stacks-list.module.css'
 
-const StackList = () => {
-    const { data: stacks, isLoading } = useApi<Stacks>(getStacks)
+export const StacksList = () => {
+    const [{ data: stacks, loading, error }] = useAuthAxios<Stack[]>('stacks')
 
-    if (isLoading) {
-        return null
+    if (loading) {
+        return (
+            <Center>
+                <CircularLoader />
+            </Center>
+        )
+    }
+
+    if (error) {
+        return (
+            <NoticeBox error title="Could not fetch list of stacks">
+                {error.message}
+            </NoticeBox>
+        )
     }
 
     return (
@@ -20,14 +40,13 @@ const StackList = () => {
                 <h1>List of Stacks</h1>
             </div>
             <DataTable>
-                <TableHead>
+                <DataTableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
                         <DataTableColumnHeader>Date</DataTableColumnHeader>
                     </DataTableRow>
-                </TableHead>
-
-                <TableBody>
+                </DataTableHead>
+                <DataTableBody>
                     {stacks.map((stack) => {
                         return (
                             <DataTableRow key={stack.name}>
@@ -40,10 +59,8 @@ const StackList = () => {
                             </DataTableRow>
                         )
                     })}
-                </TableBody>
+                </DataTableBody>
             </DataTable>
         </div>
     )
 }
-
-export default StackList

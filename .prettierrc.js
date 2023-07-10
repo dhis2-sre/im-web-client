@@ -2,7 +2,7 @@ const { config } = require('@dhis2/cli-style')
 
 module.exports = {
     ...require(config.prettier),
-    printWidth: 180,
+    printWidth: 120,
     overrides: [
         {
             files: '**/*.yml',

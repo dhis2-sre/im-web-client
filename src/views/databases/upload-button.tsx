@@ -1,8 +1,8 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { FileInputField, FileListItem } from '@dhis2/ui'
 import { useCallback, useEffect, useState } from 'react'
-import { GroupWithDatabases } from '../../types'
-import { useAlert } from '@dhis2/app-service-alerts'
 import { useAuthAxios } from '../../hooks/useAuthAxios'
+import { GroupWithDatabases } from '../../types'
 
 export const UploadButton = ({ groupName }: { groupName: string }) => {
     const { show: showAlert } = useAlert(
@@ -37,7 +37,7 @@ export const UploadButton = ({ groupName }: { groupName: string }) => {
     )
 
     useEffect(() => {
-        if (response.status === 201 && !loading) {
+        if (response?.status === 201 && !loading) {
             showAlert({
                 message: 'Database added successfully',
                 isCritical: false,
@@ -58,7 +58,9 @@ export const UploadButton = ({ groupName }: { groupName: string }) => {
 
     return (
         <FileInputField onChange={onFileSelect} label="Upload a database">
-            {loading && <FileListItem cancelText="Cancel" label={fileListItemLabel} onCancel={cancelPostRequest} loading />}
+            {loading && (
+                <FileListItem cancelText="Cancel" label={fileListItemLabel} onCancel={cancelPostRequest} loading />
+            )}
         </FileInputField>
     )
 }
