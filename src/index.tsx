@@ -1,13 +1,11 @@
 import { AlertsProvider } from '@dhis2/app-service-alerts'
 import { CssReset, CssVariables } from '@dhis2/ui'
 import React from 'react'
-import { AuthProvider } from 'react-auth-kit'
 import ReactDOM from 'react-dom/client'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
-import { API_URL, refreshApi } from './api'
 import { Alerts, ErrorView, Layout } from './components'
-import './index.module.css'
 import { GroupedDatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
+import './index.module.css'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -29,18 +27,10 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
         <AlertsProvider>
-            <AuthProvider
-                authType="localstorage"
-                authName="_auth"
-                cookieDomain={API_URL}
-                cookieSecure={true}
-                refresh={refreshApi}
-            >
-                <CssReset />
-                <CssVariables colors theme layers spacers elevations />
-                <RouterProvider router={router} />
-                <Alerts />
-            </AuthProvider>
+            <CssReset />
+            <CssVariables colors theme layers spacers elevations />
+            <RouterProvider router={router} />
+            <Alerts />
         </AlertsProvider>
     </React.StrictMode>
 )

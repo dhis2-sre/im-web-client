@@ -18,11 +18,14 @@ interface AlertStackAlert extends Alert {
 const Alerts = () => {
     const alertManagerAlerts = useAlerts()
     const [alertStackAlerts, setAlertStackAlerts] = useState<AlertStackAlert[]>(alertManagerAlerts)
-    const removeAlertStackAlert = (id) => setAlertStackAlerts(alertStackAlerts.filter((alertStackAlert) => alertStackAlert.id !== id))
+    const removeAlertStackAlert = (id) =>
+        setAlertStackAlerts(alertStackAlerts.filter((alertStackAlert) => alertStackAlert.id !== id))
 
     useEffect(() => {
         if (alertManagerAlerts.length > 0) {
-            setAlertStackAlerts((currentAlertStackAlerts): AlertStackAlert[] => mergeAlertStackAlerts(currentAlertStackAlerts, alertManagerAlerts))
+            setAlertStackAlerts((currentAlertStackAlerts): AlertStackAlert[] =>
+                mergeAlertStackAlerts(currentAlertStackAlerts, alertManagerAlerts)
+            )
         }
     }, [alertManagerAlerts])
 

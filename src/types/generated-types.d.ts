@@ -4,1146 +4,1146 @@
  */
 
 export interface paths {
-  "/databases": {
+    '/databases': {
+        /** List databases... */
+        get: operations['listDatabases']
+        /** Upload database... */
+        post: operations['uploadDatabase']
+    }
+    '/databases/{id}': {
+        /** Find a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
+        get: operations['findDatabase']
+        /**
+         * Update database by id
+         * TODO: Race condition? If two clients request at the same time... Do we need a transaction between find and update
+         */
+        put: operations['updateDatabaseById']
+        /** Delete database by id... */
+        delete: operations['deleteDatabaseById']
+    }
+    '/databases/{id}/copy': {
+        /** Copy database... */
+        post: operations['copyDatabase']
+    }
+    '/databases/{id}/download': {
+        /** Download a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
+        get: operations['downloadDatabase']
+    }
+    '/databases/{id}/external': {
+        /** Create link so the database can be downloaded without log in */
+        post: operations['createExternalDownloadDatabase']
+    }
+    '/databases/{id}/lock': {
+        /** Lock database by id... */
+        post: operations['lockDatabaseById']
+        /** Unlock database by id */
+        delete: operations['unlockDatabaseById']
+    }
+    '/databases/external/{uuid}': {
+        /** Download a given database without authentication */
+        get: operations['externalDownloadDatabase']
+    }
+    '/databases/save-as/{instanceId}': {
+        /** Save database under a new name */
+        post: operations['saveAsDatabase']
+    }
+    '/databases/save/{instanceId}': {
+        /** Saving a database won't affect the instances running the database. However, it should be noted that if two unlocked databases are deployed from the same database they can both overwrite it. It's up to the users to ensure this doesn't happen accidentally. */
+        post: operations['saveDatabase']
+    }
+    '/groups': {
+        /** Find all groups by user */
+        get: operations['findAllGroupsByUser']
+        /** Create a group... */
+        post: operations['groupCreate']
+    }
+    '/groups/{group}/cluster-configuration': {
+        /**
+         * Add a cluster configuration to a group. This will allow deploying to a remote cluster.
+         * Currently only configurations with embedded access tokens are support.
+         * The configuration needs to be encrypted using Mozilla Sops. Please see ./scripts/addClusterConfigToGroup.sh for an example of how this can be done.
+         */
+        post: operations['addClusterConfigurationToGroup']
+    }
+    '/groups/{group}/users/{userId}': {
+        /** Add a user to a group... */
+        post: operations['addUserToGroup']
+    }
+    '/groups/{name}': {
+        /** Find a group by its name */
+        get: operations['findGroupByName']
+    }
+    '/health': {
+        /** Show service health status */
+        get: operations['health']
+    }
+    '/instances': {
+        /** List all instances accessible by the user */
+        get: operations['listInstances']
+        /** Deploy an instance... */
+        post: operations['deployInstance']
+    }
+    '/instances-name-to-id/{groupName}/{instanceName}': {
+        /** Find instance id by name and group name */
+        get: operations['instanceNameToId']
+    }
+    '/instances/{id}': {
+        /** Find an instance by id */
+        get: operations['findById']
+        /** Update an instance... */
+        put: operations['updateInstance']
+        /** Delete an instance by id */
+        delete: operations['deleteInstance']
+    }
+    '/instances/{id}/logs': {
+        /** Stream instance logs in real time */
+        get: operations['instanceLogs']
+    }
+    '/instances/{id}/parameters': {
+        /** Find instance by id with decrypted parameters */
+        get: operations['findByIdDecrypted']
+    }
+    '/instances/{id}/pause': {
+        /**
+         * Pause an instance. Pause can be called multiple times even on an already paused instance
+         * (idempotent).
+         */
+        put: operations['pauseInstance']
+    }
+    '/instances/{id}/reset': {
+        /** Resetting an instance will completely destroy it and redeploy using the same parameters */
+        put: operations['resetInstance']
+    }
+    '/instances/{id}/restart': {
+        /** Restart an instance... */
+        put: operations['restartInstance']
+    }
+    '/instances/{id}/resume': {
+        /**
+         * Resume a paused instance. Resume can be called multiple times even on an already running
+         * instance (idempotent).
+         */
+        put: operations['resumeInstance']
+    }
+    '/integrations': {
+        /** Return integration for a given key */
+        post: operations['postIntegration']
+    }
+    '/me': {
+        /** Current user details */
+        get: operations['me']
+    }
+    '/presets': {
+        /** List all presets accessible by the user */
+        get: operations['listPresets']
+    }
+    '/public/instances': {
+        /** List all public instances */
+        get: operations['listPublicInstances']
+    }
+    '/refresh': {
+        /** Refresh user tokens */
+        post: operations['refreshToken']
+    }
+    '/stacks': {
+        /** Find all stacks... */
+        get: operations['stacks']
+    }
+    '/stacks/{name}': {
+        /** Find stack by name */
+        get: operations['stack']
+    }
+    '/tokens': {
+        /** Sign in... And get tokens */
+        post: operations['signIn']
+    }
+    '/users': {
+        /** Find all users with the groups they belong to */
+        get: operations['findAllUsers']
+        /** Sign up a user. This endpoint is publicly accessible and therefor anyone can sign up. However, before being able to perform any actions, users needs to be a member of a group. And only administrators can add users to groups. */
+        post: operations['signUp']
+        /** Sign out user... The authentication is done using oauth and JWT. A JWT can't easily be invalidated so even after calling this endpoint a user can still sign in assuming the JWT isn't expired. However, the token can't be refreshed using the refresh token supplied upon signin */
+        delete: operations['signOut']
+    }
+    '/users/{id}': {
+        /** Find a user by its id */
+        get: operations['findUserById']
+        /** Update user's email and/or password */
+        put: operations['updateUser']
+        /** Delete user by id */
+        delete: operations['deleteUser']
+    }
+}
+
+export interface definitions {
+    ClusterConfiguration: {
+        /** Format: date-time */
+        createdAt?: string
+        groupName?: string
+        /** Format: uint64 */
+        id?: number
+        kubernetesConfiguration?: number[]
+        /** Format: date-time */
+        updatedAt?: string
+    }
+    CopyDatabaseRequest: {
+        group?: string
+        name?: string
+    }
+    CreateExternalDatabaseRequest: {
+        /**
+         * Format: uint64
+         * @description Expiration time in seconds
+         */
+        expiration?: number
+    }
+    CreateGroupRequest: {
+        deployable?: boolean
+        hostname?: string
+        name?: string
+    }
+    Database: {
+        /** Format: date-time */
+        createdAt?: string
+        externalDownloads?: definitions['ExternalDownload'][]
+        groupName?: string
+        /** Format: uint64 */
+        id?: number
+        lock?: definitions['Lock']
+        name?: string
+        slug?: string
+        /** Format: date-time */
+        updatedAt?: string
+        url?: string
+    }
+    DeployInstanceRequest: {
+        description?: string
+        groupName?: string
+        name?: string
+        optionalParameters?: definitions['InstanceOptionalParameter'][]
+        /** Format: uint64 */
+        presetInstance?: number
+        public?: boolean
+        requiredParameters?: definitions['InstanceRequiredParameter'][]
+        /** Format: uint64 */
+        sourceInstance?: number
+        stackName?: string
+        /** Format: uint64 */
+        ttl?: number
+    }
+    ExternalDownload: {
+        /** Format: uint64 */
+        databaseId?: number
+        /** Format: uint64 */
+        expiration?: number
+        /** Format: uuid */
+        uuid?: string
+    }
+    /** @description Group domain object defining a group */
+    Group: {
+        clusterConfiguration?: definitions['ClusterConfiguration']
+        /** Format: date-time */
+        createdAt?: string
+        deployable?: boolean
+        hostname?: string
+        name?: string
+        /** Format: date-time */
+        updatedAt?: string
+        users?: definitions['User'][]
+    }
+    GroupWithInstances: {
+        hostname?: string
+        instances?: definitions['Instance'][]
+        name?: string
+    }
+    GroupsWithDatabases: {
+        databases?: definitions['Database'][]
+        hostname?: string
+        name?: string
+    }
+    Instance: {
+        /** Format: date-time */
+        createdAt?: string
+        deployLog?: string
+        description?: string
+        group?: definitions['Group']
+        groupName?: string
+        /** Format: uint64 */
+        id?: number
+        name?: string
+        optionalParameters?: definitions['InstanceOptionalParameter'][]
+        preset?: boolean
+        /** Format: uint64 */
+        presetId?: number
+        public?: boolean
+        requiredParameters?: definitions['InstanceRequiredParameter'][]
+        stackName?: string
+        /** Format: uint64 */
+        ttl?: number
+        /** Format: date-time */
+        updatedAt?: string
+        user?: definitions['User']
+        /** Format: uint64 */
+        userId?: number
+    }
+    InstanceOptionalParameter: {
+        /** @description TODO: Rename StackOptionalParameterID to Name */
+        name?: string
+        value?: string
+    }
+    InstanceRequiredParameter: {
+        /** @description TODO: Rename StackRequiredParameterID to Name */
+        name?: string
+        value?: string
+    }
+    Lock: {
+        /** Format: uint64 */
+        databaseId?: number
+        /** Format: uint64 */
+        instanceId?: number
+        /** Format: uint64 */
+        userId?: number
+    }
+    LockDatabaseRequest: {
+        /** Format: uint64 */
+        instanceId?: number
+    }
+    RefreshTokenRequest: {
+        refreshToken?: string
+    }
+    Request: {
+        key?: string
+        payload?: unknown
+    }
+    /** @description Response depends on the input and can be either a list or a map */
+    Response: { [key: string]: unknown }
+    Stack: {
+        /** Format: date-time */
+        createdAt?: string
+        hostnamePattern?: string
+        hostnameVariable?: string
+        instances?: definitions['Instance'][]
+        name?: string
+        optionalParameters?: definitions['StackOptionalParameter'][]
+        requiredParameters?: definitions['StackRequiredParameter'][]
+        /** Format: date-time */
+        updatedAt?: string
+    }
+    StackOptionalParameter: {
+        consumed?: boolean
+        defaultValue?: string
+        name?: string
+        stackName?: string
+    }
+    StackRequiredParameter: {
+        consumed?: boolean
+        name?: string
+        stackName?: string
+    }
+    /** @description Tokens domain object defining user tokens */
+    Tokens: {
+        accessToken?: string
+        /** Format: uint64 */
+        expiresIn?: number
+        refreshToken?: string
+        tokenType?: string
+    }
+    UpdateDatabaseRequest: {
+        name?: string
+    }
+    UpdateInstanceRequest: {
+        optionalParameters?: definitions['InstanceOptionalParameter'][]
+        requiredParameters?: definitions['InstanceRequiredParameter'][]
+        /** Format: uint64 */
+        ttl?: number
+    }
+    /** @description User domain object defining a user */
+    User: {
+        adminGroups?: definitions['Group'][]
+        /** Format: date-time */
+        createdAt?: string
+        email?: string
+        groups?: definitions['Group'][]
+        /** Format: uint64 */
+        id?: number
+        /** Format: date-time */
+        updatedAt?: string
+    }
+    saveAsRequest: {
+        /** @description Database dump format. Currently plain and custom are support, please see https://www.postgresql.org/docs/current/app-pgdump.html */
+        format?: string
+        /** @description Name of the new database */
+        name?: string
+    }
+    signUpRequest: {
+        email?: string
+        password?: string
+    }
+    updateUserRequest: {
+        email?: string
+        password?: string
+    }
+}
+
+export interface responses {
+    CreateExternalDownloadResponse: {
+        schema: definitions['ExternalDownload']
+    }
+    Database: {
+        schema: definitions['Database']
+    }
+    DownloadDatabaseResponse: {
+        schema: number[]
+    }
+    Error: unknown
+    GroupWithInstances: {
+        schema: definitions['GroupWithInstances'][]
+    }
+    InstanceLogsResponse: unknown
+    Lock: {
+        schema: definitions['Lock']
+    }
+    Response: {
+        schema: definitions['Response']
+    }
+    StackResponse: {
+        schema: definitions['Stack']
+    }
+    StacksResponse: {
+        schema: definitions['Stack'][]
+    }
+    Tokens: {
+        schema: definitions['Tokens']
+    }
+    UsersResponse: {
+        schema: definitions['User'][]
+    }
+}
+
+export interface operations {
     /** List databases... */
-    get: operations["listDatabases"];
+    listDatabases: {
+        responses: {
+            /** GroupsWithDatabases */
+            200: {
+                schema: definitions['GroupsWithDatabases'][]
+            }
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Upload database... */
-    post: operations["uploadDatabase"];
-  };
-  "/databases/{id}": {
+    uploadDatabase: {
+        parameters: {
+            formData: {
+                /** Upload database request body parameter */
+                Group: string
+                /** Upload database request body parameter */
+                File: unknown
+            }
+        }
+        responses: {
+            201: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-    get: operations["findDatabase"];
+    findDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            200: responses['Database']
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Update database by id
      * TODO: Race condition? If two clients request at the same time... Do we need a transaction between find and update
      */
-    put: operations["updateDatabaseById"];
+    updateDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Update database request body parameter */
+                Body: definitions['UpdateDatabaseRequest']
+            }
+        }
+        responses: {
+            200: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Delete database by id... */
-    delete: operations["deleteDatabaseById"];
-  };
-  "/databases/{id}/copy": {
+    deleteDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Copy database... */
-    post: operations["copyDatabase"];
-  };
-  "/databases/{id}/download": {
+    copyDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Copy database request body parameter */
+                Body: definitions['CopyDatabaseRequest']
+            }
+        }
+        responses: {
+            202: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Download a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-    get: operations["downloadDatabase"];
-  };
-  "/databases/{id}/external": {
+    downloadDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            200: responses['DownloadDatabaseResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Create link so the database can be downloaded without log in */
-    post: operations["createExternalDownloadDatabase"];
-  };
-  "/databases/{id}/lock": {
+    createExternalDownloadDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Create external database download */
+                Body: definitions['CreateExternalDatabaseRequest']
+            }
+        }
+        responses: {
+            200: responses['CreateExternalDownloadResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Lock database by id... */
-    post: operations["lockDatabaseById"];
+    lockDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Lock/unlock database request body parameter */
+                Body: definitions['LockDatabaseRequest']
+            }
+        }
+        responses: {
+            200: responses['Lock']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            409: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Unlock database by id */
-    delete: operations["unlockDatabaseById"];
-  };
-  "/databases/external/{uuid}": {
+    unlockDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Lock/unlock database request body parameter */
+                Body: definitions['LockDatabaseRequest']
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Download a given database without authentication */
-    get: operations["externalDownloadDatabase"];
-  };
-  "/databases/save-as/{instanceId}": {
+    externalDownloadDatabase: {
+        parameters: {
+            path: {
+                uuid: number
+            }
+        }
+        responses: {
+            200: responses['DownloadDatabaseResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Save database under a new name */
-    post: operations["saveAsDatabase"];
-  };
-  "/databases/save/{instanceId}": {
+    saveAsDatabase: {
+        parameters: {
+            path: {
+                instanceId: number
+            }
+            body: {
+                /** SaveAs database request body parameter */
+                Body: definitions['saveAsRequest']
+            }
+        }
+        responses: {
+            201: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Saving a database won't affect the instances running the database. However, it should be noted that if two unlocked databases are deployed from the same database they can both overwrite it. It's up to the users to ensure this doesn't happen accidentally. */
-    post: operations["saveDatabase"];
-  };
-  "/groups": {
+    saveDatabase: {
+        parameters: {
+            path: {
+                instanceId: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find all groups by user */
-    get: operations["findAllGroupsByUser"];
+    findAllGroupsByUser: {
+        parameters: {
+            query: {
+                /** deployable */
+                deployable?: string
+            }
+        }
+        responses: {
+            /** Group */
+            200: {
+                schema: definitions['Group'][]
+            }
+            401: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Create a group... */
-    post: operations["groupCreate"];
-  };
-  "/groups/{group}/cluster-configuration": {
+    groupCreate: {
+        parameters: {
+            body: {
+                /** Refresh token request body parameter */
+                Body: definitions['CreateGroupRequest']
+            }
+        }
+        responses: {
+            /** Group */
+            201: {
+                schema: definitions['Group']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Add a cluster configuration to a group. This will allow deploying to a remote cluster.
      * Currently only configurations with embedded access tokens are support.
      * The configuration needs to be encrypted using Mozilla Sops. Please see ./scripts/addClusterConfigToGroup.sh for an example of how this can be done.
      */
-    post: operations["addClusterConfigurationToGroup"];
-  };
-  "/groups/{group}/users/{userId}": {
+    addClusterConfigurationToGroup: {
+        parameters: {
+            path: {
+                group: string
+            }
+            formData: {
+                /** SOPS encrypted Kubernetes configuration file */
+                Body: unknown
+            }
+        }
+        responses: {
+            /** Group */
+            201: {
+                schema: definitions['Group']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Add a user to a group... */
-    post: operations["addUserToGroup"];
-  };
-  "/groups/{name}": {
+    addUserToGroup: {
+        parameters: {
+            path: {
+                group: string
+                userId: number
+            }
+        }
+        responses: {
+            /** Group */
+            201: {
+                schema: definitions['Group']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a group by its name */
-    get: operations["findGroupByName"];
-  };
-  "/health": {
+    findGroupByName: {
+        parameters: {
+            path: {
+                name: string
+            }
+        }
+        responses: {
+            /** Group */
+            200: {
+                schema: definitions['Group']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Show service health status */
-    get: operations["health"];
-  };
-  "/instances": {
+    health: {
+        responses: {
+            200: responses['Response']
+        }
+    }
     /** List all instances accessible by the user */
-    get: operations["listInstances"];
+    listInstances: {
+        responses: {
+            200: responses['GroupWithInstances']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Deploy an instance... */
-    post: operations["deployInstance"];
-  };
-  "/instances-name-to-id/{groupName}/{instanceName}": {
+    deployInstance: {
+        parameters: {
+            body: {
+                /** Deploy instance request body parameter */
+                Payload: definitions['DeployInstanceRequest']
+            }
+            query: {
+                /** preset */
+                preset?: string
+            }
+        }
+        responses: {
+            /** Instance */
+            201: {
+                schema: definitions['Instance']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find instance id by name and group name */
-    get: operations["instanceNameToId"];
-  };
-  "/instances/{id}": {
+    instanceNameToId: {
+        parameters: {
+            path: {
+                groupName: string
+                instanceName: string
+            }
+        }
+        responses: {
+            /** Instance */
+            200: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find an instance by id */
-    get: operations["findById"];
+    findById: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            /** Instance */
+            200: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Update an instance... */
-    put: operations["updateInstance"];
+    updateInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Update instance request body parameter */
+                Payload: definitions['UpdateInstanceRequest']
+            }
+        }
+        responses: {
+            /** Instance */
+            204: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Delete an instance by id */
-    delete: operations["deleteInstance"];
-  };
-  "/instances/{id}/logs": {
+    deleteInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Stream instance logs in real time */
-    get: operations["instanceLogs"];
-  };
-  "/instances/{id}/parameters": {
+    instanceLogs: {
+        parameters: {
+            path: {
+                id: number
+            }
+            query: {
+                /** selector */
+                selector?: string
+            }
+        }
+        responses: {
+            200: responses['InstanceLogsResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find instance by id with decrypted parameters */
-    get: operations["findByIdDecrypted"];
-  };
-  "/instances/{id}/pause": {
+    findByIdDecrypted: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            /** Instance */
+            200: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Pause an instance. Pause can be called multiple times even on an already paused instance
      * (idempotent).
      */
-    put: operations["pauseInstance"];
-  };
-  "/instances/{id}/reset": {
+    pauseInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Resetting an instance will completely destroy it and redeploy using the same parameters */
-    put: operations["resetInstance"];
-  };
-  "/instances/{id}/restart": {
+    resetInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+        }
+    }
     /** Restart an instance... */
-    put: operations["restartInstance"];
-  };
-  "/instances/{id}/resume": {
+    restartInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+            query: {
+                /** selector */
+                selector?: string
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Resume a paused instance. Resume can be called multiple times even on an already running
      * instance (idempotent).
      */
-    put: operations["resumeInstance"];
-  };
-  "/integrations": {
+    resumeInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Return integration for a given key */
-    post: operations["postIntegration"];
-  };
-  "/me": {
+    postIntegration: {
+        parameters: {
+            body: {
+                /** Integration request body */
+                Body: definitions['Request']
+            }
+        }
+        responses: {
+            200: responses['Response']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Current user details */
-    get: operations["me"];
-  };
-  "/presets": {
+    me: {
+        responses: {
+            /** User */
+            200: {
+                schema: definitions['User']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** List all presets accessible by the user */
-    get: operations["listPresets"];
-  };
-  "/public/instances": {
+    listPresets: {
+        responses: {
+            200: responses['GroupWithInstances']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** List all public instances */
-    get: operations["listPublicInstances"];
-  };
-  "/refresh": {
+    listPublicInstances: {
+        responses: {
+            200: responses['GroupWithInstances']
+        }
+    }
     /** Refresh user tokens */
-    post: operations["refreshToken"];
-  };
-  "/stacks": {
+    refreshToken: {
+        parameters: {
+            body: {
+                /** Refresh token request body parameter */
+                Body: definitions['RefreshTokenRequest']
+            }
+        }
+        responses: {
+            201: responses['Tokens']
+            400: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find all stacks... */
-    get: operations["stacks"];
-  };
-  "/stacks/{name}": {
+    stacks: {
+        responses: {
+            200: responses['StacksResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find stack by name */
-    get: operations["stack"];
-  };
-  "/tokens": {
+    stack: {
+        parameters: {
+            path: {
+                name: string
+            }
+        }
+        responses: {
+            200: responses['StackResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Sign in... And get tokens */
-    post: operations["signIn"];
-  };
-  "/users": {
+    signIn: {
+        responses: {
+            201: responses['Tokens']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find all users with the groups they belong to */
-    get: operations["findAllUsers"];
+    findAllUsers: {
+        responses: {
+            200: responses['UsersResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Sign up a user. This endpoint is publicly accessible and therefor anyone can sign up. However, before being able to perform any actions, users needs to be a member of a group. And only administrators can add users to groups. */
-    post: operations["signUp"];
+    signUp: {
+        parameters: {
+            body: {
+                /** SignUp request body parameter */
+                Body: definitions['signUpRequest']
+            }
+        }
+        responses: {
+            /** User */
+            201: {
+                schema: definitions['User']
+            }
+            400: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Sign out user... The authentication is done using oauth and JWT. A JWT can't easily be invalidated so even after calling this endpoint a user can still sign in assuming the JWT isn't expired. However, the token can't be refreshed using the refresh token supplied upon signin */
-    delete: operations["signOut"];
-  };
-  "/users/{id}": {
+    signOut: {
+        responses: {
+            200: unknown
+            401: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a user by its id */
-    get: operations["findUserById"];
+    findUserById: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            /** User */
+            200: {
+                schema: definitions['User']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Update user's email and/or password */
-    put: operations["updateUser"];
+    updateUser: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Update user request */
+                Body: definitions['updateUserRequest']
+            }
+        }
+        responses: {
+            /** User */
+            200: {
+                schema: definitions['User']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Delete user by id */
-    delete: operations["deleteUser"];
-  };
-}
-
-export interface definitions {
-  ClusterConfiguration: {
-    /** Format: date-time */
-    createdAt?: string;
-    groupName?: string;
-    /** Format: uint64 */
-    id?: number;
-    kubernetesConfiguration?: number[];
-    /** Format: date-time */
-    updatedAt?: string;
-  };
-  CopyDatabaseRequest: {
-    group?: string;
-    name?: string;
-  };
-  CreateExternalDatabaseRequest: {
-    /**
-     * Format: uint64
-     * @description Expiration time in seconds
-     */
-    expiration?: number;
-  };
-  CreateGroupRequest: {
-    deployable?: boolean;
-    hostname?: string;
-    name?: string;
-  };
-  Database: {
-    /** Format: date-time */
-    createdAt?: string;
-    externalDownloads?: definitions["ExternalDownload"][];
-    groupName?: string;
-    /** Format: uint64 */
-    id?: number;
-    lock?: definitions["Lock"];
-    name?: string;
-    slug?: string;
-    /** Format: date-time */
-    updatedAt?: string;
-    url?: string;
-  };
-  DeployInstanceRequest: {
-    description?: string;
-    groupName?: string;
-    name?: string;
-    optionalParameters?: definitions["InstanceOptionalParameter"][];
-    /** Format: uint64 */
-    presetInstance?: number;
-    public?: boolean;
-    requiredParameters?: definitions["InstanceRequiredParameter"][];
-    /** Format: uint64 */
-    sourceInstance?: number;
-    stackName?: string;
-    /** Format: uint64 */
-    ttl?: number;
-  };
-  ExternalDownload: {
-    /** Format: uint64 */
-    databaseId?: number;
-    /** Format: uint64 */
-    expiration?: number;
-    /** Format: uuid */
-    uuid?: string;
-  };
-  /** @description Group domain object defining a group */
-  Group: {
-    clusterConfiguration?: definitions["ClusterConfiguration"];
-    /** Format: date-time */
-    createdAt?: string;
-    deployable?: boolean;
-    hostname?: string;
-    name?: string;
-    /** Format: date-time */
-    updatedAt?: string;
-    users?: definitions["User"][];
-  };
-  GroupWithInstances: {
-    hostname?: string;
-    instances?: definitions["Instance"][];
-    name?: string;
-  };
-  GroupsWithDatabases: {
-    databases?: definitions["Database"][];
-    hostname?: string;
-    name?: string;
-  };
-  Instance: {
-    /** Format: date-time */
-    createdAt?: string;
-    deployLog?: string;
-    description?: string;
-    group?: definitions["Group"];
-    groupName?: string;
-    /** Format: uint64 */
-    id?: number;
-    name?: string;
-    optionalParameters?: definitions["InstanceOptionalParameter"][];
-    preset?: boolean;
-    /** Format: uint64 */
-    presetId?: number;
-    public?: boolean;
-    requiredParameters?: definitions["InstanceRequiredParameter"][];
-    stackName?: string;
-    /** Format: uint64 */
-    ttl?: number;
-    /** Format: date-time */
-    updatedAt?: string;
-    user?: definitions["User"];
-    /** Format: uint64 */
-    userId?: number;
-  };
-  InstanceOptionalParameter: {
-    /** @description TODO: Rename StackOptionalParameterID to Name */
-    name?: string;
-    value?: string;
-  };
-  InstanceRequiredParameter: {
-    /** @description TODO: Rename StackRequiredParameterID to Name */
-    name?: string;
-    value?: string;
-  };
-  Lock: {
-    /** Format: uint64 */
-    databaseId?: number;
-    /** Format: uint64 */
-    instanceId?: number;
-    /** Format: uint64 */
-    userId?: number;
-  };
-  LockDatabaseRequest: {
-    /** Format: uint64 */
-    instanceId?: number;
-  };
-  RefreshTokenRequest: {
-    refreshToken?: string;
-  };
-  Request: {
-    key?: string;
-    payload?: unknown;
-  };
-  /** @description Response depends on the input and can be either a list or a map */
-  Response: { [key: string]: unknown };
-  Stack: {
-    /** Format: date-time */
-    createdAt?: string;
-    hostnamePattern?: string;
-    hostnameVariable?: string;
-    instances?: definitions["Instance"][];
-    name?: string;
-    optionalParameters?: definitions["StackOptionalParameter"][];
-    requiredParameters?: definitions["StackRequiredParameter"][];
-    /** Format: date-time */
-    updatedAt?: string;
-  };
-  StackOptionalParameter: {
-    consumed?: boolean;
-    defaultValue?: string;
-    name?: string;
-    stackName?: string;
-  };
-  StackRequiredParameter: {
-    consumed?: boolean;
-    name?: string;
-    stackName?: string;
-  };
-  /** @description Tokens domain object defining user tokens */
-  Tokens: {
-    accessToken?: string;
-    /** Format: uint64 */
-    expiresIn?: number;
-    refreshToken?: string;
-    tokenType?: string;
-  };
-  UpdateDatabaseRequest: {
-    name?: string;
-  };
-  UpdateInstanceRequest: {
-    optionalParameters?: definitions["InstanceOptionalParameter"][];
-    requiredParameters?: definitions["InstanceRequiredParameter"][];
-    /** Format: uint64 */
-    ttl?: number;
-  };
-  /** @description User domain object defining a user */
-  User: {
-    adminGroups?: definitions["Group"][];
-    /** Format: date-time */
-    createdAt?: string;
-    email?: string;
-    groups?: definitions["Group"][];
-    /** Format: uint64 */
-    id?: number;
-    /** Format: date-time */
-    updatedAt?: string;
-  };
-  saveAsRequest: {
-    /** @description Database dump format. Currently plain and custom are support, please see https://www.postgresql.org/docs/current/app-pgdump.html */
-    format?: string;
-    /** @description Name of the new database */
-    name?: string;
-  };
-  signUpRequest: {
-    email?: string;
-    password?: string;
-  };
-  updateUserRequest: {
-    email?: string;
-    password?: string;
-  };
-}
-
-export interface responses {
-  CreateExternalDownloadResponse: {
-    schema: definitions["ExternalDownload"];
-  };
-  Database: {
-    schema: definitions["Database"];
-  };
-  DownloadDatabaseResponse: {
-    schema: number[];
-  };
-  Error: unknown;
-  GroupWithInstances: {
-    schema: definitions["GroupWithInstances"][];
-  };
-  InstanceLogsResponse: unknown;
-  Lock: {
-    schema: definitions["Lock"];
-  };
-  Response: {
-    schema: definitions["Response"];
-  };
-  StackResponse: {
-    schema: definitions["Stack"];
-  };
-  StacksResponse: {
-    schema: definitions["Stack"][];
-  };
-  Tokens: {
-    schema: definitions["Tokens"];
-  };
-  UsersResponse: {
-    schema: definitions["User"][];
-  };
-}
-
-export interface operations {
-  /** List databases... */
-  listDatabases: {
-    responses: {
-      /** GroupsWithDatabases */
-      200: {
-        schema: definitions["GroupsWithDatabases"][];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Upload database... */
-  uploadDatabase: {
-    parameters: {
-      formData: {
-        /** Upload database request body parameter */
-        Group: string;
-        /** Upload database request body parameter */
-        File: unknown;
-      };
-    };
-    responses: {
-      201: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-  findDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      200: responses["Database"];
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Update database by id
-   * TODO: Race condition? If two clients request at the same time... Do we need a transaction between find and update
-   */
-  updateDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Update database request body parameter */
-        Body: definitions["UpdateDatabaseRequest"];
-      };
-    };
-    responses: {
-      200: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Delete database by id... */
-  deleteDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Copy database... */
-  copyDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Copy database request body parameter */
-        Body: definitions["CopyDatabaseRequest"];
-      };
-    };
-    responses: {
-      202: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Download a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-  downloadDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      200: responses["DownloadDatabaseResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Create link so the database can be downloaded without log in */
-  createExternalDownloadDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Create external database download */
-        Body: definitions["CreateExternalDatabaseRequest"];
-      };
-    };
-    responses: {
-      200: responses["CreateExternalDownloadResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Lock database by id... */
-  lockDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Lock/unlock database request body parameter */
-        Body: definitions["LockDatabaseRequest"];
-      };
-    };
-    responses: {
-      200: responses["Lock"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      409: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Unlock database by id */
-  unlockDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Lock/unlock database request body parameter */
-        Body: definitions["LockDatabaseRequest"];
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Download a given database without authentication */
-  externalDownloadDatabase: {
-    parameters: {
-      path: {
-        uuid: number;
-      };
-    };
-    responses: {
-      200: responses["DownloadDatabaseResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Save database under a new name */
-  saveAsDatabase: {
-    parameters: {
-      path: {
-        instanceId: number;
-      };
-      body: {
-        /** SaveAs database request body parameter */
-        Body: definitions["saveAsRequest"];
-      };
-    };
-    responses: {
-      201: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Saving a database won't affect the instances running the database. However, it should be noted that if two unlocked databases are deployed from the same database they can both overwrite it. It's up to the users to ensure this doesn't happen accidentally. */
-  saveDatabase: {
-    parameters: {
-      path: {
-        instanceId: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find all groups by user */
-  findAllGroupsByUser: {
-    parameters: {
-      query: {
-        /** deployable */
-        deployable?: string;
-      };
-    };
-    responses: {
-      /** Group */
-      200: {
-        schema: definitions["Group"][];
-      };
-      401: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Create a group... */
-  groupCreate: {
-    parameters: {
-      body: {
-        /** Refresh token request body parameter */
-        Body: definitions["CreateGroupRequest"];
-      };
-    };
-    responses: {
-      /** Group */
-      201: {
-        schema: definitions["Group"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Add a cluster configuration to a group. This will allow deploying to a remote cluster.
-   * Currently only configurations with embedded access tokens are support.
-   * The configuration needs to be encrypted using Mozilla Sops. Please see ./scripts/addClusterConfigToGroup.sh for an example of how this can be done.
-   */
-  addClusterConfigurationToGroup: {
-    parameters: {
-      path: {
-        group: string;
-      };
-      formData: {
-        /** SOPS encrypted Kubernetes configuration file */
-        Body: unknown;
-      };
-    };
-    responses: {
-      /** Group */
-      201: {
-        schema: definitions["Group"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Add a user to a group... */
-  addUserToGroup: {
-    parameters: {
-      path: {
-        group: string;
-        userId: number;
-      };
-    };
-    responses: {
-      /** Group */
-      201: {
-        schema: definitions["Group"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find a group by its name */
-  findGroupByName: {
-    parameters: {
-      path: {
-        name: string;
-      };
-    };
-    responses: {
-      /** Group */
-      200: {
-        schema: definitions["Group"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Show service health status */
-  health: {
-    responses: {
-      200: responses["Response"];
-    };
-  };
-  /** List all instances accessible by the user */
-  listInstances: {
-    responses: {
-      200: responses["GroupWithInstances"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Deploy an instance... */
-  deployInstance: {
-    parameters: {
-      body: {
-        /** Deploy instance request body parameter */
-        Payload: definitions["DeployInstanceRequest"];
-      };
-      query: {
-        /** preset */
-        preset?: string;
-      };
-    };
-    responses: {
-      /** Instance */
-      201: {
-        schema: definitions["Instance"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find instance id by name and group name */
-  instanceNameToId: {
-    parameters: {
-      path: {
-        groupName: string;
-        instanceName: string;
-      };
-    };
-    responses: {
-      /** Instance */
-      200: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find an instance by id */
-  findById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** Instance */
-      200: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Update an instance... */
-  updateInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Update instance request body parameter */
-        Payload: definitions["UpdateInstanceRequest"];
-      };
-    };
-    responses: {
-      /** Instance */
-      204: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Delete an instance by id */
-  deleteInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Stream instance logs in real time */
-  instanceLogs: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      query: {
-        /** selector */
-        selector?: string;
-      };
-    };
-    responses: {
-      200: responses["InstanceLogsResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find instance by id with decrypted parameters */
-  findByIdDecrypted: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** Instance */
-      200: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Pause an instance. Pause can be called multiple times even on an already paused instance
-   * (idempotent).
-   */
-  pauseInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Resetting an instance will completely destroy it and redeploy using the same parameters */
-  resetInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-    };
-  };
-  /** Restart an instance... */
-  restartInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      query: {
-        /** selector */
-        selector?: string;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Resume a paused instance. Resume can be called multiple times even on an already running
-   * instance (idempotent).
-   */
-  resumeInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Return integration for a given key */
-  postIntegration: {
-    parameters: {
-      body: {
-        /** Integration request body */
-        Body: definitions["Request"];
-      };
-    };
-    responses: {
-      200: responses["Response"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Current user details */
-  me: {
-    responses: {
-      /** User */
-      200: {
-        schema: definitions["User"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** List all presets accessible by the user */
-  listPresets: {
-    responses: {
-      200: responses["GroupWithInstances"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** List all public instances */
-  listPublicInstances: {
-    responses: {
-      200: responses["GroupWithInstances"];
-    };
-  };
-  /** Refresh user tokens */
-  refreshToken: {
-    parameters: {
-      body: {
-        /** Refresh token request body parameter */
-        Body: definitions["RefreshTokenRequest"];
-      };
-    };
-    responses: {
-      201: responses["Tokens"];
-      400: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find all stacks... */
-  stacks: {
-    responses: {
-      200: responses["StacksResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find stack by name */
-  stack: {
-    parameters: {
-      path: {
-        name: string;
-      };
-    };
-    responses: {
-      200: responses["StackResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Sign in... And get tokens */
-  signIn: {
-    responses: {
-      201: responses["Tokens"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find all users with the groups they belong to */
-  findAllUsers: {
-    responses: {
-      200: responses["UsersResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Sign up a user. This endpoint is publicly accessible and therefor anyone can sign up. However, before being able to perform any actions, users needs to be a member of a group. And only administrators can add users to groups. */
-  signUp: {
-    parameters: {
-      body: {
-        /** SignUp request body parameter */
-        Body: definitions["signUpRequest"];
-      };
-    };
-    responses: {
-      /** User */
-      201: {
-        schema: definitions["User"];
-      };
-      400: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Sign out user... The authentication is done using oauth and JWT. A JWT can't easily be invalidated so even after calling this endpoint a user can still sign in assuming the JWT isn't expired. However, the token can't be refreshed using the refresh token supplied upon signin */
-  signOut: {
-    responses: {
-      200: unknown;
-      401: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find a user by its id */
-  findUserById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** User */
-      200: {
-        schema: definitions["User"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Update user's email and/or password */
-  updateUser: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Update user request */
-        Body: definitions["updateUserRequest"];
-      };
-    };
-    responses: {
-      /** User */
-      200: {
-        schema: definitions["User"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Delete user by id */
-  deleteUser: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
+    deleteUser: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
 }
 
 export interface external {}
