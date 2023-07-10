@@ -18,10 +18,8 @@
         "axios": "^1.4.0",
         "axios-hooks": "^4.0.0",
         "axios-jwt": "3.0.0",
-        "jwt-decode": "^3.1.2",
         "moment": "^2.29.4",
         "react": "^18.2.0",
-        "react-auth-kit": "^2.12.3",
         "react-dom": "^18.2.0",
         "react-moment": "^1.1.3",
         "react-router": "^6.14.1",
@@ -37,7 +35,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "format": "yarn d2-style apply",
-        "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts"
+        "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts && yarn format"
     },
     "eslintConfig": {
         "extends": [
