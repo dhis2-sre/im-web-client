@@ -1,9 +1,8 @@
-import { InputField, CheckboxField, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { CheckboxField, InputField, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import cx from 'classnames'
-import styles from './ParameterField.module.css'
-import { useApi } from '../api/useApi'
-import { getIntergrations } from '../api/intergrations'
 import { useEffect, useRef } from 'react'
+import { useAuthAxios } from '../../hooks'
+import styles from './parameter-field.module.css'
 
 export const DATABASE_ID = 'DATABASE_ID'
 export const FLYWAY_MIGRATE_OUT_OF_ORDER = 'FLYWAY_MIGRATE_OUT_OF_ORDER'
@@ -15,9 +14,20 @@ export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const SOURCE_ID = 'SOURCE_ID'
 export const PRESET_ID = 'PRESET_ID'
 
-export const DROPDOWN_PARAMETER_NAMES = new Set([DATABASE_ID, IMAGE_REPOSITORY, IMAGE_TAG, IMAGE_PULL_POLICY, SOURCE_ID, PRESET_ID])
+export const DROPDOWN_PARAMETER_NAMES = new Set([
+    DATABASE_ID,
+    IMAGE_REPOSITORY,
+    IMAGE_TAG,
+    IMAGE_PULL_POLICY,
+    SOURCE_ID,
+    PRESET_ID,
+])
 
-export const CHECKBOX_PARAMETER_NAMES = new Set([INSTALL_REDIS, FLYWAY_MIGRATE_OUT_OF_ORDER, FLYWAY_REPAIR_BEFORE_MIGRATION])
+export const CHECKBOX_PARAMETER_NAMES = new Set([
+    INSTALL_REDIS,
+    FLYWAY_MIGRATE_OUT_OF_ORDER,
+    FLYWAY_REPAIR_BEFORE_MIGRATION,
+])
 
 type ParameterFieldProps = {
     name: string
@@ -34,7 +44,7 @@ const toTitleCase = (string) =>
         .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase())
         .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase())
 
-const getAsyncParameterFieldOptions = (key, repository) => {
+const getAsyncParameterFieldRequestData = (key, repository) => {
     switch (key) {
         case IMAGE_TAG:
             return {
@@ -74,9 +84,20 @@ const getOptions = (name: string, value, data) => {
     return data.map((value) => ({ value, label: value }))
 }
 
-const AsyncParameterDropdownField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
+const AsyncParameterDropdownField = ({
+    name,
+    onChange,
+    value,
+    disabled,
+    repository,
+    required,
+}: ParameterFieldProps) => {
     const prevRepositoryRef = useRef(repository)
-    const { data, error, isFetching, refetch } = useApi(getIntergrations, getAsyncParameterFieldOptions(name, repository))
+    const [{ data, error, loading }, refetch] = useAuthAxios({
+        url: 'integrations',
+        method: 'POST',
+        data: getAsyncParameterFieldRequestData(name, repository),
+    })
 
     useEffect(() => {
         if (repository !== prevRepositoryRef.current) {
@@ -90,7 +111,7 @@ const AsyncParameterDropdownField = ({ name, onChange, value, disabled, reposito
             label={toTitleCase(name)}
             filterable={true}
             className={styles.field}
-            disabled={disabled || isFetching}
+            disabled={disabled || loading}
             selected={value}
             required={required}
             onChange={({ selected: value }) => onChange({ name, value })}
@@ -106,7 +127,16 @@ const AsyncParameterDropdownField = ({ name, onChange, value, disabled, reposito
 
 export const ParameterField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
     if (DROPDOWN_PARAMETER_NAMES.has(name)) {
-        return <AsyncParameterDropdownField name={name} onChange={onChange} value={value} disabled={disabled} required={required} repository={repository} />
+        return (
+            <AsyncParameterDropdownField
+                name={name}
+                onChange={onChange}
+                value={value}
+                disabled={disabled}
+                required={required}
+                repository={repository}
+            />
+        )
     } else if (CHECKBOX_PARAMETER_NAMES.has(name)) {
         return (
             <CheckboxField
@@ -121,6 +151,16 @@ export const ParameterField = ({ name, onChange, value, disabled, repository, re
             />
         )
     } else {
-        return <InputField className={styles.field} name={name} label={toTitleCase(name)} value={value} onChange={onChange} required={required} disabled={disabled} />
+        return (
+            <InputField
+                className={styles.field}
+                name={name}
+                label={toTitleCase(name)}
+                value={value}
+                onChange={onChange}
+                required={required}
+                disabled={disabled}
+            />
+        )
     }
 }

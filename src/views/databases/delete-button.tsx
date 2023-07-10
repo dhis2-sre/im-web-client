@@ -1,24 +1,24 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDelete16 } from '@dhis2/ui'
 import { useCallback, useEffect, useState } from 'react'
+import { ConfirmationModal } from '../../components/confirmation-modal'
 import { useAuthAxios } from '../../hooks'
-import { GroupWithDatabases } from '../../types'
-import { ConfirmationModal } from '../ConfirmationModal'
-import { useAlert } from '@dhis2/app-service-alerts'
+import { Database } from '../../types'
 
 type DeletButtonProps = {
     id: number
     databaseName: string
     groupName: string
-    onDeleteComplete: Function
+    onComplete: Function
 }
 
-export const DeleteButton = ({ id, databaseName, groupName, onDeleteComplete }: DeletButtonProps) => {
-    const [isPromptShowing, setIsPromptShowing] = useState(false)
+export const DeleteButton = ({ id, databaseName, groupName, onComplete }: DeletButtonProps) => {
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ response, loading, error }, deleteDatabase] = useAuthAxios<GroupWithDatabases>(
+    const [{ response, loading, error }, deleteDatabase] = useAuthAxios<Database>(
         {
             url: `databases/${id}`,
             method: 'delete',
@@ -27,26 +27,24 @@ export const DeleteButton = ({ id, databaseName, groupName, onDeleteComplete }: 
     )
 
     const onClick = useCallback(() => {
-        setIsPromptShowing(true)
-    }, [setIsPromptShowing])
+        setShowConfirmationModal(true)
+    }, [setShowConfirmationModal])
 
     const onCancel = useCallback(() => {
-        setIsPromptShowing(false)
-    }, [setIsPromptShowing])
+        setShowConfirmationModal(false)
+    }, [setShowConfirmationModal])
 
     const onConfirm = useCallback(() => {
-        if (!loading) {
-            deleteDatabase()
-            setIsPromptShowing(false)
-        }
-    }, [deleteDatabase, setIsPromptShowing, loading])
+        deleteDatabase()
+        setShowConfirmationModal(false)
+    }, [deleteDatabase, setShowConfirmationModal])
 
     useEffect(() => {
-        if (response.status === 202 && !loading) {
+        if (response?.status === 202 && !loading) {
             showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
-            onDeleteComplete()
+            onComplete()
         }
-    }, [onDeleteComplete, response, showAlert, groupName, databaseName, loading])
+    }, [onComplete, response, showAlert, groupName, databaseName, loading])
 
     useEffect(() => {
         if (error && !loading) {
@@ -59,7 +57,7 @@ export const DeleteButton = ({ id, databaseName, groupName, onDeleteComplete }: 
             <Button small destructive loading={loading} icon={<IconDelete16 />} onClick={onClick}>
                 Delete
             </Button>
-            {isPromptShowing && (
+            {showConfirmationModal && (
                 <ConfirmationModal destructive onConfirm={onConfirm} onCancel={onCancel}>
                     Are you sure you wish to delete "{groupName}/{databaseName}"?
                 </ConfirmationModal>

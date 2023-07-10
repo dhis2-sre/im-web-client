@@ -1,23 +1,38 @@
-import { DataTableToolbar as TableToolbar, DataTable, DataTableHead as TableHead, DataTableRow, DataTableCell, DataTableColumnHeader, DataTableBody as TableBody } from '@dhis2/ui'
-import { getStack } from '../api/stacks'
-import { Stack } from '../types/stack'
+import {
+    Center,
+    CircularLoader,
+    DataTable,
+    DataTableBody,
+    DataTableCell,
+    DataTableColumnHeader,
+    DataTableHead,
+    DataTableRow,
+    DataTableToolbar,
+    NoticeBox,
+} from '@dhis2/ui'
 import { useParams } from 'react-router-dom'
-import { useApi } from '../api/useApi'
-import styles from './StackDetails.module.css'
-import { useEffect } from 'react'
+import { useAuthAxios } from '../../hooks'
+import { Stack } from '../../types'
+import styles from './stack-details.module.css'
 
-const StackDetails = () => {
+export const StackDetails = () => {
     const { name } = useParams()
-    const { data: stack, isLoading, isFetching, refetch } = useApi<Stack>(getStack, name)
+    const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`stacks/${name}`)
 
-    useEffect(() => {
-        if (!isFetching && stack && name !== stack.name) {
-            refetch()
-        }
-    }, [name, stack, isFetching, refetch])
+    if (loading) {
+        return (
+            <Center>
+                <CircularLoader />
+            </Center>
+        )
+    }
 
-    if (isLoading) {
-        return null
+    if (error) {
+        return (
+            <NoticeBox error title="Could not fetch stack details">
+                {error.message}
+            </NoticeBox>
+        )
     }
 
     return (
@@ -25,16 +40,16 @@ const StackDetails = () => {
             <h1>{stack.name}</h1>
 
             <>
-                <TableToolbar className={styles.tabletoolbar}>Required parameters</TableToolbar>
+                <DataTableToolbar className={styles.tabletoolbar}>Required parameters</DataTableToolbar>
                 <DataTable className={styles.datatable}>
-                    <TableHead>
+                    <DataTableHead>
                         <DataTableRow>
                             <DataTableColumnHeader>Name</DataTableColumnHeader>
                             <DataTableColumnHeader>Consumed</DataTableColumnHeader>
                         </DataTableRow>
-                    </TableHead>
+                    </DataTableHead>
 
-                    <TableBody>
+                    <DataTableBody>
                         {stack.requiredParameters?.map((parameter) => {
                             return (
                                 <DataTableRow key={parameter.name}>
@@ -43,22 +58,22 @@ const StackDetails = () => {
                                 </DataTableRow>
                             )
                         })}
-                    </TableBody>
+                    </DataTableBody>
                 </DataTable>
             </>
 
             <>
-                <TableToolbar className={styles.tabletoolbar}>Optional parameters</TableToolbar>
+                <DataTableToolbar className={styles.tabletoolbar}>Optional parameters</DataTableToolbar>
                 <DataTable className={styles.datatable}>
-                    <TableHead>
+                    <DataTableHead>
                         <DataTableRow>
                             <DataTableColumnHeader>Name</DataTableColumnHeader>
                             <DataTableColumnHeader>Default value</DataTableColumnHeader>
                             <DataTableColumnHeader>Consumed</DataTableColumnHeader>
                         </DataTableRow>
-                    </TableHead>
+                    </DataTableHead>
 
-                    <TableBody>
+                    <DataTableBody>
                         {stack.optionalParameters?.map((parameter) => {
                             return (
                                 <DataTableRow key={parameter.name}>
@@ -68,12 +83,9 @@ const StackDetails = () => {
                                 </DataTableRow>
                             )
                         })}
-                    </TableBody>
+                    </DataTableBody>
                 </DataTable>
             </>
-            {!stack && <p>no stack</p>}
         </div>
     )
 }
-
-export default StackDetails

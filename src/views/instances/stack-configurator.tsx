@@ -1,13 +1,20 @@
-import { CheckboxField, Divider, InputField, SingleSelectField, SingleSelectOption, TextAreaField } from '@dhis2/ui'
+import {
+    Center,
+    CheckboxField,
+    CircularLoader,
+    Divider,
+    InputField,
+    NoticeBox,
+    SingleSelectField,
+    SingleSelectOption,
+    TextAreaField,
+} from '@dhis2/ui'
 import cx from 'classnames'
-import { getStack } from '../api/stacks'
-import { Stack } from '../types/stack'
-import { useApi } from '../api/useApi'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
-import styles from './StackConfigurator.module.css'
-import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './ParameterField'
-import { Group } from '../types'
-import { getGroups } from '../api'
+import { useAuthAxios } from '../../hooks'
+import { Group, Stack } from '../../types'
+import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './parameter-field'
+import styles from './stack-configurator.module.css'
 
 // type ParameterRecord = Record<ParameterName, string>
 type ParameterRecord = any
@@ -23,7 +30,10 @@ const toKeyedObject = (array): ParameterRecord =>
 const getRepositoryValueForImageTag = (name: string, requiredParameters, optionalParameters) =>
     name === IMAGE_TAG ? requiredParameters[IMAGE_REPOSITORY] ?? optionalParameters[IMAGE_REPOSITORY] : undefined
 
-const computeNewParameters = (currentParameters: ParameterRecord, { name, value }: { name: string; value: string }): ParameterRecord => {
+const computeNewParameters = (
+    currentParameters: ParameterRecord,
+    { name, value }: { name: string; value: string }
+): ParameterRecord => {
     /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
      * the `IMAGE_TAG` value needs to be cleared when
      * `IMAGE_REPOSITORY` changes.
@@ -55,16 +65,25 @@ const ttlMap = new Map<string, number>([
     ['1 month', 60 * 60 * 24 * 7 * 4],
 ])
 
-export const StackConfigurator = forwardRef(function StackConfigurator({ name: stackName, disabled }: { name: string; disabled: boolean }, ref) {
+export const StackConfigurator = forwardRef(function StackConfigurator(
+    { name: stackName, disabled }: { name: string; disabled: boolean },
+    ref
+) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
+    const [group, setGroup] = useState('')
+    const [ttl, setTtl] = useState(defaultTTL)
+    const [publicity, setPublicity] = useState(false)
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
-    const { data: stack, isLoading, isFetching, refetch } = useApi<Stack>(getStack, stackName)
-    const { data: groups, isLoading: isLoadingGroups } = useApi<Group[]>(getGroups)
-    const [group, setGroup] = useState('')
-    const [ttl, setTtl] = useState('')
-    const [publicity, setPublicity] = useState(false)
+    const [{ data: stack, loading: stackLoading, error: stackError }] = useAuthAxios<Stack>(`stacks/${name}`)
+    const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
+        method: 'GET',
+        url: 'groups',
+        params: {
+            deployable: true,
+        },
+    })
 
     useImperativeHandle(
         ref,
@@ -81,25 +100,17 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
                 }
             },
         }),
-        [name, description, group, ttl, requiredStackParameters, optionalStackParameters]
+        [name, description, group, ttl, requiredStackParameters, optionalStackParameters, publicity]
     )
 
     useEffect(() => {
-        if (!isFetching && stack && stack.name !== stackName) {
-            refetch()
-        }
-    }, [stackName, refetch, stack, isFetching])
-
-    useEffect(() => {
         if (stack) {
-            setRequiredStackParameters(toKeyedObject(stack.requiredParameters.filter((parameter) => !parameter.consumed)))
+            setRequiredStackParameters(
+                toKeyedObject(stack.requiredParameters.filter((parameter) => !parameter.consumed))
+            )
             setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])
-
-    useEffect(() => {
-        setTtl(defaultTTL)
-    }, [])
 
     useEffect(() => {
         if (groups && groups.length > 0) {
@@ -107,9 +118,18 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
         }
     }, [groups])
 
-    if (isLoading || isLoadingGroups) {
-        return null
+    if (stackLoading || groupsLoading) {
+        return (
+            <Center>
+                <CircularLoader />
+            </Center>
+        )
     }
+
+    if (stackError || groupsError)
+        <NoticeBox error title="Could load the form">
+            Could not fetch stack and/or groups
+        </NoticeBox>
 
     const onRequiredInputChange = (parameter) => {
         setRequiredStackParameters((currentParameters) => computeNewParameters(currentParameters, parameter))
@@ -122,19 +142,48 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
     return (
         <>
             <div className={styles.basics}>
-                <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
-                <TextAreaField className={styles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
-                <SingleSelectField className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
+                <InputField
+                    className={styles.field}
+                    label="Name"
+                    value={name}
+                    onChange={({ value }) => setName(value)}
+                    required
+                    disabled={disabled}
+                />
+                <TextAreaField
+                    className={styles.field}
+                    label="Description"
+                    value={description}
+                    rows={3}
+                    onChange={({ value }) => setDescription(value)}
+                />
+                <SingleSelectField
+                    className={styles.field}
+                    selected={group}
+                    filterable={true}
+                    onChange={({ selected }) => setGroup(selected)}
+                    label="Group"
+                >
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <SingleSelectField className={styles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
+                <SingleSelectField
+                    className={styles.field}
+                    selected={ttl}
+                    onChange={({ selected }) => setTtl(selected)}
+                    label="Lifetime"
+                >
                     {Array.from(ttlMap.keys()).map((key) => (
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
-                <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
+                <CheckboxField
+                    className={cx(styles.field, styles.checkboxfield)}
+                    label="Public?"
+                    checked={publicity}
+                    onChange={({ checked }) => setPublicity(checked)}
+                />
             </div>
 
             {requiredStackParameters && (
@@ -163,7 +212,11 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
                         key={name}
                         name={name}
                         value={value}
-                        repository={getRepositoryValueForImageTag(name, requiredStackParameters, optionalStackParameters)}
+                        repository={getRepositoryValueForImageTag(
+                            name,
+                            requiredStackParameters,
+                            optionalStackParameters
+                        )}
                         onChange={onOptionalInputChange}
                         disabled={disabled}
                     />

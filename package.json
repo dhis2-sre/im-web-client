@@ -36,7 +36,8 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "format": "yarn d2-style apply"
+        "format": "yarn d2-style apply",
+        "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts"
     },
     "eslintConfig": {
         "extends": [
