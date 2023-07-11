@@ -27,12 +27,17 @@ export const NewInstance = () => {
         },
         { manual: true }
     )
-    const createInstance = useCallback(() => {
-        postNewInstance({
-            stackName: selectedStack.name,
-            ...stackConfiguratorRef.current.getStackParameters(),
-        })
-    }, [postNewInstance, selectedStack])
+    const createInstance = useCallback(
+        (event) => {
+            event.preventDefault()
+
+            postNewInstance({
+                stackName: selectedStack.name,
+                ...stackConfiguratorRef.current.getStackParameters(),
+            })
+        },
+        [postNewInstance, selectedStack]
+    )
 
     useEffect(() => {
         if (stacks) {
@@ -86,7 +91,7 @@ export const NewInstance = () => {
                         </NoticeBox>
                     )}
                     <ButtonStrip>
-                        <Button primary disabled={postLoading} loading={postLoading} onClick={createInstance}>
+                        <Button primary disabled={postLoading} loading={postLoading}>
                             Create instance
                         </Button>
                         <Button disabled={postLoading} onClick={() => navigate('/instances')}>
