@@ -55,7 +55,7 @@ export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }
             </Button>
             {showLogModal && (
                 <Modal fluid onClose={onClose}>
-                    <ModalTitle>{instanceName}</ModalTitle>
+                    <ModalTitle>Instance: {instanceName}</ModalTitle>
                     <ModalContent>
                         <div className={styles.container}>
                             {!log && !error && (
