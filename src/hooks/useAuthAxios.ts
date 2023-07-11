@@ -12,6 +12,10 @@ import { useNavigate } from 'react-router-dom'
 
 export const baseURL = process.env.REACT_APP_API_URL
 
+if (!baseURL) {
+    throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
+}
+
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL })
 
