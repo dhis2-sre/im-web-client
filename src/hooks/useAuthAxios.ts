@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import { Options, RefetchFunction, UseAxiosResult, makeUseAxios } from 'axios-hooks'
+import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import {
     IAuthTokens,
     TokenRefreshRequest,
@@ -81,9 +81,9 @@ const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = true, ...op
      * block in the component itself, this default behaviour can be
      * achieved by passing `autoCatch: false` in the options parameter. */
     const executeWithAutoCatch = useCallback(
-        async (urlOrConfigObject) => {
+        async (...args) => {
             try {
-                return await execute(urlOrConfigObject)
+                return await execute(...args)
             } catch (error) {
                 /* Do nothing, assume the consumer will
                  * use the returned error object */
