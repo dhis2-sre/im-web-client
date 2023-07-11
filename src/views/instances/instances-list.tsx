@@ -1,6 +1,7 @@
 import {
     Button,
     ButtonStrip,
+    colors,
     DataTable,
     DataTableBody,
     DataTableCell,
@@ -75,7 +76,10 @@ export const InstancesList = () => {
                                                 <Tag positive>Running</Tag>
                                             </DataTableCell>
                                             <DataTableCell>
-                                                {instance.name} {instance.public === true ? <IconWorld24 /> : <></>}
+                                                <span className={styles.verticallyAlignedCellContent}>
+                                                    {instance.name}{' '}
+                                                    {instance.public && <IconWorld24 color={colors.grey600} />}
+                                                </span>
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <Moment date={instance.createdAt} fromNow />
