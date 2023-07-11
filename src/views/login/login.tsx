@@ -25,18 +25,12 @@ export const Login = () => {
             url: 'tokens',
             method: 'POST',
         },
-        { manual: true }
-    )
-    const onSubmit = useCallback(async () => {
-        if (username && password) {
-            try {
-                await getTokens({ auth: { username, password } })
-            } catch (error) {
-                console.log('Caught it')
-            }
-        } else {
-            console.log('show some sort of error now')
+        {
+            manual: true,
         }
+    )
+    const onSubmit = useCallback(() => {
+        getTokens({ auth: { username, password } })
     }, [getTokens, username, password])
 
     useEffect(() => {
