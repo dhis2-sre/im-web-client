@@ -2,7 +2,7 @@ import { LogoIconWhite } from '@dhis2/ui'
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { LogoutButton } from './logout-button'
 import { isLoggedIn } from 'axios-jwt'
-import styles from './layout.module.css'
+import styles from './Layout.module.css'
 
 export const Layout = () => {
     const location = useLocation()
