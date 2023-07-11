@@ -29,9 +29,13 @@ export const Login = () => {
             manual: true,
         }
     )
-    const onSubmit = useCallback(() => {
-        getTokens({ auth: { username, password } })
-    }, [getTokens, username, password])
+    const onSubmit = useCallback(
+        (event) => {
+            event.preventDefault()
+            getTokens({ auth: { username, password } })
+        },
+        [getTokens, username, password]
+    )
 
     useEffect(() => {
         if (tokens) {
@@ -80,7 +84,7 @@ export const Login = () => {
                         {error?.response?.data ?? error?.message ?? 'Could not fetch authentication tokens'}
                     </Help>
                 )}
-                <Button primary onClick={onSubmit} type="submit" value="login" loading={loading}>
+                <Button primary type="submit" value="login" loading={loading}>
                     Login
                 </Button>
                 <Link to={`/sign-up`}>Sign up?</Link>

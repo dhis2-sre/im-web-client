@@ -33,19 +33,27 @@ export const SignUp = () => {
             [name]: value,
         }))
     }, [])
-    const [{ response, error, loading }, postSignup] = useAuthAxios({
-        url: 'users',
-        method: 'POST',
-    })
-    const isInputValid = inputs.email && inputs.password && inputs.password === inputs.confirmPassword
-    const onSubmit = useCallback(() => {
-        if (isInputValid) {
-            const { email, password } = inputs
-            postSignup({ data: { email, password } })
-        } else {
-            setErrorMessage(getInputsErrorMessage(inputs))
-        }
-    }, [inputs, isInputValid, postSignup])
+    const [{ response, error, loading }, postSignup] = useAuthAxios(
+        {
+            url: 'users',
+            method: 'POST',
+        },
+        { manual: true }
+    )
+
+    const onSubmit = useCallback(
+        (event) => {
+            event.preventDefault()
+
+            if (inputs.email && inputs.password && inputs.password === inputs.confirmPassword) {
+                const { email, password } = inputs
+                postSignup({ data: { email, password } })
+            } else {
+                setErrorMessage(getInputsErrorMessage(inputs))
+            }
+        },
+        [inputs, postSignup]
+    )
 
     useEffect(() => {
         if (error && !loading) {
@@ -84,14 +92,19 @@ export const SignUp = () => {
                 <InputField
                     disabled={loading}
                     type="password"
-                    name="confirm-password"
-                    label="confirm-password"
+                    name="confirmPassword"
+                    label="confirmPassword"
                     value={inputs.confirmPassword}
                     autoComplete="new-password"
                     onChange={onInputChange}
                 />
                 {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary onClick={onSubmit} type="submit" value="Sign up" disabled>
+                <Button
+                    primary
+                    type="submit"
+                    value="Sign up"
+                    disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}
+                >
                     Sign up
                 </Button>
             </Card>
