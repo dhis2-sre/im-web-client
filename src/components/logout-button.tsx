@@ -1,30 +1,35 @@
-import { clearAuthTokens, isLoggedIn } from 'axios-jwt'
-import { useEffect, useState } from 'react'
+import { useAlert } from '@dhis2/app-service-alerts'
+import { clearAuthTokens } from 'axios-jwt'
+import { useCallback, useState } from 'react'
 import { Navigate } from 'react-router'
 import { useAuthAxios } from '../hooks'
 import styles from './logout-button.module.css'
 
 export const LogoutButton = () => {
+    const { show: showError } = useAlert('Could not log out', { critical: true })
     const [isLoggedOut, setIsLoggedOut] = useState(false)
-    const [{ response }, requestLogout] = useAuthAxios(
+    const [, requestLogout] = useAuthAxios(
         {
             method: 'DELETE',
             url: 'users',
         },
-        { manual: true }
+        { manual: true, autoCatch: false }
     )
 
-    useEffect(() => {
-        if (response?.status === 200 && isLoggedIn()) {
+    const onClick = useCallback(async () => {
+        try {
+            await requestLogout()
             clearAuthTokens()
             setIsLoggedOut(true)
+        } catch (error) {
+            showError()
         }
-    }, [response])
+    }, [requestLogout, showError])
 
     return isLoggedOut ? (
         <Navigate to="/login" />
     ) : (
-        <button onClick={() => requestLogout()} className={styles.logout}>
+        <button onClick={onClick} className={styles.logout}>
             Logout
         </button>
     )

@@ -76,7 +76,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
     const [publicity, setPublicity] = useState(false)
     const [requiredStackParameters, setRequiredStackParameters] = useState({})
     const [optionalStackParameters, setOptionalStackParameters] = useState({})
-    const [{ data: stack, loading: stackLoading, error: stackError }] = useAuthAxios<Stack>(`stacks/${name}`)
+    const [{ data: stack, loading: stackLoading, error: stackError }] = useAuthAxios<Stack>(`stacks/${stackName}`)
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
         url: 'groups',

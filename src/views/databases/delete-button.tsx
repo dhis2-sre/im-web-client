@@ -1,6 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDelete16 } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../components/confirmation-modal'
 import { useAuthAxios } from '../../hooks'
 import { Database } from '../../types'
@@ -18,12 +18,12 @@ export const DeleteButton = ({ id, databaseName, groupName, onComplete }: DeletB
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ response, loading, error }, deleteDatabase] = useAuthAxios<Database>(
+    const [{ loading }, deleteDatabase] = useAuthAxios<Database>(
         {
             url: `databases/${id}`,
             method: 'delete',
         },
-        { manual: true }
+        { manual: true, autoCatch: false }
     )
 
     const onClick = useCallback(() => {
@@ -34,27 +34,20 @@ export const DeleteButton = ({ id, databaseName, groupName, onComplete }: DeletB
         setShowConfirmationModal(false)
     }, [setShowConfirmationModal])
 
-    const onConfirm = useCallback(() => {
-        deleteDatabase()
-        setShowConfirmationModal(false)
-    }, [deleteDatabase, setShowConfirmationModal])
-
-    useEffect(() => {
-        if (response?.status === 202 && !loading) {
+    const onConfirm = useCallback(async () => {
+        try {
+            setShowConfirmationModal(false)
+            await deleteDatabase()
             showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
             onComplete()
-        }
-    }, [onComplete, response, showAlert, groupName, databaseName, loading])
-
-    useEffect(() => {
-        if (error && !loading) {
+        } catch (error) {
             showAlert({ message: `There was an error when deleting ${groupName}/${databaseName}`, isCritical: true })
         }
-    }, [error, showAlert, groupName, databaseName, loading])
+    }, [deleteDatabase, setShowConfirmationModal, showAlert, groupName, databaseName, onComplete])
 
     return (
         <>
-            <Button small destructive loading={loading} icon={<IconDelete16 />} onClick={onClick}>
+            <Button small secondary loading={loading} icon={<IconDelete16 />} onClick={onClick}>
                 Delete
             </Button>
             {showConfirmationModal && (

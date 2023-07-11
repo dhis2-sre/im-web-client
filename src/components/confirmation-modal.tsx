@@ -13,10 +13,10 @@ export const ConfirmationModal = ({ children, destructive, onConfirm, onCancel }
         <ModalActions>
             <ButtonStrip end>
                 <Button onClick={onCancel} secondary>
-                    Secondary action
+                    Cancel
                 </Button>
-                <Button destructive={destructive} onClick={onConfirm}>
-                    Primary action
+                <Button primary={!destructive} destructive={destructive} onClick={onConfirm}>
+                    Confirm
                 </Button>
             </ButtonStrip>
         </ModalActions>

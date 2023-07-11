@@ -1,6 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconClockHistory16 } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../components'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
@@ -18,7 +18,7 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ loading, error, response }, deleteInstance] = useAuthAxios<Instance>(
+    const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
             method: 'PUT',
             url: `instances/${instanceId}/reset`,
@@ -35,23 +35,16 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
         setShowConfirmationModal(false)
     }, [setShowConfirmationModal])
 
-    const onConfirm = useCallback(() => {
-        setShowConfirmationModal(false)
-        deleteInstance()
-    }, [deleteInstance, setShowConfirmationModal])
-
-    useEffect(() => {
-        if (response?.status === 202 && !loading) {
+    const onConfirm = useCallback(async () => {
+        try {
+            setShowConfirmationModal(false)
+            await deleteInstance()
             showAlert({ message: `Successfully reset instance "${instanceName}"`, isCritical: false })
             onComplete()
-        }
-    }, [onComplete, response, showAlert, instanceName, loading])
-
-    useEffect(() => {
-        if (error && !loading) {
+        } catch (error) {
             showAlert({ message: `There was an error when resetting instance "${instanceName}"`, isCritical: true })
         }
-    }, [error, showAlert, instanceName, loading])
+    }, [setShowConfirmationModal, deleteInstance, showAlert, onComplete, instanceName])
 
     return (
         <>

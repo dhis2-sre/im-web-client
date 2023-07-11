@@ -1,6 +1,6 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import styles from './sign-up.module.css'
 
@@ -19,6 +19,7 @@ const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
 }
 
 export const SignUp = () => {
+    const navigate = useNavigate()
     const [inputs, setInputs] = useState({
         email: '',
         password: '',
@@ -33,7 +34,7 @@ export const SignUp = () => {
             [name]: value,
         }))
     }, [])
-    const [{ response, error, loading }, postSignup] = useAuthAxios(
+    const [{ loading }, postSignup] = useAuthAxios(
         {
             url: 'users',
             method: 'POST',
@@ -42,28 +43,23 @@ export const SignUp = () => {
     )
 
     const onSubmit = useCallback(
-        (event) => {
+        async (event) => {
             event.preventDefault()
 
             if (inputs.email && inputs.password && inputs.password === inputs.confirmPassword) {
-                const { email, password } = inputs
-                postSignup({ data: { email, password } })
+                try {
+                    const { email, password } = inputs
+                    postSignup({ data: { email, password } })
+                    navigate('/login')
+                } catch (error) {
+                    setErrorMessage(error.message)
+                }
             } else {
                 setErrorMessage(getInputsErrorMessage(inputs))
             }
         },
-        [inputs, postSignup]
+        [inputs, postSignup, navigate]
     )
-
-    useEffect(() => {
-        if (error && !loading) {
-            setErrorMessage(error.message)
-        }
-    }, [error, loading])
-
-    if (response?.status === 201) {
-        return <Navigate to="/login" />
-    }
 
     return (
         <form className={styles.container} onSubmit={onSubmit}>

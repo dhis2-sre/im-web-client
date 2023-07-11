@@ -1,10 +1,11 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { FileInputField, FileListItem } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { FileInput, LinearLoader } from '@dhis2/ui'
+import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks/useAuthAxios'
 import { GroupWithDatabases } from '../../types'
+import styles from './upload-button.module.css'
 
-export const UploadButton = ({ groupName }: { groupName: string }) => {
+export const UploadButton = ({ groupName, onComplete }: { groupName: string; onComplete: Function }) => {
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
@@ -16,51 +17,52 @@ export const UploadButton = ({ groupName }: { groupName: string }) => {
         const percentage = Math.floor((loaded * 100) / total)
         setUploadProgress(percentage)
     }, [])
-    const [{ response, error, loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupWithDatabases>(
+    const [{ loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupWithDatabases>(
         {
             url: `/databases`,
             method: 'post',
             onUploadProgress,
         },
-        { manual: true }
+        { manual: true, autoCatch: false }
     )
     const onFileSelect = useCallback(
-        ({ files }) => {
-            const file = files[0]
-            const formData = new FormData()
-            formData.append('group', groupName)
-            formData.append('database', file, file.name)
-            setFileName(file.name)
-            postDatabase({ data: formData })
+        async ({ files }) => {
+            try {
+                const file = files[0]
+                const formData = new FormData()
+                formData.append('group', groupName)
+                formData.append('database', file, file.name)
+                setFileName(file.name)
+                await postDatabase({ data: formData })
+                showAlert({
+                    message: 'Database added successfully',
+                    isCritical: false,
+                })
+                onComplete()
+            } catch (error) {
+                showAlert({
+                    message: 'There was a problem uploading the database',
+                    isCritical: true,
+                })
+            }
         },
-        [groupName, postDatabase]
+        [groupName, onComplete, postDatabase, showAlert]
     )
 
-    useEffect(() => {
-        if (response?.status === 201 && !loading) {
-            showAlert({
-                message: 'Database added successfully',
-                isCritical: false,
-            })
-        }
-    }, [response, showAlert, loading])
-
-    useEffect(() => {
-        if (error && !loading) {
-            showAlert({
-                message: 'There was a problem uploading the database',
-                isCritical: true,
-            })
-        }
-    }, [error, loading, showAlert])
-
-    const fileListItemLabel = `(${uploadProgress}%) ${fileName}`
-
     return (
-        <FileInputField onChange={onFileSelect} label="Upload a database">
+        <div className={styles.container}>
+            <FileInput buttonLabel="Upload a database" onChange={onFileSelect} disabled={loading} />
             {loading && (
-                <FileListItem cancelText="Cancel" label={fileListItemLabel} onCancel={cancelPostRequest} loading />
+                <div className={styles.progressWrap}>
+                    <span className={styles.label}>
+                        Uploading database <b>{fileName}</b> ({uploadProgress}%)
+                        <button className={styles.cancelButton} onClick={cancelPostRequest}>
+                            Cancel
+                        </button>
+                    </span>
+                    <LinearLoader amount={uploadProgress} />
+                </div>
             )}
-        </FileInputField>
+        </div>
     )
 }

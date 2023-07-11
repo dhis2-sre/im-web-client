@@ -4,8 +4,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { Alerts, ErrorView, Layout } from './components'
-import { GroupedDatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
 import './index.module.css'
+import { GroupedDatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
