@@ -1,6 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDelete16 } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../components'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
@@ -18,13 +18,14 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ instanceId, onComple
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ loading, error, response }, deleteInstance] = useAuthAxios<Instance>(
+    const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
             method: 'DELETE',
             url: `instances/${instanceId}`,
         },
         {
             manual: true,
+            autoCatch: false,
         }
     )
     const onClick = useCallback(() => {
@@ -35,28 +36,21 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ instanceId, onComple
         setShowConfirmationModal(false)
     }, [setShowConfirmationModal])
 
-    const onConfirm = useCallback(() => {
+    const onConfirm = useCallback(async () => {
         setShowConfirmationModal(false)
-        deleteInstance()
-    }, [deleteInstance, setShowConfirmationModal])
-
-    useEffect(() => {
-        if (response?.status === 202 && !loading) {
+        try {
+            await deleteInstance()
             showAlert({ message: `Successfully deleted instance "${instanceName}"`, isCritical: false })
             onComplete()
-        }
-    }, [onComplete, response, showAlert, instanceName, loading])
-
-    useEffect(() => {
-        if (error && !loading) {
+        } catch (error) {
             showAlert({ message: `There was an error when deleting instance "${instanceName}"`, isCritical: true })
         }
-    }, [error, showAlert, instanceName, loading])
+    }, [deleteInstance, setShowConfirmationModal, instanceName, onComplete, showAlert])
 
     return (
         <>
             {showConfirmationModal && (
-                <ConfirmationModal onCancel={onCancel} onConfirm={onConfirm}>
+                <ConfirmationModal destructive onCancel={onCancel} onConfirm={onConfirm}>
                     Are you sure you want to delete instance "{instanceName}"
                 </ConfirmationModal>
             )}
