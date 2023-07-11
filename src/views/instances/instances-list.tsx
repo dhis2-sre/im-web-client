@@ -1,5 +1,6 @@
 import {
     Button,
+    ButtonStrip,
     DataTable,
     DataTableBody,
     DataTableCell,
@@ -26,7 +27,9 @@ const calculateExpiration = (instance: Instance) => new Date(instance.createdAt)
 
 export const InstancesList = () => {
     const navigate = useNavigate()
-    const [{ data: instancesGroups, error }, fetchInstancesGroups] = useAuthAxios<GroupWithInstances[]>('instances')
+    const [{ data: instancesGroups, error }, fetchInstancesGroups] = useAuthAxios<GroupWithInstances[]>('instances', {
+        useCache: false,
+    })
 
     return (
         <div className={styles.wrapper}>
@@ -38,7 +41,7 @@ export const InstancesList = () => {
             </div>
 
             {error && (
-                <NoticeBox error title="Could not fetch the log">
+                <NoticeBox error title="Could not retrieve instances">
                     {error.message}
                 </NoticeBox>
             )}
@@ -59,10 +62,6 @@ export const InstancesList = () => {
                                     <DataTableColumnHeader>Owner</DataTableColumnHeader>
                                     <DataTableColumnHeader>Type</DataTableColumnHeader>
                                     <DataTableColumnHeader>Expires</DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </DataTableHead>
@@ -89,30 +88,28 @@ export const InstancesList = () => {
                                                 <Moment date={calculateExpiration(instance)} fromNow />
                                             </DataTableCell>
                                             <DataTableCell>
-                                                <OpenButton hostname={group.hostname} instanceName={instance.name} />
+                                                <ButtonStrip>
+                                                    <OpenButton
+                                                        hostname={group.hostname}
+                                                        instanceName={instance.name}
+                                                    />
+                                                    <RestartButton
+                                                        instanceId={instance.id}
+                                                        instanceName={instance.name}
+                                                        onComplete={fetchInstancesGroups}
+                                                    />
+                                                    <ResetButton
+                                                        instanceId={instance.id}
+                                                        instanceName={instance.name}
+                                                        onComplete={fetchInstancesGroups}
+                                                    />
+                                                    <DeleteButton
+                                                        instanceId={instance.id}
+                                                        instanceName={instance.name}
+                                                        onComplete={fetchInstancesGroups}
+                                                    />
+                                                </ButtonStrip>
                                             </DataTableCell>
-                                            <DataTableCell>
-                                                <RestartButton
-                                                    instanceId={instance.id}
-                                                    instanceName={instance.name}
-                                                    onComplete={fetchInstancesGroups}
-                                                />
-                                            </DataTableCell>
-                                            <DataTableCell>
-                                                <DeleteButton
-                                                    instanceId={instance.id}
-                                                    instanceName={instance.name}
-                                                    onComplete={fetchInstancesGroups}
-                                                />
-                                            </DataTableCell>
-                                            <DataTableCell>
-                                                <ResetButton
-                                                    instanceId={instance.id}
-                                                    instanceName={instance.name}
-                                                    onComplete={fetchInstancesGroups}
-                                                />
-                                            </DataTableCell>
-                                            <DataTableCell></DataTableCell>
                                         </DataTableRow>
                                     )
                                 })}

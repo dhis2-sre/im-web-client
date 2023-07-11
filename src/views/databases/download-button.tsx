@@ -1,13 +1,13 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, IconLaunch16 } from '@dhis2/ui'
-import { useEffect } from 'react'
+import { Button, IconDownload16 } from '@dhis2/ui'
+import { useCallback } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { baseURL } from '../../hooks/useAuthAxios'
 import { ExternalDownload } from '../../types'
 
 export const DownloadButton = ({ id }: { id: number }) => {
     const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
-    const [{ response, error, loading }, fetchDownloadLink] = useAuthAxios<ExternalDownload>(
+    const [{ loading }, fetchDownloadLink] = useAuthAxios<ExternalDownload>(
         {
             url: `/databases/${id}/external`,
             method: 'post',
@@ -17,27 +17,25 @@ export const DownloadButton = ({ id }: { id: number }) => {
         },
         {
             manual: true,
+            autoCatch: false,
         }
     )
 
-    useEffect(() => {
-        if (response?.status === 201 && !loading) {
+    const onClick = useCallback(async () => {
+        try {
+            const { data } = await fetchDownloadLink()
             const link = document.createElement('a')
-            link.href = baseURL + '/databases/external/' + response.data.uuid
+            link.href = `${baseURL}/databases/external/${data.uuid}`
             link.target = '_blank'
             link.click()
-            link.parentElement.removeChild(link)
-        }
-    }, [response, loading])
-
-    useEffect(() => {
-        if (error && !loading) {
+            link.remove()
+        } catch {
             showError()
         }
-    }, [error, loading, showError])
+    }, [fetchDownloadLink, showError])
 
     return (
-        <Button small loading={loading} icon={<IconLaunch16 />} onClick={fetchDownloadLink}>
+        <Button small secondary loading={loading} icon={<IconDownload16 />} onClick={onClick}>
             Download
         </Button>
     )

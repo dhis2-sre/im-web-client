@@ -1,4 +1,5 @@
 import {
+    ButtonStrip,
     DataTable,
     DataTableCell,
     DataTableColumnHeader,
@@ -16,7 +17,9 @@ import styles from './grouped-databases-list.module.css'
 import { UploadButton } from './upload-button'
 
 export const GroupedDatabasesList = () => {
-    const [{ data: groupsWithDatabases }, fetchGroupsWithDatabases] = useAuthAxios<GroupWithDatabases[]>('databases')
+    const [{ data: groupsWithDatabases }, fetchGroupsWithDatabases] = useAuthAxios<GroupWithDatabases[]>('databases', {
+        useCache: false,
+    })
 
     return (
         <div className={styles.wrapper}>
@@ -28,7 +31,7 @@ export const GroupedDatabasesList = () => {
                 <div key={group.name}>
                     <TableToolbar className={styles.tabletoolbar}>
                         <h2>{group.name}</h2>
-                        <UploadButton groupName={group.name} />
+                        <UploadButton groupName={group.name} onComplete={fetchGroupsWithDatabases} />
                     </TableToolbar>
                     <DataTable>
                         <TableHead>
@@ -36,7 +39,6 @@ export const GroupedDatabasesList = () => {
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                                <DataTableColumnHeader></DataTableColumnHeader>
                                 <DataTableColumnHeader></DataTableColumnHeader>
                             </DataTableRow>
                         </TableHead>
@@ -51,15 +53,15 @@ export const GroupedDatabasesList = () => {
                                         <Moment date={database.updatedAt} fromNow />
                                     </DataTableCell>
                                     <DataTableCell>
-                                        <DownloadButton id={database.id} />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <DeleteButton
-                                            id={database.id}
-                                            databaseName={database.name}
-                                            groupName={group.name}
-                                            onComplete={fetchGroupsWithDatabases}
-                                        />
+                                        <ButtonStrip>
+                                            <DownloadButton id={database.id} />
+                                            <DeleteButton
+                                                id={database.id}
+                                                databaseName={database.name}
+                                                groupName={group.name}
+                                                onComplete={fetchGroupsWithDatabases}
+                                            />
+                                        </ButtonStrip>
                                     </DataTableCell>
                                 </DataTableRow>
                             ))}
