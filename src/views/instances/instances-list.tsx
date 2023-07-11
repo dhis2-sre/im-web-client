@@ -22,6 +22,7 @@ import styles from './instances-list.module.css'
 import { OpenButton } from './open-button'
 import { ResetButton } from './reset-button'
 import { RestartButton } from './restart-button'
+import { LogButton } from './log-button'
 
 const calculateExpiration = (instance: Instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
@@ -93,6 +94,7 @@ export const InstancesList = () => {
                                                         hostname={group.hostname}
                                                         instanceName={instance.name}
                                                     />
+                                                    <LogButton instanceId={instance.id} instanceName={instance.name} />
                                                     <RestartButton
                                                         instanceId={instance.id}
                                                         instanceName={instance.name}

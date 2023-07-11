@@ -13,6 +13,7 @@ import {
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
+import styles from './log-button.module.css'
 
 type LogButtonProps = {
     instanceId: number
@@ -22,7 +23,7 @@ type LogButtonProps = {
 export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }) => {
     const [showLogModal, setShowLogModal] = useState(false)
     const [log, setLog] = useState('')
-    const [{ loading, error }, getLog] = useAuthAxios<Instance>(
+    const [{ error }, requestLog] = useAuthAxios<Instance>(
         {
             method: 'GET',
             url: `instances/${instanceId}/logs`,
@@ -32,12 +33,16 @@ export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }
         },
         {
             manual: true,
+            /* The way this endpoint behaves triggers the hook's autoCancel
+             * behaviour. But we can disable that. */
+            autoCancel: false,
         }
     )
+
     const onClick = useCallback(() => {
-        getLog()
+        requestLog()
         setShowLogModal(true)
-    }, [getLog, setShowLogModal])
+    }, [requestLog, setShowLogModal])
 
     const onClose = useCallback(() => {
         setShowLogModal(false)
@@ -45,30 +50,30 @@ export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }
 
     return (
         <>
-            <Button small secondary icon={IconTerminalWindow16} onClick={onClick}>
+            <Button small secondary icon={<IconTerminalWindow16 />} onClick={onClick}>
                 Logs
             </Button>
             {showLogModal && (
-                <Modal large onClose={onClose}>
+                <Modal fluid onClose={onClose}>
                     <ModalTitle>{instanceName}</ModalTitle>
                     <ModalContent>
-                        {loading && (
-                            <Center>
-                                <CircularLoader />
-                            </Center>
-                        )}
-                        {error && (
-                            <NoticeBox error title="Could not fetch the log">
-                                {error.message}
-                            </NoticeBox>
-                        )}
-                        {log && <pre>{log}</pre>}
+                        <div className={styles.container}>
+                            {!log && !error && (
+                                <Center>
+                                    <CircularLoader />
+                                </Center>
+                            )}
+                            {error && (
+                                <NoticeBox error title="Could not fetch the log">
+                                    {error.message}
+                                </NoticeBox>
+                            )}
+                            {log && !error && <pre>{log}</pre>}
+                        </div>
                     </ModalContent>
                     <ModalActions>
                         <ButtonStrip end>
-                            <Button primary onClick={onClose}>
-                                Primary action
-                            </Button>
+                            <Button onClick={onClose}>Close</Button>
                         </ButtonStrip>
                     </ModalActions>
                 </Modal>
