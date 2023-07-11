@@ -1,8 +1,8 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { isLoggedIn, setAuthTokens } from 'axios-jwt'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
-import styles from './LoginPage.module.css'
+import styles from './login.module.css'
 import { useAuthAxios } from '../../hooks'
 
 const getRedirectPath = (location) => {
@@ -27,12 +27,23 @@ export const Login = () => {
         },
         { manual: true }
     )
+    const onSubmit = useCallback(async () => {
+        if (username && password) {
+            try {
+                await getTokens({ auth: { username, password } })
+            } catch (error) {
+                console.log('Caught it')
+            }
+        } else {
+            console.log('show some sort of error now')
+        }
+    }, [getTokens, username, password])
 
     useEffect(() => {
         if (tokens) {
             setAuthTokens({
-                accessToken: tokens.access_token,
-                refreshToken: tokens.refresh_token,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
             })
             setIsAuthenticated(isLoggedIn())
         }
@@ -43,14 +54,7 @@ export const Login = () => {
     }
 
     return (
-        <form
-            className={styles.container}
-            onSubmit={(event) => {
-                event.stopPropagation()
-                event.preventDefault()
-                getTokens({ auth: { username, password } })
-            }}
-        >
+        <form className={styles.container} onSubmit={onSubmit}>
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
@@ -82,17 +86,7 @@ export const Login = () => {
                         {error?.response?.data ?? error?.message ?? 'Could not fetch authentication tokens'}
                     </Help>
                 )}
-                <Button
-                    primary
-                    onClick={(_, event) => {
-                        event.stopPropagation()
-                        event.preventDefault()
-                        getTokens({ auth: { username, password } })
-                    }}
-                    type="submit"
-                    value="login"
-                    loading={loading}
-                >
+                <Button primary onClick={onSubmit} type="submit" value="login" loading={loading}>
                     Login
                 </Button>
                 <Link to={`/sign-up`}>Sign up?</Link>

@@ -10,7 +10,7 @@ import {
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export const baseURL = process.env.REACT_APP_IM_API
+export const baseURL = process.env.REACT_APP_API_URL
 
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL })

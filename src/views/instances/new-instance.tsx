@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
-import styles from './NewInstance.module.css'
+import styles from './new-instance.module.css'
 import { StackConfigurator } from './stack-configurator'
 
 export const NewInstance = () => {
