@@ -1,0 +1,13 @@
+ls:
+    src:
+        .dir: kebab-case
+        .ts: kebab-case
+        .tsx: kebab-case
+        .d.ts: kebab-case
+        .module.css: kebab-case
+
+ignore:
+    - node_modules
+    - build
+    - src/setupTests.ts
+    - src/reportWebVitals.ts

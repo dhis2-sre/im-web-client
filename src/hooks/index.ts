@@ -1,1 +1,1 @@
-export { useAuthAxios } from './useAuthAxios'
+export { useAuthAxios } from './use-auth-axios'

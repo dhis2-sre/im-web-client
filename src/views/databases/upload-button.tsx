@@ -1,7 +1,7 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { FileInput, LinearLoader } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../hooks/useAuthAxios'
+import { useAuthAxios } from '../../hooks'
 import { GroupWithDatabases } from '../../types'
 import styles from './upload-button.module.css'
 
