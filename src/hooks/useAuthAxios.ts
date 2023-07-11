@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
+import { Options, RefetchFunction, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import {
     IAuthTokens,
     TokenRefreshRequest,
@@ -7,7 +7,7 @@ import {
     clearAuthTokens,
     getBrowserLocalStorage,
 } from 'axios-jwt'
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const baseURL = process.env.REACT_APP_API_URL
@@ -52,24 +52,45 @@ const useAxiosWithJwt = makeUseAxios({
 
 const PUBLIC_PATHS = new Set(['/login', '/sign-up'])
 
+interface UseAuthAxiosOptions extends Options {
+    autoCatch?: boolean
+}
+
 interface UseAuthAxios {
     <TResponse = any, TBody = any, TError = any>(
         config: AxiosRequestConfig<TBody> | string,
-        options?: Options
+        options?: UseAuthAxiosOptions
     ): UseAxiosResult<TResponse, TBody, TError>
 }
 
 /* Add some redirect logic to the custom hooks so that users
  * are redirected to the login page once the refresh token
  * has expired */
-const useAuthAxios: UseAuthAxios = (urlOrConfigObject, options) => {
+const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = true, ...options } = {}) => {
     const navigate = useNavigate()
     // Just pass all arguments from the main function to this sub function
     const useAxiosResult: UseAxiosResult = useAxiosWithJwt(urlOrConfigObject, options)
     const prevUseAxiosResult = useRef<UseAxiosResult>(useAxiosResult)
-    const [{ error }] = useAxiosResult
+    const [{ error }, execute] = useAxiosResult
     const isAuthenticationError = error?.response?.status === 401
     const isAtPublicPath = PUBLIC_PATHS.has(window.location.pathname)
+
+    /* The default behaviour for useAxios is to let consumers deal
+     * with promise rejection manually, but we prefer it to be handled
+     * here. In cases where it is more ergonomic to have a try/catch
+     * block in the component itself, this default behaviour can be
+     * achieved by passing `autoCatch: false` in the options parameter. */
+    const executeWithAutoCatch = useCallback(
+        async (urlOrConfigObject) => {
+            try {
+                return await execute(urlOrConfigObject)
+            } catch (error) {
+                /* Do nothing, assume the consumer will
+                 * use the returned error object */
+            }
+        },
+        [execute]
+    )
 
     if (isAuthenticationError && !isAtPublicPath) {
         /* Note: setting the `referrerPath` in the
@@ -93,6 +114,9 @@ const useAuthAxios: UseAuthAxios = (urlOrConfigObject, options) => {
          * into error state before navigation happens. */
         return prevUseAxiosResult.current
     } else {
+        if (autoCatch) {
+            useAxiosResult[1] = executeWithAutoCatch
+        }
         prevUseAxiosResult.current = useAxiosResult
         return useAxiosResult
     }
