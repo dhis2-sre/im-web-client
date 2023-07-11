@@ -41,7 +41,7 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
     }, [deleteInstance, setShowConfirmationModal])
 
     useEffect(() => {
-        if (response.status === 202 && !loading) {
+        if (response?.status === 202 && !loading) {
             showAlert({ message: `Successfully reset instance "${instanceName}"`, isCritical: false })
             onComplete()
         }
