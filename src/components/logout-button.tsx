@@ -1,13 +1,13 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { clearAuthTokens } from 'axios-jwt'
-import { useCallback, useState } from 'react'
-import { Navigate } from 'react-router'
+import { clearAuthTokens, isLoggedIn } from 'axios-jwt'
+import { useCallback } from 'react'
+import { useNavigate } from 'react-router'
 import { useAuthAxios } from '../hooks'
 import styles from './logout-button.module.css'
 
 export const LogoutButton = () => {
+    const navigate = useNavigate()
     const { show: showError } = useAlert('Could not log out', { critical: true })
-    const [isLoggedOut, setIsLoggedOut] = useState(false)
     const [, requestLogout] = useAuthAxios(
         {
             method: 'DELETE',
@@ -17,18 +17,20 @@ export const LogoutButton = () => {
     )
 
     const onClick = useCallback(async () => {
-        try {
-            await requestLogout()
-            clearAuthTokens()
-            setIsLoggedOut(true)
-        } catch (error) {
-            showError()
+        if (isLoggedIn()) {
+            try {
+                await requestLogout()
+                clearAuthTokens()
+                navigate('/login')
+            } catch (error) {
+                showError()
+            }
+        } else {
+            navigate('/login')
         }
-    }, [requestLogout, showError])
+    }, [requestLogout, showError, navigate])
 
-    return isLoggedOut ? (
-        <Navigate to="/login" />
-    ) : (
+    return (
         <button onClick={onClick} className={styles.logout}>
             Logout
         </button>
