@@ -40,6 +40,7 @@ export const UploadButton = ({ groupName, onComplete }: { groupName: string; onC
                 })
                 onComplete()
             } catch (error) {
+                console.error(error)
                 showAlert({
                     message: 'There was a problem uploading the database',
                     isCritical: true,

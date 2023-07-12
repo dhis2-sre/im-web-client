@@ -52,6 +52,7 @@ export const SignUp = () => {
                     postSignup({ data: { email, password } })
                     navigate('/login')
                 } catch (error) {
+                    console.error(error)
                     setErrorMessage(error.message)
                 }
             } else {

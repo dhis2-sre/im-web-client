@@ -42,6 +42,7 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
             showAlert({ message: `Successfully reset instance "${instanceName}"`, isCritical: false })
             onComplete()
         } catch (error) {
+            console.error(error)
             showAlert({ message: `There was an error when resetting instance "${instanceName}"`, isCritical: true })
         }
     }, [setShowConfirmationModal, deleteInstance, showAlert, onComplete, instanceName])

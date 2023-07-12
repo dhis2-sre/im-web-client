@@ -29,7 +29,8 @@ export const DownloadButton = ({ id }: { id: number }) => {
             link.target = '_blank'
             link.click()
             link.remove()
-        } catch {
+        } catch (error) {
+            console.error(error)
             showError()
         }
     }, [fetchDownloadLink, showError])

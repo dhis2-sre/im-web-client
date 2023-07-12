@@ -41,7 +41,8 @@ export const RestartButton: React.FC<RestartButtonProps> = ({ instanceId, onComp
             await deleteInstance()
             showAlert({ message: `Successfully restarted instance "${instanceName}"`, isCritical: false })
             onComplete()
-        } catch {
+        } catch (error) {
+            console.error(error)
             showAlert({ message: `There was an error when restarting instance "${instanceName}"`, isCritical: true })
         }
     }, [setShowConfirmationModal, deleteInstance, showAlert, onComplete, instanceName])

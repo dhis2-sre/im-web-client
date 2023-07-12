@@ -43,6 +43,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ instanceId, onComple
             showAlert({ message: `Successfully deleted instance "${instanceName}"`, isCritical: false })
             onComplete()
         } catch (error) {
+            console.error(error)
             showAlert({ message: `There was an error when deleting instance "${instanceName}"`, isCritical: true })
         }
     }, [deleteInstance, setShowConfirmationModal, instanceName, onComplete, showAlert])

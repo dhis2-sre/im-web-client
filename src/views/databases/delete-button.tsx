@@ -41,6 +41,7 @@ export const DeleteButton = ({ id, databaseName, groupName, onComplete }: DeletB
             showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
             onComplete()
         } catch (error) {
+            console.error(error)
             showAlert({ message: `There was an error when deleting ${groupName}/${databaseName}`, isCritical: true })
         }
     }, [deleteDatabase, setShowConfirmationModal, showAlert, groupName, databaseName, onComplete])

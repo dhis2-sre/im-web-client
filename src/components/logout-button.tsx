@@ -23,6 +23,7 @@ export const LogoutButton = () => {
                 clearAuthTokens()
                 navigate('/login')
             } catch (error) {
+                console.error(error)
                 showError()
             }
         } else {

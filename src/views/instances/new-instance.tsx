@@ -37,7 +37,9 @@ export const NewInstance = () => {
                 }
                 await postNewInstance({ data })
                 navigate('/instances')
-            } catch (error) {}
+            } catch (error) {
+                console.error(error)
+            }
         },
         [postNewInstance, selectedStack, navigate]
     )
