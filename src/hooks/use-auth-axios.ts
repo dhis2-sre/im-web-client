@@ -19,6 +19,10 @@ if (!baseURL) {
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL })
 
+type TokenRefreshResponse = {
+    data: IAuthTokens
+}
+
 const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promise<IAuthTokens | string> =>
     /* We have to use the default axios instance here
      * otherwise we get an infitine loop */
@@ -26,10 +30,12 @@ const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promis
         .post(`${baseURL}/refresh`, {
             refreshToken,
         })
-        .then((response) => ({
-            accessToken: response.data.access_token,
-            refreshToken: response.data.refresh_token,
-        }))
+        .then(
+            (response: TokenRefreshResponse): IAuthTokens => ({
+                accessToken: response.data.accessToken,
+                refreshToken: response.data.refreshToken,
+            })
+        )
         .catch((error) => {
             clearAuthTokens()
             return error
