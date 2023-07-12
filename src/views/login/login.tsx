@@ -5,7 +5,7 @@ import { Link, Navigate, useLocation } from 'react-router-dom'
 import styles from './login.module.css'
 import { useAuthAxios } from '../../hooks'
 
-const getRedirectPath = (location) => {
+const getReferrerPath = (location) => {
     const referrerPath = location.state?.referrerPath
 
     if (!referrerPath || referrerPath === '/login') {
@@ -48,7 +48,7 @@ export const Login = () => {
     }, [tokens])
 
     if (isAuthenticated) {
-        return <Navigate to={getRedirectPath(location)} />
+        return <Navigate to={getReferrerPath(location)} />
     }
 
     return (

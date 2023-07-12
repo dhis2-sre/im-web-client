@@ -7,10 +7,12 @@ import {
     clearAuthTokens,
     getBrowserLocalStorage,
 } from 'axios-jwt'
-import { useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback } from 'react'
 
 export const baseURL = process.env.REACT_APP_API_URL
+/* Better make sure this is a unque string because the event
+ * is going to be sent via the global window object */
+export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_8c464fe8-81e0-4145-9652-a4597b54545f'
 
 if (!baseURL) {
     throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
@@ -18,6 +20,11 @@ if (!baseURL) {
 
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL })
+
+const dispatchUnauthorizedEvent = () => {
+    const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })
+    window.dispatchEvent(event)
+}
 
 type TokenRefreshResponse = {
     data: IAuthTokens
@@ -37,8 +44,12 @@ const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promis
             })
         )
         .catch((error) => {
-            clearAuthTokens()
-            return error
+            // Could not refresh because refresh token was expired
+            if (error.response.status === 401) {
+                clearAuthTokens()
+                dispatchUnauthorizedEvent()
+            }
+            return Promise.reject(error)
         })
 
 const getStorage = getBrowserLocalStorage
@@ -60,8 +71,6 @@ const useAxiosWithJwt = makeUseAxios({
     },
 })
 
-const PUBLIC_PATHS = new Set(['/login', '/sign-up'])
-
 interface UseAuthAxiosOptions extends Options {
     autoCatch?: boolean
 }
@@ -73,17 +82,9 @@ interface UseAuthAxios {
     ): UseAxiosResult<TResponse, TBody, TError>
 }
 
-/* Add some redirect logic to the custom hooks so that users
- * are redirected to the login page once the refresh token
- * has expired */
 const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = true, ...options } = {}) => {
-    const navigate = useNavigate()
-    // Just pass all arguments from the main function to this sub function
     const useAxiosResult: UseAxiosResult = useAxiosWithJwt(urlOrConfigObject, options)
-    const prevUseAxiosResult = useRef<UseAxiosResult>(useAxiosResult)
-    const [{ error }, execute] = useAxiosResult
-    const isAuthenticationError = error?.response?.status === 401
-    const isAtPublicPath = PUBLIC_PATHS.has(window.location.pathname)
+    const [, execute] = useAxiosResult
 
     /* The default behaviour for useAxios is to let consumers deal
      * with promise rejection manually, but we prefer it to be handled
@@ -95,41 +96,19 @@ const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = true, ...op
             try {
                 return await execute(...args)
             } catch (error) {
-                /* Do nothing, assume the consumer will
-                 * use the returned error object */
+                /* Only show the error on the browser console, but ensure
+                 * the app does not crash. Assume the consumer will use
+                 * the returned error object to display an error UI.  */
+                console.error(error)
             }
         },
         [execute]
     )
 
-    if (isAuthenticationError && !isAtPublicPath) {
-        /* Note: setting the `referrerPath` in the
-         * `requestAnimationFrame callback can cause the value
-         * value to be `/login`. So we set it here instead. */
-        const referrerPath = window.location.pathname
-        /* Wait for the component render cycle to finish before
-         * navigation, which will trigger a re-render in the
-         * route provider. Not waiting for an animation frame
-         * will cause React to throw an error about simultanious
-         * state updates. */
-        window.requestAnimationFrame(() => {
-            navigate('/login', { state: { referrerPath } })
-        })
-        /* Since the request failed, `useAxiosResult` will contain an
-         * and error state. But we do not want to handle becomming
-         * unauthenticated as error in the component, since a redirect
-         * to the login form will cause the component that required the
-         * authentication to become unmounted anyway. Returning the
-         * previous state prevents components from briefly transitioning
-         * into error state before navigation happens. */
-        return prevUseAxiosResult.current
-    } else {
-        if (autoCatch) {
-            useAxiosResult[1] = executeWithAutoCatch
-        }
-        prevUseAxiosResult.current = useAxiosResult
-        return useAxiosResult
+    if (autoCatch) {
+        useAxiosResult[1] = executeWithAutoCatch
     }
+    return useAxiosResult
 }
 
 export { useAuthAxios }
