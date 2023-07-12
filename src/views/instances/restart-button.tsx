@@ -23,9 +23,7 @@ export const RestartButton: React.FC<RestartButtonProps> = ({ instanceId, onComp
             method: 'PUT',
             url: `instances/${instanceId}/restart`,
         },
-        {
-            manual: true,
-        }
+        { manual: true, autoCatch: false }
     )
     const onClick = useCallback(() => {
         setShowConfirmationModal(true)

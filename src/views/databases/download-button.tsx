@@ -15,10 +15,7 @@ export const DownloadButton = ({ id }: { id: number }) => {
                 expiration: 5,
             },
         },
-        {
-            manual: true,
-            autoCatch: false,
-        }
+        { manual: true, autoCatch: false }
     )
 
     const onClick = useCallback(async () => {

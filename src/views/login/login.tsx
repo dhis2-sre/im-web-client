@@ -1,9 +1,10 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { isLoggedIn, setAuthTokens } from 'axios-jwt'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import styles from './login.module.css'
 import { useAuthAxios } from '../../hooks'
+import { Tokens } from '../../types'
 
 const getReferrerPath = (location) => {
     const referrerPath = location.state?.referrerPath
@@ -20,32 +21,29 @@ export const Login = () => {
     const [password, setPassword] = useState('')
     const [isAuthenticated, setIsAuthenticated] = useState(() => isLoggedIn())
     const location = useLocation()
-    const [{ data: tokens, loading, error }, getTokens] = useAuthAxios(
+    const [{ loading, error }, getTokens] = useAuthAxios<Tokens>(
         {
             url: 'tokens',
             method: 'POST',
         },
-        {
-            manual: true,
-        }
+        { manual: true }
     )
     const onSubmit = useCallback(
-        (event) => {
+        async (event) => {
             event.preventDefault()
-            getTokens({ auth: { username, password } })
+            try {
+                const { data: tokens } = await getTokens({ auth: { username, password } })
+                setAuthTokens({
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                })
+                setIsAuthenticated(isLoggedIn())
+            } catch (error) {
+                console.error(error)
+            }
         },
         [getTokens, username, password]
     )
-
-    useEffect(() => {
-        if (tokens) {
-            setAuthTokens({
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-            })
-            setIsAuthenticated(isLoggedIn())
-        }
-    }, [tokens])
 
     if (isAuthenticated) {
         return <Navigate to={getReferrerPath(location)} />

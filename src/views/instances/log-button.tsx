@@ -31,12 +31,9 @@ export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }
                 setLog(progressEvent.event.currentTarget.response)
             },
         },
-        {
-            manual: true,
-            /* The way this endpoint behaves triggers the hook's autoCancel
-             * behaviour. But we can disable that. */
-            autoCancel: false,
-        }
+        /* The way this endpoint behaves triggers the hook's autoCancel
+         * behaviour. But we can disable that. */
+        { manual: true, autoCancel: false }
     )
 
     const onClick = useCallback(() => {
