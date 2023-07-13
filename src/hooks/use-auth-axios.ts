@@ -3,7 +3,7 @@ import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor, clearAuthTokens, getBrowserLocalStorage } from 'axios-jwt'
 import { useCallback } from 'react'
 
-export const baseURL = process.env.REACT_APP_API_URL
+export const baseURL = import.meta.env.VITE_API_URL
 /* Better make sure this is a unque string because the event
  * is going to be sent via the global window object */
 export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'

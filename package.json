@@ -1,7 +1,8 @@
 {
-    "name": "instance-manager",
-    "version": "0.1.0",
+    "name": "im-web-client",
     "private": true,
+    "version": "0.1.0",
+    "type": "module",
     "dependencies": {
         "@dhis2/app-runtime": "^3.9.4",
         "@dhis2/app-service-alerts": "^3.9.4",
@@ -21,20 +22,30 @@
         "typescript": "^5.1.6",
         "web-vitals": "^3.4.0"
     },
+    "devDependencies": {
+        "@dhis2/cli-style": "^10.5.1",
+        "@ls-lint/ls-lint": "^2.0.1",
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^14.0.0",
+        "@testing-library/user-event": "^14.4.3",
+        "@types/jest": "^29.5.3",
+        "@types/node": "^20.4.1",
+        "@types/react-dom": "^18.2.6",
+        "@types/react-router-dom": "^5.3.3",
+        "@types/react": "^18.2.14",
+        "@vitejs/plugin-react-swc": "^3.3.2",
+        "eslint-plugin-react-refresh": "^0.4.1",
+        "typescript": "^5.0.2",
+        "vite": "^4.4.0"
+    },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
+        "start": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
         "test": "react-scripts test",
-        "eject": "react-scripts eject",
         "format": "yarn d2-style apply",
         "lint": "yarn d2-style check",
         "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts && yarn format"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
     },
     "browserslist": {
         "production": [
@@ -47,17 +58,5 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
-    },
-    "devDependencies": {
-        "@dhis2/cli-style": "^10.5.1",
-        "@ls-lint/ls-lint": "^2.0.1",
-        "@testing-library/jest-dom": "^5.16.5",
-        "@testing-library/react": "^14.0.0",
-        "@testing-library/user-event": "^14.4.3",
-        "@types/jest": "^29.5.3",
-        "@types/node": "^20.4.1",
-        "@types/react-dom": "^18.2.6",
-        "@types/react-router-dom": "^5.3.3",
-        "@types/react": "^18.2.14"
     }
 }
