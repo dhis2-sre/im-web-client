@@ -23,7 +23,7 @@ export const Login = () => {
     const location = useLocation()
     const [{ loading, error }, getTokens] = useAuthAxios<Tokens>(
         {
-            url: 'tokens',
+            url: '/tokens',
             method: 'POST',
         },
         { manual: true }

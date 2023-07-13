@@ -20,7 +20,7 @@ export const DeleteButton = ({ id, databaseName, groupName, onComplete }: DeletB
     )
     const [{ loading }, deleteDatabase] = useAuthAxios<Database>(
         {
-            url: `databases/${id}`,
+            url: `/databases/${id}`,
             method: 'delete',
         },
         { manual: true }

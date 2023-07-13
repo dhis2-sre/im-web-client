@@ -15,7 +15,7 @@ export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }
     const [{ error }, requestLog] = useAuthAxios<Instance>(
         {
             method: 'GET',
-            url: `instances/${instanceId}/logs`,
+            url: `/instances/${instanceId}/logs`,
             onDownloadProgress: (progressEvent) => {
                 setLog(progressEvent.event.currentTarget.response)
             },

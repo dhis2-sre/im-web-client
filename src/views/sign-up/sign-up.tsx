@@ -36,7 +36,7 @@ export const SignUp = () => {
     }, [])
     const [{ loading }, postSignup] = useAuthAxios(
         {
-            url: 'users',
+            url: '/users',
             method: 'POST',
         },
         { manual: true }

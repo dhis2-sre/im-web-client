@@ -13,7 +13,7 @@ export const NewInstance = () => {
     const [{ data: stacks, loading: stacksLoading, error: stacksError }] = useAuthAxios<Stack[]>('stacks')
     const [{ loading: postLoading, error: postError }, postNewInstance] = useAuthAxios(
         {
-            url: 'instances',
+            url: '/instances',
             method: 'POST',
         },
         { manual: true }

@@ -76,7 +76,7 @@ const getOptions = (name: string, value, data) => {
 const AsyncParameterDropdownField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
     const prevRepositoryRef = useRef(repository)
     const [{ data, error, loading }, refetch] = useAuthAxios({
-        url: 'integrations',
+        url: '/integrations',
         method: 'POST',
         data: getAsyncParameterFieldRequestData(name, repository),
     })

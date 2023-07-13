@@ -21,7 +21,7 @@ export const RestartButton: React.FC<RestartButtonProps> = ({ instanceId, onComp
     const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
             method: 'PUT',
-            url: `instances/${instanceId}/restart`,
+            url: `/instances/${instanceId}/restart`,
         },
         { manual: true }
     )

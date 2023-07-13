@@ -11,7 +11,7 @@ export const LogoutButton = () => {
     const [, requestLogout] = useAuthAxios(
         {
             method: 'DELETE',
-            url: 'users',
+            url: '/users',
         },
         { manual: true }
     )

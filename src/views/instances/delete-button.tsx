@@ -21,7 +21,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ instanceId, onComple
     const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
             method: 'DELETE',
-            url: `instances/${instanceId}`,
+            url: `/instances/${instanceId}`,
         },
         { manual: true }
     )

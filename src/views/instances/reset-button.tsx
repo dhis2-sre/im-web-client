@@ -21,7 +21,7 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
     const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
             method: 'PUT',
-            url: `instances/${instanceId}/reset`,
+            url: `/instances/${instanceId}/reset`,
         },
         { manual: true }
     )
