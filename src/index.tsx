@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { Alerts, ErrorView, Layout } from './components'
 import './index.module.css'
-import { GroupedDatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
+import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -16,7 +16,7 @@ const router = createBrowserRouter(
                 <Route path="/stacks" element={<StacksList />} />
                 <Route path="/stacks/:name" element={<StackDetails />} />
                 <Route path="/instances" element={<InstancesList />} />
-                <Route path="/databases" element={<GroupedDatabasesList />} />
+                <Route path="/databases" element={<DatabasesList />} />
                 <Route path="/new" element={<NewInstance />} />
             </Route>
         </>
