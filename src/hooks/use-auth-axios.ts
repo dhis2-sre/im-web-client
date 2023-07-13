@@ -12,7 +12,7 @@ import { useCallback } from 'react'
 export const baseURL = process.env.REACT_APP_API_URL
 /* Better make sure this is a unque string because the event
  * is going to be sent via the global window object */
-export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_8c464fe8-81e0-4145-9652-a4597b54545f'
+export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
 if (!baseURL) {
     throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
@@ -44,7 +44,6 @@ const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promis
             })
         )
         .catch((error) => {
-            // Could not refresh because refresh token was expired
             if (error.response.status === 401) {
                 clearAuthTokens()
                 dispatchUnauthorizedEvent()
