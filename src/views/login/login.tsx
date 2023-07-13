@@ -77,11 +77,7 @@ export const Login = () => {
                     }}
                     disabled={loading}
                 />
-                {error && (
-                    <Help error>
-                        {error?.response?.data ?? error?.message ?? 'Could not fetch authentication tokens'}
-                    </Help>
-                )}
+                {error && <Help error>{error?.response?.data ?? error?.message ?? 'Could not fetch authentication tokens'}</Help>}
                 <Button primary type="submit" value="login" loading={loading}>
                     Login
                 </Button>

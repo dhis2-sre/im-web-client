@@ -69,23 +69,8 @@ export const SignUp = () => {
                     <LogoIcon className={styles.logo} />
                     Instance manager sign up
                 </h2>
-                <InputField
-                    disabled={loading}
-                    name="email"
-                    label="email"
-                    type="email"
-                    value={inputs.email}
-                    onChange={onInputChange}
-                />
-                <InputField
-                    disabled={loading}
-                    type="password"
-                    name="password"
-                    label="password"
-                    value={inputs.password}
-                    autoComplete="new-password"
-                    onChange={onInputChange}
-                />
+                <InputField disabled={loading} name="email" label="email" type="email" value={inputs.email} onChange={onInputChange} />
+                <InputField disabled={loading} type="password" name="password" label="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
                 <InputField
                     disabled={loading}
                     type="password"
@@ -96,12 +81,7 @@ export const SignUp = () => {
                     onChange={onInputChange}
                 />
                 {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button
-                    primary
-                    type="submit"
-                    value="Sign up"
-                    disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}
-                >
+                <Button primary type="submit" value="Sign up" disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}>
                     Sign up
                 </Button>
             </Card>

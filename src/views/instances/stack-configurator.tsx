@@ -1,14 +1,4 @@
-import {
-    Center,
-    CheckboxField,
-    CircularLoader,
-    Divider,
-    InputField,
-    NoticeBox,
-    SingleSelectField,
-    SingleSelectOption,
-    TextAreaField,
-} from '@dhis2/ui'
+import { Center, CheckboxField, CircularLoader, Divider, InputField, NoticeBox, SingleSelectField, SingleSelectOption, TextAreaField } from '@dhis2/ui'
 import cx from 'classnames'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
@@ -30,10 +20,7 @@ const toKeyedObject = (array): ParameterRecord =>
 const getRepositoryValueForImageTag = (name: string, requiredParameters, optionalParameters) =>
     name === IMAGE_TAG ? requiredParameters[IMAGE_REPOSITORY] ?? optionalParameters[IMAGE_REPOSITORY] : undefined
 
-const computeNewParameters = (
-    currentParameters: ParameterRecord,
-    { name, value }: { name: string; value: string }
-): ParameterRecord => {
+const computeNewParameters = (currentParameters: ParameterRecord, { name, value }: { name: string; value: string }): ParameterRecord => {
     /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
      * the `IMAGE_TAG` value needs to be cleared when
      * `IMAGE_REPOSITORY` changes.
@@ -65,10 +52,7 @@ const ttlMap = new Map<string, number>([
     ['1 month', 60 * 60 * 24 * 7 * 4],
 ])
 
-export const StackConfigurator = forwardRef(function StackConfigurator(
-    { name: stackName, disabled }: { name: string; disabled: boolean },
-    ref
-) {
+export const StackConfigurator = forwardRef(function StackConfigurator({ name: stackName, disabled }: { name: string; disabled: boolean }, ref) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [group, setGroup] = useState('')
@@ -105,9 +89,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
 
     useEffect(() => {
         if (stack) {
-            setRequiredStackParameters(
-                toKeyedObject(stack.requiredParameters.filter((parameter) => !parameter.consumed))
-            )
+            setRequiredStackParameters(toKeyedObject(stack.requiredParameters.filter((parameter) => !parameter.consumed)))
             setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
         }
     }, [stack, setRequiredStackParameters, setOptionalStackParameters])
@@ -142,48 +124,19 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
     return (
         <>
             <div className={styles.basics}>
-                <InputField
-                    className={styles.field}
-                    label="Name"
-                    value={name}
-                    onChange={({ value }) => setName(value)}
-                    required
-                    disabled={disabled}
-                />
-                <TextAreaField
-                    className={styles.field}
-                    label="Description"
-                    value={description}
-                    rows={3}
-                    onChange={({ value }) => setDescription(value)}
-                />
-                <SingleSelectField
-                    className={styles.field}
-                    selected={group}
-                    filterable={true}
-                    onChange={({ selected }) => setGroup(selected)}
-                    label="Group"
-                >
+                <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
+                <TextAreaField className={styles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
+                <SingleSelectField className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <SingleSelectField
-                    className={styles.field}
-                    selected={ttl}
-                    onChange={({ selected }) => setTtl(selected)}
-                    label="Lifetime"
-                >
+                <SingleSelectField className={styles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
                     {Array.from(ttlMap.keys()).map((key) => (
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
-                <CheckboxField
-                    className={cx(styles.field, styles.checkboxfield)}
-                    label="Public?"
-                    checked={publicity}
-                    onChange={({ checked }) => setPublicity(checked)}
-                />
+                <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
             </div>
 
             {requiredStackParameters && (
@@ -212,11 +165,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                         key={name}
                         name={name}
                         value={value}
-                        repository={getRepositoryValueForImageTag(
-                            name,
-                            requiredStackParameters,
-                            optionalStackParameters
-                        )}
+                        repository={getRepositoryValueForImageTag(name, requiredStackParameters, optionalStackParameters)}
                         onChange={onOptionalInputChange}
                         disabled={disabled}
                     />

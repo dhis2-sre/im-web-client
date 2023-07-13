@@ -1,15 +1,4 @@
-import {
-    Center,
-    CircularLoader,
-    DataTable,
-    DataTableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead,
-    DataTableRow,
-    DataTableToolbar,
-    NoticeBox,
-} from '@dhis2/ui'
+import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, DataTableToolbar, NoticeBox } from '@dhis2/ui'
 import { useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'

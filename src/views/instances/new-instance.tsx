@@ -1,13 +1,4 @@
-import {
-    Button,
-    ButtonStrip,
-    Card,
-    Center,
-    CircularLoader,
-    NoticeBox,
-    SingleSelectField,
-    SingleSelectOption,
-} from '@dhis2/ui'
+import { Button, ButtonStrip, Card, Center, CircularLoader, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'

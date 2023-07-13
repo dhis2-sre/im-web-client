@@ -52,14 +52,7 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
                     Are you sure you want to reset instance "{instanceName}"
                 </ConfirmationModal>
             )}
-            <Button
-                small
-                secondary
-                loading={loading}
-                disabled={loading}
-                icon={<IconClockHistory16 />}
-                onClick={onClick}
-            >
+            <Button small secondary loading={loading} disabled={loading} icon={<IconClockHistory16 />} onClick={onClick}>
                 Reset
             </Button>
         </>

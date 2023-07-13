@@ -1,12 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
-import {
-    IAuthTokens,
-    TokenRefreshRequest,
-    applyAuthTokenInterceptor,
-    clearAuthTokens,
-    getBrowserLocalStorage,
-} from 'axios-jwt'
+import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor, clearAuthTokens, getBrowserLocalStorage } from 'axios-jwt'
 import { useCallback } from 'react'
 
 export const baseURL = process.env.REACT_APP_API_URL
@@ -75,10 +69,7 @@ interface UseAuthAxiosOptions extends Options {
 }
 
 interface UseAuthAxios {
-    <TResponse = any, TBody = any, TError = any>(
-        config: AxiosRequestConfig<TBody> | string,
-        options?: UseAuthAxiosOptions
-    ): UseAxiosResult<TResponse, TBody, TError>
+    <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 
 const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = true, ...options } = {}) => {

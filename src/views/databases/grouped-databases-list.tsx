@@ -55,12 +55,7 @@ export const DatabasesList = () => {
                                     <DataTableCell>
                                         <ButtonStrip>
                                             <DownloadButton id={database.id} />
-                                            <DeleteButton
-                                                id={database.id}
-                                                databaseName={database.name}
-                                                groupName={group.name}
-                                                onComplete={fetchGroupsWithDatabases}
-                                            />
+                                            <DeleteButton id={database.id} databaseName={database.name} groupName={group.name} onComplete={fetchGroupsWithDatabases} />
                                         </ButtonStrip>
                                     </DataTableCell>
                                 </DataTableRow>

@@ -1,14 +1,4 @@
-import {
-    Center,
-    CircularLoader,
-    DataTable,
-    DataTableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead,
-    DataTableRow,
-    NoticeBox,
-} from '@dhis2/ui'
+import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, NoticeBox } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'

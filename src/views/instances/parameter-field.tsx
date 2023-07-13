@@ -14,20 +14,9 @@ export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const SOURCE_ID = 'SOURCE_ID'
 export const PRESET_ID = 'PRESET_ID'
 
-export const DROPDOWN_PARAMETER_NAMES = new Set([
-    DATABASE_ID,
-    IMAGE_REPOSITORY,
-    IMAGE_TAG,
-    IMAGE_PULL_POLICY,
-    SOURCE_ID,
-    PRESET_ID,
-])
+export const DROPDOWN_PARAMETER_NAMES = new Set([DATABASE_ID, IMAGE_REPOSITORY, IMAGE_TAG, IMAGE_PULL_POLICY, SOURCE_ID, PRESET_ID])
 
-export const CHECKBOX_PARAMETER_NAMES = new Set([
-    INSTALL_REDIS,
-    FLYWAY_MIGRATE_OUT_OF_ORDER,
-    FLYWAY_REPAIR_BEFORE_MIGRATION,
-])
+export const CHECKBOX_PARAMETER_NAMES = new Set([INSTALL_REDIS, FLYWAY_MIGRATE_OUT_OF_ORDER, FLYWAY_REPAIR_BEFORE_MIGRATION])
 
 type ParameterFieldProps = {
     name: string
@@ -84,14 +73,7 @@ const getOptions = (name: string, value, data) => {
     return data.map((value) => ({ value, label: value }))
 }
 
-const AsyncParameterDropdownField = ({
-    name,
-    onChange,
-    value,
-    disabled,
-    repository,
-    required,
-}: ParameterFieldProps) => {
+const AsyncParameterDropdownField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
     const prevRepositoryRef = useRef(repository)
     const [{ data, error, loading }, refetch] = useAuthAxios({
         url: 'integrations',
@@ -127,16 +109,7 @@ const AsyncParameterDropdownField = ({
 
 export const ParameterField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
     if (DROPDOWN_PARAMETER_NAMES.has(name)) {
-        return (
-            <AsyncParameterDropdownField
-                name={name}
-                onChange={onChange}
-                value={value}
-                disabled={disabled}
-                required={required}
-                repository={repository}
-            />
-        )
+        return <AsyncParameterDropdownField name={name} onChange={onChange} value={value} disabled={disabled} required={required} repository={repository} />
     } else if (CHECKBOX_PARAMETER_NAMES.has(name)) {
         return (
             <CheckboxField
@@ -151,16 +124,6 @@ export const ParameterField = ({ name, onChange, value, disabled, repository, re
             />
         )
     } else {
-        return (
-            <InputField
-                className={styles.field}
-                name={name}
-                label={toTitleCase(name)}
-                value={value}
-                onChange={onChange}
-                required={required}
-                disabled={disabled}
-            />
-        )
+        return <InputField className={styles.field} name={name} label={toTitleCase(name)} value={value} onChange={onChange} required={required} disabled={disabled} />
     }
 }

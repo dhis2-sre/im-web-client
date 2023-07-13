@@ -77,8 +77,7 @@ export const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span className={styles.verticallyAlignedCellContent}>
-                                                    {instance.name}{' '}
-                                                    {instance.public && <IconWorld24 color={colors.grey600} />}
+                                                    {instance.name} {instance.public && <IconWorld24 color={colors.grey600} />}
                                                 </span>
                                             </DataTableCell>
                                             <DataTableCell>
@@ -94,26 +93,11 @@ export const InstancesList = () => {
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <ButtonStrip>
-                                                    <OpenButton
-                                                        hostname={group.hostname}
-                                                        instanceName={instance.name}
-                                                    />
+                                                    <OpenButton hostname={group.hostname} instanceName={instance.name} />
                                                     <LogButton instanceId={instance.id} instanceName={instance.name} />
-                                                    <RestartButton
-                                                        instanceId={instance.id}
-                                                        instanceName={instance.name}
-                                                        onComplete={fetchInstancesGroups}
-                                                    />
-                                                    <ResetButton
-                                                        instanceId={instance.id}
-                                                        instanceName={instance.name}
-                                                        onComplete={fetchInstancesGroups}
-                                                    />
-                                                    <DeleteButton
-                                                        instanceId={instance.id}
-                                                        instanceName={instance.name}
-                                                        onComplete={fetchInstancesGroups}
-                                                    />
+                                                    <RestartButton instanceId={instance.id} instanceName={instance.name} onComplete={fetchInstancesGroups} />
+                                                    <ResetButton instanceId={instance.id} instanceName={instance.name} onComplete={fetchInstancesGroups} />
+                                                    <DeleteButton instanceId={instance.id} instanceName={instance.name} onComplete={fetchInstancesGroups} />
                                                 </ButtonStrip>
                                             </DataTableCell>
                                         </DataTableRow>
