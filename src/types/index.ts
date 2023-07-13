@@ -89,5 +89,3 @@ export type WaitResponse = definitions['WaitResponse']
 export type saveAsRequest = definitions['saveAsRequest']
 export type signUpRequest = definitions['signUpRequest']
 export type updateUserRequest = definitions['updateUserRequest']
-
-
