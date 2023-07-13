@@ -16,7 +16,7 @@ export const NewInstance = () => {
             url: 'instances',
             method: 'POST',
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
     const onSubmit = useCallback(
         async (event) => {

@@ -23,7 +23,7 @@ export const DeleteButton = ({ id, databaseName, groupName, onComplete }: DeletB
             url: `databases/${id}`,
             method: 'delete',
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
 
     const onClick = useCallback(() => {

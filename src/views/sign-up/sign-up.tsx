@@ -39,7 +39,7 @@ export const SignUp = () => {
             url: 'users',
             method: 'POST',
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
 
     const onSubmit = useCallback(

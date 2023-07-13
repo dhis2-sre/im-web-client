@@ -72,15 +72,15 @@ interface UseAuthAxios {
     <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 
-const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = true, ...options } = {}) => {
+const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, ...options } = {}) => {
     const useAxiosResult: UseAxiosResult = useAxiosWithJwt(urlOrConfigObject, options)
     const [, execute] = useAxiosResult
 
     /* The default behaviour for useAxios is to let consumers deal
-     * with promise rejection manually, but we prefer it to be handled
-     * here. In cases where it is more ergonomic to have a try/catch
-     * block in the component itself, this default behaviour can be
-     * achieved by passing `autoCatch: false` in the options parameter. */
+     * with promise rejection manually, but in some cases this is not
+     * convenient. In cases where it is not ergonomic to have a try/catch
+     * block in the component itself, the errors can be caught (swallowed)
+     * in the hook by passing `autoCatch: true` in the options parameter. */
     const executeWithAutoCatch = useCallback(
         async (...args) => {
             try {

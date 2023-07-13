@@ -23,7 +23,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ instanceId, onComple
             method: 'DELETE',
             url: `instances/${instanceId}`,
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
     const onClick = useCallback(() => {
         setShowConfirmationModal(true)

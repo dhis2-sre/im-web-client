@@ -23,7 +23,7 @@ export const UploadButton = ({ groupName, onComplete }: { groupName: string; onC
             method: 'post',
             onUploadProgress,
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
     const onFileSelect = useCallback(
         async ({ files }) => {

@@ -23,7 +23,7 @@ export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete
             method: 'PUT',
             url: `instances/${instanceId}/reset`,
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
     const onClick = useCallback(() => {
         setShowConfirmationModal(true)

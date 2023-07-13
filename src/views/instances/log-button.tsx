@@ -22,7 +22,7 @@ export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }
         },
         /* The way this endpoint behaves triggers the hook's autoCancel
          * behaviour. But we can disable that. */
-        { manual: true, autoCancel: false }
+        { manual: true, autoCancel: false, autoCatch: true }
     )
 
     const onClick = useCallback(() => {

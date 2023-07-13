@@ -13,7 +13,7 @@ export const LogoutButton = () => {
             method: 'DELETE',
             url: 'users',
         },
-        { manual: true, autoCatch: false }
+        { manual: true }
     )
 
     const onClick = useCallback(async () => {
