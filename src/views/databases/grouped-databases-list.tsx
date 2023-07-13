@@ -15,8 +15,9 @@ import { DeleteButton } from './delete-button'
 import { DownloadButton } from './download-button'
 import styles from './grouped-databases-list.module.css'
 import { UploadButton } from './upload-button'
+import type { FC } from 'react'
 
-export const DatabasesList = () => {
+export const DatabasesList: FC = () => {
     const [{ data: groupsWithDatabases }, fetchGroupsWithDatabases] = useAuthAxios<GroupWithDatabases[]>('databases', {
         useCache: false,
     })

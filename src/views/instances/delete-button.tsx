@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../components'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
+import type { FC } from 'react'
 
 type DeleteButtonProps = {
     instanceId: number
@@ -11,7 +12,7 @@ type DeleteButtonProps = {
     onComplete: () => void
 }
 
-export const DeleteButton: React.FC<DeleteButtonProps> = ({ instanceId, onComplete, instanceName }) => {
+export const DeleteButton: FC<DeleteButtonProps> = ({ instanceId, onComplete, instanceName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(

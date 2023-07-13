@@ -5,8 +5,9 @@ import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
 import styles from './new-instance.module.css'
 import { StackConfigurator } from './stack-configurator'
+import type { FC } from 'react'
 
-export const NewInstance = () => {
+export const NewInstance: FC = () => {
     const navigate = useNavigate()
     const stackConfiguratorRef = useRef(null)
     const [selectedStack, setSelectedStack] = useState<Stack>({ name: '' })

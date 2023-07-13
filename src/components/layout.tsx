@@ -5,8 +5,9 @@ import { isLoggedIn } from 'axios-jwt'
 import styles from './layout.module.css'
 import { useEffect } from 'react'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
+import type { FC } from 'react'
 
-export const Layout = () => {
+export const Layout: FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
 

@@ -1,4 +1,5 @@
 import { Button, ButtonStrip, Modal, ModalActions, ModalContent } from '@dhis2/ui'
+import type { FC } from 'react'
 
 type ConfirmationModalProps = {
     children: React.ReactNode
@@ -7,7 +8,7 @@ type ConfirmationModalProps = {
     onCancel: Function
 }
 
-export const ConfirmationModal = ({ children, destructive, onConfirm, onCancel }: ConfirmationModalProps) => (
+export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, destructive, onConfirm, onCancel }) => (
     <Modal small>
         <ModalContent>{children}</ModalContent>
         <ModalActions>

@@ -3,6 +3,7 @@ import cx from 'classnames'
 import { useEffect, useRef } from 'react'
 import { useAuthAxios } from '../../hooks'
 import styles from './parameter-field.module.css'
+import type { FC } from 'react'
 
 export const DATABASE_ID = 'DATABASE_ID'
 export const FLYWAY_MIGRATE_OUT_OF_ORDER = 'FLYWAY_MIGRATE_OUT_OF_ORDER'
@@ -73,7 +74,7 @@ const getOptions = (name: string, value, data) => {
     return data.map((value) => ({ value, label: value }))
 }
 
-const AsyncParameterDropdownField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
+const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, onChange, value, disabled, repository, required }) => {
     const prevRepositoryRef = useRef(repository)
     const [{ data, error, loading }, refetch] = useAuthAxios({
         url: '/integrations',

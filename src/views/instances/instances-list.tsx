@@ -24,10 +24,11 @@ import { OpenButton } from './open-button'
 import { ResetButton } from './reset-button'
 import { RestartButton } from './restart-button'
 import { LogButton } from './log-button'
+import type { FC } from 'react'
 
 const calculateExpiration = (instance: Instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
-export const InstancesList = () => {
+export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const [{ data: instancesGroups, error }, fetchInstancesGroups] = useAuthAxios<GroupWithInstances[]>('instances', {
         useCache: false,

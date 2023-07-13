@@ -2,16 +2,24 @@ import { Center, CheckboxField, CircularLoader, Divider, InputField, NoticeBox, 
 import cx from 'classnames'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
-import { Group, Stack } from '../../types'
+import { Group, Stack, StackOptionalParameter, StackRequiredParameter } from '../../types'
 import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './parameter-field'
 import styles from './stack-configurator.module.css'
+import type { Ref } from 'react'
 
-// type ParameterRecord = Record<ParameterName, string>
-type ParameterRecord = any
+type StackParameters = {
+    name: string
+    description: string
+    groupName: string
+    ttl: number
+    public: boolean
+    requiredParameters: StackRequiredParameter[]
+    optionalParameters: StackOptionalParameter[]
+}
 
 const toArray = (object) => Object.entries(object).map(([name, value]) => ({ name, value }))
 
-const toKeyedObject = (array): ParameterRecord =>
+const toKeyedObject = (array): StackRequiredParameter =>
     array.reduce((acc, { name, defaultValue: value }) => {
         acc[name] = value ?? ''
         return acc
@@ -20,7 +28,7 @@ const toKeyedObject = (array): ParameterRecord =>
 const getRepositoryValueForImageTag = (name: string, requiredParameters, optionalParameters) =>
     name === IMAGE_TAG ? requiredParameters[IMAGE_REPOSITORY] ?? optionalParameters[IMAGE_REPOSITORY] : undefined
 
-const computeNewParameters = (currentParameters: ParameterRecord, { name, value }: { name: string; value: string }): ParameterRecord => {
+const computeNewParameters = (currentParameters: StackRequiredParameter, { name, value }: { name: string; value: string }): StackRequiredParameter => {
     /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
      * the `IMAGE_TAG` value needs to be cleared when
      * `IMAGE_REPOSITORY` changes.
@@ -52,7 +60,9 @@ const ttlMap = new Map<string, number>([
     ['1 month', 60 * 60 * 24 * 7 * 4],
 ])
 
-export const StackConfigurator = forwardRef(function StackConfigurator({ name: stackName, disabled }: { name: string; disabled: boolean }, ref) {
+type StackConfiguratorProps = { name: string; disabled: boolean }
+
+export const StackConfigurator = forwardRef(function StackConfigurator({ name: stackName, disabled }: StackConfiguratorProps, ref: Ref<{ getStackParameters }>) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [group, setGroup] = useState('')
@@ -72,7 +82,7 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
     useImperativeHandle(
         ref,
         () => ({
-            getStackParameters() {
+            getStackParameters(): StackParameters {
                 return {
                     name: name,
                     description: description,

@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../components'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
+import type { FC } from 'react'
 
 type RestartButtonProps = {
     instanceId: number
@@ -11,7 +12,7 @@ type RestartButtonProps = {
     onComplete: () => void
 }
 
-export const RestartButton: React.FC<RestartButtonProps> = ({ instanceId, onComplete, instanceName }) => {
+export const RestartButton: FC<RestartButtonProps> = ({ instanceId, onComplete, instanceName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(

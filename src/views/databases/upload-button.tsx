@@ -4,8 +4,11 @@ import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { GroupWithDatabases } from '../../types'
 import styles from './upload-button.module.css'
+import type { FC } from 'react'
 
-export const UploadButton = ({ groupName, onComplete }: { groupName: string; onComplete: Function }) => {
+type UploadButtonProps = { groupName: string; onComplete: Function }
+
+export const UploadButton: FC<UploadButtonProps> = ({ groupName, onComplete }) => {
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })

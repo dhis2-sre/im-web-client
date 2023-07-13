@@ -2,6 +2,7 @@ import { useAlerts } from '@dhis2/app-service-alerts'
 import type { Alert, AlertOptions } from '@dhis2/app-service-alerts/build/types/types'
 import { AlertBar, AlertStack } from '@dhis2/ui'
 import { useState, useEffect } from 'react'
+import type { FC } from 'react'
 
 interface AlertStackOptions extends AlertOptions {
     onHidden?: Function
@@ -15,7 +16,7 @@ interface AlertStackAlert extends Alert {
  * we need to move it to @dhis2/ui and import it from
  * there, although we did have to add types here */
 
-const Alerts = () => {
+const Alerts: FC = () => {
     const alertManagerAlerts = useAlerts()
     const [alertStackAlerts, setAlertStackAlerts] = useState<AlertStackAlert[]>(alertManagerAlerts)
     const removeAlertStackAlert = (id) => setAlertStackAlerts(alertStackAlerts.filter((alertStackAlert) => alertStackAlert.id !== id))

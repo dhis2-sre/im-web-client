@@ -3,13 +3,14 @@ import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
 import styles from './log-button.module.css'
+import type { FC } from 'react'
 
 type LogButtonProps = {
     instanceId: number
     instanceName: string
 }
 
-export const LogButton: React.FC<LogButtonProps> = ({ instanceId, instanceName }) => {
+export const LogButton: FC<LogButtonProps> = ({ instanceId, instanceName }) => {
     const [showLogModal, setShowLogModal] = useState(false)
     const [log, setLog] = useState('')
     const [{ error }, requestLog] = useAuthAxios<Instance>(
