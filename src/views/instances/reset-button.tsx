@@ -1,6 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconClockHistory16 } from '@dhis2/ui'
-import { useCallback, useState } from 'react'
+import React, { FC, useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../components'
 import { useAuthAxios } from '../../hooks'
 import { Instance } from '../../types'
@@ -11,7 +11,7 @@ type ResetButtonProps = {
     onComplete: () => void
 }
 
-export const ResetButton: React.FC<ResetButtonProps> = ({ instanceId, onComplete, instanceName }) => {
+export const ResetButton: FC<ResetButtonProps> = ({ instanceId, onComplete, instanceName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(
