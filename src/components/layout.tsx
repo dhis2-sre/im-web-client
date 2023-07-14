@@ -6,6 +6,7 @@ import styles from './layout.module.css'
 import { useEffect } from 'react'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import type { FC } from 'react'
+import {getCurrentUser} from "../hooks";
 
 export const Layout: FC = () => {
     const navigate = useNavigate()
@@ -39,6 +40,11 @@ export const Layout: FC = () => {
                     <NavLink to="/instances">Instances</NavLink>
                     <NavLink to="/databases">Databases</NavLink>
                     <NavLink to="/stacks">Stacks</NavLink>
+                    {getCurrentUser().isAdmin() &&
+                        <>
+                            <NavLink to="/users">Users</NavLink>
+                            <NavLink to="/groups">Groups</NavLink>
+                        </>}
                 </nav>
                 <LogoutButton />
             </div>

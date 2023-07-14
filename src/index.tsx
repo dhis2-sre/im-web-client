@@ -2,10 +2,12 @@ import { AlertsProvider } from '@dhis2/app-service-alerts'
 import { CssReset, CssVariables } from '@dhis2/ui'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, ErrorView, Layout } from './components'
 import './index.module.css'
 import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
+import { UsersList } from './views/users'
+import { GroupsList } from './views/groups'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -18,6 +20,8 @@ const router = createBrowserRouter(
                 <Route path="/instances" element={<InstancesList />} />
                 <Route path="/databases" element={<DatabasesList />} />
                 <Route path="/new" element={<NewInstance />} />
+                <Route path="/groups" element={<GroupsList />} />
+                <Route path="/users" element={<UsersList />} />
             </Route>
         </>
     )
