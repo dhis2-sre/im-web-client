@@ -13,12 +13,12 @@ import { useAuthAxios } from '../../hooks'
 import { GroupWithDatabases } from '../../types'
 import { DeleteButton } from './delete-button'
 import { DownloadButton } from './download-button'
-import styles from './grouped-databases-list.module.css'
+import styles from './databases-list.module.css'
 import { UploadButton } from './upload-button'
 import type { FC } from 'react'
 
 export const DatabasesList: FC = () => {
-    const [{ data: groupsWithDatabases }, fetchGroupsWithDatabases] = useAuthAxios<GroupWithDatabases[]>('databases', {
+    const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', {
         useCache: false,
     })
 
@@ -28,11 +28,11 @@ export const DatabasesList: FC = () => {
                 <h1>All databases</h1>
             </div>
 
-            {groupsWithDatabases?.map((group) => (
+            {data?.map((group) => (
                 <div key={group.name}>
                     <TableToolbar className={styles.tabletoolbar}>
                         <h2>{group.name}</h2>
-                        <UploadButton groupName={group.name} onComplete={fetchGroupsWithDatabases} />
+                        <UploadButton groupName={group.name} onComplete={refetch} />
                     </TableToolbar>
                     <DataTable>
                         <TableHead>
@@ -56,7 +56,7 @@ export const DatabasesList: FC = () => {
                                     <DataTableCell>
                                         <ButtonStrip>
                                             <DownloadButton id={database.id} />
-                                            <DeleteButton id={database.id} databaseName={database.name} groupName={group.name} onComplete={fetchGroupsWithDatabases} />
+                                            <DeleteButton id={database.id} databaseName={database.name} groupName={group.name} onComplete={refetch} />
                                         </ButtonStrip>
                                     </DataTableCell>
                                 </DataTableRow>

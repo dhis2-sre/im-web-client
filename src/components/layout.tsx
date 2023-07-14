@@ -38,9 +38,7 @@ export const Layout: FC = () => {
                 <nav className={styles.navlist}>
                     <NavLink to="/instances">Instances</NavLink>
                     <NavLink to="/databases">Databases</NavLink>
-                    <NavLink to="/stacks" end>
-                        Stacks
-                    </NavLink>
+                    <NavLink to="/stacks">Stacks</NavLink>
                 </nav>
                 <LogoutButton />
             </div>

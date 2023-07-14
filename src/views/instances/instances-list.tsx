@@ -30,7 +30,7 @@ const calculateExpiration = (instance: Instance) => new Date(instance.createdAt)
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
-    const [{ data: instancesGroups, error }, fetchInstancesGroups] = useAuthAxios<GroupWithInstances[]>('instances', {
+    const [{ data, error }, refetch] = useAuthAxios<GroupWithInstances[]>('instances', {
         useCache: false,
     })
 
@@ -49,9 +49,9 @@ export const InstancesList: FC = () => {
                 </NoticeBox>
             )}
 
-            {instancesGroups?.length < 1 && <h3>No instances</h3>}
+            {data?.length < 1 && <h3>No instances</h3>}
 
-            {instancesGroups?.map((group) => {
+            {data?.map((group) => {
                 return (
                     <div key={group.name}>
                         <DataTableToolbar className={styles.tabletoolbar}>{group.name}</DataTableToolbar>
@@ -96,9 +96,9 @@ export const InstancesList: FC = () => {
                                                 <ButtonStrip>
                                                     <OpenButton hostname={group.hostname} instanceName={instance.name} />
                                                     <LogButton instanceId={instance.id} instanceName={instance.name} />
-                                                    <RestartButton instanceId={instance.id} instanceName={instance.name} onComplete={fetchInstancesGroups} />
-                                                    <ResetButton instanceId={instance.id} instanceName={instance.name} onComplete={fetchInstancesGroups} />
-                                                    <DeleteButton instanceId={instance.id} instanceName={instance.name} onComplete={fetchInstancesGroups} />
+                                                    <RestartButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
+                                                    <ResetButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
+                                                    <DeleteButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
                                                 </ButtonStrip>
                                             </DataTableCell>
                                         </DataTableRow>

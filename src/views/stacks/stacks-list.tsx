@@ -6,7 +6,7 @@ import { Stack } from '../../types'
 import styles from './stacks-list.module.css'
 
 export const StacksList = () => {
-    const [{ data: stacks, loading, error }] = useAuthAxios<Stack[]>('stacks')
+    const [{ data, loading, error }] = useAuthAxios<Stack[]>('/stacks')
 
     if (loading) {
         return (
@@ -37,7 +37,7 @@ export const StacksList = () => {
                     </DataTableRow>
                 </DataTableHead>
                 <DataTableBody>
-                    {stacks.map((stack) => {
+                    {data.map((stack) => {
                         return (
                             <DataTableRow key={stack.name}>
                                 <DataTableCell>

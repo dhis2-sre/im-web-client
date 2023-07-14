@@ -1,1 +1,1 @@
-export { DatabasesList } from './grouped-databases-list'
+export { DatabasesList } from './databases-list'
