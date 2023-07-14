@@ -18,9 +18,7 @@ import type { FC } from 'react'
 import { UploadButton } from './upload-button'
 
 export const DatabasesList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', {
-        useCache: false,
-    })
+    const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', { useCache: false })
 
     return (
         <div className={styles.wrapper}>
