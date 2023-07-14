@@ -29,11 +29,12 @@
         "@testing-library/user-event": "^14.4.3",
         "@types/jest": "^29.5.3",
         "@types/node": "^20.4.1",
+        "@types/react": "^18.2.14",
         "@types/react-dom": "^18.2.6",
         "@types/react-router-dom": "^5.3.3",
-        "@types/react": "^18.2.14",
         "@vitejs/plugin-react-swc": "^3.3.2",
         "eslint-plugin-react-refresh": "^0.4.1",
+        "openapi-typescript-codegen": "^0.25.0",
         "typescript": "^5.1.6",
         "vite": "^4.4.0"
     },
@@ -49,7 +50,7 @@
         "format:eslint": "yarn eslint src --fix",
         "format:prettier": "yarn prettier src --write",
         "format": "yarn format:eslint && yarn format:prettier",
-        "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts && yarn format:prettier"
+        "generate-types": "rm -r ./src/types/generated && yarn openapi --input https://api.im.dev.test.c.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false"
     },
     "browserslist": {
         "production": [
