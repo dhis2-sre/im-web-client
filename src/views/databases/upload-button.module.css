@@ -26,5 +26,5 @@
 }
 
 .cancelButton:hover {
-        color: var(--colors-blue700);
+    color: var(--colors-blue700);
 }

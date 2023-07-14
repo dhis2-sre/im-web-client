@@ -1231,1953 +1231,728 @@ export interface responses {
 
 export interface operations {
     /** List databases... */
-    get: operations["listDatabases"];
+    listDatabases: {
+        responses: {
+            /** GroupsWithDatabases */
+            200: {
+                schema: definitions['GroupsWithDatabases'][]
+            }
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Upload database... */
-    post: operations["uploadDatabase"];
-  };
-  "/databases/{id}": {
+    uploadDatabase: {
+        parameters: {
+            formData: {
+                /** Upload database request body parameter */
+                Group: string
+                /** Upload database request body parameter */
+                File: unknown
+            }
+        }
+        responses: {
+            201: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-    get: operations["findDatabase"];
+    findDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            200: responses['Database']
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Update database by id
      * TODO: Race condition? If two clients request at the same time... Do we need a transaction between find and update
      */
-    put: operations["updateDatabaseById"];
+    updateDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Update database request body parameter */
+                Body: definitions['UpdateDatabaseRequest']
+            }
+        }
+        responses: {
+            200: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Delete database by id... */
-    delete: operations["deleteDatabaseById"];
-  };
-  "/databases/{id}/copy": {
+    deleteDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Copy database... */
-    post: operations["copyDatabase"];
-  };
-  "/databases/{id}/download": {
+    copyDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Copy database request body parameter */
+                Body: definitions['CopyDatabaseRequest']
+            }
+        }
+        responses: {
+            202: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Download a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-    get: operations["downloadDatabase"];
-  };
-  "/databases/{id}/external": {
+    downloadDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            200: responses['DownloadDatabaseResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Create link so the database can be downloaded without log in */
-    post: operations["createExternalDownloadDatabase"];
-  };
-  "/databases/{id}/lock": {
+    createExternalDownloadDatabase: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Create external database download */
+                Body: definitions['CreateExternalDatabaseRequest']
+            }
+        }
+        responses: {
+            200: responses['CreateExternalDownloadResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Lock database by id... */
-    post: operations["lockDatabaseById"];
+    lockDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Lock/unlock database request body parameter */
+                Body: definitions['LockDatabaseRequest']
+            }
+        }
+        responses: {
+            200: responses['Lock']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            409: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Unlock database by id */
-    delete: operations["unlockDatabaseById"];
-  };
-  "/databases/external/{uuid}": {
+    unlockDatabaseById: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Lock/unlock database request body parameter */
+                Body: definitions['LockDatabaseRequest']
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Download a given database without authentication */
-    get: operations["externalDownloadDatabase"];
-  };
-  "/databases/save-as/{instanceId}": {
+    externalDownloadDatabase: {
+        parameters: {
+            path: {
+                uuid: number
+            }
+        }
+        responses: {
+            200: responses['DownloadDatabaseResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Save database under a new name */
-    post: operations["saveAsDatabase"];
-  };
-  "/databases/save/{instanceId}": {
+    saveAsDatabase: {
+        parameters: {
+            path: {
+                instanceId: number
+            }
+            body: {
+                /** SaveAs database request body parameter */
+                Body: definitions['saveAsRequest']
+            }
+        }
+        responses: {
+            201: responses['Database']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Saving a database won't affect the instances running the database. However, it should be noted that if two unlocked databases are deployed from the same database they can both overwrite it. It's up to the users to ensure this doesn't happen accidentally. */
-    post: operations["saveDatabase"];
-  };
-  "/groups": {
+    saveDatabase: {
+        parameters: {
+            path: {
+                instanceId: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find all groups by user */
-    get: operations["findAllGroupsByUser"];
+    findAllGroupsByUser: {
+        parameters: {
+            query: {
+                /** deployable */
+                deployable?: string
+            }
+        }
+        responses: {
+            /** Group */
+            200: {
+                schema: definitions['Group'][]
+            }
+            401: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Create a group... */
-    post: operations["groupCreate"];
-  };
-  "/groups/{group}/cluster-configuration": {
+    groupCreate: {
+        parameters: {
+            body: {
+                /** Refresh token request body parameter */
+                Body: definitions['CreateGroupRequest']
+            }
+        }
+        responses: {
+            /** Group */
+            201: {
+                schema: definitions['Group']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Add a cluster configuration to a group. This will allow deploying to a remote cluster.
      * Currently only configurations with embedded access tokens are support.
      * The configuration needs to be encrypted using Mozilla Sops. Please see ./scripts/addClusterConfigToGroup.sh for an example of how this can be done.
      */
-    post: operations["addClusterConfigurationToGroup"];
-  };
-  "/groups/{group}/users/{userId}": {
+    addClusterConfigurationToGroup: {
+        parameters: {
+            path: {
+                group: string
+            }
+            formData: {
+                /** SOPS encrypted Kubernetes configuration file */
+                Body: unknown
+            }
+        }
+        responses: {
+            /** Group */
+            201: {
+                schema: definitions['Group']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Add a user to a group... */
-    post: operations["addUserToGroup"];
-  };
-  "/groups/{name}": {
+    addUserToGroup: {
+        parameters: {
+            path: {
+                group: string
+                userId: number
+            }
+        }
+        responses: {
+            /** Group */
+            201: {
+                schema: definitions['Group']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a group by its name */
-    get: operations["findGroupByName"];
-  };
-  "/health": {
+    findGroupByName: {
+        parameters: {
+            path: {
+                name: string
+            }
+        }
+        responses: {
+            /** Group */
+            200: {
+                schema: definitions['Group']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Show service health status */
-    get: operations["health"];
-  };
-  "/instances": {
+    health: {
+        responses: {
+            200: responses['Response']
+        }
+    }
     /** List all instances accessible by the user */
-    get: operations["listInstances"];
+    listInstances: {
+        responses: {
+            200: responses['GroupWithInstances']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Deploy an instance... */
-    post: operations["deployInstance"];
-  };
-  "/instances-name-to-id/{groupName}/{instanceName}": {
+    deployInstance: {
+        parameters: {
+            body: {
+                /** Deploy instance request body parameter */
+                Payload: definitions['DeployInstanceRequest']
+            }
+            query: {
+                /** preset */
+                preset?: string
+            }
+        }
+        responses: {
+            /** Instance */
+            201: {
+                schema: definitions['Instance']
+            }
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find instance id by name and group name */
-    get: operations["instanceNameToId"];
-  };
-  "/instances/{id}": {
+    instanceNameToId: {
+        parameters: {
+            path: {
+                groupName: string
+                instanceName: string
+            }
+        }
+        responses: {
+            /** Instance */
+            200: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find an instance by id */
-    get: operations["findById"];
+    findById: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            /** Instance */
+            200: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Update an instance... */
-    put: operations["updateInstance"];
+    updateInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Update instance request body parameter */
+                Payload: definitions['UpdateInstanceRequest']
+            }
+        }
+        responses: {
+            /** Instance */
+            204: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Delete an instance by id */
-    delete: operations["deleteInstance"];
-  };
-  "/instances/{id}/logs": {
+    deleteInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Stream instance logs in real time */
-    get: operations["instanceLogs"];
-  };
-  "/instances/{id}/parameters": {
+    instanceLogs: {
+        parameters: {
+            path: {
+                id: number
+            }
+            query: {
+                /** selector */
+                selector?: string
+            }
+        }
+        responses: {
+            200: responses['InstanceLogsResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find instance by id with decrypted parameters */
-    get: operations["findByIdDecrypted"];
-  };
-  "/instances/{id}/pause": {
+    findByIdDecrypted: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            /** Instance */
+            200: {
+                schema: definitions['Instance']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Pause an instance. Pause can be called multiple times even on an already paused instance
      * (idempotent).
      */
-    put: operations["pauseInstance"];
-  };
-  "/instances/{id}/reset": {
+    pauseInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Resetting an instance will completely destroy it and redeploy using the same parameters */
-    put: operations["resetInstance"];
-  };
-  "/instances/{id}/restart": {
+    resetInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+        }
+    }
     /** Restart an instance... */
-    put: operations["restartInstance"];
-  };
-  "/instances/{id}/resume": {
+    restartInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+            query: {
+                /** selector */
+                selector?: string
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /**
      * Resume a paused instance. Resume can be called multiple times even on an already running
      * instance (idempotent).
      */
-    put: operations["resumeInstance"];
-  };
-  "/integrations": {
+    resumeInstance: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Return integration for a given key */
-    post: operations["postIntegration"];
-  };
-  "/me": {
+    postIntegration: {
+        parameters: {
+            body: {
+                /** Integration request body */
+                Body: definitions['Request']
+            }
+        }
+        responses: {
+            200: responses['Response']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Current user details */
-    get: operations["me"];
-  };
-  "/presets": {
+    me: {
+        responses: {
+            /** User */
+            200: {
+                schema: definitions['User']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** List all presets accessible by the user */
-    get: operations["listPresets"];
-  };
-  "/public/instances": {
+    listPresets: {
+        responses: {
+            200: responses['GroupWithInstances']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** List all public instances */
-    get: operations["listPublicInstances"];
-  };
-  "/refresh": {
+    listPublicInstances: {
+        responses: {
+            200: responses['GroupWithInstances']
+        }
+    }
     /** Refresh user tokens */
-    post: operations["refreshToken"];
-  };
-  "/stacks": {
+    refreshToken: {
+        parameters: {
+            body: {
+                /** Refresh token request body parameter */
+                Body: definitions['RefreshTokenRequest']
+            }
+        }
+        responses: {
+            201: responses['Tokens']
+            400: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find all stacks... */
-    get: operations["stacks"];
-  };
-  "/stacks/{name}": {
+    stacks: {
+        responses: {
+            200: responses['StacksResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find stack by name */
-    get: operations["stack"];
-  };
-  "/tokens": {
+    stack: {
+        parameters: {
+            path: {
+                name: string
+            }
+        }
+        responses: {
+            200: responses['StackResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Sign in... And get tokens */
-    post: operations["signIn"];
-  };
-  "/users": {
+    signIn: {
+        responses: {
+            201: responses['Tokens']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find all users with the groups they belong to */
-    get: operations["findAllUsers"];
+    findAllUsers: {
+        responses: {
+            200: responses['UsersResponse']
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Sign up a user. This endpoint is publicly accessible and therefor anyone can sign up. However, before being able to perform any actions, users needs to be a member of a group. And only administrators can add users to groups. */
-    post: operations["signUp"];
+    signUp: {
+        parameters: {
+            body: {
+                /** SignUp request body parameter */
+                Body: definitions['signUpRequest']
+            }
+        }
+        responses: {
+            /** User */
+            201: {
+                schema: definitions['User']
+            }
+            400: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Sign out user... The authentication is done using oauth and JWT. A JWT can't easily be invalidated so even after calling this endpoint a user can still sign in assuming the JWT isn't expired. However, the token can't be refreshed using the refresh token supplied upon signin */
-    delete: operations["signOut"];
-  };
-  "/users/{id}": {
+    signOut: {
+        responses: {
+            200: unknown
+            401: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a user by its id */
-    get: operations["findUserById"];
+    findUserById: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            /** User */
+            200: {
+                schema: definitions['User']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Update user's email and/or password */
-    put: operations["updateUser"];
+    updateUser: {
+        parameters: {
+            path: {
+                id: number
+            }
+            body: {
+                /** Update user request */
+                Body: definitions['updateUserRequest']
+            }
+        }
+        responses: {
+            /** User */
+            200: {
+                schema: definitions['User']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Delete user by id */
-    delete: operations["deleteUser"];
-  };
-}
-
-export interface definitions {
-  /** AccessMode defines the access mode of a volume. */
-  AccessMode: {
-    BlockVolume?: definitions["TypeBlock"];
-    MountVolume?: definitions["TypeMount"];
-    Scope?: definitions["Scope"];
-    Sharing?: definitions["SharingMode"];
-  };
-  /** @description AuthenticateOKBody authenticate o k body */
-  AuthenticateOKBody: {
-    /** @description An opaque token used to authenticate a user after a successful login */
-    IdentityToken: string;
-    /** @description The status of the authentication */
-    Status: string;
-  };
-  /** Availability specifies the availability of the volume. */
-  Availability: string;
-  /**
-   * @description CapacityRange describes the minimum and maximum capacity a volume should be
-   * created with
-   */
-  CapacityRange: {
-    /**
-     * Format: int64
-     * @description LimitBytes specifies that a volume must not be bigger than this. The
-     * value of 0 indicates an unspecified maximum
-     */
-    LimitBytes?: number;
-    /**
-     * Format: int64
-     * @description RequiredBytes specifies that a volume must be at least this big. The
-     * value of 0 indicates an unspecified minimum.
-     */
-    RequiredBytes?: number;
-  };
-  ClusterConfiguration: {
-    /** Format: date-time */
-    createdAt?: string;
-    groupName?: string;
-    /** Format: uint64 */
-    id?: number;
-    kubernetesConfiguration?: number[];
-    /** Format: date-time */
-    updatedAt?: string;
-  };
-  /**
-   * @description ClusterVolume contains options and information specific to, and only present
-   * on, Swarm CSI cluster volumes.
-   */
-  ClusterVolume: {
-    /** Format: date-time */
-    CreatedAt?: string;
-    /**
-     * @description ID is the Swarm ID of the volume. Because cluster volumes are Swarm
-     * objects, they have an ID, unlike non-cluster volumes, which only have a
-     * Name. This ID can be used to refer to the cluster volume.
-     */
-    ID?: string;
-    Info?: definitions["Info"];
-    /**
-     * @description PublishStatus contains the status of the volume as it pertains to its
-     * publishing on Nodes.
-     */
-    PublishStatus?: definitions["PublishStatus"][];
-    Spec?: definitions["ClusterVolumeSpec"];
-    /** Format: date-time */
-    UpdatedAt?: string;
-    Version?: definitions["Version"];
-  };
-  /** ClusterVolumeSpec contains the spec used to create this volume. */
-  ClusterVolumeSpec: {
-    AccessMode?: definitions["AccessMode"];
-    AccessibilityRequirements?: definitions["TopologyRequirement"];
-    Availability?: definitions["Availability"];
-    CapacityRange?: definitions["CapacityRange"];
-    /**
-     * @description Group defines the volume group of this volume. Volumes belonging to the
-     * same group can be referred to by group name when creating Services.
-     * Referring to a volume by group instructs swarm to treat volumes in that
-     * group interchangeably for the purpose of scheduling. Volumes with an
-     * empty string for a group technically all belong to the same, emptystring
-     * group.
-     */
-    Group?: string;
-    /**
-     * @description Secrets defines Swarm Secrets that are passed to the CSI storage plugin
-     * when operating on this volume.
-     */
-    Secrets?: definitions["Secret"][];
-  };
-  /** @description ContainerChangeResponseItem change item in response to ContainerChanges operation */
-  ContainerChangeResponseItem: {
-    /**
-     * Format: uint8
-     * @description Kind of change
-     */
-    Kind: number;
-    /** @description Path to file that has changed */
-    Path: string;
-  };
-  /** @description ContainerTopOKBody OK response to ContainerTop operation */
-  ContainerTopOKBody: {
-    /**
-     * @description Each process running in the container, where each is process
-     * is an array of values corresponding to the titles.
-     */
-    Processes: string[][];
-    /** @description The ps column titles */
-    Titles: string[];
-  };
-  /** @description ContainerUpdateOKBody OK response to ContainerUpdate operation */
-  ContainerUpdateOKBody: {
-    /** @description warnings */
-    Warnings: string[];
-  };
-  CopyDatabaseRequest: {
-    group?: string;
-    name?: string;
-  };
-  CreateExternalDatabaseRequest: {
-    /**
-     * Format: uint64
-     * @description Expiration time in seconds
-     */
-    expiration?: number;
-  };
-  CreateGroupRequest: {
-    deployable?: boolean;
-    hostname?: string;
-    name?: string;
-  };
-  /**
-   * CreateOptions VolumeConfig
-   * @description Volume configuration
-   */
-  CreateOptions: {
-    ClusterVolumeSpec?: definitions["ClusterVolumeSpec"];
-    /** @description Name of the volume driver to use. */
-    Driver?: string;
-    /**
-     * @description A mapping of driver options and values. These options are
-     * passed directly to the driver and are driver specific.
-     */
-    DriverOpts?: { [key: string]: string };
-    /** @description User-defined key/value metadata. */
-    Labels?: { [key: string]: string };
-    /** @description The new volume's name. If not specified, Docker generates a name. */
-    Name?: string;
-  };
-  /**
-   * CreateResponse ContainerCreateResponse
-   * @description OK response to ContainerCreate operation
-   */
-  CreateResponse: {
-    /** @description The ID of the created container */
-    Id: string;
-    /** @description Warnings encountered when creating the container */
-    Warnings: string[];
-  };
-  Database: {
-    /** Format: date-time */
-    createdAt?: string;
-    externalDownloads?: definitions["ExternalDownload"][];
-    groupName?: string;
-    /** Format: uint64 */
-    id?: number;
-    lock?: definitions["Lock"];
-    name?: string;
-    slug?: string;
-    /** Format: date-time */
-    updatedAt?: string;
-    url?: string;
-  };
-  DeployInstanceRequest: {
-    description?: string;
-    groupName?: string;
-    name?: string;
-    optionalParameters?: definitions["InstanceOptionalParameter"][];
-    /** Format: uint64 */
-    presetInstance?: number;
-    public?: boolean;
-    requiredParameters?: definitions["InstanceRequiredParameter"][];
-    /** Format: uint64 */
-    sourceInstance?: number;
-    stackName?: string;
-    /** Format: uint64 */
-    ttl?: number;
-  };
-  /** ErrorResponse Represents an error. */
-  ErrorResponse: {
-    /** @description The error message. */
-    message: string;
-  };
-  ExternalDownload: {
-    /** Format: uint64 */
-    databaseId?: number;
-    /** Format: uint64 */
-    expiration?: number;
-    /** Format: uuid */
-    uuid?: string;
-  };
-  /**
-   * @description GraphDriverData Information about the storage driver used to store the container's and
-   * image's filesystem.
-   */
-  GraphDriverData: {
-    /**
-     * @description Low-level storage metadata, provided as key/value pairs.
-     *
-     * This information is driver-specific, and depends on the storage-driver
-     * in use, and should be used for informational purposes only.
-     */
-    Data: { [key: string]: string };
-    /** @description Name of the storage driver. */
-    Name: string;
-  };
-  /** @description Group domain object defining a group */
-  Group: {
-    clusterConfiguration?: definitions["ClusterConfiguration"];
-    /** Format: date-time */
-    createdAt?: string;
-    deployable?: boolean;
-    hostname?: string;
-    name?: string;
-    /** Format: date-time */
-    updatedAt?: string;
-    users?: definitions["User"][];
-  };
-  GroupWithInstances: {
-    hostname?: string;
-    instances?: definitions["Instance"][];
-    name?: string;
-  };
-  GroupsWithDatabases: {
-    databases?: definitions["Database"][];
-    hostname?: string;
-    name?: string;
-  };
-  /** @description HistoryResponseItem individual image layer information in response to ImageHistory operation */
-  HistoryResponseItem: {
-    /** @description comment */
-    Comment: string;
-    /**
-     * Format: int64
-     * @description created
-     */
-    Created: number;
-    /** @description created by */
-    CreatedBy: string;
-    /** @description Id */
-    Id: string;
-    /**
-     * Format: int64
-     * @description size
-     */
-    Size: number;
-    /** @description tags */
-    Tags: string[];
-  };
-  /** @description IDResponse Response to an API call that returns just an Id */
-  IdResponse: {
-    /** @description The id of the newly created object. */
-    Id: string;
-  };
-  /** @description ImageDeleteResponseItem image delete response item */
-  ImageDeleteResponseItem: {
-    /** @description The image ID of an image that was deleted */
-    Deleted?: string;
-    /** @description The image ID of an image that was untagged */
-    Untagged?: string;
-  };
-  /** @description ImageSummary image summary */
-  ImageSummary: {
-    /**
-     * Format: int64
-     * @description Number of containers using this image. Includes both stopped and running
-     * containers.
-     *
-     * This size is not calculated by default, and depends on which API endpoint
-     * is used. `-1` indicates that the value has not been set / calculated.
-     */
-    Containers: number;
-    /**
-     * Format: int64
-     * @description Date and time at which the image was created as a Unix timestamp
-     * (number of seconds sinds EPOCH).
-     */
-    Created: number;
-    /**
-     * @description ID is the content-addressable ID of an image.
-     *
-     * This identifier is a content-addressable digest calculated from the
-     * image's configuration (which includes the digests of layers used by
-     * the image).
-     *
-     * Note that this digest differs from the `RepoDigests` below, which
-     * holds digests of image manifests that reference the image.
-     */
-    Id: string;
-    /** @description User-defined key/value metadata. */
-    Labels: { [key: string]: string };
-    /**
-     * @description ID of the parent image.
-     *
-     * Depending on how the image was created, this field may be empty and
-     * is only set for images that were built/created locally. This field
-     * is empty if the image was pulled from an image registry.
-     */
-    ParentId: string;
-    /**
-     * @description List of content-addressable digests of locally available image manifests
-     * that the image is referenced from. Multiple manifests can refer to the
-     * same image.
-     *
-     * These digests are usually only available if the image was either pulled
-     * from a registry, or if the image was pushed to a registry, which is when
-     * the manifest is generated and its digest calculated.
-     */
-    RepoDigests: string[];
-    /**
-     * @description List of image names/tags in the local image cache that reference this
-     * image.
-     *
-     * Multiple image tags can refer to the same image, and this list may be
-     * empty if no tags reference the image, in which case the image is
-     * "untagged", in which case it can still be referenced by its ID.
-     */
-    RepoTags: string[];
-    /**
-     * Format: int64
-     * @description Total size of image layers that are shared between this image and other
-     * images.
-     *
-     * This size is not calculated by default. `-1` indicates that the value
-     * has not been set / calculated.
-     */
-    SharedSize: number;
-    /**
-     * Format: int64
-     * @description Total size of the image including all layers it is composed of.
-     */
-    Size: number;
-    /**
-     * Format: int64
-     * @description Total size of the image including all layers it is composed of.
-     *
-     * In versions of Docker before v1.10, this field was calculated from
-     * the image itself and all of its parent images. Docker v1.10 and up
-     * store images self-contained, and no longer use a parent-chain, making
-     * this field an equivalent of the Size field.
-     *
-     * This field is kept for backward compatibility, but may be removed in
-     * a future version of the API.
-     */
-    VirtualSize: number;
-  };
-  /**
-   * @description Info contains information about the Volume as a whole as provided by
-   * the CSI storage plugin.
-   */
-  Info: {
-    /**
-     * @description AccessibleTopolgoy is the topology this volume is actually accessible
-     * from.
-     */
-    AccessibleTopology?: definitions["Topology"][];
-    /**
-     * Format: int64
-     * @description CapacityBytes is the capacity of the volume in bytes. A value of 0
-     * indicates that the capacity is unknown.
-     */
-    CapacityBytes?: number;
-    /**
-     * @description VolumeContext is the context originating from the CSI storage plugin
-     * when the Volume is created.
-     */
-    VolumeContext?: { [key: string]: string };
-    /**
-     * @description VolumeID is the ID of the Volume as seen by the CSI storage plugin. This
-     * is distinct from the Volume's Swarm ID, which is the ID used by all of
-     * the Docker Engine to refer to the Volume. If this field is blank, then
-     * the Volume has not been successfully created yet.
-     */
-    VolumeID?: string;
-  };
-  Instance: {
-    /** Format: date-time */
-    createdAt?: string;
-    deployLog?: string;
-    description?: string;
-    group?: definitions["Group"];
-    groupName?: string;
-    /** Format: uint64 */
-    id?: number;
-    name?: string;
-    optionalParameters?: definitions["InstanceOptionalParameter"][];
-    preset?: boolean;
-    /** Format: uint64 */
-    presetId?: number;
-    public?: boolean;
-    requiredParameters?: definitions["InstanceRequiredParameter"][];
-    stackName?: string;
-    /** Format: uint64 */
-    ttl?: number;
-    /** Format: date-time */
-    updatedAt?: string;
-    user?: definitions["User"];
-    /** Format: uint64 */
-    userId?: number;
-  };
-  InstanceOptionalParameter: {
-    /** @description TODO: Rename StackOptionalParameterID to Name */
-    name?: string;
-    value?: string;
-  };
-  InstanceRequiredParameter: {
-    /** @description TODO: Rename StackRequiredParameterID to Name */
-    name?: string;
-    value?: string;
-  };
-  /**
-   * ListResponse VolumeListResponse
-   * @description Volume list response
-   */
-  ListResponse: {
-    /** @description List of volumes */
-    Volumes?: definitions["Volume"][];
-    /** @description Warnings that occurred when fetching the list of volumes. */
-    Warnings?: string[];
-  };
-  Lock: {
-    /** Format: uint64 */
-    databaseId?: number;
-    /** Format: uint64 */
-    instanceId?: number;
-    /** Format: uint64 */
-    userId?: number;
-  };
-  LockDatabaseRequest: {
-    /** Format: uint64 */
-    instanceId?: number;
-  };
-  /** Meta is a base object inherited by most of the other once. */
-  Meta: {
-    /** Format: date-time */
-    CreatedAt?: string;
-    /** Format: date-time */
-    UpdatedAt?: string;
-    Version?: definitions["Version"];
-  };
-  /** @description Plugin A plugin for the Engine API */
-  Plugin: {
-    Config: definitions["PluginConfig"];
-    /** @description True if the plugin is running. False if the plugin is not running, only installed. */
-    Enabled: boolean;
-    /** @description Id */
-    Id?: string;
-    /** @description name */
-    Name: string;
-    /** @description plugin remote reference used to push/pull the plugin */
-    PluginReference?: string;
-    Settings: definitions["PluginSettings"];
-  };
-  /** PluginConfig The config of a plugin. */
-  PluginConfig: {
-    Args: definitions["PluginConfigArgs"];
-    /** @description description */
-    Description: string;
-    /** @description Docker Version used to create the plugin */
-    DockerVersion?: string;
-    /** @description documentation */
-    Documentation: string;
-    /** @description entrypoint */
-    Entrypoint: string[];
-    /** @description env */
-    Env: definitions["PluginEnv"][];
-    Interface: definitions["PluginConfigInterface"];
-    /** @description ipc host */
-    IpcHost: boolean;
-    Linux: definitions["PluginConfigLinux"];
-    /** @description mounts */
-    Mounts: definitions["PluginMount"][];
-    Network: definitions["PluginConfigNetwork"];
-    /** @description pid host */
-    PidHost: boolean;
-    /** @description propagated mount */
-    PropagatedMount: string;
-    User?: definitions["PluginConfigUser"];
-    /** @description work dir */
-    WorkDir: string;
-    rootfs?: definitions["PluginConfigRootfs"];
-  };
-  /** @description PluginConfigArgs plugin config args */
-  PluginConfigArgs: {
-    /** @description description */
-    Description: string;
-    /** @description name */
-    Name: string;
-    /** @description settable */
-    Settable: string[];
-    /** @description value */
-    Value: string[];
-  };
-  /** @description PluginConfigInterface The interface between Docker and the plugin */
-  PluginConfigInterface: {
-    /** @description Protocol to use for clients connecting to the plugin. */
-    ProtocolScheme?: string;
-    /** @description socket */
-    Socket: string;
-    /** @description types */
-    Types: definitions["PluginInterfaceType"][];
-  };
-  /** @description PluginConfigLinux plugin config linux */
-  PluginConfigLinux: {
-    /** @description allow all devices */
-    AllowAllDevices: boolean;
-    /** @description capabilities */
-    Capabilities: string[];
-    /** @description devices */
-    Devices: definitions["PluginDevice"][];
-  };
-  /** @description PluginConfigNetwork plugin config network */
-  PluginConfigNetwork: {
-    /** @description type */
-    Type: string;
-  };
-  /** @description PluginConfigRootfs plugin config rootfs */
-  PluginConfigRootfs: {
-    /** @description diff ids */
-    diff_ids?: string[];
-    /** @description type */
-    type?: string;
-  };
-  /** @description PluginConfigUser plugin config user */
-  PluginConfigUser: {
-    /**
-     * Format: uint32
-     * @description g ID
-     */
-    GID?: number;
-    /**
-     * Format: uint32
-     * @description UID
-     */
-    UID?: number;
-  };
-  /** @description PluginDevice plugin device */
-  PluginDevice: {
-    /** @description description */
-    Description: string;
-    /** @description name */
-    Name: string;
-    /** @description path */
-    Path: string;
-    /** @description settable */
-    Settable: string[];
-  };
-  /** @description PluginEnv plugin env */
-  PluginEnv: {
-    /** @description description */
-    Description: string;
-    /** @description name */
-    Name: string;
-    /** @description settable */
-    Settable: string[];
-    /** @description value */
-    Value: string;
-  };
-  /** @description PluginInterfaceType plugin interface type */
-  PluginInterfaceType: {
-    /** @description capability */
-    Capability: string;
-    /** @description prefix */
-    Prefix: string;
-    /** @description version */
-    Version: string;
-  };
-  /** @description PluginMount plugin mount */
-  PluginMount: {
-    /** @description description */
-    Description: string;
-    /** @description destination */
-    Destination: string;
-    /** @description name */
-    Name: string;
-    /** @description options */
-    Options: string[];
-    /** @description settable */
-    Settable: string[];
-    /** @description source */
-    Source: string;
-    /** @description type */
-    Type: string;
-  };
-  /** PluginSettings Settings that can be modified by users. */
-  PluginSettings: {
-    /** @description args */
-    Args: string[];
-    /** @description devices */
-    Devices: definitions["PluginDevice"][];
-    /** @description env */
-    Env: string[];
-    /** @description mounts */
-    Mounts: definitions["PluginMount"][];
-  };
-  /** @description Port An open port on a container */
-  Port: {
-    /** @description Host IP address that the container's port is mapped to */
-    IP?: string;
-    /**
-     * Format: uint16
-     * @description Port on the container
-     */
-    PrivatePort: number;
-    /**
-     * Format: uint16
-     * @description Port exposed on the host
-     */
-    PublicPort?: number;
-    /** @description type */
-    Type: string;
-  };
-  /**
-   * @description PublishState represents the state of a Volume as it pertains to its
-   * use on a particular Node.
-   */
-  PublishState: string;
-  /**
-   * @description PublishStatus represents the status of the volume as published to an
-   * individual node
-   */
-  PublishStatus: {
-    /** @description NodeID is the ID of the swarm node this Volume is published to. */
-    NodeID?: string;
-    /**
-     * @description PublishContext is the PublishContext returned by the CSI plugin when
-     * a volume is published.
-     */
-    PublishContext?: { [key: string]: string };
-    State?: definitions["PublishState"];
-  };
-  RefreshTokenRequest: {
-    refreshToken?: string;
-  };
-  Request: {
-    key?: string;
-    payload?: unknown;
-  };
-  /** @description Response depends on the input and can be either a list or a map */
-  Response: { [key: string]: unknown };
-  /**
-   * @description Scope defines the Scope of a Cluster Volume. This is how many nodes a
-   * Volume can be accessed simultaneously on.
-   */
-  Scope: string;
-  /**
-   * @description Secret represents a Swarm Secret value that must be passed to the CSI
-   * storage plugin when operating on this Volume. It represents one key-value
-   * pair of possibly many.
-   */
-  Secret: {
-    /** @description Key is the name of the key of the key-value pair passed to the plugin. */
-    Key?: string;
-    /**
-     * @description Secret is the swarm Secret object from which to read data. This can be a
-     * Secret name or ID. The Secret data is retrieved by Swarm and used as the
-     * value of the key-value pair passed to the plugin.
-     */
-    Secret?: string;
-  };
-  /** @description ServiceUpdateResponse service update response */
-  ServiceUpdateResponse: {
-    /** @description Optional warning messages */
-    Warnings?: string[];
-  };
-  /**
-   * @description SharingMode defines the Sharing of a Cluster Volume. This is how Tasks using a
-   * Volume at the same time can use it.
-   */
-  SharingMode: string;
-  Stack: {
-    /** Format: date-time */
-    createdAt?: string;
-    hostnamePattern?: string;
-    hostnameVariable?: string;
-    instances?: definitions["Instance"][];
-    name?: string;
-    optionalParameters?: definitions["StackOptionalParameter"][];
-    requiredParameters?: definitions["StackRequiredParameter"][];
-    /** Format: date-time */
-    updatedAt?: string;
-  };
-  StackOptionalParameter: {
-    consumed?: boolean;
-    defaultValue?: string;
-    name?: string;
-    stackName?: string;
-  };
-  StackRequiredParameter: {
-    consumed?: boolean;
-    name?: string;
-    stackName?: string;
-  };
-  /** @description Tokens domain object defining user tokens */
-  Tokens: {
-    accessToken?: string;
-    /** Format: uint64 */
-    expiresIn?: number;
-    refreshToken?: string;
-    tokenType?: string;
-  };
-  /**
-   * Topology is a map of topological domains to topological segments.
-   * @description This description is taken verbatim from the CSI Spec:
-   *
-   * A topological domain is a sub-division of a cluster, like "region",
-   * "zone", "rack", etc.
-   * A topological segment is a specific instance of a topological domain,
-   * like "zone3", "rack3", etc.
-   * For example {"com.company/zone": "Z1", "com.company/rack": "R3"}
-   * Valid keys have two segments: an OPTIONAL prefix and name, separated
-   * by a slash (/), for example: "com.company.example/zone".
-   * The key name segment is REQUIRED. The prefix is OPTIONAL.
-   * The key name MUST be 63 characters or less, begin and end with an
-   * alphanumeric character ([a-z0-9A-Z]), and contain only dashes (-),
-   * underscores (_), dots (.), or alphanumerics in between, for example
-   * "zone".
-   * The key prefix MUST be 63 characters or less, begin and end with a
-   * lower-case alphanumeric character ([a-z0-9]), contain only
-   * dashes (-), dots (.), or lower-case alphanumerics in between, and
-   * follow domain name notation format
-   * (https://tools.ietf.org/html/rfc1035#section-2.3.1).
-   * The key prefix SHOULD include the plugin's host company name and/or
-   * the plugin name, to minimize the possibility of collisions with keys
-   * from other plugins.
-   * If a key prefix is specified, it MUST be identical across all
-   * topology keys returned by the SP (across all RPCs).
-   * Keys MUST be case-insensitive. Meaning the keys "Zone" and "zone"
-   * MUST not both exist.
-   * Each value (topological segment) MUST contain 1 or more strings.
-   * Each string MUST be 63 characters or less and begin and end with an
-   * alphanumeric character with '-', '_', '.', or alphanumerics in
-   * between.
-   */
-  Topology: {
-    Segments?: { [key: string]: string };
-  };
-  /**
-   * @description TopologyRequirement expresses the user's requirements for a volume's
-   * accessible topology.
-   */
-  TopologyRequirement: {
-    /**
-     * @description Preferred is a list of Topologies that the volume should attempt to be
-     * provisioned in.
-     *
-     * Taken from the CSI spec:
-     *
-     * Specifies the list of topologies the CO would prefer the volume to
-     * be provisioned in.
-     *
-     * This field is OPTIONAL. If TopologyRequirement is specified either
-     * requisite or preferred or both MUST be specified.
-     *
-     * An SP MUST attempt to make the provisioned volume available using
-     * the preferred topologies in order from first to last.
-     *
-     * If requisite is specified, all topologies in preferred list MUST
-     * also be present in the list of requisite topologies.
-     *
-     * If the SP is unable to to make the provisioned volume available
-     * from any of the preferred topologies, the SP MAY choose a topology
-     * from the list of requisite topologies.
-     * If the list of requisite topologies is not specified, then the SP
-     * MAY choose from the list of all possible topologies.
-     * If the list of requisite topologies is specified and the SP is
-     * unable to to make the provisioned volume available from any of the
-     * requisite topologies it MUST fail the CreateVolume call.
-     *
-     * Example 1:
-     * Given a volume should be accessible from a single zone, and
-     * requisite =
-     * {"region": "R1", "zone": "Z2"},
-     * {"region": "R1", "zone": "Z3"}
-     * preferred =
-     * {"region": "R1", "zone": "Z3"}
-     * then the the SP SHOULD first attempt to make the provisioned volume
-     * available from "zone" "Z3" in the "region" "R1" and fall back to
-     * "zone" "Z2" in the "region" "R1" if that is not possible.
-     *
-     * Example 2:
-     * Given a volume should be accessible from a single zone, and
-     * requisite =
-     * {"region": "R1", "zone": "Z2"},
-     * {"region": "R1", "zone": "Z3"},
-     * {"region": "R1", "zone": "Z4"},
-     * {"region": "R1", "zone": "Z5"}
-     * preferred =
-     * {"region": "R1", "zone": "Z4"},
-     * {"region": "R1", "zone": "Z2"}
-     * then the the SP SHOULD first attempt to make the provisioned volume
-     * accessible from "zone" "Z4" in the "region" "R1" and fall back to
-     * "zone" "Z2" in the "region" "R1" if that is not possible. If that
-     * is not possible, the SP may choose between either the "zone"
-     * "Z3" or "Z5" in the "region" "R1".
-     *
-     * Example 3:
-     * Given a volume should be accessible from TWO zones (because an
-     * opaque parameter in CreateVolumeRequest, for example, specifies
-     * the volume is accessible from two zones, aka synchronously
-     * replicated), and
-     * requisite =
-     * {"region": "R1", "zone": "Z2"},
-     * {"region": "R1", "zone": "Z3"},
-     * {"region": "R1", "zone": "Z4"},
-     * {"region": "R1", "zone": "Z5"}
-     * preferred =
-     * {"region": "R1", "zone": "Z5"},
-     * {"region": "R1", "zone": "Z3"}
-     * then the the SP SHOULD first attempt to make the provisioned volume
-     * accessible from the combination of the two "zones" "Z5" and "Z3" in
-     * the "region" "R1". If that's not possible, it should fall back to
-     * a combination of "Z5" and other possibilities from the list of
-     * requisite. If that's not possible, it should fall back  to a
-     * combination of "Z3" and other possibilities from the list of
-     * requisite. If that's not possible, it should fall back  to a
-     * combination of other possibilities from the list of requisite.
-     */
-    Preferred?: definitions["Topology"][];
-    /**
-     * @description Requisite specifies a list of Topologies, at least one of which the
-     * volume must be accessible from.
-     *
-     * Taken verbatim from the CSI Spec:
-     *
-     * Specifies the list of topologies the provisioned volume MUST be
-     * accessible from.
-     * This field is OPTIONAL. If TopologyRequirement is specified either
-     * requisite or preferred or both MUST be specified.
-     *
-     * If requisite is specified, the provisioned volume MUST be
-     * accessible from at least one of the requisite topologies.
-     *
-     * Given
-     * x = number of topologies provisioned volume is accessible from
-     * n = number of requisite topologies
-     * The CO MUST ensure n >= 1. The SP MUST ensure x >= 1
-     * If x==n, then the SP MUST make the provisioned volume available to
-     * all topologies from the list of requisite topologies. If it is
-     * unable to do so, the SP MUST fail the CreateVolume call.
-     * For example, if a volume should be accessible from a single zone,
-     * and requisite =
-     * {"region": "R1", "zone": "Z2"}
-     * then the provisioned volume MUST be accessible from the "region"
-     * "R1" and the "zone" "Z2".
-     * Similarly, if a volume should be accessible from two zones, and
-     * requisite =
-     * {"region": "R1", "zone": "Z2"},
-     * {"region": "R1", "zone": "Z3"}
-     * then the provisioned volume MUST be accessible from the "region"
-     * "R1" and both "zone" "Z2" and "zone" "Z3".
-     *
-     * If x<n, then the SP SHALL choose x unique topologies from the list
-     * of requisite topologies. If it is unable to do so, the SP MUST fail
-     * the CreateVolume call.
-     * For example, if a volume should be accessible from a single zone,
-     * and requisite =
-     * {"region": "R1", "zone": "Z2"},
-     * {"region": "R1", "zone": "Z3"}
-     * then the SP may choose to make the provisioned volume available in
-     * either the "zone" "Z2" or the "zone" "Z3" in the "region" "R1".
-     * Similarly, if a volume should be accessible from two zones, and
-     * requisite =
-     * {"region": "R1", "zone": "Z2"},
-     * {"region": "R1", "zone": "Z3"},
-     * {"region": "R1", "zone": "Z4"}
-     * then the provisioned volume MUST be accessible from any combination
-     * of two unique topologies: e.g. "R1/Z2" and "R1/Z3", or "R1/Z2" and
-     * "R1/Z4", or "R1/Z3" and "R1/Z4".
-     *
-     * If x>n, then the SP MUST make the provisioned volume available from
-     * all topologies from the list of requisite topologies and MAY choose
-     * the remaining x-n unique topologies from the list of all possible
-     * topologies. If it is unable to do so, the SP MUST fail the
-     * CreateVolume call.
-     * For example, if a volume should be accessible from two zones, and
-     * requisite =
-     * {"region": "R1", "zone": "Z2"}
-     * then the provisioned volume MUST be accessible from the "region"
-     * "R1" and the "zone" "Z2" and the SP may select the second zone
-     * independently, e.g. "R1/Z4".
-     */
-    Requisite?: definitions["Topology"][];
-  };
-  /**
-   * TypeBlock defines options for using a volume as a block-type volume.
-   * @description Intentionally empty.
-   */
-  TypeBlock: { [key: string]: unknown };
-  /**
-   * @description TypeMount contains options for using a volume as a Mount-type
-   * volume.
-   */
-  TypeMount: {
-    /** @description FsType specifies the filesystem type for the mount volume. Optional. */
-    FsType?: string;
-    /** @description MountFlags defines flags to pass when mounting the volume. Optional. */
-    MountFlags?: string[];
-  };
-  UpdateDatabaseRequest: {
-    name?: string;
-  };
-  UpdateInstanceRequest: {
-    optionalParameters?: definitions["InstanceOptionalParameter"][];
-    requiredParameters?: definitions["InstanceRequiredParameter"][];
-    /** Format: uint64 */
-    ttl?: number;
-  };
-  /**
-   * @description UsageData Usage details about the volume. This information is used by the
-   * `GET /system/df` endpoint, and omitted in other endpoints.
-   */
-  UsageData: {
-    /**
-     * Format: int64
-     * @description The number of containers referencing this volume. This field
-     * is set to `-1` if the reference-count is not available.
-     */
-    RefCount: number;
-    /**
-     * Format: int64
-     * @description Amount of disk space used by the volume (in bytes). This information
-     * is only available for volumes created with the `"local"` volume
-     * driver. For volumes created with other volume drivers, this field
-     * is set to `-1` ("not available")
-     */
-    Size: number;
-  };
-  /** @description User domain object defining a user */
-  User: {
-    adminGroups?: definitions["Group"][];
-    /** Format: date-time */
-    createdAt?: string;
-    email?: string;
-    groups?: definitions["Group"][];
-    /** Format: uint64 */
-    id?: number;
-    /** Format: date-time */
-    updatedAt?: string;
-  };
-  /** Version represents the internal object version. */
-  Version: {
-    /** Format: uint64 */
-    Index?: number;
-  };
-  /** @description Volume volume */
-  Volume: {
-    ClusterVolume?: definitions["ClusterVolume"];
-    /** @description Date/Time the volume was created. */
-    CreatedAt?: string;
-    /** @description Name of the volume driver used by the volume. */
-    Driver: string;
-    /** @description User-defined key/value metadata. */
-    Labels: { [key: string]: string };
-    /** @description Mount path of the volume on the host. */
-    Mountpoint: string;
-    /** @description Name of the volume. */
-    Name: string;
-    /** @description The driver specific options used when creating the volume. */
-    Options: { [key: string]: string };
-    /**
-     * @description The level at which the volume exists. Either `global` for cluster-wide,
-     * or `local` for machine level.
-     */
-    Scope: string;
-    /**
-     * @description Low-level details about the volume, provided by the volume driver.
-     * Details are returned as a map with key/value pairs:
-     * `{"key":"value","key2":"value2"}`.
-     *
-     * The `Status` field is optional, and is omitted if the volume driver
-     * does not support this feature.
-     */
-    Status?: { [key: string]: unknown };
-    UsageData?: definitions["UsageData"];
-  };
-  /** @description WaitExitError container waiting error, if any */
-  WaitExitError: {
-    /** @description Details of an error */
-    Message?: string;
-  };
-  /**
-   * WaitResponse ContainerWaitResponse
-   * @description OK response to ContainerWait operation
-   */
-  WaitResponse: {
-    Error?: definitions["WaitExitError"];
-    /**
-     * Format: int64
-     * @description Exit code of the container
-     */
-    StatusCode: number;
-  };
-  saveAsRequest: {
-    /** @description Database dump format. Currently plain and custom are support, please see https://www.postgresql.org/docs/current/app-pgdump.html */
-    format?: string;
-    /** @description Name of the new database */
-    name?: string;
-  };
-  signUpRequest: {
-    email?: string;
-    password?: string;
-  };
-  updateUserRequest: {
-    email?: string;
-    password?: string;
-  };
-}
-
-export interface responses {
-  CreateExternalDownloadResponse: {
-    schema: definitions["ExternalDownload"];
-  };
-  Database: {
-    schema: definitions["Database"];
-  };
-  DownloadDatabaseResponse: {
-    schema: number[];
-  };
-  Error: unknown;
-  GroupWithInstances: {
-    schema: definitions["GroupWithInstances"][];
-  };
-  InstanceLogsResponse: unknown;
-  Lock: {
-    schema: definitions["Lock"];
-  };
-  Response: {
-    schema: definitions["Response"];
-  };
-  StackResponse: {
-    schema: definitions["Stack"];
-  };
-  StacksResponse: {
-    schema: definitions["Stack"][];
-  };
-  Tokens: {
-    schema: definitions["Tokens"];
-  };
-  UsersResponse: {
-    schema: definitions["User"][];
-  };
-}
-
-export interface operations {
-  /** List databases... */
-  listDatabases: {
-    responses: {
-      /** GroupsWithDatabases */
-      200: {
-        schema: definitions["GroupsWithDatabases"][];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Upload database... */
-  uploadDatabase: {
-    parameters: {
-      formData: {
-        /** Upload database request body parameter */
-        Group: string;
-        /** Upload database request body parameter */
-        File: unknown;
-      };
-    };
-    responses: {
-      201: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-  findDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      200: responses["Database"];
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Update database by id
-   * TODO: Race condition? If two clients request at the same time... Do we need a transaction between find and update
-   */
-  updateDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Update database request body parameter */
-        Body: definitions["UpdateDatabaseRequest"];
-      };
-    };
-    responses: {
-      200: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Delete database by id... */
-  deleteDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Copy database... */
-  copyDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Copy database request body parameter */
-        Body: definitions["CopyDatabaseRequest"];
-      };
-    };
-    responses: {
-      202: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Download a database by its identifier. The identifier could be either the actual id of the database or the slug associated with it */
-  downloadDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      200: responses["DownloadDatabaseResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Create link so the database can be downloaded without log in */
-  createExternalDownloadDatabase: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Create external database download */
-        Body: definitions["CreateExternalDatabaseRequest"];
-      };
-    };
-    responses: {
-      200: responses["CreateExternalDownloadResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Lock database by id... */
-  lockDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Lock/unlock database request body parameter */
-        Body: definitions["LockDatabaseRequest"];
-      };
-    };
-    responses: {
-      200: responses["Lock"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      409: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Unlock database by id */
-  unlockDatabaseById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Lock/unlock database request body parameter */
-        Body: definitions["LockDatabaseRequest"];
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Download a given database without authentication */
-  externalDownloadDatabase: {
-    parameters: {
-      path: {
-        uuid: number;
-      };
-    };
-    responses: {
-      200: responses["DownloadDatabaseResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Save database under a new name */
-  saveAsDatabase: {
-    parameters: {
-      path: {
-        instanceId: number;
-      };
-      body: {
-        /** SaveAs database request body parameter */
-        Body: definitions["saveAsRequest"];
-      };
-    };
-    responses: {
-      201: responses["Database"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Saving a database won't affect the instances running the database. However, it should be noted that if two unlocked databases are deployed from the same database they can both overwrite it. It's up to the users to ensure this doesn't happen accidentally. */
-  saveDatabase: {
-    parameters: {
-      path: {
-        instanceId: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find all groups by user */
-  findAllGroupsByUser: {
-    parameters: {
-      query: {
-        /** deployable */
-        deployable?: string;
-      };
-    };
-    responses: {
-      /** Group */
-      200: {
-        schema: definitions["Group"][];
-      };
-      401: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Create a group... */
-  groupCreate: {
-    parameters: {
-      body: {
-        /** Refresh token request body parameter */
-        Body: definitions["CreateGroupRequest"];
-      };
-    };
-    responses: {
-      /** Group */
-      201: {
-        schema: definitions["Group"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Add a cluster configuration to a group. This will allow deploying to a remote cluster.
-   * Currently only configurations with embedded access tokens are support.
-   * The configuration needs to be encrypted using Mozilla Sops. Please see ./scripts/addClusterConfigToGroup.sh for an example of how this can be done.
-   */
-  addClusterConfigurationToGroup: {
-    parameters: {
-      path: {
-        group: string;
-      };
-      formData: {
-        /** SOPS encrypted Kubernetes configuration file */
-        Body: unknown;
-      };
-    };
-    responses: {
-      /** Group */
-      201: {
-        schema: definitions["Group"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Add a user to a group... */
-  addUserToGroup: {
-    parameters: {
-      path: {
-        group: string;
-        userId: number;
-      };
-    };
-    responses: {
-      /** Group */
-      201: {
-        schema: definitions["Group"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find a group by its name */
-  findGroupByName: {
-    parameters: {
-      path: {
-        name: string;
-      };
-    };
-    responses: {
-      /** Group */
-      200: {
-        schema: definitions["Group"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Show service health status */
-  health: {
-    responses: {
-      200: responses["Response"];
-    };
-  };
-  /** List all instances accessible by the user */
-  listInstances: {
-    responses: {
-      200: responses["GroupWithInstances"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Deploy an instance... */
-  deployInstance: {
-    parameters: {
-      body: {
-        /** Deploy instance request body parameter */
-        Payload: definitions["DeployInstanceRequest"];
-      };
-      query: {
-        /** preset */
-        preset?: string;
-      };
-    };
-    responses: {
-      /** Instance */
-      201: {
-        schema: definitions["Instance"];
-      };
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find instance id by name and group name */
-  instanceNameToId: {
-    parameters: {
-      path: {
-        groupName: string;
-        instanceName: string;
-      };
-    };
-    responses: {
-      /** Instance */
-      200: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find an instance by id */
-  findById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** Instance */
-      200: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Update an instance... */
-  updateInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Update instance request body parameter */
-        Payload: definitions["UpdateInstanceRequest"];
-      };
-    };
-    responses: {
-      /** Instance */
-      204: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Delete an instance by id */
-  deleteInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Stream instance logs in real time */
-  instanceLogs: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      query: {
-        /** selector */
-        selector?: string;
-      };
-    };
-    responses: {
-      200: responses["InstanceLogsResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find instance by id with decrypted parameters */
-  findByIdDecrypted: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** Instance */
-      200: {
-        schema: definitions["Instance"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Pause an instance. Pause can be called multiple times even on an already paused instance
-   * (idempotent).
-   */
-  pauseInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Resetting an instance will completely destroy it and redeploy using the same parameters */
-  resetInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      400: responses["Error"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-    };
-  };
-  /** Restart an instance... */
-  restartInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      query: {
-        /** selector */
-        selector?: string;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /**
-   * Resume a paused instance. Resume can be called multiple times even on an already running
-   * instance (idempotent).
-   */
-  resumeInstance: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Return integration for a given key */
-  postIntegration: {
-    parameters: {
-      body: {
-        /** Integration request body */
-        Body: definitions["Request"];
-      };
-    };
-    responses: {
-      200: responses["Response"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Current user details */
-  me: {
-    responses: {
-      /** User */
-      200: {
-        schema: definitions["User"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** List all presets accessible by the user */
-  listPresets: {
-    responses: {
-      200: responses["GroupWithInstances"];
-      401: responses["Error"];
-      403: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** List all public instances */
-  listPublicInstances: {
-    responses: {
-      200: responses["GroupWithInstances"];
-    };
-  };
-  /** Refresh user tokens */
-  refreshToken: {
-    parameters: {
-      body: {
-        /** Refresh token request body parameter */
-        Body: definitions["RefreshTokenRequest"];
-      };
-    };
-    responses: {
-      201: responses["Tokens"];
-      400: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find all stacks... */
-  stacks: {
-    responses: {
-      200: responses["StacksResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find stack by name */
-  stack: {
-    parameters: {
-      path: {
-        name: string;
-      };
-    };
-    responses: {
-      200: responses["StackResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Sign in... And get tokens */
-  signIn: {
-    responses: {
-      201: responses["Tokens"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find all users with the groups they belong to */
-  findAllUsers: {
-    responses: {
-      200: responses["UsersResponse"];
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Sign up a user. This endpoint is publicly accessible and therefor anyone can sign up. However, before being able to perform any actions, users needs to be a member of a group. And only administrators can add users to groups. */
-  signUp: {
-    parameters: {
-      body: {
-        /** SignUp request body parameter */
-        Body: definitions["signUpRequest"];
-      };
-    };
-    responses: {
-      /** User */
-      201: {
-        schema: definitions["User"];
-      };
-      400: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Sign out user... The authentication is done using oauth and JWT. A JWT can't easily be invalidated so even after calling this endpoint a user can still sign in assuming the JWT isn't expired. However, the token can't be refreshed using the refresh token supplied upon signin */
-  signOut: {
-    responses: {
-      200: unknown;
-      401: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Find a user by its id */
-  findUserById: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** User */
-      200: {
-        schema: definitions["User"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Update user's email and/or password */
-  updateUser: {
-    parameters: {
-      path: {
-        id: number;
-      };
-      body: {
-        /** Update user request */
-        Body: definitions["updateUserRequest"];
-      };
-    };
-    responses: {
-      /** User */
-      200: {
-        schema: definitions["User"];
-      };
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
-  /** Delete user by id */
-  deleteUser: {
-    parameters: {
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      202: unknown;
-      401: responses["Error"];
-      403: responses["Error"];
-      404: responses["Error"];
-      415: responses["Error"];
-    };
-  };
+    deleteUser: {
+        parameters: {
+            path: {
+                id: number
+            }
+        }
+        responses: {
+            202: unknown
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
 }
 
 export interface external {}
