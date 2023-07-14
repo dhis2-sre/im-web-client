@@ -50,7 +50,7 @@
         "format:eslint": "yarn eslint src --fix",
         "format:prettier": "yarn prettier src --write",
         "format": "yarn format:eslint && yarn format:prettier",
-        "generate-types": "rm -r ./src/types/generated && yarn openapi --input https://api.im.dev.test.c.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false"
+        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://api.im.dev.test.c.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent"
     },
     "browserslist": {
         "production": [
