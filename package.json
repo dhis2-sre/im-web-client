@@ -19,7 +19,6 @@
         "react-router-dom": "^6.14.1",
         "react-scripts": "5.0.1",
         "styled-jsx": "^5.1.2",
-        "typescript": "^5.1.6",
         "web-vitals": "^3.4.0"
     },
     "devDependencies": {
@@ -35,7 +34,7 @@
         "@types/react": "^18.2.14",
         "@vitejs/plugin-react-swc": "^3.3.2",
         "eslint-plugin-react-refresh": "^0.4.1",
-        "typescript": "^5.0.2",
+        "typescript": "^5.1.6",
         "vite": "^4.4.0"
     },
     "scripts": {
@@ -43,9 +42,14 @@
         "build": "tsc && vite build",
         "preview": "vite preview",
         "test": "react-scripts test",
-        "format": "yarn d2-style apply",
-        "lint": "yarn d2-style check",
-        "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts && yarn format"
+        "lint:eslint": "yarn eslint src",
+        "lint:prettier": "yarn prettier src --check",
+        "lint:lslint": "yarn ls-lint",
+        "lint": "yarn lint:eslint && yarn lint:prettier && yarn lint:lslint",
+        "format:eslint": "yarn eslint src --fix",
+        "format:prettier": "yarn prettier src --write",
+        "format": "yarn format:eslint && yarn format:prettier",
+        "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts && yarn format:prettier"
     },
     "browserslist": {
         "production": [
