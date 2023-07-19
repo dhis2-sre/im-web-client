@@ -49,7 +49,7 @@ export const SignUp = () => {
             if (inputs.email && inputs.password && inputs.password === inputs.confirmPassword) {
                 try {
                     const { email, password } = inputs
-                    postSignup({ data: { email, password } })
+                    await postSignup({ data: { email, password } })
                     navigate('/login')
                 } catch (error) {
                     console.error(error)
