@@ -51,6 +51,15 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
     )
 
     const onUpload = useCallback(async () => {
+        // TODO: How do I disable the upload button until a file is selected
+        if (databaseFile.size === 0) {
+            showAlert({
+                message: 'No file selected',
+                isCritical: true,
+            })
+            return
+        }
+
         try {
             const formData = new FormData()
             formData.append('group', group)
@@ -118,7 +127,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                     <Button onClick={onUpload} disabled={loading}>
                         Upload
                     </Button>
-                    <Button onClick={onClose} disabled={loading}>
+                    <Button onClick={onClose}>
                         Close
                     </Button>
                 </ButtonStrip>

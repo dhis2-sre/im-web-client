@@ -1,5 +1,4 @@
 import {
-    Button,
     ButtonStrip,
     DataTable,
     DataTableBody as TableBody,
@@ -8,7 +7,6 @@ import {
     DataTableHead as TableHead,
     DataTableRow,
     DataTableToolbar as TableToolbar,
-    IconAdd24,
 } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
@@ -17,21 +15,9 @@ import { DeleteButton } from './delete-button'
 import { DownloadButton } from './download-button'
 import styles from './databases-list.module.css'
 import type { FC } from 'react'
-import { useState } from 'react'
-import { UploadDatabaseModal } from './upload-database-modal'
+import { UploadButton } from './upload-button'
 
 export const DatabasesList: FC = () => {
-    const [showUploadDatabaseModal, setShowUploadDatabaseModal] = useState(false)
-
-    const onClose = () => {
-        setShowUploadDatabaseModal(false)
-    }
-
-    const onUploadDatabaseComplete = () => {
-        setShowUploadDatabaseModal(false)
-        refetch()
-    }
-
     const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', {
         useCache: false,
     })
@@ -40,9 +26,7 @@ export const DatabasesList: FC = () => {
         <div className={styles.wrapper}>
             <div className={styles.heading}>
                 <h1>Databases</h1>
-                <Button icon={<IconAdd24 />} onClick={() => setShowUploadDatabaseModal(true)}>
-                    Upload database
-                </Button>
+                <UploadButton onComplete={refetch} />
             </div>
 
             {data?.map((group) => (
@@ -81,7 +65,6 @@ export const DatabasesList: FC = () => {
                     </DataTable>
                 </div>
             ))}
-            {showUploadDatabaseModal && <UploadDatabaseModal onComplete={onUploadDatabaseComplete} onClose={onClose} />}
         </div>
     )
 }
