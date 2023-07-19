@@ -34,7 +34,7 @@ export const SignUp = () => {
             [name]: value,
         }))
     }, [])
-    const [{ loading }, postSignup] = useAuthAxios(
+    const [{ loading }, postSignUp] = useAuthAxios(
         {
             url: '/users',
             method: 'POST',
@@ -49,7 +49,7 @@ export const SignUp = () => {
             if (inputs.email && inputs.password && inputs.password === inputs.confirmPassword) {
                 try {
                     const { email, password } = inputs
-                    await postSignup({ data: { email, password } })
+                    await postSignUp({ data: { email, password } })
                     navigate('/login')
                 } catch (error) {
                     console.error(error)
@@ -59,7 +59,7 @@ export const SignUp = () => {
                 setErrorMessage(getInputsErrorMessage(inputs))
             }
         },
-        [inputs, postSignup, navigate]
+        [inputs, postSignUp, navigate]
     )
 
     return (
