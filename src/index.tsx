@@ -8,6 +8,7 @@ import './index.module.css'
 import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
 import { UsersList } from './views/users'
 import { GroupsList } from './views/groups'
+import { CurrentUserContext, getCurrentUser } from './hooks/current-user'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -27,14 +28,17 @@ const router = createBrowserRouter(
     )
 )
 
+const currentUser = getCurrentUser()
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
         <AlertsProvider>
-            <CssReset />
-            <CssVariables colors theme layers spacers elevations />
-            <RouterProvider router={router} />
-            <Alerts />
+            <CurrentUserContext.Provider value={{ currentUser }}>
+                <CssReset />
+                <CssVariables colors theme layers spacers elevations />
+                <RouterProvider router={router} />
+                <Alerts />
+            </CurrentUserContext.Provider>
         </AlertsProvider>
     </React.StrictMode>
 )

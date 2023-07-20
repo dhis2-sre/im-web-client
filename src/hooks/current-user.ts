@@ -1,30 +1,39 @@
-import jwtDecode, { JwtPayload } from 'jwt-decode'
-import { getAccessToken } from 'axios-jwt'
-import { User } from '../types'
+import jwtDecode, {JwtPayload} from 'jwt-decode'
+import {getAccessToken} from 'axios-jwt'
+import {User} from '../types'
+import {createContext} from 'react'
 
 // TODO: This is not a hook
 interface JwtPayloadWithUser extends JwtPayload {
     user: User
 }
 
-export const getCurrentUser = (): SuperUser => {
+export const getCurrentUser = (): CurrentUser => {
     const token = getAccessToken()
     if (token) {
         const decoded = jwtDecode<JwtPayloadWithUser>(token)
-        return new SuperUser(decoded.user)
+        return new CurrentUser(decoded.user)
     }
-// TODO: null or {}?
+    // TODO: null or {}?
     return null
 }
 
-// TODO: Is there a better way to add methods to the User type?
-class SuperUser {
-    private user : User
-    constructor(user : User) {
+class CurrentUser {
+    private user: User
+
+    constructor(user: User) {
         this.user = user
     }
 
-    public isAdmin(): boolean {
-        return this.user.groups.some(group => group.name === "administrators")
+    public isAdministrator(): boolean {
+        return this.user.groups.some((group) => group.name === 'administrators')
     }
 }
+
+interface currentUserContext {
+    currentUser: CurrentUser
+}
+
+export const CurrentUserContext = createContext<currentUserContext>({
+    currentUser: null,
+})
