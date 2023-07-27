@@ -1,11 +1,11 @@
 import {
     ButtonStrip,
     DataTable,
+    DataTableBody as TableBody,
     DataTableCell,
     DataTableColumnHeader,
-    DataTableRow,
-    DataTableBody as TableBody,
     DataTableHead as TableHead,
+    DataTableRow,
     DataTableToolbar as TableToolbar,
 } from '@dhis2/ui'
 import Moment from 'react-moment'
@@ -14,8 +14,8 @@ import { GroupWithDatabases } from '../../types'
 import { DeleteButton } from './delete-button'
 import { DownloadButton } from './download-button'
 import styles from './databases-list.module.css'
-import { UploadButton } from './upload-button'
 import type { FC } from 'react'
+import { UploadButton } from './upload-button'
 
 export const DatabasesList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', {
@@ -25,14 +25,14 @@ export const DatabasesList: FC = () => {
     return (
         <div className={styles.wrapper}>
             <div className={styles.heading}>
-                <h1>All databases</h1>
+                <h1>Databases</h1>
+                <UploadButton onComplete={refetch} />
             </div>
 
             {data?.map((group) => (
                 <div key={group.name}>
                     <TableToolbar className={styles.tabletoolbar}>
                         <h2>{group.name}</h2>
-                        <UploadButton groupName={group.name} onComplete={refetch} />
                     </TableToolbar>
                     <DataTable>
                         <TableHead>
