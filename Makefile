@@ -17,7 +17,13 @@ dev:
 clean:
 	$(clean-cmd)
 
-.PHONY: docker-image push-docker-image
+e2e-test:
+	docker compose run test
+
+cypress:
+	yarn run cypress open --config-file ./cypress/cypress.config.js
+
+.PHONY: docker-image push-docker-image test cypress
 
 
 ## CI/CD
@@ -32,8 +38,5 @@ keys:
 
 smoke-test:
 	IMAGE_TAG=$(tag) docker compose up -d prod
-
-test:
-	echo TODO
 
 .PHONY: init check keys smoke-test test

@@ -23,3 +23,17 @@ services:
         command: yarn start
         ports:
             - "3000:3000"
+
+    test:
+        image: cypress/included:12.17.2
+        stdin_open: true
+        tty: true
+        # TODO: Only necessary when site is running on hosts localhost
+        network_mode: host
+        volumes:
+            - ./cypress:/e2e
+        working_dir: /e2e
+        environment:
+            CYPRESS_UI_HOSTNAME: https://${UI_HOSTNAME}
+            CYPRESS_USER_EMAIL: ${USER_EMAIL}
+            CYPRESS_PASSWORD: ${PASSWORD}

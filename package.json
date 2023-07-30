@@ -58,6 +58,7 @@
         "@types/node": "^20.5.0",
         "@types/react-dom": "^18.2.6",
         "@types/react-router-dom": "^5.3.3",
-        "@types/react": "^18.2.20"
+        "@types/react": "^18.2.20",
+        "cypress": "^12.17.2"
     }
 }
