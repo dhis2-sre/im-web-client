@@ -39,10 +39,9 @@ function handle_type_generation () {
         # with the generated files since this is the least disruptive
         # way of dealing with changes in the OpenAPI specifications
         # which don't affect the codebase.
-        local commit_title="chore: update type definitions due to changes in OpenAPI specification"
-        local commit_body="This commit was auto-generated in the pre-push Husky hook because the changes do not affect the codebase."
-        local commit_message="$commit_title\n\n$commit_body"
-        git commit $space_delimited_changed_file_list -m"$commit_message"
+        git commit $space_delimited_changed_file_list -m 'chore: update type definitions due to changes in OpenAPI specification
+
+This commit was auto-generated in the pre-push Husky hook because the changes do not affect the codebase.'
         echo "Changes do not affect codebase. Added a commit with updated type definitions"
         exit 0
     else
