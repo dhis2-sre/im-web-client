@@ -1,4 +1,54 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn generate-types
+function handle_type_generation () {
+    local generated_types_dir="src/types/generated"
+
+    # Ensure new files are included in the diff by listing all untracked (new)
+    # files in the generated types directory and git-add them with the
+    # `--intend-to-add` flag which prevents them from becoming staged
+    for untracked_file_name in $(git -C $generated_types_dir ls-files --others); do
+        git add --intent-to-add "$generated_types_dir/$untracked_file_name"
+    done
+
+    # Check if there are changes in the generated types directory
+    local has_changes=false
+    local space_delimited_changed_file_list=""
+    for changed_file_name in $(git diff --name-only $generated_types_dir); do
+        if [ "$has_changes" = true ]
+        then
+            space_delimited_changed_file_list="$space_delimited_changed_file_list $changed_file_name"
+        else
+            space_delimited_changed_file_list="$changed_file_name"
+        fi
+        has_changes=true
+    done
+
+    if [ "$has_changes" = true ]
+    then
+        echo "OpenAPI changes detected."
+
+        # Let TypeScript compile the project.
+        # If this fails it must be due to changes in the generated types.
+        # In this case the process will exit with 1 and the developer needs to
+        # take action to fix the issues and then commit the changes manually.
+        ./node_modules/.bin/tsc
+
+        # If we've made it to here that means the type generation process
+        # has not caused any type errors, so we proceed to add a commit
+        # with the generated files since this is the least disruptive
+        # way of dealing with changes in the OpenAPI specifications
+        # which don't affect the codebase.
+        local commit_title="chore: update type definitions due to changes in OpenAPI specification"
+        local commit_body="This commit was auto-generated in the pre-push Husky hook because the changes do not affect the codebase."
+        local commit_message="$commit_title\n\n$commit_body"
+        git commit $space_delimited_changed_file_list -m"$commit_message"
+        echo "Changes do not affect codebase. Added a commit with updated type definitions"
+        exit 0
+    else
+        echo "No OpenAPI changes found."
+        exit 0
+    fi
+}
+
+yarn lint && yarn generate-types && handle_type_generation
