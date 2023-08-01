@@ -1,4 +1,6 @@
 {
+    "extends": "./tsconfig.json",
+    "files": ["vite.config.ts", ".eslintrc.cjs"],
     "compilerOptions": {
         "composite": true,
         "skipLibCheck": true,
@@ -8,6 +10,5 @@
         "noEmit": true,
         "allowJs": true,
         "types": ["@types/node"]
-    },
-    "include": ["vite.config.ts", ".eslintrc.cjs"]
+    }
 }
