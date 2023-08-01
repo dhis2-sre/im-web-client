@@ -41,7 +41,8 @@ function handle_type_generation () {
         # which don't affect the codebase.
         git commit $space_delimited_changed_file_list -m 'chore: update type definitions due to changes in OpenAPI specification
 
-This commit was auto-generated in the pre-push Husky hook because the changes do not affect the codebase.'
+This commit was auto-generated in the pre-push Husky hook,
+because the project could still be compiled after the type changes.'
         echo "Changes do not affect codebase. Added a commit with updated type definitions"
         exit 0
     else
