@@ -10,6 +10,7 @@ import type { User } from './User'
  * Group domain object defining a group
  */
 export type Group = {
+    adminUsers?: Array<User>
     clusterConfiguration?: ClusterConfiguration
     createdAt?: string
     deployable?: boolean
