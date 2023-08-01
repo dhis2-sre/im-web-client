@@ -11,3 +11,4 @@ ignore:
     - build
     - src/setupTests.ts
     - src/reportWebVitals.ts
+    - src/types/generated/models
