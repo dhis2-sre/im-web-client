@@ -870,7 +870,6 @@ export interface definitions {
         consumed?: boolean
         defaultValue?: string
         name?: string
-        stackName?: string
     }
     /** @description Tokens domain object defining user tokens */
     Tokens: {
