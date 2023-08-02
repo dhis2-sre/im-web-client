@@ -44,6 +44,7 @@ export const DatabasesList: FC = () => {
                             </DataTableRow>
                         </TableHead>
                         <TableBody>
+                            {group.databases?.length > 1 || <h3>No databases</h3>}
                             {group.databases?.map((database) => (
                                 <DataTableRow key={database.id}>
                                     <DataTableCell>{database.name}</DataTableCell>
