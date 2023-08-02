@@ -127,9 +127,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                     <Button onClick={onUpload} disabled={loading}>
                         Upload
                     </Button>
-                    <Button onClick={onClose}>
-                        Close
-                    </Button>
+                    <Button onClick={onClose}>Close</Button>
                 </ButtonStrip>
             </ModalActions>
             {loading && (
