@@ -2,7 +2,7 @@ import { Button, ButtonStrip, Card, Center, CircularLoader, NoticeBox, SingleSel
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
-import { Stack } from '../../types'
+import { Instance, Stack } from '../../types'
 import styles from './new-instance.module.css'
 import { StackConfigurator } from './stack-configurator'
 import type { FC } from 'react'
@@ -12,7 +12,7 @@ export const NewInstance: FC = () => {
     const stackConfiguratorRef = useRef(null)
     const [selectedStack, setSelectedStack] = useState<Stack>({ name: '' })
     const [{ data: stacks, loading: stacksLoading, error: stacksError }] = useAuthAxios<Stack[]>('stacks')
-    const [{ loading: postLoading, error: postError }, postNewInstance] = useAuthAxios(
+    const [{ loading: postLoading, error: postError }, postNewInstance] = useAuthAxios<Instance>(
         {
             url: '/instances',
             method: 'POST',
