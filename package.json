@@ -28,6 +28,7 @@
         "eject": "react-scripts eject",
         "format": "yarn d2-style apply",
         "lint": "yarn d2-style check",
+        "e2e": "yarn playwright test --ui",
         "generate-types": "npx --yes openapi-typescript@5.4.1 https://api.im.dev.test.c.dhis2.org/swagger.yaml -o ./src/types/generated-types.d.ts && yarn format"
     },
     "eslintConfig": {
@@ -51,14 +52,16 @@
     "devDependencies": {
         "@dhis2/cli-style": "^10.5.1",
         "@ls-lint/ls-lint": "^2.0.1",
+        "@playwright/test": "^1.37.0",
         "@testing-library/jest-dom": "^5.17.0",
         "@testing-library/react": "^14.0.0",
         "@testing-library/user-event": "^14.4.3",
         "@types/jest": "^29.5.3",
         "@types/node": "^20.5.0",
+        "@types/react": "^18.2.20",
         "@types/react-dom": "^18.2.6",
         "@types/react-router-dom": "^5.3.3",
-        "@types/react": "^18.2.20",
-        "cypress": "^12.17.2"
+        "dotenv": "^16.3.1",
+        "dotenv-expand": "^10.0.0"
     }
 }
