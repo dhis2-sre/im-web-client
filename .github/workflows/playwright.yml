@@ -18,7 +18,7 @@ jobs:
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Run Playwright tests
-              run: npx playwright test --debug
+              run: npx playwright test
               env:
                   # Not quite sure where to read these values
                   UI_HOSTNAME: ${{ secrets.UI_HOSTNAME }}
