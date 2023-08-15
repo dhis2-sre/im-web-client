@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import { password, username } from './env'
 
 export const login = async (page) => {
-    await page.goto('http://localhost:3000/login')
+    await page.goto('/login')
     await page.getByLabel('username').click()
     await page.getByLabel('username').fill(username)
     await page.getByLabel('password').click()
