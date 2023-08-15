@@ -10,7 +10,7 @@ test.describe('stack', () => {
     })
 
     test('can list stacks', async ({ page }) => {
-        const stacksLink = page.getByRole('link', { name: 'Stacks' })
+        const stacksLink = await page.getByRole('link', { name: 'Stacks' })
         await expect(stacksLink).toBeVisible()
 
         await stacksLink.click()
