@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run serially to avoid race conditions between prettier and eslint
+npx lint-staged --concurrent false
