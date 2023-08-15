@@ -2,8 +2,8 @@
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
 [ -z "$FILES" ] && exit 0
 
-# Check if staged files can be compiled
-echo "$FILES" | xargs ./node_modules/.bin/tsc
+# Check if staged files can be compiled (without generating js files)
+echo "$FILES" | xargs ./node_modules/.bin/tsc --noEmit
 
 # Format all staged files
 # Prettier

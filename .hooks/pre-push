@@ -32,7 +32,7 @@ function handle_type_generation () {
         # If this fails it must be due to changes in the generated types.
         # In this case the process will exit with 1 and the developer needs to
         # take action to fix the issues and then commit the changes manually.
-        ./node_modules/.bin/tsc
+        ./node_modules/.bin/tsc --noEmit
 
         # If we've made it to here that means the type generation process
         # has not caused any type errors, so we proceed to add a commit
