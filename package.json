@@ -22,6 +22,8 @@
         "web-vitals": "^3.4.0"
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.7.1",
+        "@commitlint/config-conventional": "^17.7.0",
         "@dhis2/cli-style": "^10.5.1",
         "@ls-lint/ls-lint": "^2.0.1",
         "@testing-library/jest-dom": "^5.16.5",

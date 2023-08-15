@@ -1,6 +1,6 @@
 {
     "extends": "./tsconfig.json",
-    "files": ["vite.config.ts", ".eslintrc.cjs"],
+    "files": ["vite.config.ts", ".eslintrc.cjs", "commitlint.config.cjs"],
     "compilerOptions": {
         "composite": true,
         "skipLibCheck": true,
