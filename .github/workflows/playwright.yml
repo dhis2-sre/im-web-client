@@ -17,6 +17,8 @@ jobs:
               run: yarn
             - name: Install Playwright Browsers
               run: yarn playwright install --with-deps
+            - name: Start the app
+              run: yarn start
             - name: Run Playwright tests
               run: yarn playwright test
               env:
