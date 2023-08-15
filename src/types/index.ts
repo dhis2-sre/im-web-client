@@ -2,7 +2,7 @@
  * bunch of stuff but currently all we need is the models.
  * One of the types in the OpenApi spec is incorrectly named in my opinion.
  * `GroupsWithDatabases` actually describes a single group. Re-exporting
- * everything excl. this incorrectly named item is not possible with manually
+ * everything excl. this incorrectly named item is not possible without manually
  * re-exporting all named types. So we don't bother removing the incorrectly
  * named type, but just export it under the correct name too.
  * TODO: fix this name in the OpenAPI spec. */
