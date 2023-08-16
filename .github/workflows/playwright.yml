@@ -24,8 +24,8 @@ jobs:
                   CI: true
                   API_URL: https://api.im.dev.test.c.dhis2.org
                   REACT_APP_API_URL: https://api.im.dev.test.c.dhis2.org
-                  USER_EMAIL: ${{ secrets.IM_ADMIN_USER }}
-                  PASSWORD: ${{ secrets.IM_ADMIN_PASSWORD }}
+                  IM_ADMIN_USER: ${{ secrets.IM_ADMIN_USER }}
+                  IM_ADMIN_PASSWORD: ${{ secrets.IM_ADMIN_PASSWORD }}
             - uses: actions/upload-artifact@v3
               if: always()
               with:
