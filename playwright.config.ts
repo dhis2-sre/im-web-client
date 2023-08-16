@@ -1,4 +1,4 @@
-import { type PlaywrightTestConfi, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Read environment variables from file.
@@ -9,7 +9,7 @@ import { type PlaywrightTestConfi, devices } from '@playwright/test'
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const config: PlaywrightTestConfig = {
+export default defineConfig({
     testDir: './e2e',
     /* Run tests in files in parallel */
     fullyParallel: true,
@@ -28,6 +28,7 @@ const config: PlaywrightTestConfig = {
 
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
+        testIdAttribute: 'data-test',
     },
 
     /* Configure projects for major browsers */
@@ -74,9 +75,7 @@ const config: PlaywrightTestConfig = {
         url: 'http://127.0.0.1:3000',
         // reuseExistingServer: !process.env.CI,
         reuseExistingServer: false,
-        stderr: 'ignore',
-        stdout: 'ignore',
+        stderr: 'pipe',
+        stdout: 'pipe',
     },
-}
-
-export default config
+})
