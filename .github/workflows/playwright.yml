@@ -21,9 +21,11 @@ jobs:
               run: npx playwright test
               env:
                   # Not quite sure where to read these values
-                  UI_HOSTNAME: ${{ secrets.UI_HOSTNAME }}
-                  USER_EMAIL: ${{ secrets.USER_EMAIL }}
-                  PASSWORD: ${{ secrets.PASSWORD }}
+                  CI: true
+                  API_URL: https://api.im.dev.test.c.dhis2.org
+                  REACT_APP_API_URL: https://api.im.dev.test.c.dhis2.org
+                  USER_EMAIL: ${{ secrets.IM_ADMIN_USER }}
+                  PASSWORD: ${{ secrets.IM_ADMIN_PASSWORD }}
             - uses: actions/upload-artifact@v3
               if: always()
               with:
