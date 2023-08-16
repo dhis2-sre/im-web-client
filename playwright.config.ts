@@ -1,10 +1,24 @@
 import { defineConfig, devices } from '@playwright/test'
+import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
+import path from 'path'
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+function loadEnvVariables() {
+    // Assume it's a development environment unless one of these indicates otherwise
+    const mode =
+        process.env.ENVIRONMENT === 'prod' || process.env.ENVIRONMENT === 'production' || process.env.NODE_ENV === 'prod' || process.env.NODE_ENV === 'production'
+            ? 'production'
+            : 'development'
+    /* Note that order matters here. The values from the .env files with more specific names
+       need to override the values that may have been set in more generically named env files. */
+    const validEnvFileNamesForCurrentEnv = ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]
+
+    for (const fileName of validEnvFileNamesForCurrentEnv) {
+        console.log('loading filename', fileName)
+        dotenvExpand.expand(dotenv.config({ path: path.resolve(__dirname, fileName) }))
+    }
+}
+loadEnvVariables()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
