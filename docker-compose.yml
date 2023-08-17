@@ -25,15 +25,18 @@ services:
             - "3000:3000"
 
     test:
-        image: cypress/included:12.17.2
+        image: mcr.microsoft.com/playwright:v1.37.0-jammy
         stdin_open: true
         tty: true
-        # TODO: Only necessary when site is running on hosts localhost
+        # command: yarn install --frozen-lockfile && npx playwright test
+        command: sh -c "yarn install --frozen-lockfile && npx playwright test"
         network_mode: host
         volumes:
-            - ./cypress:/e2e
+            - ./:/e2e
         working_dir: /e2e
         environment:
-            CYPRESS_UI_HOSTNAME: https://${UI_HOSTNAME}
-            CYPRESS_USER_EMAIL: ${USER_EMAIL}
-            CYPRESS_PASSWORD: ${PASSWORD}
+            CI: true
+            IM_ADMIN_USER: ${IM_ADMIN_USER}
+            IM_ADMIN_PASSWORD: ${IM_ADMIN_PASSWORD}
+            API_URL: ${API_URL}
+            REACT_APP_API_URL: ${API_URL}

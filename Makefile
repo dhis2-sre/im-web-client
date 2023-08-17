@@ -20,10 +20,7 @@ clean:
 e2e-test:
 	docker compose run test
 
-cypress:
-	yarn run cypress open --config-file ./cypress/cypress.config.js
-
-.PHONY: docker-image push-docker-image test cypress
+.PHONY: docker-image push-docker-image test
 
 
 ## CI/CD
