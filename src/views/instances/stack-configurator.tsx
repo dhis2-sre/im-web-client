@@ -6,6 +6,7 @@ import { useAuthAxios } from '../../hooks'
 import { Group, Stack, StackParameter } from '../../types'
 import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './parameter-field'
 import styles from './stack-configurator.module.css'
+import fieldStyles from './parameter-field.module.css'
 
 type StackParameters = {
     name: string
@@ -141,26 +142,26 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
 
     return (
         <>
-            <div className={styles.basics}>
-                <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
-                <TextAreaField className={styles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
-                <SingleSelectField className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
+            <div className={styles.container}>
+                <InputField className={fieldStyles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
+                <TextAreaField className={fieldStyles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
+                <SingleSelectField className={fieldStyles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <SingleSelectField className={styles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
+                <SingleSelectField className={fieldStyles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
                     {Array.from(ttlMap.keys()).map((key) => (
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
-                <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
+                <CheckboxField className={cx(fieldStyles.field, fieldStyles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
             </div>
-            <div>
-                {stackParameters && (
-                    <>
-                        <Divider />
-                        <h4 className={styles.subheader}>Parameters</h4>
+            {stackParameters && (
+                <>
+                    <Divider />
+                    <h4 className={styles.subheader}>Parameters</h4>
+                    <div className={styles.container}>
                         {Object.entries(stackParameters).map(([name, value]: any) => (
                             <ParameterField
                                 key={name}
@@ -172,9 +173,9 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                                 disabled={disabled}
                             />
                         ))}
-                    </>
-                )}
-            </div>
+                    </div>
+                </>
+            )}
         </>
     )
 })
