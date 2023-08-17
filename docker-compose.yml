@@ -34,7 +34,7 @@ services:
             - ./:/e2e
         working_dir: /e2e
         environment:
-            CI: true
+            CI: "true"
             IM_ADMIN_USER: ${IM_ADMIN_USER}
             IM_ADMIN_PASSWORD: ${IM_ADMIN_PASSWORD}
             API_URL: ${API_URL}

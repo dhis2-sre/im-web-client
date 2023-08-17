@@ -19,7 +19,7 @@ jobs:
             - name: Run Playwright tests
               run: make e2e-test
               env:
-                  CI: "true"
+                  CI: true
                   API_URL: https://api.im.dev.test.c.dhis2.org
                   REACT_APP_API_URL: https://api.im.dev.test.c.dhis2.org
                   IM_ADMIN_USER: ${{ secrets.IM_ADMIN_USER }}
