@@ -1,39 +1,19 @@
-import {
-    Button,
-    DataTable,
-    DataTableBody as TableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead as TableHead,
-    DataTableRow,
-    IconAdd24,
-    IconCheckmark16,
-} from '@dhis2/ui'
+import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
 import styles from './groups-list.module.css'
 import type { FC } from 'react'
-import { useState } from 'react'
 import { Group } from '../../types'
-import { NewGroupModal } from '.'
+import { NewGroupButton } from './new-group-button'
 
 export const GroupsList: FC = () => {
-    const [showNewGroupModal, setShowNewGroupModal] = useState(false)
-
     const [{ data }, refetch] = useAuthAxios<Group[]>('/groups', { useCache: false })
-
-    const onClose = () => {
-        setShowNewGroupModal(false)
-        refetch()
-    }
 
     return (
         <div>
             <div className={styles.heading}>
                 <h1>Groups</h1>
-                <Button icon={<IconAdd24 />} onClick={() => setShowNewGroupModal(true)}>
-                    New group
-                </Button>
+                <NewGroupButton onComplete={refetch} />
             </div>
             <DataTable>
                 <TableHead>
@@ -64,7 +44,6 @@ export const GroupsList: FC = () => {
                     })}
                 </TableBody>
             </DataTable>
-            {showNewGroupModal && <NewGroupModal onClose={onClose} />}
         </div>
     )
 }

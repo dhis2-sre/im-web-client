@@ -7,10 +7,11 @@ import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
 
 type NewGroupModalProps = {
-    onClose: Function
+    onComplete: Function
+    onCancel: Function
 }
 
-export const NewGroupModal: FC<NewGroupModalProps> = ({ onClose }) => {
+export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) => {
     const [name, setName] = useState('')
     const [hostname, setHostname] = useState('')
     const [deployable, setDeployable] = useState(true)
@@ -26,15 +27,15 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onClose }) => {
         try {
             const data = { name, hostname, deployable }
             await createGroup({ data })
-            onClose()
+            onComplete()
         } catch (error) {
             showAlert({ message: `There was an error when creating the group`, isCritical: true })
             console.error(error)
         }
-    }, [createGroup, deployable, hostname, name, onClose, showAlert])
+    }, [createGroup, deployable, hostname, name, onComplete, showAlert])
 
     return (
-        <Modal fluid onClose={onClose}>
+        <Modal fluid onClose={onCancel}>
             <ModalTitle>New group</ModalTitle>
             <ModalContent>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required />
@@ -46,7 +47,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onClose }) => {
                     <Button onClick={onCreate} disabled={loading}>
                         Create
                     </Button>
-                    <Button onClick={onClose} disabled={loading}>
+                    <Button onClick={onCancel} disabled={loading}>
                         Close
                     </Button>
                 </ButtonStrip>
