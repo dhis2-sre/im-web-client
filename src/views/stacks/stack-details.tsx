@@ -27,54 +27,28 @@ export const StackDetails = () => {
     return (
         <div key={stack.name}>
             <h1>{stack.name}</h1>
+            <DataTableToolbar className={styles.tabletoolbar}>Parameters</DataTableToolbar>
+            <DataTable className={styles.datatable}>
+                <DataTableHead>
+                    <DataTableRow>
+                        <DataTableColumnHeader>Name</DataTableColumnHeader>
+                        <DataTableColumnHeader>Default value</DataTableColumnHeader>
+                        <DataTableColumnHeader>Consumed</DataTableColumnHeader>
+                    </DataTableRow>
+                </DataTableHead>
 
-            <>
-                <DataTableToolbar className={styles.tabletoolbar}>Required parameters</DataTableToolbar>
-                <DataTable className={styles.datatable}>
-                    <DataTableHead>
-                        <DataTableRow>
-                            <DataTableColumnHeader>Name</DataTableColumnHeader>
-                            <DataTableColumnHeader>Consumed</DataTableColumnHeader>
-                        </DataTableRow>
-                    </DataTableHead>
-
-                    <DataTableBody>
-                        {stack.requiredParameters?.map((parameter) => {
-                            return (
-                                <DataTableRow key={parameter.name}>
-                                    <DataTableCell>{parameter.name}</DataTableCell>
-                                    <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                                </DataTableRow>
-                            )
-                        })}
-                    </DataTableBody>
-                </DataTable>
-            </>
-
-            <>
-                <DataTableToolbar className={styles.tabletoolbar}>Optional parameters</DataTableToolbar>
-                <DataTable className={styles.datatable}>
-                    <DataTableHead>
-                        <DataTableRow>
-                            <DataTableColumnHeader>Name</DataTableColumnHeader>
-                            <DataTableColumnHeader>Default value</DataTableColumnHeader>
-                            <DataTableColumnHeader>Consumed</DataTableColumnHeader>
-                        </DataTableRow>
-                    </DataTableHead>
-
-                    <DataTableBody>
-                        {stack.optionalParameters?.map((parameter) => {
-                            return (
-                                <DataTableRow key={parameter.name}>
-                                    <DataTableCell>{parameter.name}</DataTableCell>
-                                    <DataTableCell>{parameter.defaultValue}</DataTableCell>
-                                    <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                                </DataTableRow>
-                            )
-                        })}
-                    </DataTableBody>
-                </DataTable>
-            </>
+                <DataTableBody>
+                    {stack.parameters?.map((parameter) => {
+                        return (
+                            <DataTableRow key={parameter.name}>
+                                <DataTableCell>{parameter.name}</DataTableCell>
+                                <DataTableCell>{parameter.defaultValue}</DataTableCell>
+                                <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
+                            </DataTableRow>
+                        )
+                    })}
+                </DataTableBody>
+            </DataTable>
         </div>
     )
 }

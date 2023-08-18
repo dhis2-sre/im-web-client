@@ -1,11 +1,12 @@
 import { Center, CheckboxField, CircularLoader, Divider, InputField, NoticeBox, SingleSelectField, SingleSelectOption, TextAreaField } from '@dhis2/ui'
 import cx from 'classnames'
+import type { Ref } from 'react'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
-import { Group, Stack, StackOptionalParameter, StackRequiredParameter } from '../../types'
+import { Group, Stack, StackParameter } from '../../types'
 import { IMAGE_REPOSITORY, IMAGE_TAG, ParameterField } from './parameter-field'
 import styles from './stack-configurator.module.css'
-import type { Ref } from 'react'
+import fieldStyles from './parameter-field.module.css'
 
 type StackParameters = {
     name: string
@@ -13,22 +14,29 @@ type StackParameters = {
     groupName: string
     ttl: number
     public: boolean
-    requiredParameters: StackRequiredParameter[]
-    optionalParameters: StackOptionalParameter[]
+    parameters: StackParameter[]
 }
 
 const toArray = (object) => Object.entries(object).map(([name, value]) => ({ name, value }))
 
-const toKeyedObject = (array): StackRequiredParameter =>
+const toKeyedObject = (array): StackParameter =>
     array.reduce((acc, { name, defaultValue: value }) => {
         acc[name] = value ?? ''
         return acc
     }, {})
 
-const getRepositoryValueForImageTag = (name: string, requiredParameters, optionalParameters) =>
-    name === IMAGE_TAG ? requiredParameters[IMAGE_REPOSITORY] ?? optionalParameters[IMAGE_REPOSITORY] : undefined
+const getRepositoryValueForImageTag = (name: string, parameters) => (name === IMAGE_TAG ? parameters[IMAGE_REPOSITORY] : undefined)
 
-const computeNewParameters = (currentParameters: StackRequiredParameter, { name, value }: { name: string; value: string }): StackRequiredParameter => {
+const computeNewParameters = (
+    currentParameters: StackParameter,
+    {
+        name,
+        value,
+    }: {
+        name: string
+        value: string
+    }
+): StackParameter => {
     /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
      * the `IMAGE_TAG` value needs to be cleared when
      * `IMAGE_REPOSITORY` changes.
@@ -62,14 +70,18 @@ const ttlMap = new Map<string, number>([
 
 type StackConfiguratorProps = { name: string; disabled: boolean }
 
-export const StackConfigurator = forwardRef(function StackConfigurator({ name: stackName, disabled }: StackConfiguratorProps, ref: Ref<{ getStackParameters }>) {
+export const StackConfigurator = forwardRef(function StackConfigurator(
+    { name: stackName, disabled }: StackConfiguratorProps,
+    ref: Ref<{
+        getStackParameters
+    }>
+) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [group, setGroup] = useState('')
     const [ttl, setTtl] = useState(defaultTTL)
     const [publicity, setPublicity] = useState(false)
-    const [requiredStackParameters, setRequiredStackParameters] = useState({})
-    const [optionalStackParameters, setOptionalStackParameters] = useState({})
+    const [stackParameters, setStackParameters] = useState({})
     const [{ data: stack, loading: stackLoading, error: stackError }] = useAuthAxios<Stack>(`stacks/${stackName}`)
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -89,20 +101,18 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
                     groupName: group,
                     ttl: ttlMap.get(ttl),
                     public: publicity,
-                    requiredParameters: toArray(requiredStackParameters),
-                    optionalParameters: toArray(optionalStackParameters),
+                    parameters: toArray(stackParameters),
                 }
             },
         }),
-        [name, description, group, ttl, requiredStackParameters, optionalStackParameters, publicity]
+        [name, description, group, ttl, stackParameters, publicity]
     )
 
     useEffect(() => {
         if (stack) {
-            setRequiredStackParameters(toKeyedObject(stack.requiredParameters.filter((parameter) => !parameter.consumed)))
-            setOptionalStackParameters(toKeyedObject(stack.optionalParameters))
+            setStackParameters(toKeyedObject(stack.parameters.filter((parameter) => !parameter.consumed)))
         }
-    }, [stack, setRequiredStackParameters, setOptionalStackParameters])
+    }, [stack, setStackParameters])
 
     useEffect(() => {
         if (groups && groups.length > 0) {
@@ -118,69 +128,54 @@ export const StackConfigurator = forwardRef(function StackConfigurator({ name: s
         )
     }
 
-    if (stackError || groupsError)
-        <NoticeBox error title="Could load the form">
-            Could not fetch stack and/or groups
-        </NoticeBox>
-
-    const onRequiredInputChange = (parameter) => {
-        setRequiredStackParameters((currentParameters) => computeNewParameters(currentParameters, parameter))
+    if (stackError || groupsError) {
+        return (
+            <NoticeBox error title="Could load the form">
+                Could not fetch stack and/or groups
+            </NoticeBox>
+        )
     }
 
-    const onOptionalInputChange = (parameter) => {
-        setOptionalStackParameters((currentParameters) => computeNewParameters(currentParameters, parameter))
+    const onInputChange = (parameter) => {
+        setStackParameters((currentParameters) => computeNewParameters(currentParameters, parameter))
     }
 
     return (
         <>
-            <div className={styles.basics}>
-                <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
-                <TextAreaField className={styles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
-                <SingleSelectField className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
+            <div className={styles.container}>
+                <InputField className={fieldStyles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={disabled} />
+                <TextAreaField className={fieldStyles.field} label="Description" value={description} rows={3} onChange={({ value }) => setDescription(value)} />
+                <SingleSelectField className={fieldStyles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <SingleSelectField className={styles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
+                <SingleSelectField className={fieldStyles.field} selected={ttl} onChange={({ selected }) => setTtl(selected)} label="Lifetime">
                     {Array.from(ttlMap.keys()).map((key) => (
                         <SingleSelectOption key={key} label={key} value={key} />
                     ))}
                 </SingleSelectField>
-                <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
+                <CheckboxField className={cx(fieldStyles.field, fieldStyles.checkboxfield)} label="Public?" checked={publicity} onChange={({ checked }) => setPublicity(checked)} />
             </div>
-
-            {requiredStackParameters && (
+            {stackParameters && (
                 <>
                     <Divider />
-                    <h4 className={styles.subheader}>Required parameters</h4>
+                    <h4 className={styles.subheader}>Parameters</h4>
+                    <div className={styles.container}>
+                        {Object.entries(stackParameters).map(([name, value]: any) => (
+                            <ParameterField
+                                key={name}
+                                name={name}
+                                value={value}
+                                repository={getRepositoryValueForImageTag(name, stackParameters)}
+                                onChange={onInputChange}
+                                required
+                                disabled={disabled}
+                            />
+                        ))}
+                    </div>
                 </>
             )}
-            {Object.entries(requiredStackParameters).map(([name, value]: any) => (
-                <ParameterField
-                    key={name}
-                    name={name}
-                    value={value}
-                    repository={getRepositoryValueForImageTag(name, requiredStackParameters, optionalStackParameters)}
-                    onChange={onRequiredInputChange}
-                    required
-                    disabled={disabled}
-                />
-            ))}
-
-            <Divider />
-            <h4 className={styles.subheader}>Optional parameters</h4>
-            <div className={styles.container}>
-                {Object.entries(optionalStackParameters).map(([name, value]: any) => (
-                    <ParameterField
-                        key={name}
-                        name={name}
-                        value={value}
-                        repository={getRepositoryValueForImageTag(name, requiredStackParameters, optionalStackParameters)}
-                        onChange={onOptionalInputChange}
-                        disabled={disabled}
-                    />
-                ))}
-            </div>
         </>
     )
 })

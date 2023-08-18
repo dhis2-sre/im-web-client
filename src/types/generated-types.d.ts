@@ -68,10 +68,16 @@ export interface paths {
     '/groups/{group}/users/{userId}': {
         /** Add a user to a group... */
         post: operations['addUserToGroup']
+        /** Remove a user from a group... */
+        delete: operations['removeUserFromGroup']
     }
     '/groups/{name}': {
         /** Find a group by its name */
         get: operations['findGroupByName']
+    }
+    '/groups/{name}/details': {
+        /** Find a group by its name with details */
+        get: operations['findGroupByNameWithDetails']
     }
     '/health': {
         /** Show service health status */
@@ -352,11 +358,10 @@ export interface definitions {
         description?: string
         groupName?: string
         name?: string
-        optionalParameters?: definitions['InstanceOptionalParameter'][]
+        parameters?: definitions['InstanceParameter'][]
         /** Format: uint64 */
         presetInstance?: number
         public?: boolean
-        requiredParameters?: definitions['InstanceRequiredParameter'][]
         /** Format: uint64 */
         sourceInstance?: number
         stackName?: string
@@ -393,6 +398,7 @@ export interface definitions {
     }
     /** @description Group domain object defining a group */
     Group: {
+        adminUsers?: definitions['User'][]
         clusterConfiguration?: definitions['ClusterConfiguration']
         /** Format: date-time */
         createdAt?: string
@@ -561,6 +567,7 @@ export interface definitions {
         VolumeID?: string
     }
     Instance: {
+        Parameters?: definitions['InstanceParameter'][]
         /** Format: date-time */
         createdAt?: string
         deployLog?: string
@@ -570,12 +577,10 @@ export interface definitions {
         /** Format: uint64 */
         id?: number
         name?: string
-        optionalParameters?: definitions['InstanceOptionalParameter'][]
         preset?: boolean
         /** Format: uint64 */
         presetId?: number
         public?: boolean
-        requiredParameters?: definitions['InstanceRequiredParameter'][]
         stackName?: string
         /** Format: uint64 */
         ttl?: number
@@ -585,13 +590,8 @@ export interface definitions {
         /** Format: uint64 */
         userId?: number
     }
-    InstanceOptionalParameter: {
-        /** @description TODO: Rename StackOptionalParameterID to Name */
-        name?: string
-        value?: string
-    }
-    InstanceRequiredParameter: {
-        /** @description TODO: Rename StackRequiredParameterID to Name */
+    InstanceParameter: {
+        /** @description TODO: Rename StackParameterID to Name */
         name?: string
         value?: string
     }
@@ -862,21 +862,14 @@ export interface definitions {
         hostnameVariable?: string
         instances?: definitions['Instance'][]
         name?: string
-        optionalParameters?: definitions['StackOptionalParameter'][]
-        requiredParameters?: definitions['StackRequiredParameter'][]
+        parameters?: definitions['StackParameter'][]
         /** Format: date-time */
         updatedAt?: string
     }
-    StackOptionalParameter: {
+    StackParameter: {
         consumed?: boolean
         defaultValue?: string
         name?: string
-        stackName?: string
-    }
-    StackRequiredParameter: {
-        consumed?: boolean
-        name?: string
-        stackName?: string
     }
     /** @description Tokens domain object defining user tokens */
     Tokens: {
@@ -1088,8 +1081,7 @@ export interface definitions {
         name?: string
     }
     UpdateInstanceRequest: {
-        optionalParameters?: definitions['InstanceOptionalParameter'][]
-        requiredParameters?: definitions['InstanceRequiredParameter'][]
+        parameters?: definitions['InstanceParameter'][]
         /** Format: uint64 */
         ttl?: number
     }
@@ -1473,7 +1465,7 @@ export interface operations {
     groupCreate: {
         parameters: {
             body: {
-                /** Refresh token request body parameter */
+                /** Create group request body parameter */
                 Body: definitions['CreateGroupRequest']
             }
         }
@@ -1533,8 +1525,42 @@ export interface operations {
             415: responses['Error']
         }
     }
+    /** Remove a user from a group... */
+    removeUserFromGroup: {
+        parameters: {
+            path: {
+                group: string
+                userId: number
+            }
+        }
+        responses: {
+            204: never
+            400: responses['Error']
+            401: responses['Error']
+            403: responses['Error']
+            415: responses['Error']
+        }
+    }
     /** Find a group by its name */
     findGroupByName: {
+        parameters: {
+            path: {
+                name: string
+            }
+        }
+        responses: {
+            /** Group */
+            200: {
+                schema: definitions['Group']
+            }
+            401: responses['Error']
+            403: responses['Error']
+            404: responses['Error']
+            415: responses['Error']
+        }
+    }
+    /** Find a group by its name with details */
+    findGroupByNameWithDetails: {
         parameters: {
             path: {
                 name: string
