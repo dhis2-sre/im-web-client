@@ -1,0 +1,6 @@
+.tabletoolbar {
+    background-color: var(--colors-white);
+}
+.datatable {
+    margin-bottom: var(--spacers-dp24);
+}
