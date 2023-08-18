@@ -35,7 +35,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
     }, [createGroup, deployable, hostname, name, onComplete, showAlert])
 
     return (
-        <Modal fluid onClose={onCancel}>
+        <Modal onClose={onCancel}>
             <ModalTitle>New group</ModalTitle>
             <ModalContent>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required />
