@@ -23,3 +23,19 @@ services:
         command: yarn start
         ports:
             - "3000:3000"
+
+    test:
+        image: mcr.microsoft.com/playwright:v1.37.0-jammy
+        stdin_open: true
+        tty: true
+        command: sh -c "yarn install --frozen-lockfile && npx playwright test"
+        network_mode: host
+        volumes:
+            - ./:/e2e
+        working_dir: /e2e
+        environment:
+            CI: "true"
+            IM_ADMIN_USER: ${IM_ADMIN_USER}
+            IM_ADMIN_PASSWORD: ${IM_ADMIN_PASSWORD}
+            API_URL: ${API_URL}
+            REACT_APP_API_URL: ${API_URL}
