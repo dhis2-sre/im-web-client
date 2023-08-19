@@ -1,28 +1,13 @@
 import { LogoIconWhite } from '@dhis2/ui'
-import { useNavigate, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { LogoutButton } from './logout-button'
-import { isLoggedIn } from 'axios-jwt'
 import styles from './layout.module.css'
-import { useEffect } from 'react'
-import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import type { FC } from 'react'
+import { useAuth } from '../hooks'
 
 export const Layout: FC = () => {
-    const navigate = useNavigate()
+    const { isAdministrator } = useAuth()
     const location = useLocation()
-
-    useEffect(() => {
-        const navigateToLogin = (event) => navigate('/login', { state: { referrerPath: event.detail } })
-        window.addEventListener(UNAUTHORIZED_EVENT, navigateToLogin, false)
-
-        return () => {
-            window.removeEventListener(UNAUTHORIZED_EVENT, navigateToLogin, false)
-        }
-    }, [navigate])
-
-    if (!isLoggedIn()) {
-        return <Navigate to="/login" state={{ referrerPath: location.pathname }} />
-    }
 
     if (location.pathname === '/') {
         return <Navigate to="/instances" />
@@ -39,6 +24,12 @@ export const Layout: FC = () => {
                     <NavLink to="/instances">Instances</NavLink>
                     <NavLink to="/databases">Databases</NavLink>
                     <NavLink to="/stacks">Stacks</NavLink>
+                    {isAdministrator && (
+                        <>
+                            <NavLink to="/users">Users</NavLink>
+                            <NavLink to="/groups">Groups</NavLink>
+                        </>
+                    )}
                 </nav>
                 <LogoutButton />
             </div>
