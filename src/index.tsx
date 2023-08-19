@@ -6,20 +6,20 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 import { Alerts, ErrorView, Layout } from './components'
 import './index.module.css'
 import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
-import {Validate} from "./views/validate";
+import { Validate } from './views/validate'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/validate/:token" element={<Validate />} />
             <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
                 <Route path="/stacks" element={<StacksList />} />
                 <Route path="/stacks/:name" element={<StackDetails />} />
                 <Route path="/instances" element={<InstancesList />} />
                 <Route path="/databases" element={<DatabasesList />} />
                 <Route path="/new" element={<NewInstance />} />
-                <Route path="/validate/:token" element={<Validate />} />
             </Route>
         </>
     )

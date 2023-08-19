@@ -179,6 +179,10 @@ export interface paths {
         /** Delete user by id */
         delete: operations['deleteUser']
     }
+    '/users/validate': {
+        /** Validate users email */
+        get: operations['validateEmail']
+    }
 }
 
 export interface definitions {
@@ -216,6 +220,16 @@ export interface definitions {
          */
         RequiredBytes?: number
     }
+    /**
+     * ChangeType Kind of change
+     * Format: uint8
+     * @description Can be one of:
+     *
+     * `0`: Modified ("C")
+     * `1`: Added ("A")
+     * `2`: Deleted ("D")
+     */
+    ChangeType: number
     ClusterConfiguration: {
         /** Format: date-time */
         createdAt?: string
@@ -270,16 +284,6 @@ export interface definitions {
          * when operating on this volume.
          */
         Secrets?: definitions['Secret'][]
-    }
-    /** @description ContainerChangeResponseItem change item in response to ContainerChanges operation */
-    ContainerChangeResponseItem: {
-        /**
-         * Format: uint8
-         * @description Kind of change
-         */
-        Kind: number
-        /** @description Path to file that has changed */
-        Path: string
     }
     /** @description ContainerTopOKBody OK response to ContainerTop operation */
     ContainerTopOKBody: {
@@ -380,6 +384,12 @@ export interface definitions {
         expiration?: number
         /** Format: uuid */
         uuid?: string
+    }
+    /** FilesystemChange Change in the container's filesystem. */
+    FilesystemChange: {
+        Kind: definitions['ChangeType']
+        /** @description Path to file or directory that has changed. */
+        Path: string
     }
     /**
      * @description GraphDriverData Information about the storage driver used to store the container's and
@@ -528,14 +538,13 @@ export interface definitions {
          * @description Total size of the image including all layers it is composed of.
          *
          * In versions of Docker before v1.10, this field was calculated from
-         * the image itself and all of its parent images. Docker v1.10 and up
-         * store images self-contained, and no longer use a parent-chain, making
-         * this field an equivalent of the Size field.
+         * the image itself and all of its parent images. Images are now stored
+         * self-contained, and no longer use a parent-chain, making this field
+         * an equivalent of the Size field.
          *
-         * This field is kept for backward compatibility, but may be removed in
-         * a future version of the API.
+         * Deprecated: this field is kept for backward compatibility, and will be removed in API v1.44.
          */
-        VirtualSize: number
+        VirtualSize?: number
     }
     /**
      * @description Info contains information about the Volume as a whole as provided by
@@ -567,7 +576,6 @@ export interface definitions {
         VolumeID?: string
     }
     Instance: {
-        Parameters?: definitions['InstanceParameter'][]
         /** Format: date-time */
         createdAt?: string
         deployLog?: string
@@ -577,6 +585,7 @@ export interface definitions {
         /** Format: uint64 */
         id?: number
         name?: string
+        parameters?: definitions['InstanceParameter'][]
         preset?: boolean
         /** Format: uint64 */
         presetId?: number
@@ -1183,6 +1192,9 @@ export interface definitions {
     updateUserRequest: {
         email?: string
         password?: string
+    }
+    validateEmailRequest: {
+        token?: string
     }
 }
 
@@ -1977,6 +1989,19 @@ export interface operations {
             403: responses['Error']
             404: responses['Error']
             415: responses['Error']
+        }
+    }
+    /** Validate users email */
+    validateEmail: {
+        parameters: {
+            body: {
+                /** Email validation token request body parameter */
+                Body: definitions['validateEmailRequest']
+            }
+        }
+        responses: {
+            200: unknown
+            404: responses['Error']
         }
     }
 }
