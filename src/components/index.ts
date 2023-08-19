@@ -1,4 +1,5 @@
 export { Alerts } from './alerts'
+export { AuthProvider } from './auth-provider'
 export { ConfirmationModal } from './confirmation-modal'
 export { ErrorView } from './error-view'
 export { Layout } from './layout'

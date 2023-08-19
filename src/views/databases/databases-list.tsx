@@ -18,9 +18,7 @@ import type { FC } from 'react'
 import { UploadButton } from './upload-button'
 
 export const DatabasesList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', {
-        useCache: false,
-    })
+    const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', { useCache: false })
 
     return (
         <div className={styles.wrapper}>
@@ -44,7 +42,13 @@ export const DatabasesList: FC = () => {
                             </DataTableRow>
                         </TableHead>
                         <TableBody>
-                            {group.databases?.length > 1 || <h3>No databases</h3>}
+                            {(!group.databases || group.databases.length === 0) && (
+                                <DataTableRow>
+                                    <DataTableCell colSpan="4">
+                                        <h3>No databases</h3>
+                                    </DataTableCell>
+                                </DataTableRow>
+                            )}
                             {group.databases?.map((database) => (
                                 <DataTableRow key={database.id}>
                                     <DataTableCell>{database.name}</DataTableCell>
