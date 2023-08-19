@@ -1,53 +1,20 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
-import { isLoggedIn, setAuthTokens } from 'axios-jwt'
 import { useCallback, useState } from 'react'
-import { Link, Navigate, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import styles from './login.module.css'
-import { useAuthAxios } from '../../hooks'
-import { Tokens } from '../../types'
-
-const getReferrerPath = (location) => {
-    const referrerPath = location.state?.referrerPath
-
-    if (!referrerPath || referrerPath === '/login') {
-        return '/instances'
-    }
-
-    return referrerPath
-}
+import { useAuth } from '../../hooks'
 
 export const Login = () => {
+    const { login, isAuthenticating, tokensRequestError } = useAuth()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [isAuthenticated, setIsAuthenticated] = useState(() => isLoggedIn())
-    const location = useLocation()
-    const [{ loading, error }, getTokens] = useAuthAxios<Tokens>(
-        {
-            url: '/tokens',
-            method: 'POST',
-        },
-        { manual: true }
-    )
     const onSubmit = useCallback(
         async (event) => {
             event.preventDefault()
-            try {
-                const { data: tokens } = await getTokens({ auth: { username, password } })
-                setAuthTokens({
-                    accessToken: tokens.accessToken,
-                    refreshToken: tokens.refreshToken,
-                })
-                setIsAuthenticated(isLoggedIn())
-            } catch (error) {
-                console.error(error)
-            }
+            await login(username, password)
         },
-        [getTokens, username, password]
+        [login, username, password]
     )
-
-    if (isAuthenticated) {
-        return <Navigate to={getReferrerPath(location)} />
-    }
 
     return (
         <form className={styles.container} onSubmit={onSubmit}>
@@ -64,7 +31,7 @@ export const Login = () => {
                     onChange={({ value }) => {
                         setUsername(value)
                     }}
-                    disabled={loading}
+                    disabled={isAuthenticating}
                 />
                 <InputField
                     type="password"
@@ -75,10 +42,10 @@ export const Login = () => {
                     onChange={({ value }) => {
                         setPassword(value)
                     }}
-                    disabled={loading}
+                    disabled={isAuthenticating}
                 />
-                {error && <Help error>{error?.response?.data ?? error?.message ?? 'Could not fetch authentication tokens'}</Help>}
-                <Button primary type="submit" value="login" loading={loading}>
+                {tokensRequestError && <Help error>{tokensRequestError?.response?.data ?? tokensRequestError?.message ?? 'Could not fetch authentication tokens'}</Help>}
+                <Button primary type="submit" value="login" loading={isAuthenticating}>
                     Login
                 </Button>
                 <Link to={`/sign-up`}>Sign up?</Link>

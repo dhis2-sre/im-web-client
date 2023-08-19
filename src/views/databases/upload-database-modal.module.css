@@ -1,29 +1,35 @@
-.heading {
+.container {
     display: flex;
-    align-items: center;
-    color: var(--colors-grey900);
+    flex-direction: column;
     gap: var(--spacers-dp16);
-}
-.heading h1 {
-    font-weight: 400;
-    font-size: 28px;
-    line-height: 40px;
-}
-.wrapper {
-    width: 100%;
-}
-.tabletoolbar {
-    background-color: var(--colors-white);
-}
-.opendeletewrap {
-    min-width: 180px;
-    display: flex;
-    gap: var(--spacers-dp8);
+    align-items: flex-start;
+    /* Prevent content shift when showing filename and progress */
+    min-height: 180px;
 }
 
-.loader {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 1000;
+.progressWrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    color: var(--colors-grey900);
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.container .progressWrap .loader {
+    margin-left: 0;
+}
+
+.cancelButton {
+    all: unset;
+    color: var(--colors-blue600);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-inline-start: 4px;
+}
+
+.cancelButton:hover {
+    color: var(--colors-blue700);
 }

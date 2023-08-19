@@ -1,17 +1,4 @@
-import {
-    Button,
-    ButtonStrip,
-    Center,
-    CircularLoader,
-    FileInput,
-    LinearLoader,
-    Modal,
-    ModalActions,
-    ModalContent,
-    ModalTitle,
-    SingleSelectField,
-    SingleSelectOption,
-} from '@dhis2/ui'
+import { Button, ButtonStrip, FileInput, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import styles from './upload-database-modal.module.css'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -101,40 +88,43 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
     }
 
     return (
-        <Modal fluid onClose={onClose}>
+        <Modal onClose={onClose}>
             <ModalTitle>Upload database</ModalTitle>
-            <ModalContent>
-                <SingleSelectField className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
+            <ModalContent className={styles.container}>
+                <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
                 <FileInput buttonLabel="Select database" onChange={onFileSelect} disabled={loading} />
-                {loading && (
+                {databaseFile.size > 0 && (
                     <div className={styles.progressWrap}>
                         <span className={styles.label}>
-                            Uploading database <b>{databaseFile.name}</b> ({uploadProgress}%)
-                            <button className={styles.cancelButton} onClick={cancelPostRequest}>
-                                Cancel
-                            </button>
+                            {loading ? (
+                                <>
+                                    Uploading database file: <b>{databaseFile.name}</b> ({uploadProgress}%)
+                                    <button className={styles.cancelButton} onClick={cancelPostRequest}>
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    Selected database file: <b>{databaseFile.name}</b>
+                                </>
+                            )}
                         </span>
-                        <LinearLoader amount={uploadProgress} />
+                        {loading && <LinearLoader amount={uploadProgress} className={styles.loader} />}
                     </div>
                 )}
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={onUpload} disabled={loading}>
+                    <Button onClick={onUpload} disabled={loading || databaseFile.size === 0}>
                         Upload
                     </Button>
                     <Button onClick={onClose}>Close</Button>
                 </ButtonStrip>
             </ModalActions>
-            {loading && (
-                <Center>
-                    <CircularLoader />
-                </Center>
-            )}
         </Modal>
     )
 }
