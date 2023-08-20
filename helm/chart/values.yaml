@@ -36,6 +36,7 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 101
   runAsGroup: 101
+  allowPrivilegeEscalation: false
 
 service:
   type: ClusterIP
