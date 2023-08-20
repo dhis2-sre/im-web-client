@@ -1,11 +1,11 @@
-import { Button, Center, CircularLoader, NoticeBox } from '@dhis2/ui'
+import { Center, CircularLoader, NoticeBox } from '@dhis2/ui'
 import { Navigate, useParams } from 'react-router-dom'
-import { useCallback, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 
 export const Validate = () => {
     const { token } = useParams()
-    const [{ loading, error }, submit] = useAuthAxios(
+    const [{ loading, error }, fetch] = useAuthAxios(
         {
             url: '/users/validate',
             method: 'post',
@@ -15,17 +15,17 @@ export const Validate = () => {
     )
     const [validated, setValidated] = useState<boolean>(false)
 
-    const onSubmit = useCallback(
-        async (event) => {
+    useEffect(() => {
+        const submit = async () => {
             try {
-                await submit()
+                await fetch()
                 setValidated(true)
             } catch (error) {
                 console.error(error)
             }
-        },
-        [submit]
-    )
+        }
+        submit()
+    }, [fetch, token])
 
     if (loading) {
         return (
@@ -45,16 +45,8 @@ export const Validate = () => {
 
     return (
         <div>
-            <h3>Token: {token}</h3>
             {validated && <Navigate to="/login" />}
-            {error && error.response.status === 404 && (
-                <NoticeBox error title="Could not validate">
-                    Token not found
-                </NoticeBox>
-            )}
-            <Button primary value="login" onClick={onSubmit} loading={loading}>
-                Validate
-            </Button>
+            <h3>Validating token... {token}</h3>
         </div>
     )
 }
