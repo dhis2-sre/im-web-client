@@ -1,5 +1,5 @@
 import { Button, Center, CircularLoader, NoticeBox } from '@dhis2/ui'
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 
@@ -45,8 +45,8 @@ export const Validate = () => {
 
     return (
         <div>
-            <h3>Token: "{token}"</h3>
-            {validated && <h3>Congratulation! Your email has been validated :-)</h3>}
+            <h3>Token: {token}</h3>
+            {validated && <Navigate to="/login" />}
             {error && error.response.status === 404 && (
                 <NoticeBox error title="Could not validate">
                     Token not found
