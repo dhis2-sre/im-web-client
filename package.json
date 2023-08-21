@@ -52,7 +52,7 @@
     "devDependencies": {
         "@dhis2/cli-style": "^10.5.1",
         "@ls-lint/ls-lint": "^2.0.1",
-        "@playwright/test": "^1.37.0",
+        "@playwright/test": "^1.37.1",
         "@testing-library/jest-dom": "^5.17.0",
         "@testing-library/react": "^14.0.0",
         "@testing-library/user-event": "^14.4.3",
