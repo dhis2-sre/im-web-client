@@ -16,8 +16,8 @@ const router = createBrowserRouter(
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/validate/:token" element={<Validate />} />
             <Route element={<AuthProvider />}>
+                <Route path="/login" element={<Login />} />
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
-                    <Route path="/login" element={<Login />} />
                     <Route path="/stacks" element={<StacksList />} />
                     <Route path="/stacks/:name" element={<StackDetails />} />
                     <Route path="/instances" element={<InstancesList />} />
