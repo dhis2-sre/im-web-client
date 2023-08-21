@@ -14,10 +14,10 @@ const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
             <Route path="/validate/:token" element={<Validate />} />
             <Route element={<AuthProvider />}>
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
+                    <Route path="/login" element={<Login />} />
                     <Route path="/stacks" element={<StacksList />} />
                     <Route path="/stacks/:name" element={<StackDetails />} />
                     <Route path="/instances" element={<InstancesList />} />
