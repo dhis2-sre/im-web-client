@@ -1,8 +1,8 @@
 import { Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import styles from './add-to-group-modal.module.css'
 import type { FC } from 'react'
-import {useCallback, useEffect, useState} from 'react'
-import { useAuth, useAuthAxios } from '../../hooks'
+import { useCallback, useEffect, useState } from 'react'
+import { useAuthAxios } from '../../hooks'
 import { Group, GroupWithDatabases } from '../../types'
 import { useAlert } from '@dhis2/app-service-alerts'
 
@@ -59,7 +59,6 @@ export const AddToGroupModal: FC<AddToGroupModalProps> = ({ userId, onClose, onC
             })
             console.error(error)
         }
-
     }, [addUser, onComplete, showAlert])
 
     if (groupsLoading) {
