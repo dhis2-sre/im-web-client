@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { User } from '../../types'
 import { AddToGroupButton } from './add-to-group-button'
+import { RemoveFromGroupButton } from './remove-from-group-button'
 
 export const UserDetails = () => {
     const { id } = useParams()
@@ -28,11 +29,15 @@ export const UserDetails = () => {
         <div key={user.id}>
             <h1>{user.email}</h1>
             <div>
-                Groups <AddToGroupButton onComplete={refetch}  userId={user.id}/>
+                Groups <AddToGroupButton onComplete={refetch} userId={user.id} />
             </div>
             <ul>
                 {user.groups?.map((group) => {
-                    return <li key={group.name}>{group.name}</li>
+                    return (
+                        <li key={group.name}>
+                            {group.name} <RemoveFromGroupButton group={group.name} userId={user.id} onComplete={refetch} />
+                        </li>
+                    )
                 })}
             </ul>
             <div>Administrator groups</div>
