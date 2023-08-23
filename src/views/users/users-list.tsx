@@ -1,4 +1,4 @@
-import { ButtonStrip, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
+import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
 import styles from './users-list.module.css'
@@ -24,7 +24,6 @@ export const UsersList: FC = () => {
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
                         <DataTableColumnHeader>Groups</DataTableColumnHeader>
                         <DataTableColumnHeader>Administrator Groups</DataTableColumnHeader>
-                        <DataTableColumnHeader></DataTableColumnHeader>
                     </DataTableRow>
                 </TableHead>
 
@@ -54,9 +53,6 @@ export const UsersList: FC = () => {
                                             return <li key={group.name}>{group.name}</li>
                                         })}
                                     </ul>
-                                </DataTableCell>
-                                <DataTableCell>
-                                    <ButtonStrip>button</ButtonStrip>
                                 </DataTableCell>
                             </DataTableRow>
                         )
