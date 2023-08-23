@@ -67,7 +67,7 @@ export const AddToGroupModal: FC<AddToGroupModalProps> = ({ userId, onClose, onC
 
     return (
         <Modal onClose={onClose}>
-            <ModalTitle>Upload database</ModalTitle>
+            <ModalTitle>Add user to group</ModalTitle>
             <ModalContent className={styles.container}>
                 <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
                     {groups.map((group) => (
