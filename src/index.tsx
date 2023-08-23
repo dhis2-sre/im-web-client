@@ -8,20 +8,24 @@ import './index.module.css'
 import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
 import { UsersList } from './views/users'
 import { GroupsList } from './views/groups'
+import { Validate } from './views/validate'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route element={<AuthProvider />}>
+        <Route>
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
-                <Route path="/stacks" element={<StacksList />} />
-                <Route path="/stacks/:name" element={<StackDetails />} />
-                <Route path="/instances" element={<InstancesList />} />
-                <Route path="/databases" element={<DatabasesList />} />
-                <Route path="/new" element={<NewInstance />} />
-                <Route path="/groups" element={<GroupsList />} />
-                <Route path="/users" element={<UsersList />} />
+            <Route path="/validate/:token" element={<Validate />} />
+            <Route element={<AuthProvider />}>
+                <Route path="/login" element={<Login />} />
+                <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
+                    <Route path="/stacks" element={<StacksList />} />
+                    <Route path="/stacks/:name" element={<StackDetails />} />
+                    <Route path="/instances" element={<InstancesList />} />
+                    <Route path="/databases" element={<DatabasesList />} />
+                    <Route path="/new" element={<NewInstance />} />
+                    <Route path="/groups" element={<GroupsList />} />
+                    <Route path="/users" element={<UsersList />} />
+                </Route>
             </Route>
         </Route>
     )
