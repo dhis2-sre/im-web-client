@@ -3,7 +3,7 @@ import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor, clearAuthTokens, getBrowserLocalStorage } from 'axios-jwt'
 import { useCallback } from 'react'
 
-export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://api.im.dev.test.c.dhis2.org'
+export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://dev.api.im.dhis2.org'
 
 /* Better make sure this is a unque string because the event
  * is going to be sent via the global window object */
