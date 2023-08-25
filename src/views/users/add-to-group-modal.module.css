@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp16);
+    align-items: flex-start;
+    /* Prevent content shift when showing filename and progress */
+    min-height: 180px;
+}
+
+.progressWrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    color: var(--colors-grey900);
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.container .progressWrap .loader {
+    margin-left: 0;
+}
+
+.cancelButton {
+    all: unset;
+    color: var(--colors-blue600);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-inline-start: 4px;
+}
+
+.cancelButton:hover {
+    color: var(--colors-blue700);
+}
