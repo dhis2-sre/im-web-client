@@ -29,7 +29,7 @@
         "format": "yarn d2-style apply",
         "lint": "yarn d2-style check",
         "e2e": "yarn playwright test --ui",
-        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://api.im.dev.test.c.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent"
+        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent"
     },
     "eslintConfig": {
         "extends": [
