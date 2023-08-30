@@ -9,6 +9,7 @@ import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails,
 import { UsersList } from './views/users'
 import { GroupsList } from './views/groups'
 import { Validate } from './views/validate'
+import {UserDetails} from "./views/users/user-details";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -25,6 +26,7 @@ const router = createBrowserRouter(
                     <Route path="/new" element={<NewInstance />} />
                     <Route path="/groups" element={<GroupsList />} />
                     <Route path="/users" element={<UsersList />} />
+                    <Route path="/users/:id" element={<UserDetails />} />
                 </Route>
             </Route>
         </Route>

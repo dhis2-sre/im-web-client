@@ -60,6 +60,7 @@ export const InstancesList: FC = () => {
                                 <DataTableRow>
                                     <DataTableColumnHeader>Status</DataTableColumnHeader>
                                     <DataTableColumnHeader>Name</DataTableColumnHeader>
+                                    <DataTableColumnHeader>Description</DataTableColumnHeader>
                                     <DataTableColumnHeader>Created</DataTableColumnHeader>
                                     <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                     <DataTableColumnHeader>Owner</DataTableColumnHeader>
@@ -80,6 +81,9 @@ export const InstancesList: FC = () => {
                                                 <span className={styles.verticallyAlignedCellContent}>
                                                     {instance.name} {instance.public && <IconWorld24 color={colors.grey600} />}
                                                 </span>
+                                            </DataTableCell>
+                                            <DataTableCell>
+                                                {instance.description}
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <Moment date={instance.createdAt} fromNow />
