@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   call-workflow:
-    uses: dhis2-sre/gha-workflows/.github/workflows/im-build-test-deploy.yaml@master
+    uses: dhis2-sre/gha-workflows/.github/workflows/im-build-test-deploy.yaml@im-manager-integration-tests
     with:
       PROCESS_NAME: nginx
       POD_NAME: im-web-client
