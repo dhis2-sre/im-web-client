@@ -1,5 +1,4 @@
 import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, NoticeBox } from '@dhis2/ui'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
@@ -42,9 +41,6 @@ export const StacksList = () => {
                             <DataTableRow key={stack.name}>
                                 <DataTableCell>
                                     <Link to={`/stacks/${stack.name}`}>{stack.name}</Link>
-                                </DataTableCell>
-                                <DataTableCell>
-                                    <Moment date={stack.createdAt} fromNow />
                                 </DataTableCell>
                             </DataTableRow>
                         )

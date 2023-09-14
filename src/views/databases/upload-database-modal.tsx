@@ -4,7 +4,7 @@ import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Group, GroupWithDatabases } from '../../types'
+import { Group, GroupsWithDatabases } from '../../types'
 
 type UploadDatabaseModalProps = {
     onClose: Function
@@ -28,7 +28,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         setUploadProgress(percentage)
     }, [])
 
-    const [{ loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupWithDatabases>(
+    const [{ loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupsWithDatabases>(
         {
             url: `/databases`,
             method: 'post',

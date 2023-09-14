@@ -3,27 +3,18 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { DeploymentInstance } from './DeploymentInstance'
 import type { Group } from './Group'
-import type { InstanceParameter } from './InstanceParameter'
 import type { User } from './User'
 
-export type Instance = {
+export type Deployment = {
     createdAt?: string
-    deployLog?: string
     description?: string
     group?: Group
     groupName?: string
     id?: number
+    instances?: Array<DeploymentInstance>
     name?: string
-    parameters?: Array<InstanceParameter>
-    preset?: boolean
-    /**
-     * The preset which this instance is created from
-     */
-    presetId?: number
-    public?: boolean
-    stackName?: string
-    ttl?: number
     updatedAt?: string
     user?: User
     userId?: number

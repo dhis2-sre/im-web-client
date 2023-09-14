@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { StackParameter } from './StackParameter'
+import type { parameters } from './parameters'
 
-export type Stack = {
-    name?: string
-    parameters?: Array<StackParameter>
+export type SaveInstanceRequest = {
+    parameters?: parameters
+    stackName?: string
 }
