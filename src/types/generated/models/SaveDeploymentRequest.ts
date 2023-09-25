@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { StackParameter } from './StackParameter'
-
-export type Stack = {
+export type SaveDeploymentRequest = {
+    description?: string
+    group?: string
     name?: string
-    parameters?: Array<StackParameter>
 }

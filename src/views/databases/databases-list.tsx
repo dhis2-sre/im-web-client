@@ -10,7 +10,7 @@ import {
 } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
-import { GroupWithDatabases } from '../../types'
+import { GroupsWithDatabases } from '../../types'
 import { DeleteButton } from './delete-button'
 import { DownloadButton } from './download-button'
 import styles from './databases-list.module.css'
@@ -18,7 +18,7 @@ import type { FC } from 'react'
 import { UploadButton } from './upload-button'
 
 export const DatabasesList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<GroupWithDatabases[]>('databases', { useCache: false })
+    const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
 
     return (
         <div className={styles.wrapper}>

@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type InstanceParameter = {
-    name?: string
-    value?: string
-}
+import type { parameter } from './parameter'
+
+export type parameters = Record<string, parameter>

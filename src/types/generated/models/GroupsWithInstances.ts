@@ -5,7 +5,7 @@
 
 import type { Instance } from './Instance'
 
-export type GroupWithInstances = {
+export type GroupsWithInstances = {
     hostname?: string
     instances?: Array<Instance>
     name?: string

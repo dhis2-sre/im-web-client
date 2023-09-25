@@ -3,9 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { StackParameter } from './StackParameter'
-
-export type Stack = {
-    name?: string
-    parameters?: Array<StackParameter>
+export type parameter = {
+    Value?: string
 }
