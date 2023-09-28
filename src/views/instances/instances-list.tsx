@@ -82,9 +82,7 @@ export const InstancesList: FC = () => {
                                                     {instance.name} {instance.public && <IconWorld24 color={colors.grey600} />}
                                                 </span>
                                             </DataTableCell>
-                                            <DataTableCell>
-                                                {instance.description}
-                                            </DataTableCell>
+                                            <DataTableCell>{instance.description}</DataTableCell>
                                             <DataTableCell>
                                                 <Moment date={instance.createdAt} fromNow />
                                             </DataTableCell>
