@@ -9,7 +9,7 @@ import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails,
 import { UsersList } from './views/users'
 import { GroupsList } from './views/groups'
 import { Validate } from './views/validate'
-import {UserDetails} from "./views/users/user-details";
+import { UserDetails } from './views/users/user-details'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
