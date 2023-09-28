@@ -3,6 +3,9 @@ tag ?= latest
 version ?= $(shell yq e '.version' helm/chart/Chart.yaml)
 clean-cmd = docker compose down --remove-orphans --volumes
 
+dev:
+	docker compose up --build dev
+
 docker-image:
 	@echo "ENVIRONMENT: $$ENVIRONMENT"; \
 	echo "API_URL: $$API_URL"; \
@@ -10,9 +13,6 @@ docker-image:
 
 push-docker-image:
 	IMAGE_TAG=$(tag) docker compose push prod
-
-dev:
-	docker compose up --build dev
 
 clean:
 	$(clean-cmd)
