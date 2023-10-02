@@ -8,5 +8,3 @@
  * TODO: fix this name in the OpenAPI spec. */
 
 export type * from './generated'
-// Export as corrected name
-export type { GroupsWithDatabases as GroupWithDatabases } from './generated'

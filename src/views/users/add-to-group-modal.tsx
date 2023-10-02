@@ -3,7 +3,7 @@ import styles from './add-to-group-modal.module.css'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
-import { Group, GroupWithDatabases } from '../../types'
+import { Group, GroupsWithDatabases } from '../../types'
 import { useAlert } from '@dhis2/app-service-alerts'
 
 type AddToGroupModalProps = {
@@ -36,7 +36,7 @@ export const AddToGroupModal: FC<AddToGroupModalProps> = ({ userId, onClose, onC
         }
     }, [groups])
 
-    const [{ loading }, addUser] = useAuthAxios<GroupWithDatabases>(
+    const [{ loading }, addUser] = useAuthAxios<GroupsWithDatabases>(
         {
             url: `/groups/${group}/users/${userId}`,
             method: 'post',

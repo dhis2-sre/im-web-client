@@ -15,4 +15,5 @@ export type User = {
     groups?: Array<Group>
     id?: number
     updatedAt?: string
+    validated?: boolean
 }

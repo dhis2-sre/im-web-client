@@ -17,7 +17,7 @@ import {
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
-import { GroupWithInstances, Instance } from '../../types'
+import { GroupsWithInstances, Instance } from '../../types'
 import { DeleteButton } from './delete-button'
 import styles from './instances-list.module.css'
 import { OpenButton } from './open-button'
@@ -30,7 +30,7 @@ const calculateExpiration = (instance: Instance) => new Date(instance.createdAt)
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
-    const [{ data, error }, refetch] = useAuthAxios<GroupWithInstances[]>('instances', {
+    const [{ data, error }, refetch] = useAuthAxios<GroupsWithInstances[]>('instances', {
         useCache: false,
     })
 
@@ -82,9 +82,7 @@ export const InstancesList: FC = () => {
                                                     {instance.name} {instance.public && <IconWorld24 color={colors.grey600} />}
                                                 </span>
                                             </DataTableCell>
-                                            <DataTableCell>
-                                                {instance.description}
-                                            </DataTableCell>
+                                            <DataTableCell>{instance.description}</DataTableCell>
                                             <DataTableCell>
                                                 <Moment date={instance.createdAt} fromNow />
                                             </DataTableCell>
