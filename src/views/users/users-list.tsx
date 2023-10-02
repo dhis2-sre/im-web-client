@@ -20,6 +20,7 @@ export const UsersList: FC = () => {
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Email</DataTableColumnHeader>
+                        <DataTableColumnHeader>Validated</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
                         <DataTableColumnHeader>Groups</DataTableColumnHeader>
@@ -34,6 +35,7 @@ export const UsersList: FC = () => {
                                 <DataTableCell>
                                     <Link to={`/users/${user.id}`}>{user.email}</Link>
                                 </DataTableCell>
+                                <DataTableCell>{user.validated ? 'true' : 'false'}</DataTableCell>
                                 <DataTableCell>
                                     <Moment date={user.createdAt} fromNow />
                                 </DataTableCell>
