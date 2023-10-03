@@ -14,7 +14,7 @@ export const SaveAsButton: FC<AddToGroupButtonProps> = ({ instanceId, instanceNa
     return (
         <>
             <Button small secondary icon={<IconSave16 />} onClick={() => setShowModal(true)}>
-                Save as
+                Save database as
             </Button>
             {showModal && <SaveAsModal onClose={() => setShowModal(false)} instanceId={instanceId} instanceName={instanceName} />}
         </>
