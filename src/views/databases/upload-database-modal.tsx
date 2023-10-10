@@ -1,4 +1,4 @@
-import { Button, ButtonStrip, FileInput, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import styles from './upload-database-modal.module.css'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -14,6 +14,7 @@ type UploadDatabaseModalProps = {
 export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete }) => {
     const [group, setGroup] = useState('')
     const [databaseFile, setDatabaseFile] = useState(new Blob())
+    const [prefix, setPrefix] = useState<string>('')
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -51,6 +52,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             const formData = new FormData()
             formData.append('group', group)
             formData.append('database', databaseFile, databaseFile.name)
+            formData.append('prefix', prefix)
             await postDatabase({ data: formData })
             showAlert({
                 message: 'Database added successfully',
@@ -64,7 +66,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, group, onComplete, postDatabase, showAlert])
+    }, [databaseFile, group, prefix, onComplete, postDatabase, showAlert])
 
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -96,6 +98,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
+                <InputField className={styles.field} label="Path prefix" value={prefix} onChange={({ value }) => setPrefix(value)} disabled={loading} />
                 <FileInput buttonLabel="Select database" onChange={onFileSelect} disabled={loading} />
                 {databaseFile.size > 0 && (
                     <div className={styles.progressWrap}>
