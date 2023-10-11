@@ -110,7 +110,9 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
 
     useEffect(() => {
         if (stack) {
-            setStackParameters(toKeyedObject(stack.parameters.filter((parameter) => !parameter.consumed)))
+            const filtered = stack.parameters.filter((parameter) => !parameter.consumed)
+            filtered.sort((a, b) => a.priority < b.priority ? -1 : 1)
+            setStackParameters(toKeyedObject(filtered))
         }
     }, [stack, setStackParameters])
 
