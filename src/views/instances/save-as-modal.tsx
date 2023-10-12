@@ -69,7 +69,10 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
         <Modal onClose={onClose}>
             <ModalTitle>Save "{instanceName}" database as</ModalTitle>
             <ModalContent className={styles.container}>
-                <InputField className={fieldStyles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} /> {extension}
+                <div className={styles.fileAndExtension}>
+                    <InputField className={fieldStyles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
+                    <span>{extension}</span>
+                </div>
                 <SingleSelectField className={fieldStyles.field} selected={format} onChange={onSelectChange} label="Format">
                     {Array.from(formats.keys()).map((key) => (
                         <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
