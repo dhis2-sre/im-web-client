@@ -15,8 +15,8 @@ type SaveAsModalProps = {
 
 const defaultFormat = 'custom'
 const formats = new Map<string, string[]>([
-    ['custom', ['custom (pgc)', '.pgc']],
-    ['plain', ['plain (sql.gz)', '.sql.gz']],
+    ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
+    ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
 ])
 
 export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, onClose }) => {
