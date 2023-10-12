@@ -33,7 +33,7 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
             url: `/databases/save-as/${instanceId}`,
             method: 'post',
             data: {
-                name: name+extension,
+                name: name + extension,
                 format,
             },
         },
