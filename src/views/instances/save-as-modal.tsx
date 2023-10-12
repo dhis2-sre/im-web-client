@@ -14,14 +14,15 @@ type SaveAsModalProps = {
 }
 
 const defaultFormat = 'custom'
-const formats = new Map<string, string>([
-    ['custom', 'custom (pgc)'],
-    ['plain', 'plain (sql.gz)'],
+const formats = new Map<string, string[]>([
+    ['custom', ['custom (pgc)', '.pgc']],
+    ['plain', ['plain (sql.gz)', '.sql.gz']],
 ])
 
 export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, onClose }) => {
     const [name, setName] = useState<string>('')
     const [format, setFormat] = useState<string>(defaultFormat)
+    const [extension, setExtension] = useState<string>(formats.get(defaultFormat)[1])
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
@@ -32,7 +33,7 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
             url: `/databases/save-as/${instanceId}`,
             method: 'post',
             data: {
-                name,
+                name: name+extension,
                 format,
             },
         },
@@ -56,14 +57,22 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
         }
     }, [saveAs, showAlert, onClose])
 
+    const onSelectChange = useCallback(
+        ({ selected }) => {
+            setFormat(selected)
+            setExtension(formats.get(selected)[1])
+        },
+        [setFormat, setExtension]
+    )
+
     return (
         <Modal onClose={onClose}>
             <ModalTitle>Save "{instanceName}" database as</ModalTitle>
             <ModalContent className={styles.container}>
-                <InputField className={fieldStyles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
-                <SingleSelectField className={fieldStyles.field} selected={format} onChange={({ selected }) => setFormat(selected)} label="Format">
+                <InputField className={fieldStyles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} /> {extension}
+                <SingleSelectField className={fieldStyles.field} selected={format} onChange={onSelectChange} label="Format">
                     {Array.from(formats.keys()).map((key) => (
-                        <SingleSelectOption key={key} label={formats.get(key)} value={key} />
+                        <SingleSelectOption key={key} label={formats.get(key)[0]} value={key} />
                     ))}
                 </SingleSelectField>
             </ModalContent>
