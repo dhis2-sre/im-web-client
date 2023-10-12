@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
 import styles from './stack-details.module.css'
-import {useEffect, useState} from "react";
+import { useEffect, useState } from 'react'
 
 export const StackDetails = () => {
     const { name } = useParams()
@@ -12,10 +12,10 @@ export const StackDetails = () => {
 
     useEffect(() => {
         if (stack) {
-            stack.parameters.sort((a, b) => a.priority < b.priority ? -1 : 1)
+            stack.parameters.sort((a, b) => (a.priority < b.priority ? -1 : 1))
             setSortedStack(stack)
         }
-    }, [stack]);
+    }, [stack])
 
     if (loading || !sortedStack) {
         return (
