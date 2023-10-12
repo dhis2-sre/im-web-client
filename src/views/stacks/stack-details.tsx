@@ -38,15 +38,17 @@ export const StackDetails = () => {
                 </DataTableHead>
 
                 <DataTableBody>
-                    {stack.parameters?.map((parameter) => {
-                        return (
-                            <DataTableRow key={parameter.name}>
-                                <DataTableCell>{parameter.name}</DataTableCell>
-                                <DataTableCell>{parameter.defaultValue}</DataTableCell>
-                                <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                            </DataTableRow>
-                        )
-                    })}
+                    {stack.parameters
+                        ?.sort((a, b) => (a.priority < b.priority ? -1 : 1))
+                        .map((parameter) => {
+                            return (
+                                <DataTableRow key={parameter.name}>
+                                    <DataTableCell>{parameter.name}</DataTableCell>
+                                    <DataTableCell>{parameter.defaultValue}</DataTableCell>
+                                    <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
+                                </DataTableRow>
+                            )
+                        })}
                 </DataTableBody>
             </DataTable>
         </div>
