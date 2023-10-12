@@ -11,10 +11,18 @@ type UploadDatabaseModalProps = {
     onComplete: Function
 }
 
+const defaultFormat = 'custom'
+const formats = new Map<string, { label: string, extension: string }>([
+    ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
+    ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
+])
+
 export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete }) => {
     const [group, setGroup] = useState('')
     const [databaseFile, setDatabaseFile] = useState(new Blob())
-    const [prefix, setPrefix] = useState<string>('')
+    const [name, setName] = useState<string>('')
+    const [format, setFormat] = useState<string>(defaultFormat)
+    const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -51,8 +59,8 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         try {
             const formData = new FormData()
             formData.append('group', group)
-            formData.append('database', databaseFile, databaseFile.name)
-            formData.append('prefix', prefix)
+            formData.append('database', databaseFile)
+            formData.append('name', name + extension)
             await postDatabase({ data: formData })
             showAlert({
                 message: 'Database added successfully',
@@ -66,7 +74,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, group, prefix, onComplete, postDatabase, showAlert])
+    }, [databaseFile, group, name, onComplete, postDatabase, showAlert])
 
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -85,6 +93,14 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         }
     }, [groups])
 
+    const onSelectChange = useCallback(
+        ({ selected }) => {
+            setFormat(selected)
+            setExtension(formats.get(selected).extension)
+        },
+        [setFormat, setExtension]
+    )
+
     if (groupsLoading) {
         return
     }
@@ -98,14 +114,22 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                         <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <InputField className={styles.field} label="Path prefix" value={prefix} onChange={({ value }) => setPrefix(value)} disabled={loading} />
+                <div className={styles.fileAndExtension}>
+                    <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
+                    <span>{extension}</span>
+                </div>
+                <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
+                    {Array.from(formats.keys()).map((key) => (
+                        <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
+                    ))}
+                </SingleSelectField>
                 <FileInput buttonLabel="Select database" onChange={onFileSelect} disabled={loading} />
                 {databaseFile.size > 0 && (
                     <div className={styles.progressWrap}>
                         <span className={styles.label}>
                             {loading ? (
                                 <>
-                                    Uploading database file: <b>{databaseFile.name}</b> ({uploadProgress}%)
+                                    Uploading database file: <b>{name + extension}</b> ({uploadProgress}%)
                                     <button className={styles.cancelButton} onClick={cancelPostRequest}>
                                         Cancel
                                     </button>
