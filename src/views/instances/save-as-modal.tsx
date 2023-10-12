@@ -14,7 +14,7 @@ type SaveAsModalProps = {
 }
 
 const defaultFormat = 'custom'
-const formats = new Map<string, any>([
+const formats = new Map<string, { label: string; extension: string }>([
     ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
     ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
 ])
