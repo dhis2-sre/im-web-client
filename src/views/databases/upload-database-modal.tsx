@@ -74,7 +74,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, group, name, onComplete, postDatabase, showAlert])
+    }, [databaseFile, group, name, extension,  onComplete, postDatabase, showAlert])
 
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -85,7 +85,22 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         showAlert({ message: 'There was a problem loading the groups', isCritical: true })
         console.error(groupsError)
     }
-    const onFileSelect = useCallback(async ({ files }) => setDatabaseFile(files[0]), [])
+
+    const onFileSelect = useCallback(async ({ files }) => {
+        const uploadedFile = files[0]
+        setDatabaseFile(uploadedFile)
+
+        // TODO should we instead have this as a hardcoded value or maybe change the `formats` map?
+        const formatToExtension = Array.from(formats.entries()).map(([format, { extension }]) => [format, extension])
+        for (const [format, extension] of formatToExtension) {
+            if (uploadedFile.name.endsWith(extension)) {
+                setName(uploadedFile.name.replace(extension, ''))
+                setExtension(extension)
+                setFormat(format)
+            }
+        }
+
+    }, [])
 
     useEffect(() => {
         if (groups && groups.length > 0) {
@@ -136,7 +151,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                                 </>
                             ) : (
                                 <>
-                                    Selected database file: <b>{databaseFile.name}</b>
+                                    Selected database file: <b>{name + extension}</b>
                                 </>
                             )}
                         </span>
