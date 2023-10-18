@@ -24,7 +24,9 @@ import { OpenButton } from './open-button'
 import { ResetButton } from './reset-button'
 import { RestartButton } from './restart-button'
 import { LogButton } from './log-button'
+import { SaveAsButton } from './save-as-button'
 import type { FC } from 'react'
+import { StatusLabel } from './status-label'
 
 const calculateExpiration = (instance: Instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
@@ -75,7 +77,7 @@ export const InstancesList: FC = () => {
                                     return (
                                         <DataTableRow key={instance.id}>
                                             <DataTableCell>
-                                                <Tag positive>Running</Tag>
+                                                <StatusLabel instanceId={instance.id} />
                                             </DataTableCell>
                                             <DataTableCell>
                                                 <span className={styles.verticallyAlignedCellContent}>
@@ -101,6 +103,7 @@ export const InstancesList: FC = () => {
                                                     <RestartButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
                                                     <ResetButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
                                                     <DeleteButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
+                                                    <SaveAsButton instanceId={instance.id} instanceName={instance.name} />
                                                 </ButtonStrip>
                                             </DataTableCell>
                                         </DataTableRow>

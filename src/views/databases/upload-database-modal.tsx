@@ -19,7 +19,7 @@ const formats = new Map<string, { label: string, extension: string }>([
 
 export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete }) => {
     const [group, setGroup] = useState('')
-    const [databaseFile, setDatabaseFile] = useState(new Blob())
+    const [databaseFile, setDatabaseFile] = useState<File>(new Blob() as File)
     const [name, setName] = useState<string>('')
     const [format, setFormat] = useState<string>(defaultFormat)
     const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
