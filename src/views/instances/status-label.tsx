@@ -10,18 +10,14 @@ type StatusLabelProps = {
 
 export const StatusLabel: FC<StatusLabelProps> = ({ instanceId }) => {
     const [status, setStatus] = useState('')
-    const [{ data, loading: statusLoading, error: groupsError }] = useAuthAxios<InstanceStatus>({
+    const [{ data, loading, error: groupsError }] = useAuthAxios<InstanceStatus>({
         method: 'GET',
         url: `/instances/${instanceId}/status`,
     })
 
-    useEffect(() => {
-        setStatus(data)
-    }, [data])
-
-    if (statusLoading) {
+    if (loading) {
         return <CircularLoader />
     }
 
-    return <Tag>{status}</Tag>
+    return <Tag>{data}</Tag>
 }
