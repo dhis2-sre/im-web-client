@@ -1,6 +1,6 @@
 import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { InstanceStatus } from '../../types'
 
