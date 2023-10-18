@@ -13,7 +13,7 @@ type UploadDatabaseModalProps = {
 
 export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete }) => {
     const [group, setGroup] = useState('')
-    const [databaseFile, setDatabaseFile] = useState(new Blob())
+    const [databaseFile, setDatabaseFile] = useState<File>(new Blob() as File)
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
