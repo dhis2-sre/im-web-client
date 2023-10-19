@@ -33,3 +33,10 @@
 .cancelButton:hover {
     color: var(--colors-blue700);
 }
+
+.fileAndExtension {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}
