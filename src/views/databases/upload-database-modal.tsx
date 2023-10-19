@@ -90,14 +90,11 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         const uploadedFile = files[0]
         setDatabaseFile(uploadedFile)
 
-        // TODO should we instead have this as a hardcoded value or maybe change the `formats` map?
-        const formatToExtension = Array.from(formats.entries()).map(([format, { extension }]) => [format, extension])
-        for (const [format, extension] of formatToExtension) {
-            if (uploadedFile.name.endsWith(extension)) {
-                setName(uploadedFile.name.replace(extension, ''))
-                setExtension(extension)
-                setFormat(format)
-            }
+        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([format, { extension }]) => uploadedFile.name.endsWith(extension))
+        if (matchingFormat) {
+            setName(uploadedFile.name.replace(extension, ''))
+            setExtension(extension)
+            setFormat(matchingFormat)
         }
 
     }, [])
