@@ -12,7 +12,7 @@ type UploadDatabaseModalProps = {
 }
 
 const defaultFormat = 'custom'
-const formats = new Map<string, { label: string, extension: string }>([
+const formats = new Map<string, { label: string; extension: string }>([
     ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
     ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
 ])
@@ -74,7 +74,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, group, name, extension,  onComplete, postDatabase, showAlert])
+    }, [databaseFile, group, name, extension, onComplete, postDatabase, showAlert])
 
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -96,7 +96,6 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             setExtension(extension)
             setFormat(matchingFormat)
         }
-
     }, [])
 
     useEffect(() => {

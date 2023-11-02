@@ -51,6 +51,26 @@ export const StackDetails = () => {
                         })}
                 </DataTableBody>
             </DataTable>
+            <DataTableToolbar className={styles.tabletoolbar}>Requires</DataTableToolbar>
+            <DataTable className={styles.datatable}>
+                <DataTableHead>
+                    <DataTableRow>
+                        <DataTableColumnHeader>Name</DataTableColumnHeader>
+                    </DataTableRow>
+                </DataTableHead>
+
+                <DataTableBody>
+                    {stack.requires
+                        ?.sort((a, b) => (a.name < b.name ? -1 : 1))
+                        .map((parameter) => {
+                            return (
+                                <DataTableRow key={parameter.name}>
+                                    <DataTableCell>{parameter.name}</DataTableCell>
+                                </DataTableRow>
+                            )
+                        })}
+                </DataTableBody>
+            </DataTable>
         </div>
     )
 }
