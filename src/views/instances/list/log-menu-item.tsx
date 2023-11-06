@@ -1,16 +1,16 @@
-import { Button, ButtonStrip, Center, CircularLoader, IconTerminalWindow16, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, Center, CircularLoader, IconTerminalWindow16, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, MenuItem } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../../hooks'
 import { Instance } from '../../../types'
-import styles from './log-button.module.css'
+import styles from './log-menu-item.module.css'
 import type { FC } from 'react'
 
-type LogButtonProps = {
+type LogMenuItemProps = {
     instanceId: number
     instanceName: string
 }
 
-export const LogButton: FC<LogButtonProps> = ({ instanceId, instanceName }) => {
+export const LogMenuItem: FC<LogMenuItemProps> = ({ instanceId, instanceName }) => {
     const [showLogModal, setShowLogModal] = useState(false)
     const [log, setLog] = useState('')
     const [{ error }, requestLog] = useAuthAxios<Instance>(
@@ -37,9 +37,7 @@ export const LogButton: FC<LogButtonProps> = ({ instanceId, instanceName }) => {
 
     return (
         <>
-            <Button small secondary icon={<IconTerminalWindow16 />} onClick={onClick}>
-                Logs
-            </Button>
+            <MenuItem dense icon={<IconTerminalWindow16 />} onClick={onClick} label="Logs" />
             {showLogModal && (
                 <Modal fluid onClose={onClose}>
                     <ModalTitle>Instance: {instanceName}</ModalTitle>

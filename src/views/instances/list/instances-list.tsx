@@ -18,14 +18,10 @@ import Moment from 'react-moment'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
 import { GroupsWithInstances, Instance } from '../../../types'
-import { DeleteButton } from './delete-button'
-import { LogButton } from './log-button'
 import { OpenButton } from './open-button'
-import { ResetButton } from './reset-button'
-import { RestartButton } from './restart-button'
-import { SaveAsButton } from './save-as-button'
 import { StatusLabel } from './status-label'
 import styles from './instances-list.module.css'
+import { ActionsDropdownMenu } from './actions-dropdown-menu'
 
 const calculateExpiration = (instance: Instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
@@ -99,11 +95,7 @@ export const InstancesList: FC = () => {
                                             <DataTableCell>
                                                 <ButtonStrip>
                                                     <OpenButton hostname={group.hostname} instanceName={instance.name} />
-                                                    <LogButton instanceId={instance.id} instanceName={instance.name} />
-                                                    <RestartButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
-                                                    <ResetButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
-                                                    <DeleteButton instanceId={instance.id} instanceName={instance.name} onComplete={refetch} />
-                                                    <SaveAsButton instanceId={instance.id} instanceName={instance.name} />
+                                                    <ActionsDropdownMenu id={instance.id} name={instance.name} refreshList={refetch} />
                                                 </ButtonStrip>
                                             </DataTableCell>
                                         </DataTableRow>
