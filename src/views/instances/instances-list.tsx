@@ -43,6 +43,9 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/new')}>
                     New instance
                 </Button>
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/new-v2')}>
+                    New instance (Beta)
+                </Button>
             </div>
 
             {error && (
