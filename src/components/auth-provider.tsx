@@ -58,6 +58,8 @@ export const AuthProvider: FC = () => {
     const handleUnauthorization = useCallback(
         (event) => {
             setRedirectPath(event.detail)
+            clearAuthTokens()
+            setAccessToken(null)
             navigate('/login')
         },
         [navigate]
