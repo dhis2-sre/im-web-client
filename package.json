@@ -6,7 +6,7 @@
         "@dhis2/app-runtime": "^3.9.4",
         "@dhis2/app-service-alerts": "^3.9.4",
         "@dhis2/d2-i18n": "^1.1.2",
-        "@dhis2/ui": "^8.14.9",
+        "@dhis2/ui": "^8.14.10",
         "axios": "^1.6.0",
         "axios-hooks": "^4.0.0",
         "axios-jwt": "3.0.0",
