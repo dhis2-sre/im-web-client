@@ -40,10 +40,10 @@ export const InstancesList: FC = () => {
         <div className={styles.wrapper}>
             <div className={styles.heading}>
                 <h1>All instances</h1>
-                <Button icon={<IconAdd24 />} onClick={() => navigate('/new')}>
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
-                <Button icon={<IconAdd24 />} onClick={() => navigate('/new-v2')}>
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new-v2')}>
                     New instance (Beta)
                 </Button>
             </div>

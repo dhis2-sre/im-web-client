@@ -23,8 +23,8 @@ const router = createBrowserRouter(
                     <Route path="/stacks/:name" element={<StackDetails />} />
                     <Route path="/instances" element={<InstancesList />} />
                     <Route path="/databases" element={<DatabasesList />} />
-                    <Route path="/new" element={<NewInstance />} />
-                    <Route path="/new-v2" element={<NewInstanceV2 />} />
+                    <Route path="/instances/new" element={<NewInstance />} />
+                    <Route path="/instances/new-v2" element={<NewInstanceV2 />} />
                     <Route path="/groups" element={<GroupsList />} />
                     <Route path="/users" element={<UsersList />} />
                     <Route path="/users/:id" element={<UserDetails />} />
