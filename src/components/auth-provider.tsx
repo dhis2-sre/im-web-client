@@ -19,7 +19,7 @@ export const AuthProvider: FC = () => {
             url: '/tokens',
             method: 'POST',
         },
-        { manual: true }
+        { manual: true, autoCatch: true }
     )
     const [, requestLogout] = useAuthAxios(
         {
@@ -36,11 +36,12 @@ export const AuthProvider: FC = () => {
 
     const login = useCallback(
         async (username, password) => {
-            const {
-                data: { accessToken, refreshToken },
-            } = await getTokens({ auth: { username, password } })
-            setAuthTokens({ accessToken, refreshToken })
-            setAccessToken(accessToken)
+            const result = await getTokens({ auth: { username, password } })
+            if (result?.data) {
+                const { accessToken, refreshToken } = result.data
+                setAuthTokens({ accessToken, refreshToken })
+                setAccessToken(accessToken)
+            }
         },
         [getTokens]
     )
