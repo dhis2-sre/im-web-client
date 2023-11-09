@@ -43,8 +43,8 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
-                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new-v2')}>
-                    New instance (Beta)
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new-dhis2')}>
+                    New DHIS2 instance
                 </Button>
             </div>
 
