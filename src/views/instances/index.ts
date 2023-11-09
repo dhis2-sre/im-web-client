@@ -1,3 +1,3 @@
 export { InstancesList } from './instances-list'
 export { NewInstance } from './new-instance'
-export { NewInstanceV2 } from './new-instance-v2'
+export { NewDhis2Instance } from './new-dhis2-instance'
