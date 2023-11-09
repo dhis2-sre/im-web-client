@@ -1,24 +1,24 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useMemo } from 'react'
-import { useAuthAxios } from '../../../hooks'
+import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
-import { IMAGE_REPOSITORY } from './constants'
-import { mapStringToValueLabel, toTitleCase } from './helpers'
+import { mapStringToValueLabel, toTitleCase } from '../helpers'
 
-export const ImageRepositorySelect: FC = () => {
+type AsyncParameterSelectProps = {
+    name: string
+}
+
+export const AsyncParameterSelect: FC<AsyncParameterSelectProps> = ({ name }) => {
     const {
         meta: { initial: initialValue },
-    } = useField(IMAGE_REPOSITORY, {
+    } = useField(name, {
         subscription: { initial: true },
     })
     const [{ data, error, loading }] = useAuthAxios({
         url: '/integrations',
         method: 'POST',
         data: {
-            key: IMAGE_REPOSITORY,
-            payload: {
-                organization: 'dhis2',
-            },
+            key: name,
         },
     })
     const options = useMemo(() => {
@@ -26,7 +26,12 @@ export const ImageRepositorySelect: FC = () => {
             return initialValue ? [{ value: initialValue, label: initialValue }] : []
         }
 
-        return data.filter((value: string) => value.startsWith('core')).map(mapStringToValueLabel)
+        return Array.isArray(data)
+            ? data.map(mapStringToValueLabel)
+            : Object.entries(data).map(([value, label]) => ({
+                  value,
+                  label,
+              }))
     }, [data, initialValue])
 
     return (
@@ -34,9 +39,10 @@ export const ImageRepositorySelect: FC = () => {
             required
             loading={loading}
             error={error}
-            name={IMAGE_REPOSITORY}
-            label={toTitleCase(IMAGE_REPOSITORY)}
+            name={name}
+            label={toTitleCase(name)}
             component={SingleSelectFieldFF}
+            filterable={options.length > 7}
             options={options}
             validate={hasValue}
         />

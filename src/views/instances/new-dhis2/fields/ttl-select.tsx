@@ -1,6 +1,7 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { Field } from 'react-final-form'
-import { converter } from './helpers'
+import { converter } from '../helpers'
+import styles from './fields.module.css'
 
 const defaultTTL = 60 * 60 * 24
 const options: { label: string; value: string }[] = [
@@ -17,6 +18,7 @@ const options: { label: string; value: string }[] = [
 
 export const TtlSelect = () => (
     <Field
+        className={styles.field}
         parse={converter.integer.parse}
         format={converter.integer.format}
         required
@@ -26,5 +28,6 @@ export const TtlSelect = () => (
         options={options}
         initialValue={defaultTTL}
         validate={hasValue}
+        helpText="How long this instance will run for until automatic shutdown."
     />
 )

@@ -1,8 +1,9 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { useEffect, useMemo } from 'react'
-import { useAuthAxios } from '../../../hooks'
-import { Group } from '../../../types'
+import { useAuthAxios } from '../../../../hooks'
+import { Group } from '../../../../types'
 import { Field, useForm } from 'react-final-form'
+import styles from './fields.module.css'
 
 export const GroupSelect = () => {
     const form = useForm()
@@ -22,5 +23,17 @@ export const GroupSelect = () => {
         }
     }, [groups, form])
 
-    return <Field required={loading} error={error} name="groupName" label="Group" component={SingleSelectFieldFF} options={options} validate={hasValue} />
+    return (
+        <Field
+            filterable={options.length > 7}
+            className={styles.field}
+            required={loading}
+            error={error}
+            name="groupName"
+            label="Group"
+            component={SingleSelectFieldFF}
+            options={options}
+            validate={hasValue}
+        />
+    )
 }
