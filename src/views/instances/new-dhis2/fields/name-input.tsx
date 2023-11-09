@@ -1,5 +1,6 @@
 import { Field } from 'react-final-form'
 import { InputFieldFF } from '@dhis2/ui'
+import styles from './fields.module.css'
 
 /* DNS Label rfc1035 rules (https://www.ietf.org/rfc/rfc1035.txt):
  * The labels must follow the rules for ARPANET host names.  They must
@@ -32,4 +33,6 @@ const validateDnsLabel = (value = '') => {
     return undefined
 }
 
-export const NameInput = () => <Field required name="name" label="Name" component={InputFieldFF} validate={validateDnsLabel} />
+export const NameInput = () => (
+    <Field helpText="Also used in the instance URL." className={styles.field} required name="name" label="Name" component={InputFieldFF} validate={validateDnsLabel} />
+)

@@ -5,9 +5,10 @@ import { Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
 import { Instance } from '../../../types'
-import { NewDhis2InstanceForm } from './new-dhis2-instance-form'
 import { DHIS2_STACK_ID } from './constants'
 import { convertValuesToPayload } from './helpers'
+import { NewDhis2InstanceForm } from './new-dhis2-instance-form'
+import styles from './new-dhis2-instance.module.css'
 
 export const NewDhis2Instance: FC = () => {
     const navigate = useNavigate()
@@ -36,7 +37,7 @@ export const NewDhis2Instance: FC = () => {
     return (
         <>
             <h1>Create a new DHIS2 Core Instance</h1>
-            <Card>
+            <Card className={styles.container}>
                 <Form onSubmit={onSubmit} keepDirtyOnReinitialize>
                     {({ handleSubmit, submitting, pristine, invalid }) => (
                         <NewDhis2InstanceForm handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} submitting={submitting} pristine={pristine} invalid={invalid} />

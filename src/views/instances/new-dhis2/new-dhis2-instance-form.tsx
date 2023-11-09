@@ -1,11 +1,12 @@
-import { Button, ButtonStrip, CheckboxFieldFF, TextAreaFieldFF } from '@dhis2/ui'
-import { Field } from 'react-final-form'
+import { Button, ButtonStrip } from '@dhis2/ui'
 import { AnyObject } from 'final-form'
-import { NameInput } from './name-input'
-import { TtlSelect } from './ttl-select'
-import { GroupSelect } from './group-select'
-import { ParameterFieldSet } from './parameter-field-set'
-import { converter } from './helpers'
+import { DescriptionTextarea } from './fields/description-textarea'
+import { GroupSelect } from './fields/group-select'
+import { NameInput } from './fields/name-input'
+import { PublicCheckbox } from './fields/public-checkbox'
+import { TtlSelect } from './fields/ttl-select'
+import styles from './new-dhis2-instance-form.module.css'
+import { ParameterFieldset } from './parameter-fieldset'
 
 type NewDhis2InstanceFormProps = {
     handleCancel: () => void
@@ -17,15 +18,16 @@ type NewDhis2InstanceFormProps = {
 
 export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, submitting, pristine, invalid }: NewDhis2InstanceFormProps) => (
     <form onSubmit={handleSubmit}>
-        <fieldset>
-            <legend>Basic information</legend>
+        <fieldset className={styles.fieldset}>
+            <legend className={styles.legend}>Basic information</legend>
             <NameInput />
-            <Field name="description" label="Description" component={TextAreaFieldFF} />
+            <DescriptionTextarea />
             <TtlSelect />
             <GroupSelect />
-            <Field type="checkbox" name="public" label="Make public" parse={converter.bool.parse} format={converter.bool.format} component={CheckboxFieldFF} />
+            <PublicCheckbox />
         </fieldset>
-        <ParameterFieldSet />
+        <hr className={styles.hr} />
+        <ParameterFieldset />
         <ButtonStrip>
             <Button primary disabled={submitting || pristine || invalid} loading={submitting} type="submit">
                 Create instance

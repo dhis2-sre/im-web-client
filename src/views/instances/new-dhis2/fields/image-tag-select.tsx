@@ -1,9 +1,9 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useState } from 'react'
-import { useAuthAxios } from '../../../hooks'
+import { useAuthAxios } from '../../../../hooks'
 import { Field, useField, useForm } from 'react-final-form'
-import { IMAGE_TAG, IMAGE_REPOSITORY } from './constants'
-import { mapStringToValueLabel, toTitleCase } from './helpers'
+import { IMAGE_TAG, IMAGE_REPOSITORY } from '../constants'
+import { mapStringToValueLabel, toTitleCase } from '../helpers'
 
 // Eerst is niks geladen, dus geen values en geen opties, lege select laten zien
 // Dan laden de initialValues, maar de opties nog niet, dan een nep optie lijst laten zien met de initial value
@@ -70,6 +70,7 @@ export const ImageTagSelect: FC = () => {
             name={IMAGE_TAG}
             label={toTitleCase(IMAGE_TAG)}
             component={SingleSelectFieldFF}
+            filterable={optionsWithFallback.length > 7}
             options={optionsWithFallback}
             validate={hasValue}
         />

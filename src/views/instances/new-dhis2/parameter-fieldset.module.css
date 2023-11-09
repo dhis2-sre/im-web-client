@@ -1,0 +1,32 @@
+.legend {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 23px;
+    padding-bottom: var(--spacers-dp24);
+}
+.fieldset {
+    border: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+}
+.fieldset.primary {
+    grid-template-columns: 320px 320px;
+}
+.fieldset.secondary {
+    padding-top: var(--spacers-dp16);
+}
+.hr {
+    border: none;
+    border-top: 1px solid var(--colors-grey400);
+    width: 100%;
+    margin: var(--spacers-dp24) 0;
+}
+.summary {
+    color: var(--colors-blue600);
+    margin: var(--spacers-dp24) 0 0 0;
+    cursor: pointer;
+    user-select: none;
+}

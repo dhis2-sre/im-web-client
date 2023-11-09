@@ -1,11 +1,13 @@
 import { Center, CircularLoader, NoticeBox } from '@dhis2/ui'
+import cx from 'classnames'
 import { useForm } from 'react-final-form'
 import { useDhis2StackParameters } from '../../../hooks'
 import { DHIS2_STACK_ID } from './constants'
 import { useEffect, useMemo } from 'react'
-import { ParameterField } from './parameter-field'
+import { ParameterField } from './fields/parameter-field'
+import styles from './parameter-fieldset.module.css'
 
-export const ParameterFieldSet = () => {
+export const ParameterFieldset = () => {
     const form = useForm()
     const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useDhis2StackParameters(DHIS2_STACK_ID)
     console.log(initialParameterValues)
@@ -23,23 +25,38 @@ export const ParameterFieldSet = () => {
     }, [form, initialParameterValues, areParameterValuesInitialized])
 
     return (
-        <fieldset>
-            <legend>Instance configuration</legend>
+        <div className={styles.container}>
             {loading && (
                 <Center>
                     <CircularLoader />
                 </Center>
             )}
+
             {error && !loading && (
                 <NoticeBox error title="Could not load parameter fields">
                     {error.message}
                 </NoticeBox>
             )}
-            {!error && !loading && primaryParameters && primaryParameters.map(({ name }) => <ParameterField key={name} name={name} />)}
-            <details>
-                <summary>Advanced configuration</summary>
-                {!error && !loading && secondaryParameters && secondaryParameters.map(({ name }) => <ParameterField key={name} name={name} />)}
-            </details>
-        </fieldset>
+
+            {!error && !loading && primaryParameters && (
+                <fieldset className={cx(styles.fieldset, styles.primary)}>
+                    <legend className={styles.legend}>Instance configuration</legend>
+                    {primaryParameters.map(({ name }) => (
+                        <ParameterField key={name} name={name} />
+                    ))}
+                </fieldset>
+            )}
+
+            {!error && !loading && secondaryParameters && (
+                <details className={styles.details}>
+                    <summary className={styles.summary}>Advanced configuration</summary>
+                    <fieldset className={cx(styles.fieldset, styles.secondary)}>
+                        {!error && !loading && secondaryParameters && secondaryParameters.map(({ name }) => <ParameterField key={name} name={name} />)}
+                    </fieldset>
+                </details>
+            )}
+
+            <hr className={styles.hr} />
+        </div>
     )
 }
