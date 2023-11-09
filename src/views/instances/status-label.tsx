@@ -16,7 +16,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({ instanceId }) => {
     })
 
     if (loading) {
-        return <CircularLoader />
+        return <CircularLoader small />
     }
 
     return <Tag>{data}</Tag>
