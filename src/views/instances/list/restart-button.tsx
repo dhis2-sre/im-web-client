@@ -1,9 +1,9 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconSync16 } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { ConfirmationModal } from '../../components'
-import { useAuthAxios } from '../../hooks'
-import { Instance } from '../../types'
+import { ConfirmationModal } from '../../../components'
+import { useAuthAxios } from '../../../hooks'
+import { Instance } from '../../../types'
 import type { FC } from 'react'
 
 type RestartButtonProps = {

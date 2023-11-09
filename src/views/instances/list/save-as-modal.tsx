@@ -2,10 +2,9 @@ import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, Mod
 import styles from './save-as-modal.module.css'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { Database } from '../../types'
+import { useAuthAxios } from '../../../hooks'
+import { Database } from '../../../types'
 import { useAlert } from '@dhis2/app-service-alerts'
-import fieldStyles from './parameter-field.module.css'
 
 type SaveAsModalProps = {
     instanceId: Number
@@ -70,10 +69,10 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
             <ModalTitle>Save "{instanceName}" database as</ModalTitle>
             <ModalContent className={styles.container}>
                 <div className={styles.fileAndExtension}>
-                    <InputField className={fieldStyles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
-                    <span>{extension}</span>
+                    <InputField className={styles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
+                    <span className={styles.extension}>{extension}</span>
                 </div>
-                <SingleSelectField className={fieldStyles.field} selected={format} onChange={onSelectChange} label="Format">
+                <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
                     {Array.from(formats.keys()).map((key) => (
                         <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
                     ))}
