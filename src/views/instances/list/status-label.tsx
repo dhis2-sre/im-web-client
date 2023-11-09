@@ -1,8 +1,8 @@
 import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { InstanceStatus } from '../../types'
+import { useAuthAxios } from '../../../hooks'
+import { InstanceStatus } from '../../../types'
 
 type StatusLabelProps = {
     instanceId: number

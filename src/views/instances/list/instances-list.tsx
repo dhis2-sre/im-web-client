@@ -12,12 +12,11 @@ import {
     IconAdd24,
     IconWorld24,
     NoticeBox,
-    Tag,
 } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
-import { GroupsWithInstances, Instance } from '../../types'
+import { useAuthAxios } from '../../../hooks'
+import { GroupsWithInstances, Instance } from '../../../types'
 import { DeleteButton } from './delete-button'
 import styles from './instances-list.module.css'
 import { OpenButton } from './open-button'

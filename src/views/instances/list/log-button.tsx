@@ -1,7 +1,7 @@
 import { Button, ButtonStrip, Center, CircularLoader, IconTerminalWindow16, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { Instance } from '../../types'
+import { useAuthAxios } from '../../../hooks'
+import { Instance } from '../../../types'
 import styles from './log-button.module.css'
 import type { FC } from 'react'
 
