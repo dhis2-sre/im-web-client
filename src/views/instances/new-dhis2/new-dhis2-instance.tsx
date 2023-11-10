@@ -8,7 +8,7 @@ import { Instance } from '../../../types'
 import { DHIS2_STACK_ID } from './constants'
 import { convertValuesToPayload } from './helpers'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form'
-import styles from './new-dhis2-instance.module.css'
+import styles from './styles.module.css'
 
 export const NewDhis2Instance: FC = () => {
     const navigate = useNavigate()
