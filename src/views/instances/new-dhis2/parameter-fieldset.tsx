@@ -5,7 +5,7 @@ import { useDhis2StackParameters } from '../../../hooks'
 import { DHIS2_STACK_ID } from './constants'
 import { useEffect, useMemo } from 'react'
 import { ParameterField } from './fields/parameter-field'
-import styles from './parameter-fieldset.module.css'
+import styles from './styles.module.css'
 
 export const ParameterFieldset = () => {
     const form = useForm()
@@ -39,7 +39,7 @@ export const ParameterFieldset = () => {
             )}
 
             {!error && !loading && primaryParameters && (
-                <fieldset className={cx(styles.fieldset, styles.primary)}>
+                <fieldset className={cx(styles.fieldset, styles.parameters, styles.primary)}>
                     <legend className={styles.legend}>Instance configuration</legend>
                     {primaryParameters.map(({ name }) => (
                         <ParameterField key={name} name={name} />
@@ -48,9 +48,9 @@ export const ParameterFieldset = () => {
             )}
 
             {!error && !loading && secondaryParameters && (
-                <details className={styles.details}>
+                <details>
                     <summary className={styles.summary}>Advanced configuration</summary>
-                    <fieldset className={cx(styles.fieldset, styles.secondary)}>
+                    <fieldset className={cx(styles.fieldset, styles.parameters, styles.secondary)}>
                         {!error && !loading && secondaryParameters && secondaryParameters.map(({ name }) => <ParameterField key={name} name={name} />)}
                     </fieldset>
                 </details>
