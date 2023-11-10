@@ -47,9 +47,9 @@ export const ActionsDropdownMenu = ({ id, name, refreshList }: ActionsDropdownMe
                 <Popover onClickOutside={togglePopover} reference={anchor} placement="bottom-start">
                     <Menu>
                         <LogMenuItem instanceId={id} instanceName={name} />
+                        <SaveAsMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
                         <RestartMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
                         <ResetMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
-                        <SaveAsMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
                         <DeleteMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
                     </Menu>
                 </Popover>

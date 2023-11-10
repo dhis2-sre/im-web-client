@@ -49,7 +49,7 @@ export const ResetMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, on
                     Are you sure you want to reset instance "{instanceName}"
                 </ConfirmationModal>
             )}
-            <MenuItem dense disabled={loading} icon={<IconClockHistory16 />} onClick={onClick} label="Reset" />
+            <MenuItem dense destructive disabled={loading} icon={<IconClockHistory16 />} onClick={onClick} label="Reset" />
         </>
     )
 }
