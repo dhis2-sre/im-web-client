@@ -47,7 +47,9 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
                 isCritical: false,
             })
             onClose()
-            onComplete()
+            /* No need to refetch the instance list since this
+             * adds a DB not an instance */
+            onComplete(false)
         } catch (error) {
             showAlert({
                 message: 'There was a problem submitting the request',
