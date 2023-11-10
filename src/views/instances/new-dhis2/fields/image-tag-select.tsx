@@ -5,11 +5,6 @@ import { Field, useField, useForm } from 'react-final-form'
 import { IMAGE_TAG, IMAGE_REPOSITORY } from '../constants'
 import { mapStringToValueLabel, toTitleCase } from '../helpers'
 
-// Eerst is niks geladen, dus geen values en geen opties, lege select laten zien
-// Dan laden de initialValues, maar de opties nog niet, dan een nep optie lijst laten zien met de initial value
-// Dan de opties (data), dus dan is het mogelijk de initial value te laten zien en volledige lijst
-// Als repository veranderd wordt een nieuwe optie lijst opgehaald. Zodra deze binnenkomt ontstaat er een mismatch
-
 export const ImageTagSelect: FC = () => {
     const form = useForm()
     const [options, setOptions] = useState([])
