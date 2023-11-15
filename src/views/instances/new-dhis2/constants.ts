@@ -8,3 +8,4 @@ export const IMAGE_PULL_POLICY = 'IMAGE_PULL_POLICY'
 export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const JAVA_OPTS = 'JAVA_OPTS'
 export const OPTIONAL_FIELDS = new Set([JAVA_OPTS])
+export const PUBLIC = 'public'

@@ -5,7 +5,7 @@ import { AnyObject, Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
 import { DeployInstanceRequest, Instance } from '../../../types'
-import { DHIS2_STACK_ID } from './constants'
+import { DHIS2_STACK_ID, PUBLIC } from './constants'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form'
 import styles from './styles.module.css'
 
@@ -13,7 +13,8 @@ const convertValuesToPayload = (values: AnyObject) =>
     Object.entries(values).reduce<DeployInstanceRequest>(
         (payload, [name, value]) => {
             if (payload.hasOwnProperty(name)) {
-                payload[name] = value
+                // The `public` field needs to be a true boolean, not a true/false string
+                payload[name] = name === PUBLIC ? value === 'true' : value
             } else {
                 payload.parameters.push({ name, value })
             }
