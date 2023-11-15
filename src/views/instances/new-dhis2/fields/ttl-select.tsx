@@ -14,8 +14,8 @@ const options: { label: string; value: string }[] = [
     { label: '2 weeks', value: (60 * 60 * 24 * 7 * 2).toString() },
     { label: '1 month', value: (60 * 60 * 24 * 7 * 4).toString() },
 ]
-const parse = (str) => parseInt(str)
-const format = (integer) => integer.toString()
+const parse = (str: string): number => parseInt(str)
+const format = (integer: number): string => integer.toString()
 
 export const TtlSelect = () => (
     <Field
