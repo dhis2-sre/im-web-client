@@ -3,7 +3,8 @@ import { FC, useMemo } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
 import { IMAGE_REPOSITORY } from '../constants'
-import { mapStringToValueLabel, toTitleCase } from '../helpers'
+import { mapStringToValueLabel } from './helpers'
+import { toTitleCase } from './helpers'
 
 export const ImageRepositorySelect: FC = () => {
     const {

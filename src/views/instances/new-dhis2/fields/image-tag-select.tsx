@@ -3,7 +3,8 @@ import { FC, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField, useForm } from 'react-final-form'
 import { IMAGE_TAG, IMAGE_REPOSITORY } from '../constants'
-import { mapStringToValueLabel, toTitleCase } from '../helpers'
+import { mapStringToValueLabel } from './helpers'
+import { toTitleCase } from './helpers'
 
 export const ImageTagSelect: FC = () => {
     const form = useForm()

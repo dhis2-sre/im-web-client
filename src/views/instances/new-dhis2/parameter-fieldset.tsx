@@ -10,7 +10,6 @@ import styles from './styles.module.css'
 export const ParameterFieldset = () => {
     const form = useForm()
     const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useDhis2StackParameters(DHIS2_STACK_ID)
-    console.log(initialParameterValues)
 
     const areParameterValuesInitialized = useMemo(() => {
         const { values } = form.getState()

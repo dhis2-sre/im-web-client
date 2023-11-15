@@ -1,6 +1,5 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { Field } from 'react-final-form'
-import { converter } from '../helpers'
 import styles from './fields.module.css'
 
 const defaultTTL = 60 * 60 * 24
@@ -15,12 +14,14 @@ const options: { label: string; value: string }[] = [
     { label: '2 weeks', value: (60 * 60 * 24 * 7 * 2).toString() },
     { label: '1 month', value: (60 * 60 * 24 * 7 * 4).toString() },
 ]
+const parse = (str) => parseInt(str)
+const format = (integer) => integer.toString()
 
 export const TtlSelect = () => (
     <Field
         className={styles.field}
-        parse={converter.integer.parse}
-        format={converter.integer.format}
+        parse={parse}
+        format={format}
         required
         name="ttl"
         label="Lifetime"
