@@ -9,7 +9,7 @@ type SecondaryAndPrimaryParameters = {
 type InitialValues = { [key: string]: string }
 
 const PRIMARY_PARAMETERS = new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY', 'DATABASE_ID'])
-const isPrimary = (name) => PRIMARY_PARAMETERS.has(name)
+const isPrimary = (name: string): boolean => PRIMARY_PARAMETERS.has(name)
 
 export const useDhis2StackParameters = (stackName: string) => {
     const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
@@ -19,13 +19,13 @@ export const useDhis2StackParameters = (stackName: string) => {
                 .filter((parameter) => !parameter.consumed)
                 .sort((a, b) => (a.priority < b.priority ? -1 : 1))
                 .reduce<SecondaryAndPrimaryParameters>(
-                    (acc, parameter) => {
+                    (parameterGroups, parameter) => {
                         if (isPrimary(parameter.name)) {
-                            acc.primaryParameters.push(parameter)
+                            parameterGroups.primaryParameters.push(parameter)
                         } else {
-                            acc.secondaryParameters.push(parameter)
+                            parameterGroups.secondaryParameters.push(parameter)
                         }
-                        return acc
+                        return parameterGroups
                     },
                     { primaryParameters: [], secondaryParameters: [] }
                 ),
@@ -33,9 +33,9 @@ export const useDhis2StackParameters = (stackName: string) => {
     )
     const initialParameterValues: InitialValues = useMemo(
         () =>
-            (stack?.parameters ?? []).reduce<InitialValues>((acc, parameter) => {
-                acc[parameter.name] = parameter.defaultValue
-                return acc
+            (stack?.parameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
+                valuesAccumulator[parameter.name] = parameter.defaultValue
+                return valuesAccumulator
             }, {}),
         [stack]
     )

@@ -2,7 +2,8 @@ import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useMemo } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
-import { mapStringToValueLabel, toTitleCase } from '../helpers'
+import { mapStringToValueLabel } from './helpers'
+import { toTitleCase } from './helpers'
 
 type AsyncParameterSelectProps = {
     name: string

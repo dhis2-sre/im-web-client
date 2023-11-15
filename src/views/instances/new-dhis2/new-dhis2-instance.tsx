@@ -1,14 +1,34 @@
 import { Card } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback } from 'react'
-import { Form } from 'react-final-form'
+import { AnyObject, Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
+import { DeployInstanceRequest, Instance } from '../../../types'
 import { DHIS2_STACK_ID } from './constants'
-import { convertValuesToPayload } from './helpers'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form'
 import styles from './styles.module.css'
+
+const convertValuesToPayload = (values: AnyObject) =>
+    Object.entries(values).reduce<DeployInstanceRequest>(
+        (payload, [name, value]) => {
+            if (payload.hasOwnProperty(name)) {
+                payload[name] = value
+            } else {
+                payload.parameters.push({ name, value })
+            }
+            return payload
+        },
+        {
+            description: undefined,
+            groupName: undefined,
+            name: undefined,
+            public: undefined,
+            stackName: undefined,
+            ttl: undefined,
+            parameters: [],
+        }
+    )
 
 export const NewDhis2Instance: FC = () => {
     const navigate = useNavigate()
