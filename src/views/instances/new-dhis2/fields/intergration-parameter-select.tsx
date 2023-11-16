@@ -5,11 +5,11 @@ import { Field, useField } from 'react-final-form'
 import { mapStringToValueLabel } from './helpers'
 import { toTitleCase } from './helpers'
 
-type AsyncParameterSelectProps = {
+type IntergrationParameterSelectProps = {
     name: string
 }
 
-export const AsyncParameterSelect: FC<AsyncParameterSelectProps> = ({ name }) => {
+export const IntergrationParameterSelect: FC<IntergrationParameterSelectProps> = ({ name }) => {
     const {
         meta: { initial: initialValue },
     } = useField(name, {
