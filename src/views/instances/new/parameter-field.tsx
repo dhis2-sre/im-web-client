@@ -1,7 +1,7 @@
 import { CheckboxField, InputField, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import cx from 'classnames'
 import { useEffect, useRef } from 'react'
-import { useAuthAxios } from '../../hooks'
+import { useAuthAxios } from '../../../hooks'
 import styles from './parameter-field.module.css'
 import type { FC } from 'react'
 

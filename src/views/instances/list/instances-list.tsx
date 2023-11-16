@@ -12,21 +12,20 @@ import {
     IconAdd24,
     IconWorld24,
     NoticeBox,
-    Tag,
 } from '@dhis2/ui'
+import type { FC } from 'react'
 import Moment from 'react-moment'
-import { useNavigate } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
-import { GroupsWithInstances, Instance } from '../../types'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuthAxios } from '../../../hooks'
+import { GroupsWithInstances, Instance } from '../../../types'
 import { DeleteButton } from './delete-button'
-import styles from './instances-list.module.css'
+import { LogButton } from './log-button'
 import { OpenButton } from './open-button'
 import { ResetButton } from './reset-button'
 import { RestartButton } from './restart-button'
-import { LogButton } from './log-button'
 import { SaveAsButton } from './save-as-button'
-import type { FC } from 'react'
 import { StatusLabel } from './status-label'
+import styles from './instances-list.module.css'
 
 const calculateExpiration = (instance: Instance) => new Date(instance.createdAt).getTime() + instance.ttl * 1000
 
@@ -40,9 +39,10 @@ export const InstancesList: FC = () => {
         <div className={styles.wrapper}>
             <div className={styles.heading}>
                 <h1>All instances</h1>
-                <Button icon={<IconAdd24 />} onClick={() => navigate('/new')}>
-                    New instance
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new-dhis2')}>
+                    New DHIS2 instance
                 </Button>
+                <NavLink to="/instances/new">New custom instance</NavLink>
             </div>
 
             {error && (

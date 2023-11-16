@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout } from './components'
 import './index.module.css'
-import { DatabasesList, InstancesList, Login, NewInstance, SignUp, StackDetails, StacksList } from './views'
+import { DatabasesList, InstancesList, Login, NewInstance, NewDhis2Instance, SignUp, StackDetails, StacksList } from './views'
 import { UsersList } from './views/users'
 import { GroupsList } from './views/groups'
 import { Validate } from './views/validate'
@@ -23,7 +23,8 @@ const router = createBrowserRouter(
                     <Route path="/stacks/:name" element={<StackDetails />} />
                     <Route path="/instances" element={<InstancesList />} />
                     <Route path="/databases" element={<DatabasesList />} />
-                    <Route path="/new" element={<NewInstance />} />
+                    <Route path="/instances/new" element={<NewInstance />} />
+                    <Route path="/instances/new-dhis2" element={<NewDhis2Instance />} />
                     <Route path="/groups" element={<GroupsList />} />
                     <Route path="/users" element={<UsersList />} />
                     <Route path="/users/:id" element={<UserDetails />} />
