@@ -28,4 +28,3 @@ skaffold dev
 -   Validate create group form
     -   Can submit without hostname... No effect, no error
 -   Loading shows within form
--   Show selected file after selecting database to upload
