@@ -10,6 +10,6 @@ test.describe('databases', () => {
     })
 
     test('has a database section', async ({ page }) => {
-        await expect(page.getByRole('link', { name: 'Databases' })).toBeVisible()
+        await expect(page.getByRole('link', { name: 'DatabasesZZZ' })).toBeVisible()
     })
 })
