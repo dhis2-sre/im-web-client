@@ -1,18 +1,13 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, IconSync16 } from '@dhis2/ui'
+import { MenuItem, IconSync16 } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../../components'
 import { useAuthAxios } from '../../../hooks'
 import { Instance } from '../../../types'
 import type { FC } from 'react'
+import { AsyncActionProps } from './actions-dropdown-menu'
 
-type RestartButtonProps = {
-    instanceId: number
-    instanceName: string
-    onComplete: () => void
-}
-
-export const RestartButton: FC<RestartButtonProps> = ({ instanceId, onComplete, instanceName }) => {
+export const RestartMenuItem: FC<AsyncActionProps> = ({ instanceId, onStart, onComplete, instanceName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(
@@ -24,7 +19,7 @@ export const RestartButton: FC<RestartButtonProps> = ({ instanceId, onComplete, 
             method: 'PUT',
             url: `/instances/${instanceId}/restart`,
         },
-        { manual: true }
+        { manual: true, autoCancel: false }
     )
     const onClick = useCallback(() => {
         setShowConfirmationModal(true)
@@ -35,16 +30,18 @@ export const RestartButton: FC<RestartButtonProps> = ({ instanceId, onComplete, 
     }, [setShowConfirmationModal])
 
     const onConfirm = useCallback(async () => {
+        setShowConfirmationModal(false)
+        onStart()
         try {
-            setShowConfirmationModal(false)
             await deleteInstance()
             showAlert({ message: `Successfully restarted instance "${instanceName}"`, isCritical: false })
             onComplete()
         } catch (error) {
-            console.error(error)
+            onComplete(false)
             showAlert({ message: `There was an error when restarting instance "${instanceName}"`, isCritical: true })
+            console.error(error)
         }
-    }, [setShowConfirmationModal, deleteInstance, showAlert, onComplete, instanceName])
+    }, [setShowConfirmationModal, deleteInstance, showAlert, onComplete, onStart, instanceName])
 
     return (
         <>
@@ -53,9 +50,7 @@ export const RestartButton: FC<RestartButtonProps> = ({ instanceId, onComplete, 
                     Are you sure you want to restart instance "{instanceName}"
                 </ConfirmationModal>
             )}
-            <Button small secondary loading={loading} disabled={loading} icon={<IconSync16 />} onClick={onClick}>
-                Restart
-            </Button>
+            <MenuItem dense disabled={loading} icon={<IconSync16 />} onClick={onClick} label="Restart" />
         </>
     )
 }

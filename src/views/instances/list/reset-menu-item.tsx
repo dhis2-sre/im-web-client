@@ -1,18 +1,12 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, IconDelete16 } from '@dhis2/ui'
-import { useCallback, useState } from 'react'
+import { MenuItem, IconClockHistory16 } from '@dhis2/ui'
+import { FC, useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../../components'
 import { useAuthAxios } from '../../../hooks'
 import { Instance } from '../../../types'
-import type { FC } from 'react'
+import { AsyncActionProps } from './actions-dropdown-menu'
 
-type DeleteButtonProps = {
-    instanceId: number
-    instanceName: string
-    onComplete: () => void
-}
-
-export const DeleteButton: FC<DeleteButtonProps> = ({ instanceId, onComplete, instanceName }) => {
+export const ResetMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, onStart, instanceName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(
@@ -21,10 +15,10 @@ export const DeleteButton: FC<DeleteButtonProps> = ({ instanceId, onComplete, in
     )
     const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
-            method: 'DELETE',
-            url: `/instances/${instanceId}`,
+            method: 'PUT',
+            url: `/instances/${instanceId}/reset`,
         },
-        { manual: true }
+        { manual: true, autoCancel: false }
     )
     const onClick = useCallback(() => {
         setShowConfirmationModal(true)
@@ -35,27 +29,27 @@ export const DeleteButton: FC<DeleteButtonProps> = ({ instanceId, onComplete, in
     }, [setShowConfirmationModal])
 
     const onConfirm = useCallback(async () => {
+        onStart()
         setShowConfirmationModal(false)
         try {
             await deleteInstance()
-            showAlert({ message: `Successfully deleted instance "${instanceName}"`, isCritical: false })
+            showAlert({ message: `Successfully reset instance "${instanceName}"`, isCritical: false })
             onComplete()
         } catch (error) {
+            onComplete(false)
+            showAlert({ message: `There was an error when resetting instance "${instanceName}"`, isCritical: true })
             console.error(error)
-            showAlert({ message: `There was an error when deleting instance "${instanceName}"`, isCritical: true })
         }
-    }, [deleteInstance, setShowConfirmationModal, instanceName, onComplete, showAlert])
+    }, [setShowConfirmationModal, deleteInstance, showAlert, onComplete, instanceName, onStart])
 
     return (
         <>
             {showConfirmationModal && (
-                <ConfirmationModal destructive onCancel={onCancel} onConfirm={onConfirm}>
-                    Are you sure you want to delete instance "{instanceName}"
+                <ConfirmationModal onCancel={onCancel} onConfirm={onConfirm}>
+                    Are you sure you want to reset instance "{instanceName}"
                 </ConfirmationModal>
             )}
-            <Button small secondary loading={loading} disabled={loading} icon={<IconDelete16 />} onClick={onClick}>
-                Delete
-            </Button>
+            <MenuItem dense destructive disabled={loading} icon={<IconClockHistory16 />} onClick={onClick} label="Reset" />
         </>
     )
 }

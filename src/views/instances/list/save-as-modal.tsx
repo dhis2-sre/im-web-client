@@ -5,11 +5,10 @@ import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../../hooks'
 import { Database } from '../../../types'
 import { useAlert } from '@dhis2/app-service-alerts'
+import { AsyncActionProps } from './actions-dropdown-menu'
 
-type SaveAsModalProps = {
-    instanceId: Number
-    instanceName: string
-    onClose: Function
+interface SaveAsModalProps extends AsyncActionProps {
+    onClose: () => void
 }
 
 const defaultFormat = 'custom'
@@ -18,7 +17,7 @@ const formats = new Map<string, { label: string; extension: string }>([
     ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
 ])
 
-export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, onClose }) => {
+export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, onClose, onStart, onComplete }) => {
     const [name, setName] = useState<string>('')
     const [format, setFormat] = useState<string>(defaultFormat)
     const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
@@ -36,25 +35,30 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
                 format,
             },
         },
-        { manual: true }
+        { manual: true, autoCancel: false }
     )
 
     const submit = useCallback(async () => {
         try {
+            onStart()
             await saveAs()
             showAlert({
                 message: 'Save as request submitted successfully',
                 isCritical: false,
             })
             onClose()
+            /* No need to refetch the instance list since this
+             * adds a DB not an instance */
+            onComplete(false)
         } catch (error) {
             showAlert({
                 message: 'There was a problem submitting the request',
                 isCritical: true,
             })
             console.error(error)
+            onComplete(false)
         }
-    }, [saveAs, showAlert, onClose])
+    }, [saveAs, showAlert, onClose, onStart, onComplete])
 
     const onSelectChange = useCallback(
         ({ selected }) => {
