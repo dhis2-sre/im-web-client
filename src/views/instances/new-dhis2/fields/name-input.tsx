@@ -28,7 +28,7 @@ const validateDnsLabel = (value = '') => {
     if (!endPattern.test(value)) {
         return 'Name must end with a lowercase letter or a number'
     }
-    if (!interiorPattern.test(value)) {
+    if (interiorPattern.test(value)) {
         return 'Name can only contain lower case letter, numbers and hyphens'
     }
     return undefined
