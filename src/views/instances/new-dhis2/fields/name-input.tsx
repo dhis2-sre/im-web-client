@@ -7,9 +7,9 @@ import styles from './fields.module.css'
  * start with a letter, end with a letter or digit, and have as interior
  * characters only letters, digits, and hyphen.  There are also some
  * restrictions on the length. Labels must be 63 characters or less. */
-const startPattern = /^[a-z]/
-const endPattern = /[a-z0-9]$/
-const interiorPattern = /[^-a-z0-9]+/
+const startPattern = /^[a-z]$/
+const endPattern = /^[a-z0-9]$/
+const interiorPattern = /^[-a-z0-9]+$/
 const maxLenght = 63 - 'database-postgresql-0'.length
 
 const validateDnsLabel = (value = '') => {
@@ -22,13 +22,13 @@ const validateDnsLabel = (value = '') => {
     if (value.length > maxLenght) {
         return `Name can only contain ${maxLenght} characters`
     }
-    if (!startPattern.test(value)) {
+    if (!startPattern.test(value.charAt(0))) {
         return 'Name must start with a lowercase letter'
     }
-    if (!endPattern.test(value)) {
+    if (!endPattern.test(value.charAt(value.length - 1))) {
         return 'Name must end with a lowercase letter or a number'
     }
-    if (interiorPattern.test(value)) {
+    if (!interiorPattern.test(value.substring(1, value.length - 1))) {
         return 'Name can only contain lower case letter, numbers and hyphens'
     }
     return undefined
