@@ -9,7 +9,7 @@ import styles from './fields.module.css'
  * restrictions on the length. Labels must be 63 characters or less. */
 const startPattern = /^[a-z]/
 const endPattern = /[a-z0-9]$/
-const interiorPattern = /[-a-z0-9]*/
+const interiorPattern = /[^-a-z0-9]+/
 const maxLenght = 63 - 'database-postgresql-0'.length
 
 const validateDnsLabel = (value = '') => {
