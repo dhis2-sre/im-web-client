@@ -4,7 +4,6 @@ import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
 import { IMAGE_REPOSITORY } from '../constants'
 import { mapStringToValueLabel } from './helpers'
-import { toTitleCase } from './helpers'
 
 export const ImageRepositorySelect: FC = () => {
     const {
@@ -37,7 +36,7 @@ export const ImageRepositorySelect: FC = () => {
             loading={loading}
             error={error}
             name={IMAGE_REPOSITORY}
-            label={toTitleCase(IMAGE_REPOSITORY)}
+            label={IMAGE_REPOSITORY}
             component={SingleSelectFieldFF}
             options={options}
             validate={hasValue}
