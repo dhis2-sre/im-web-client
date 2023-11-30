@@ -12,7 +12,7 @@ const endPattern = /^[a-z0-9]$/
 const interiorPattern = /^[-a-z0-9]+$/
 const maxLenght = 63 - 'database-postgresql-0'.length
 
-const validateDnsLabel = (value = '') => {
+export const validateDnsLabel = (value = '') => {
     if (typeof value !== 'string') {
         throw new Error(`Name validator received a non-string type: "${typeof value}"`)
     }
