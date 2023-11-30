@@ -32,6 +32,7 @@ export const StackDetails = () => {
                 <DataTableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
+                        <DataTableColumnHeader>Parameter name</DataTableColumnHeader>
                         <DataTableColumnHeader>Default value</DataTableColumnHeader>
                         <DataTableColumnHeader>Consumed</DataTableColumnHeader>
                     </DataTableRow>
@@ -44,6 +45,7 @@ export const StackDetails = () => {
                             return (
                                 <DataTableRow key={parameter.name}>
                                     <DataTableCell>{parameter.name}</DataTableCell>
+                                    <DataTableCell>{parameter.parameterName}</DataTableCell>
                                     <DataTableCell>{parameter.defaultValue}</DataTableCell>
                                     <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
                                 </DataTableRow>
