@@ -18,6 +18,9 @@ clean:
 	$(clean-cmd)
 
 e2e-test:
+	docker compose run e2e-test
+
+test:
 	docker compose run test
 
 .PHONY: docker-image push-docker-image test
@@ -36,4 +39,4 @@ keys:
 smoke-test:
 	IMAGE_TAG=$(tag) docker compose up -d prod
 
-.PHONY: init check keys smoke-test test
+.PHONY: init check keys smoke-test
