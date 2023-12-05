@@ -28,12 +28,6 @@ type ParameterFieldProps = {
     repository?: string
 }
 
-const toTitleCase = (string) =>
-    string
-        .toLowerCase()
-        .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase())
-        .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase())
-
 const getAsyncParameterFieldRequestData = (key, repository) => {
     switch (key) {
         case IMAGE_TAG:
@@ -91,7 +85,7 @@ const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, onChange, 
 
     return (
         <SingleSelectField
-            label={toTitleCase(name)}
+            label={name}
             filterable={true}
             className={styles.field}
             disabled={disabled || loading}
@@ -116,7 +110,7 @@ export const ParameterField = ({ name, onChange, value, disabled, repository, re
             <CheckboxField
                 className={cx(styles.field, styles.checkboxfield)}
                 name={name}
-                label={toTitleCase(name)}
+                label={name}
                 value={value}
                 onChange={({ checked }) => onChange({ name, value: checked ? 'true' : 'false' })}
                 required={required}
@@ -125,6 +119,6 @@ export const ParameterField = ({ name, onChange, value, disabled, repository, re
             />
         )
     } else {
-        return <InputField className={styles.field} name={name} label={toTitleCase(name)} value={value} onChange={onChange} required={required} disabled={disabled} />
+        return <InputField className={styles.field} name={name} label={name} value={value} onChange={onChange} required={required} disabled={disabled} />
     }
 }
