@@ -24,7 +24,7 @@ services:
         ports:
             - "3000:3000"
 
-    test:
+    e2e-test:
         image: mcr.microsoft.com/playwright:latest
         stdin_open: true
         tty: true
@@ -39,3 +39,14 @@ services:
             IM_ADMIN_PASSWORD: ${IM_ADMIN_PASSWORD}
             API_URL: ${API_URL}
             REACT_APP_API_URL: ${API_URL}
+
+    test:
+        build:
+            context: .
+            target: builder
+        stdin_open: true
+        tty: true
+        volumes:
+            - .:/src
+        working_dir: /src
+        command: sh -c "yarn install --frozen-lockfile && yarn test -- --watchAll=false"
