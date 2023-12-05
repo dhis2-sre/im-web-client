@@ -6,11 +6,11 @@ import styles from './fields.module.css'
  * The labels must follow the rules for ARPANET host names.  They must
  * start with a letter, end with a letter or digit, and have as interior
  * characters only letters, digits, and hyphen.  There are also some
- * restrictions on the length. Labels must be 63 characters or less. */
+ * restrictions on the length. Labels must be 63 characters or fewer. */
 const startPattern = /^[a-z]$/
 const endPattern = /^[a-z0-9]$/
 const interiorPattern = /^[-a-z0-9]+$/
-const maxLenght = 63 - 'database-postgresql-0'.length
+const maxLength = 63 - 'database-postgresql-0'.length
 
 export const validateDnsLabel = (value = '') => {
     if (typeof value !== 'string') {
@@ -19,8 +19,8 @@ export const validateDnsLabel = (value = '') => {
     if (!value) {
         return 'Name is required'
     }
-    if (value.length > maxLenght) {
-        return `Name can only contain ${maxLenght} characters`
+    if (value.length > maxLength) {
+        return `Name can only contain ${maxLength} characters`
     }
     if (!startPattern.test(value.charAt(0))) {
         return 'Name must start with a lowercase letter'
