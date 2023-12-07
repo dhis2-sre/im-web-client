@@ -1,2 +1,2 @@
-export const username = process.env.IM_ADMIN_USER
-export const password = process.env.IM_ADMIN_PASSWORD
+export const username = process.env.USER_EMAIL
+export const password = process.env.USER_PASSWORD
