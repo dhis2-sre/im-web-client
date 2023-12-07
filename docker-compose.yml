@@ -35,8 +35,8 @@ services:
         working_dir: /e2e
         environment:
             CI: "true"
-            IM_ADMIN_USER: ${IM_ADMIN_USER}
-            IM_ADMIN_PASSWORD: ${IM_ADMIN_PASSWORD}
+            USER_EMAIL: ${USER_EMAIL}
+            USER_PASSWORD: ${USER_PASSWORD}
             API_URL: ${API_URL}
             REACT_APP_API_URL: ${API_URL}
 
