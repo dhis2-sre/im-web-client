@@ -40,8 +40,8 @@ export const ParameterFieldset = () => {
             {!error && !loading && primaryParameters && (
                 <fieldset className={cx(styles.fieldset, styles.parameters, styles.primary)}>
                     <legend className={styles.legend}>Instance configuration</legend>
-                    {primaryParameters.map(({ name }) => (
-                        <ParameterField key={name} name={name} />
+                    {primaryParameters.map(({ name, parameterName }) => (
+                        <ParameterField key={name} name={name} parameterName={parameterName} />
                     ))}
                 </fieldset>
             )}
@@ -50,7 +50,10 @@ export const ParameterFieldset = () => {
                 <details>
                     <summary className={styles.summary}>Advanced configuration</summary>
                     <fieldset className={cx(styles.fieldset, styles.parameters, styles.secondary)}>
-                        {!error && !loading && secondaryParameters && secondaryParameters.map(({ name }) => <ParameterField key={name} name={name} />)}
+                        {!error &&
+                            !loading &&
+                            secondaryParameters &&
+                            secondaryParameters.map(({ name, parameterName }) => <ParameterField key={name} name={name} parameterName={parameterName} />)}
                     </fieldset>
                 </details>
             )}

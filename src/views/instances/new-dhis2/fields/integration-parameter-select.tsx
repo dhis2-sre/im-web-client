@@ -4,11 +4,12 @@ import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
 import { mapStringToValueLabel } from './helpers'
 
-type IntergrationParameterSelectProps = {
+type IntegrationParameterSelectProps = {
     name: string
+    parameterName: string
 }
 
-export const IntergrationParameterSelect: FC<IntergrationParameterSelectProps> = ({ name }) => {
+export const IntegrationParameterSelect: FC<IntegrationParameterSelectProps> = ({ name, parameterName }) => {
     const {
         meta: { initial: initialValue },
     } = useField(name, {
@@ -18,7 +19,7 @@ export const IntergrationParameterSelect: FC<IntergrationParameterSelectProps> =
         url: '/integrations',
         method: 'POST',
         data: {
-            key: name,
+            key: parameterName,
         },
     })
     const options = useMemo(() => {
