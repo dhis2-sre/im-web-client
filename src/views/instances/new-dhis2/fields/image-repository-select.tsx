@@ -12,7 +12,7 @@ export type ImageRepositorySelectProps = {
 export const ImageRepositorySelect: FC<ImageRepositorySelectProps> = ({ name }) => {
     const {
         meta: { initial: initialValue },
-    } = useField(IMAGE_REPOSITORY, {
+    } = useField(name, {
         subscription: { initial: true },
     })
     const [{ data, error, loading }] = useAuthAxios({
@@ -39,7 +39,7 @@ export const ImageRepositorySelect: FC<ImageRepositorySelectProps> = ({ name }) 
             required
             loading={loading}
             error={error}
-            name={IMAGE_REPOSITORY}
+            name={name}
             label={name}
             component={SingleSelectFieldFF}
             options={options}

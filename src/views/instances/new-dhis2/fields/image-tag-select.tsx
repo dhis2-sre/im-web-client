@@ -14,7 +14,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ name }) => {
     const [options, setOptions] = useState([])
     const {
         meta: { initial: initialValue },
-    } = useField(IMAGE_TAG, {
+    } = useField(name, {
         subscription: { initial: true },
     })
     const {
@@ -66,7 +66,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ name }) => {
             required
             loading={loading}
             error={error}
-            name={IMAGE_TAG}
+            name={name}
             label={name}
             component={SingleSelectFieldFF}
             filterable={optionsWithFallback.length > 7}
