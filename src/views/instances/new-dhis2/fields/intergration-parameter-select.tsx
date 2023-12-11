@@ -3,23 +3,19 @@ import { FC, useMemo } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
 import { mapStringToValueLabel } from './helpers'
-import { toTitleCase } from './helpers'
+import { ParameterFieldProps } from './parameter-field'
 
-type IntergrationParameterSelectProps = {
-    name: string
-}
-
-export const IntergrationParameterSelect: FC<IntergrationParameterSelectProps> = ({ name }) => {
+export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ name, parameterName }) => {
     const {
         meta: { initial: initialValue },
-    } = useField(name, {
+    } = useField(parameterName, {
         subscription: { initial: true },
     })
     const [{ data, error, loading }] = useAuthAxios({
         url: '/integrations',
         method: 'POST',
         data: {
-            key: name,
+            key: parameterName,
         },
     })
     const options = useMemo(() => {
@@ -40,8 +36,8 @@ export const IntergrationParameterSelect: FC<IntergrationParameterSelectProps> =
             required
             loading={loading}
             error={error}
-            name={name}
-            label={toTitleCase(name)}
+            name={parameterName}
+            label={name}
             component={SingleSelectFieldFF}
             filterable={options.length > 7}
             options={options}

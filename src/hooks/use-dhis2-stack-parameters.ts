@@ -9,7 +9,7 @@ type SecondaryAndPrimaryParameters = {
 type InitialValues = { [key: string]: string }
 
 const PRIMARY_PARAMETERS = new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY', 'DATABASE_ID'])
-const isPrimary = (name: string): boolean => PRIMARY_PARAMETERS.has(name)
+const isPrimary = (parameterName: string): boolean => PRIMARY_PARAMETERS.has(parameterName)
 
 export const useDhis2StackParameters = (stackName: string) => {
     const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
@@ -20,7 +20,7 @@ export const useDhis2StackParameters = (stackName: string) => {
                 .sort((a, b) => (a.priority < b.priority ? -1 : 1))
                 .reduce<SecondaryAndPrimaryParameters>(
                     (parameterGroups, parameter) => {
-                        if (isPrimary(parameter.name)) {
+                        if (isPrimary(parameter.parameterName)) {
                             parameterGroups.primaryParameters.push(parameter)
                         } else {
                             parameterGroups.secondaryParameters.push(parameter)
@@ -34,7 +34,7 @@ export const useDhis2StackParameters = (stackName: string) => {
     const initialParameterValues: InitialValues = useMemo(
         () =>
             (stack?.parameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
-                valuesAccumulator[parameter.name] = parameter.defaultValue
+                valuesAccumulator[parameter.parameterName] = parameter.defaultValue
                 return valuesAccumulator
             }, {}),
         [stack]

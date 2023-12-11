@@ -17,26 +17,24 @@ type StackParameters = {
     parameters: StackParameter[]
 }
 
-const toArray = (object) => Object.entries(object).map(([name, value]) => ({ name, value }))
+type ParameterRecord = Record<string, { value: unknown; name: string }>
+
+const toArray = (object: ParameterRecord) => Object.entries(object).map(([parameterName, value]) => ({ name: parameterName, value: value.value }))
 
 const toKeyedObject = (array): StackParameter =>
-    array.reduce((acc, { name, defaultValue: value }) => {
-        acc[name] = value ?? ''
+    array.reduce((acc, { name, parameterName, defaultValue: value }) => {
+        acc[parameterName] = {
+            value: value ?? '',
+            name,
+        }
         return acc
     }, {})
 
-const getRepositoryValueForImageTag = (name: string, parameters) => (name === IMAGE_TAG ? parameters[IMAGE_REPOSITORY] : undefined)
+const getRepositoryValueForImageTag = (parameterName: string, parameters) => {
+    return parameterName === IMAGE_TAG ? parameters[IMAGE_REPOSITORY].value : undefined
+}
 
-const computeNewParameters = (
-    currentParameters: StackParameter,
-    {
-        name,
-        value,
-    }: {
-        name: string
-        value: string
-    }
-): StackParameter => {
+const computeNewParameters = (currentParameters: StackParameters, parameterName: string, value: unknown): StackParameters => {
     /* `IMAGE_TAG` depends on `IMAGE_REPOSITORY` so
      * the `IMAGE_TAG` value needs to be cleared when
      * `IMAGE_REPOSITORY` changes.
@@ -45,13 +43,16 @@ const computeNewParameters = (
      * interdependencies between optional and required parameters,
      * because it is called inside the setRequiredStackParameters
      * and setOptionalStackParameters callbacks. */
-    if (name === IMAGE_REPOSITORY && currentParameters[IMAGE_TAG]) {
-        currentParameters[IMAGE_TAG] = ''
+    if (parameterName === IMAGE_REPOSITORY && currentParameters[IMAGE_TAG]) {
+        currentParameters[IMAGE_TAG].value = ''
     }
 
     return {
         ...currentParameters,
-        [name]: value,
+        [parameterName]: {
+            name: currentParameters[parameterName].name,
+            value,
+        },
     }
 }
 
@@ -137,8 +138,8 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
         )
     }
 
-    const onInputChange = (parameter) => {
-        setStackParameters((currentParameters) => computeNewParameters(currentParameters, parameter))
+    const onInputChange = ({ parameterName, value }) => {
+        setStackParameters((currentParameters: StackParameters) => computeNewParameters(currentParameters, parameterName, value))
     }
 
     return (
@@ -163,12 +164,13 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                     <Divider />
                     <h4 className={styles.subheader}>Parameters</h4>
                     <div className={styles.container}>
-                        {Object.entries(stackParameters).map(([name, value]: any) => (
+                        {Object.entries(stackParameters).map(([parameterName, { value, name }]: any) => (
                             <ParameterField
                                 key={name}
                                 name={name}
+                                parameterName={parameterName}
                                 value={value}
-                                repository={getRepositoryValueForImageTag(name, stackParameters)}
+                                repository={getRepositoryValueForImageTag(parameterName, stackParameters)}
                                 onChange={onInputChange}
                                 required
                                 disabled={disabled}

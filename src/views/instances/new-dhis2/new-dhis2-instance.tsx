@@ -11,12 +11,12 @@ import styles from './styles.module.css'
 
 const convertValuesToPayload = (values: AnyObject) =>
     Object.entries(values).reduce<DeployInstanceRequest>(
-        (payload, [name, value]) => {
-            if (payload.hasOwnProperty(name)) {
+        (payload, [parameterName, value]) => {
+            if (payload.hasOwnProperty(parameterName)) {
                 // The `public` field needs to be a true boolean, not a true/false string
-                payload[name] = name === PUBLIC ? value === 'true' : value
+                payload[parameterName] = parameterName === PUBLIC ? value === 'true' : value
             } else {
-                payload.parameters.push({ name, value })
+                payload.parameters.push({ name: parameterName, value })
             }
             return payload
         },
