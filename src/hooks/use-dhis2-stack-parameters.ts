@@ -20,7 +20,7 @@ export const useDhis2StackParameters = (stackName: string) => {
                 .sort((a, b) => (a.priority < b.priority ? -1 : 1))
                 .reduce<SecondaryAndPrimaryParameters>(
                     (parameterGroups, parameter) => {
-                        if (isPrimary(parameter.parameterName)) {
+                        if (isPrimary(parameter.name)) {
                             parameterGroups.primaryParameters.push(parameter)
                         } else {
                             parameterGroups.secondaryParameters.push(parameter)

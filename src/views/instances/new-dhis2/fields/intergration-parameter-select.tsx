@@ -3,6 +3,7 @@ import { FC, useMemo } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
 import { mapStringToValueLabel } from './helpers'
+import { toTitleCase } from './helpers'
 
 type IntergrationParameterSelectProps = {
     name: string
@@ -40,7 +41,7 @@ export const IntergrationParameterSelect: FC<IntergrationParameterSelectProps> =
             loading={loading}
             error={error}
             name={name}
-            label={name}
+            label={toTitleCase(name)}
             component={SingleSelectFieldFF}
             filterable={options.length > 7}
             options={options}

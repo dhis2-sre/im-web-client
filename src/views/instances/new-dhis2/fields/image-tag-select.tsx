@@ -4,6 +4,7 @@ import { useAuthAxios } from '../../../../hooks'
 import { Field, useField, useForm } from 'react-final-form'
 import { IMAGE_TAG, IMAGE_REPOSITORY } from '../constants'
 import { mapStringToValueLabel } from './helpers'
+import { toTitleCase } from './helpers'
 
 export const ImageTagSelect: FC = () => {
     const form = useForm()
@@ -63,7 +64,7 @@ export const ImageTagSelect: FC = () => {
             loading={loading}
             error={error}
             name={IMAGE_TAG}
-            label={IMAGE_TAG}
+            label={toTitleCase(IMAGE_TAG)}
             component={SingleSelectFieldFF}
             filterable={optionsWithFallback.length > 7}
             options={optionsWithFallback}

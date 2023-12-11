@@ -7,6 +7,5 @@ export type StackParameter = {
     consumed?: boolean
     defaultValue?: string
     name?: string
-    parameterName?: string
     priority?: number
 }
