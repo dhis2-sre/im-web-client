@@ -5,6 +5,6 @@ import { OPTIONAL_FIELDS } from '../constants'
 
 export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)
 
-export const TextParameterInput = ({ name }: ParameterFieldProps) => (
-    <Field required={isRequired(name)} name={name} label={name} component={InputFieldFF} validate={isRequired(name) ? hasValue : undefined} />
+export const TextParameterInput = ({ name, parameterName }: ParameterFieldProps) => (
+    <Field required={isRequired(name)} name={parameterName} label={name} component={InputFieldFF} validate={isRequired(parameterName) ? hasValue : undefined} />
 )
