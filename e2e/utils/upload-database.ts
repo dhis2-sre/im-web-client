@@ -18,9 +18,8 @@ export const uploadTestDatabase = async (page) => {
         await page.getByRole('button', { name: 'Select database' }).click()
         const fileChooser = await fileChooserPromise;
         await fileChooser.setFiles(path.join(__dirname, `../fixtures/${dbName}${dbExtension}`));
-        await page.getByRole('textbox').fill(`${dbNamePrefix}${dbName}`);
+        await page.getByTestId('upload-database-name').getByRole('textbox').fill(`${dbNamePrefix}${dbName}`);
         await expect(page.getByText(`Selected database file: ${dbNamePrefix}${dbName}${dbExtension}`)).toBeVisible();
-
 
         await expect(page.getByTestId('dhis2-uicore-modalactions').getByRole('button', { name: 'Upload' })).toBeEnabled()
         await page.getByTestId('dhis2-uicore-modalactions').getByRole('button', { name: 'Upload' }).click()
