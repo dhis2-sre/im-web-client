@@ -1,6 +1,6 @@
 import { CheckboxField, InputField, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import cx from 'classnames'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useAuthAxios } from '../../../hooks'
 import styles from './parameter-field.module.css'
 import type { FC } from 'react'
@@ -51,24 +51,6 @@ const getAsyncParameterFieldRequestData = (key, repository) => {
     }
 }
 
-const getOptions = (parameterName: string, value, data) => {
-    if (!data) {
-        return value ? [{ value, label: value }] : []
-    }
-
-    if (parameterName === DATABASE_ID) {
-        /* For this field the API returns an object where the
-         * key is the ID and the value is the label */
-        return Object.entries(data).map(([value, label]) => ({
-            value,
-            label,
-        }))
-    }
-
-    // Normally the API returns an array of strings
-    return data.map((value) => ({ value, label: value }))
-}
-
 const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterName, onChange, value, disabled, repository, required }) => {
     const prevRepositoryRef = useRef(repository)
     const [{ data, error, loading }, refetch] = useAuthAxios({
@@ -76,6 +58,24 @@ const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterN
         method: 'POST',
         data: getAsyncParameterFieldRequestData(parameterName, repository),
     })
+    const options = useMemo(() => {
+        /* use fallback options either when the old options are invalid
+         * or the new/initial ones are being fetched */
+        if (!data || repository !== prevRepositoryRef.current || loading) {
+            return value ? [{ value, label: value }] : []
+        }
+        if (parameterName === DATABASE_ID) {
+            /* For this field the API returns an object where the
+             * key is the ID and the value is the label */
+            return Object.entries(data).map(([value, label]) => ({
+                value,
+                label,
+            }))
+        }
+
+        // Normally the API returns an array of strings
+        return data.map((value) => ({ value, label: value }))
+    }, [data, value, loading, parameterName, repository])
 
     useEffect(() => {
         if (repository !== prevRepositoryRef.current) {
@@ -96,7 +96,7 @@ const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterN
             error={!!error}
             validationText={error ? 'Could not load options' : undefined}
         >
-            {getOptions(parameterName, value, data).map(({ value, label }) => (
+            {options.map(({ value, label }) => (
                 <SingleSelectOption key={value} value={value} label={label} />
             ))}
         </SingleSelectField>
