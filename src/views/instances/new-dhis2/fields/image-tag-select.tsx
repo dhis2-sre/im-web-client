@@ -5,7 +5,7 @@ import { Field, useField, useForm } from 'react-final-form'
 import { IMAGE_TAG, IMAGE_REPOSITORY } from '../constants'
 import { mapStringToValueLabel } from './helpers'
 
-export const ImageTagSelect: FC<{ name: string }> = ({ name }) => {
+export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => {
     const form = useForm()
     const [options, setOptions] = useState([])
     const {
@@ -63,7 +63,7 @@ export const ImageTagSelect: FC<{ name: string }> = ({ name }) => {
             loading={loading}
             error={error}
             name={IMAGE_TAG}
-            label={name}
+            label={displayName}
             component={SingleSelectFieldFF}
             filterable={optionsWithFallback.length > 7}
             options={optionsWithFallback}

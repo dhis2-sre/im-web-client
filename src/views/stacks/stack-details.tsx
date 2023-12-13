@@ -42,8 +42,8 @@ export const StackDetails = () => {
                         ?.sort((a, b) => (a.priority < b.priority ? -1 : 1))
                         .map((parameter) => {
                             return (
-                                <DataTableRow key={parameter.name}>
-                                    <DataTableCell>{parameter.name}</DataTableCell>
+                                <DataTableRow key={parameter.displayName}>
+                                    <DataTableCell>{parameter.displayName}</DataTableCell>
                                     <DataTableCell>{parameter.defaultValue}</DataTableCell>
                                     <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
                                 </DataTableRow>

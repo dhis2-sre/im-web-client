@@ -20,7 +20,7 @@ export const DROPDOWN_PARAMETER_NAMES = new Set([DATABASE_ID, IMAGE_REPOSITORY, 
 export const CHECKBOX_PARAMETER_NAMES = new Set([INSTALL_REDIS, FLYWAY_MIGRATE_OUT_OF_ORDER, FLYWAY_REPAIR_BEFORE_MIGRATION])
 
 type ParameterFieldProps = {
-    name: string
+    displayName: string
     parameterName: string
     onChange: Function
     value: string
@@ -51,7 +51,7 @@ const getAsyncParameterFieldRequestData = (key, repository) => {
     }
 }
 
-const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterName, onChange, value, disabled, repository, required }) => {
+const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ displayName, parameterName, onChange, value, disabled, repository, required }) => {
     const prevRepositoryRef = useRef(repository)
     const [{ data, error, loading }, refetch] = useAuthAxios({
         url: '/integrations',
@@ -86,7 +86,7 @@ const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterN
 
     return (
         <SingleSelectField
-            label={name}
+            label={displayName}
             filterable={true}
             className={styles.field}
             disabled={disabled || loading}
@@ -103,11 +103,11 @@ const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterN
     )
 }
 
-export const ParameterField = ({ name, parameterName, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
+export const ParameterField = ({ displayName, parameterName, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
     if (DROPDOWN_PARAMETER_NAMES.has(parameterName)) {
         return (
             <AsyncParameterDropdownField
-                name={name}
+                displayName={displayName}
                 parameterName={parameterName}
                 onChange={onChange}
                 value={value}
@@ -121,7 +121,7 @@ export const ParameterField = ({ name, parameterName, onChange, value, disabled,
             <CheckboxField
                 className={cx(styles.field, styles.checkboxfield)}
                 name={parameterName}
-                label={name}
+                label={displayName}
                 value={value}
                 onChange={({ checked }) => onChange({ parameterName, value: checked ? 'true' : 'false' })}
                 required={required}
@@ -130,6 +130,6 @@ export const ParameterField = ({ name, parameterName, onChange, value, disabled,
             />
         )
     } else {
-        return <InputField className={styles.field} name={parameterName} label={name} value={value} onChange={onChange} required={required} disabled={disabled} />
+        return <InputField className={styles.field} name={parameterName} label={displayName} value={value} onChange={onChange} required={required} disabled={disabled} />
     }
 }
