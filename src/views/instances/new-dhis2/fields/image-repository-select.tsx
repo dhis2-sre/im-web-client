@@ -5,7 +5,7 @@ import { Field, useField } from 'react-final-form'
 import { IMAGE_REPOSITORY } from '../constants'
 import { mapStringToValueLabel } from './helpers'
 
-export const ImageRepositorySelect: FC = () => {
+export const ImageRepositorySelect: FC<{ name: string }> = ({ name }) => {
     const {
         meta: { initial: initialValue },
     } = useField(IMAGE_REPOSITORY, {
@@ -36,7 +36,7 @@ export const ImageRepositorySelect: FC = () => {
             loading={loading}
             error={error}
             name={IMAGE_REPOSITORY}
-            label={IMAGE_REPOSITORY}
+            label={name}
             component={SingleSelectFieldFF}
             options={options}
             validate={hasValue}

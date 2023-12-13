@@ -8,22 +8,23 @@ import { TextParameterInput } from './text-parameter-input'
 
 export type ParameterFieldProps = {
     name: string
+    parameterName: string
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ name }) => {
-    switch (name) {
+export const ParameterField: FC<ParameterFieldProps> = ({ name, parameterName }) => {
+    switch (parameterName) {
         case IMAGE_TAG:
-            return <ImageTagSelect />
+            return <ImageTagSelect name={name} />
         case IMAGE_REPOSITORY:
-            return <ImageRepositorySelect />
+            return <ImageRepositorySelect name={name} />
         case DATABASE_ID:
         case IMAGE_PULL_POLICY:
-            return <IntergrationParameterSelect name={name} />
+            return <IntergrationParameterSelect name={name} parameterName={parameterName} />
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
         case INSTALL_REDIS:
-            return <BooleanParameterCheckbox name={name} />
+            return <BooleanParameterCheckbox name={name} parameterName={parameterName} />
         default:
-            return <TextParameterInput name={name} />
+            return <TextParameterInput name={name} parameterName={parameterName} />
     }
 }

@@ -1,6 +1,6 @@
 import { CheckboxField, InputField, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import cx from 'classnames'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useAuthAxios } from '../../../hooks'
 import styles from './parameter-field.module.css'
 import type { FC } from 'react'
@@ -21,6 +21,7 @@ export const CHECKBOX_PARAMETER_NAMES = new Set([INSTALL_REDIS, FLYWAY_MIGRATE_O
 
 type ParameterFieldProps = {
     name: string
+    parameterName: string
     onChange: Function
     value: string
     disabled?: boolean
@@ -50,31 +51,31 @@ const getAsyncParameterFieldRequestData = (key, repository) => {
     }
 }
 
-const getOptions = (name: string, value, data) => {
-    if (!data) {
-        return value ? [{ value, label: value }] : []
-    }
-
-    if (name === DATABASE_ID) {
-        /* For this field the API returns an object where the
-         * key is the ID and the value is the label */
-        return Object.entries(data).map(([value, label]) => ({
-            value,
-            label,
-        }))
-    }
-
-    // Normally the API returns an array of strings
-    return data.map((value) => ({ value, label: value }))
-}
-
-const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, onChange, value, disabled, repository, required }) => {
+const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, parameterName, onChange, value, disabled, repository, required }) => {
     const prevRepositoryRef = useRef(repository)
     const [{ data, error, loading }, refetch] = useAuthAxios({
         url: '/integrations',
         method: 'POST',
-        data: getAsyncParameterFieldRequestData(name, repository),
+        data: getAsyncParameterFieldRequestData(parameterName, repository),
     })
+    const options = useMemo(() => {
+        /* use fallback options either when the old options are invalid
+         * or the new/initial ones are being fetched */
+        if (!data || repository !== prevRepositoryRef.current || loading) {
+            return value ? [{ value, label: value }] : []
+        }
+        if (parameterName === DATABASE_ID) {
+            /* For this field the API returns an object where the
+             * key is the ID and the value is the label */
+            return Object.entries(data).map(([value, label]) => ({
+                value,
+                label,
+            }))
+        }
+
+        // Normally the API returns an array of strings
+        return data.map((value) => ({ value, label: value }))
+    }, [data, value, loading, parameterName, repository])
 
     useEffect(() => {
         if (repository !== prevRepositoryRef.current) {
@@ -91,34 +92,44 @@ const AsyncParameterDropdownField: FC<ParameterFieldProps> = ({ name, onChange, 
             disabled={disabled || loading}
             selected={value}
             required={required}
-            onChange={({ selected: value }) => onChange({ name, value })}
+            onChange={({ selected: value }) => onChange({ parameterName, value })}
             error={!!error}
             validationText={error ? 'Could not load options' : undefined}
         >
-            {getOptions(name, value, data).map(({ value, label }) => (
+            {options.map(({ value, label }) => (
                 <SingleSelectOption key={value} value={value} label={label} />
             ))}
         </SingleSelectField>
     )
 }
 
-export const ParameterField = ({ name, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
-    if (DROPDOWN_PARAMETER_NAMES.has(name)) {
-        return <AsyncParameterDropdownField name={name} onChange={onChange} value={value} disabled={disabled} required={required} repository={repository} />
-    } else if (CHECKBOX_PARAMETER_NAMES.has(name)) {
+export const ParameterField = ({ name, parameterName, onChange, value, disabled, repository, required }: ParameterFieldProps) => {
+    if (DROPDOWN_PARAMETER_NAMES.has(parameterName)) {
+        return (
+            <AsyncParameterDropdownField
+                name={name}
+                parameterName={parameterName}
+                onChange={onChange}
+                value={value}
+                disabled={disabled}
+                required={required}
+                repository={repository}
+            />
+        )
+    } else if (CHECKBOX_PARAMETER_NAMES.has(parameterName)) {
         return (
             <CheckboxField
                 className={cx(styles.field, styles.checkboxfield)}
-                name={name}
+                name={parameterName}
                 label={name}
                 value={value}
-                onChange={({ checked }) => onChange({ name, value: checked ? 'true' : 'false' })}
+                onChange={({ checked }) => onChange({ parameterName, value: checked ? 'true' : 'false' })}
                 required={required}
                 checked={value === 'true'}
                 disabled={disabled}
             />
         )
     } else {
-        return <InputField className={styles.field} name={name} label={name} value={value} onChange={onChange} required={required} disabled={disabled} />
+        return <InputField className={styles.field} name={parameterName} label={name} value={value} onChange={onChange} required={required} disabled={disabled} />
     }
 }
