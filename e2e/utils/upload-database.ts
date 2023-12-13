@@ -8,9 +8,11 @@ const dbExtension = '.sql.gz'
 export const uploadTestDatabase = async (page) => {
     await page.getByRole('link', { name: 'Databases' }).click()
     await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'whoami' })).toBeVisible()
+    await page.waitForLoadState('domcontentloaded')
 
-    if (!await page.getByRole('cell', { name: `${dbNamePrefix}${dbName}${dbExtension}` }).isVisible()) {
+    const testDatabaseIsVisible = await page.getByRole('cell', { name: `${dbNamePrefix}${dbName}${dbExtension}` }).isVisible()
+
+    if (!testDatabaseIsVisible) {
         await page.getByRole('button', { name: 'Upload database' }).click()
 
         await expect(page.getByRole('button', { name: 'Select database' })).toBeVisible()
