@@ -30,7 +30,6 @@ type ParameterFieldProps = {
 }
 
 const getAsyncParameterFieldRequestData = (key, repository) => {
-    console.log(key, repository)
     switch (key) {
         case IMAGE_TAG:
             return {
