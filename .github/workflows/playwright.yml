@@ -31,8 +31,8 @@ jobs:
                   CI: true
                   API_URL: ${{ env.TARGET_URL }}
                   REACT_APP_API_URL: ${{ env.TARGET_URL }}
-                  IM_ADMIN_USER: ${{ secrets.IM_ADMIN_USER }}
-                  IM_ADMIN_PASSWORD: ${{ secrets.IM_ADMIN_PASSWORD }}
+                  USER_EMAIL: ${{ secrets.DEFAULT_USER_EMAIL }}
+                  USER_PASSWORD: ${{ secrets.DEFAULT_USER_PASSWORD }}
             - uses: actions/upload-artifact@v3
               if: always()
               with:
