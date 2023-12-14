@@ -14,7 +14,6 @@ test.describe('new instance', () => {
         test.setTimeout(10 * 60 * 1000) // 10 minutes
 
         await page.getByRole('link', { name: 'Instances' }).click()
-
         await page.getByRole('button', { name: 'New DHIS2 instance' }).click()
 
         await expect(page.getByRole('group', { name: 'Basic information' })).toBeVisible()
@@ -34,19 +33,25 @@ test.describe('new instance', () => {
         await expect(page.getByRole('cell', { name: randomName })).toBeVisible()
 
         // TODO is there a better way to make sure instance is Running?
-        const newInstanceRow = page.locator(`//table[@data-test='dhis2-uicore-datatable']//tr[contains(td[2], '${randomName}')]`);
+        const newInstanceRow = page.locator(`//table[@data-test='dhis2-uicore-datatable']//tr[contains(td[2], '${randomName}')]`)
 
         let status: string
 
         do {
             await expect(newInstanceRow.locator('td:first-child')).toHaveText(/^[A-Za-z]+$/)
             status = await newInstanceRow.locator('td:first-child').textContent()
-            console.log('status')
-            console.log(status)
             await page.waitForTimeout(5000)
             await page.reload()
         } while (status !== 'Running')
 
         await expect(newInstanceRow.locator('td:first-child')).toContainText('Running')
+
+        // TODO maybe do this with an API request instead of using the UI.
+        await newInstanceRow.getByTestId('instances-list-menu-button').click()
+        await page.locator('a').filter({ hasText: 'Delete' }).click()
+        await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
+        await page.getByRole('button', {name: 'Confirm'}).click()
+
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible()
     })
 })

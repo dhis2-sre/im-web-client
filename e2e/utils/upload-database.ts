@@ -8,7 +8,11 @@ const dbExtension = '.sql.gz'
 export const uploadTestDatabase = async (page) => {
     await page.getByRole('link', { name: 'Databases' }).click()
     await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
-    await page.waitForLoadState('domcontentloaded')
+    // TODO find a better way to make sure the page is loaded and if there was an test db uploaded it's shown.
+    // The problem is that if there are no databases uploaded, only the "Upload database" button is displayed
+    // and it loads before the databases list table, so it's unreliable to just wait for the button to be visible.
+    // page.waitForLoadState() with any of the state options doesn't work.
+    await page.waitForTimeout(3000)
 
     const testDatabaseIsVisible = await page.getByRole('cell', { name: `${dbNamePrefix}${dbName}${dbExtension}` }).isVisible()
 
