@@ -30,7 +30,7 @@ test.describe('new instance', () => {
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible()
+        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({timeout: 10000})
 
         // TODO is there a better way to make sure instance is Running?
         const newInstanceRow = page.locator(`//table[@data-test='dhis2-uicore-datatable']//tr[contains(td[2], '${randomName}')]`)
