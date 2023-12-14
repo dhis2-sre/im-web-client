@@ -19,13 +19,13 @@ type StackParameters = {
 
 type ParameterRecord = Record<string, { value: unknown; name: string }>
 
-const toArray = (object: ParameterRecord) => Object.entries(object).map(([parameterName, value]) => ({ name: parameterName, value: value.value }))
+const toArray = (object: ParameterRecord) => Object.entries(object).map(([parameterName, value]) => ({ displayName: parameterName, value: value.value }))
 
 const toKeyedObject = (array): StackParameter =>
-    array.reduce((acc, { name, parameterName, defaultValue: value }) => {
+    array.reduce((acc, { displayName, parameterName, defaultValue: value }) => {
         acc[parameterName] = {
             value: value ?? '',
-            name,
+            displayName,
         }
         return acc
     }, {})
@@ -50,7 +50,7 @@ const computeNewParameters = (currentParameters: StackParameters, parameterName:
     return {
         ...currentParameters,
         [parameterName]: {
-            name: currentParameters[parameterName].name,
+            displayName: currentParameters[parameterName].displayName,
             value,
         },
     }
@@ -164,10 +164,10 @@ export const StackConfigurator = forwardRef(function StackConfigurator(
                     <Divider />
                     <h4 className={styles.subheader}>Parameters</h4>
                     <div className={styles.container}>
-                        {Object.entries(stackParameters).map(([parameterName, { value, name }]: any) => (
+                        {Object.entries(stackParameters).map(([parameterName, { value, displayName }]: any) => (
                             <ParameterField
-                                key={name}
-                                name={name}
+                                key={displayName}
+                                displayName={displayName}
                                 parameterName={parameterName}
                                 value={value}
                                 repository={getRepositoryValueForImageTag(parameterName, stackParameters)}

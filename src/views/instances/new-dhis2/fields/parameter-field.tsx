@@ -7,24 +7,24 @@ import { BooleanParameterCheckbox } from './boolean-parameter-checkbox'
 import { TextParameterInput } from './text-parameter-input'
 
 export type ParameterFieldProps = {
-    name: string
+    displayName: string
     parameterName: string
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ name, parameterName }) => {
+export const ParameterField: FC<ParameterFieldProps> = ({ displayName, parameterName }) => {
     switch (parameterName) {
         case IMAGE_TAG:
-            return <ImageTagSelect name={name} />
+            return <ImageTagSelect displayName={displayName} />
         case IMAGE_REPOSITORY:
-            return <ImageRepositorySelect name={name} />
+            return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
         case IMAGE_PULL_POLICY:
-            return <IntergrationParameterSelect name={name} parameterName={parameterName} />
+            return <IntergrationParameterSelect displayName={displayName} parameterName={parameterName} />
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
         case INSTALL_REDIS:
-            return <BooleanParameterCheckbox name={name} parameterName={parameterName} />
+            return <BooleanParameterCheckbox displayName={displayName} parameterName={parameterName} />
         default:
-            return <TextParameterInput name={name} parameterName={parameterName} />
+            return <TextParameterInput displayName={displayName} parameterName={parameterName} />
     }
 }

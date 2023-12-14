@@ -5,7 +5,7 @@ import { Field, useField } from 'react-final-form'
 import { mapStringToValueLabel } from './helpers'
 import { ParameterFieldProps } from './parameter-field'
 
-export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ name, parameterName }) => {
+export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayName, parameterName }) => {
     const {
         meta: { initial: initialValue },
     } = useField(parameterName, {
@@ -37,7 +37,7 @@ export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ name, par
             loading={loading}
             error={error}
             name={parameterName}
-            label={name}
+            label={displayName}
             component={SingleSelectFieldFF}
             filterable={options.length > 7}
             options={options}
