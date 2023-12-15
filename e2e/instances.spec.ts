@@ -24,7 +24,6 @@ test.describe('new instance', () => {
         await page.getByRole('textbox', { name: 'Name'}).fill(randomName)
         await page.getByRole('textbox', { name: 'Description'}).fill('This is an e2e test instance.')
 
-        // TODO this needs a better locator
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
         await page.getByText('whoami/test/empty-db.sql.gz').click()
 
@@ -46,7 +45,6 @@ test.describe('new instance', () => {
 
         await expect(newInstanceRow.locator('td:first-child')).toContainText('Running')
 
-        // TODO maybe do this with an API request instead of using the UI.
         await newInstanceRow.getByTestId('instances-list-menu-button').click()
         await page.locator('a').filter({ hasText: 'Delete' }).click()
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
