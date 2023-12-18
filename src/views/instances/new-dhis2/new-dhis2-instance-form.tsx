@@ -28,7 +28,9 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, submitting, p
             <PublicCheckbox />
         </fieldset>
         <hr className={styles.hr} />
-        <ParameterFieldset />
+        <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
+        <ParameterFieldset stackId="dhis2-db" displayName="Database" />
+        <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
         <ButtonStrip>
             <Button primary disabled={submitting || pristine || invalid} loading={submitting} type="submit">
                 Create instance

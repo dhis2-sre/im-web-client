@@ -58,3 +58,9 @@
     cursor: pointer;
     user-select: none;
 }
+
+.legend .optionalStackCheckbox :global(label) {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 23px;
+}

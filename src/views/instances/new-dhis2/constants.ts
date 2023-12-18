@@ -9,3 +9,9 @@ export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const JAVA_OPTS = 'JAVA_OPTS'
 export const OPTIONAL_FIELDS = new Set([JAVA_OPTS])
 export const PUBLIC = 'public'
+
+export const STACK_PRIMARY_PARAMETERS = new Map([
+    ['dhis2-core', new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY'])],
+    ['dhis2-db', new Set(['DATABASE_ID'])],
+    ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'])],
+])

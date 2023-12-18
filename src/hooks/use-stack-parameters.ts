@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Stack, StackParameter } from '../types'
 import { useAuthAxios } from './use-auth-axios'
+import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]
@@ -8,10 +9,9 @@ type SecondaryAndPrimaryParameters = {
 }
 type InitialValues = { [key: string]: string }
 
-const PRIMARY_PARAMETERS = new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY', 'DATABASE_ID'])
-const isPrimary = (parameterName: string): boolean => PRIMARY_PARAMETERS.has(parameterName)
+const isPrimary = (stackName: string, parameterName: string): boolean => STACK_PRIMARY_PARAMETERS.get(stackName).has(parameterName)
 
-export const useDhis2StackParameters = (stackName: string) => {
+export const useStackParameters = (stackName: string) => {
     const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
     const { primaryParameters, secondaryParameters } = useMemo(
         () =>
@@ -20,7 +20,7 @@ export const useDhis2StackParameters = (stackName: string) => {
                 .sort((a, b) => (a.priority < b.priority ? -1 : 1))
                 .reduce<SecondaryAndPrimaryParameters>(
                     (parameterGroups, parameter) => {
-                        if (isPrimary(parameter.parameterName)) {
+                        if (isPrimary(stackName, parameter.parameterName)) {
                             parameterGroups.primaryParameters.push(parameter)
                         } else {
                             parameterGroups.secondaryParameters.push(parameter)
@@ -29,7 +29,7 @@ export const useDhis2StackParameters = (stackName: string) => {
                     },
                     { primaryParameters: [], secondaryParameters: [] }
                 ),
-        [stack]
+        [stackName, stack]
     )
     const initialParameterValues: InitialValues = useMemo(
         () =>
