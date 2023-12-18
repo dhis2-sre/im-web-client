@@ -1,14 +1,18 @@
 import { Center, CircularLoader, CheckboxFieldFF, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
 import { Field, useField, useForm } from 'react-final-form'
-import { useStackParameters } from '../../../hooks'
+import { useDhis2StackParameters } from '../../../hooks'
 import { FC, useEffect, useMemo } from 'react'
 import { ParameterField } from './fields/parameter-field'
 import styles from './styles.module.css'
 
-export const ParameterFieldset: FC<{ stackId: string; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
+export type Dhis2StackId = 'dhis2-core' | 'dhis2-db' | 'pgadmin'
+export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_USERNAME' | 'PGADMIN_PASSWORD'
+export type Dhis2StackPrimaryParameters = Map<Dhis2StackId, Set<Dhis2PrimaryField>>
+
+export const ParameterFieldset: FC<{ stackId: Dhis2StackId; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
     const form = useForm()
-    const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useStackParameters(stackId)
+    const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useDhis2StackParameters(stackId)
     const includeStackFieldName = `include_${stackId}`
     const {
         input: { value: includeStackFieldValue },
@@ -18,15 +22,15 @@ export const ParameterFieldset: FC<{ stackId: string; displayName: string; optio
     const shouldShowParameterFields = !optional || includeStackFieldValue
     const areParameterValuesInitialized = useMemo(() => {
         const { values } = form.getState()
-        const valuesLookup = new Set(Object.keys(values))
+        const valuesLookup = new Set(Object.keys(values[stackId] ?? {}))
         return Object.keys(initialParameterValues).every((key) => valuesLookup.has(key))
-    }, [form, initialParameterValues])
+    }, [form, stackId, initialParameterValues])
 
     useEffect(() => {
         if (initialParameterValues && !areParameterValuesInitialized) {
-            form.initialize((values) => ({ ...values, ...initialParameterValues }))
+            form.initialize((values) => ({ ...values, [stackId]: initialParameterValues }))
         }
-    }, [form, initialParameterValues, areParameterValuesInitialized])
+    }, [form, stackId, initialParameterValues, areParameterValuesInitialized])
 
     return (
         <>
@@ -58,7 +62,9 @@ export const ParameterFieldset: FC<{ stackId: string; displayName: string; optio
                         )}
                     </legend>
                     {shouldShowParameterFields &&
-                        primaryParameters.map(({ displayName, parameterName }) => <ParameterField key={displayName} displayName={displayName} parameterName={parameterName} />)}
+                        primaryParameters.map(({ displayName, parameterName }) => (
+                            <ParameterField key={`${stackId}.${parameterName}`} parameterName={`${stackId}.${parameterName}`} displayName={displayName} />
+                        ))}
                 </fieldset>
             )}
 
@@ -70,7 +76,7 @@ export const ParameterFieldset: FC<{ stackId: string; displayName: string; optio
                             !loading &&
                             secondaryParameters &&
                             secondaryParameters.map(({ displayName, parameterName }) => (
-                                <ParameterField key={displayName} displayName={displayName} parameterName={parameterName} />
+                                <ParameterField key={`${stackId}.${parameterName}`} parameterName={`${stackId}.${parameterName}`} displayName={displayName} />
                             ))}
                     </fieldset>
                 </details>

@@ -1,3 +1,5 @@
+import { Dhis2StackPrimaryParameters } from './parameter-fieldset'
+
 export const DHIS2_STACK_ID = 'dhis2'
 export const DATABASE_ID = 'DATABASE_ID'
 export const FLYWAY_MIGRATE_OUT_OF_ORDER = 'FLYWAY_MIGRATE_OUT_OF_ORDER'
@@ -14,4 +16,4 @@ export const STACK_PRIMARY_PARAMETERS = new Map([
     ['dhis2-core', new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY'])],
     ['dhis2-db', new Set(['DATABASE_ID'])],
     ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'])],
-])
+]) as Dhis2StackPrimaryParameters
