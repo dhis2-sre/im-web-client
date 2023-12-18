@@ -63,7 +63,7 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackId; displayName: string;
                     </legend>
                     {shouldShowParameterFields &&
                         primaryParameters.map(({ displayName, parameterName }) => (
-                            <ParameterField key={`${stackId}.${parameterName}`} parameterName={`${stackId}.${parameterName}`} displayName={displayName} />
+                            <ParameterField stackId={stackId} key={parameterName} parameterName={parameterName} displayName={displayName} />
                         ))}
                 </fieldset>
             )}
@@ -76,7 +76,7 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackId; displayName: string;
                             !loading &&
                             secondaryParameters &&
                             secondaryParameters.map(({ displayName, parameterName }) => (
-                                <ParameterField key={`${stackId}.${parameterName}`} parameterName={`${stackId}.${parameterName}`} displayName={displayName} />
+                                <ParameterField stackId={stackId} key={parameterName} parameterName={parameterName} displayName={displayName} />
                             ))}
                     </fieldset>
                 </details>

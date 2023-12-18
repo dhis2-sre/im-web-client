@@ -35,7 +35,6 @@ export const useDhis2StackParameters = (stackName: Dhis2StackId) => {
     const initialParameterValues: InitialValues = useMemo(
         () =>
             (stack?.parameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
-                console.log(parameter)
                 valuesAccumulator[parameter.parameterName] = parameter.defaultValue
                 return valuesAccumulator
             }, {}),

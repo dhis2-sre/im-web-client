@@ -2,20 +2,24 @@ import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField, useForm } from 'react-final-form'
-import { IMAGE_TAG, IMAGE_REPOSITORY } from '../constants'
+import { IMAGE_TAG } from '../constants'
 import { mapStringToValueLabel } from './helpers'
+import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select'
+
+const IMAGE_TAG_FIELD_NAME = `dhis2-core.${IMAGE_TAG}`
 
 export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => {
     const form = useForm()
     const [options, setOptions] = useState([])
+
     const {
         meta: { initial: initialValue },
-    } = useField(IMAGE_TAG, {
+    } = useField(IMAGE_TAG_FIELD_NAME, {
         subscription: { initial: true },
     })
     const {
         input: { value: repository },
-    } = useField(IMAGE_REPOSITORY, {
+    } = useField(IMAGE_REPOSITORY_FIELD_NAME, {
         subscription: { value: true },
     })
     const [{ data, error, loading }, refetch] = useAuthAxios(
@@ -35,7 +39,7 @@ export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => 
              * won't be available under the new repository,
              * the selection now needs to be cleared. */
             if (loading) {
-                form.change(IMAGE_TAG, undefined)
+                form.change(IMAGE_TAG_FIELD_NAME, undefined)
             }
             setOptions(data.map(mapStringToValueLabel))
         }
@@ -62,7 +66,7 @@ export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => 
             required
             loading={loading}
             error={error}
-            name={IMAGE_TAG}
+            name={IMAGE_TAG_FIELD_NAME}
             label={displayName}
             component={SingleSelectFieldFF}
             filterable={optionsWithFallback.length > 7}

@@ -5,13 +5,15 @@ import { ImageRepositorySelect } from './image-repository-select'
 import { ImageTagSelect } from './image-tag-select'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox'
 import { TextParameterInput } from './text-parameter-input'
+import { Dhis2StackId } from '../parameter-fieldset'
 
 export type ParameterFieldProps = {
     displayName: string
     parameterName: string
+    stackId: Dhis2StackId
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ displayName, parameterName }) => {
+export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {
     switch (parameterName) {
         case IMAGE_TAG:
             return <ImageTagSelect displayName={displayName} />
@@ -19,12 +21,12 @@ export const ParameterField: FC<ParameterFieldProps> = ({ displayName, parameter
             return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
         case IMAGE_PULL_POLICY:
-            return <IntergrationParameterSelect displayName={displayName} parameterName={parameterName} />
+            return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
         case INSTALL_REDIS:
-            return <BooleanParameterCheckbox displayName={displayName} parameterName={parameterName} />
+            return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         default:
-            return <TextParameterInput displayName={displayName} parameterName={parameterName} />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} />
     }
 }
