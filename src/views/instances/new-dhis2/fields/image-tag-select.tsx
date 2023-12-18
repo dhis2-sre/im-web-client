@@ -40,6 +40,10 @@ export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => 
              * the selection now needs to be cleared. */
             if (loading) {
                 form.change(IMAGE_TAG_FIELD_NAME, undefined)
+                /* Also blur so the field validation kicks in
+                 * and user's attention is caught by the error
+                 * message */
+                form.blur(IMAGE_TAG_FIELD_NAME)
             }
             setOptions(data.map(mapStringToValueLabel))
         }
