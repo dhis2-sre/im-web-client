@@ -4,8 +4,8 @@ import { AnyObject } from 'final-form'
 import { DescriptionTextarea } from './fields/description-textarea'
 import { GroupSelect } from './fields/group-select'
 import { NameInput } from './fields/name-input'
-// import { PublicCheckbox } from './fields/public-checkbox'
-// import { TtlSelect } from './fields/ttl-select'
+import { PublicCheckbox } from './fields/public-checkbox'
+import { TtlSelect } from './fields/ttl-select'
 import { ParameterFieldset } from './parameter-fieldset'
 import styles from './styles.module.css'
 import { useFormState } from 'react-final-form'
@@ -32,10 +32,9 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
                 <legend className={styles.legend}>Basic information</legend>
                 <NameInput />
                 <DescriptionTextarea />
+                <TtlSelect />
                 <GroupSelect />
-                {/* TODO: add these fields once they API support it */}
-                {/* <TtlSelect /> */}
-                {/* <PublicCheckbox /> */}
+                <PublicCheckbox />
             </fieldset>
             <hr className={styles.hr} />
             <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />

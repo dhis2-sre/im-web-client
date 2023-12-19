@@ -35,9 +35,8 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                     name: values.name,
                     group: values.groupName,
                     description: values.description,
-                    // TODO: add these fields once they API support it
-                    // ttl: values.ttl,
-                    // public: values.public,
+                    ttl: values.ttl,
+                    public: values.public,
                 }
                 const { data } = await executePost({ data: payload })
                 return data.id

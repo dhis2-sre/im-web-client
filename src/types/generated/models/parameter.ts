@@ -4,5 +4,5 @@
 /* eslint-disable */
 
 export type parameter = {
-    Value?: string
+    value?: string
 }
