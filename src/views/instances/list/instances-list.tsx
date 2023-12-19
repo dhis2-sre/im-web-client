@@ -68,7 +68,7 @@ export const InstancesList: FC = () => {
                         return (
                             <>
                                 <DataTableRow>
-                                    <DataTableCell colspan="9">
+                                    <DataTableCell staticStyle colspan="9">
                                         <h2 className={styles.groupName}>{group.name}</h2>
                                     </DataTableCell>
                                 </DataTableRow>
@@ -87,31 +87,31 @@ export const InstancesList: FC = () => {
                                 {group.deployments?.map((deployment) => {
                                     return (
                                         <DataTableRow key={deployment.id}>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 <StatusLabel instanceId={deployment.id} />
                                             </DataTableCell>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 <span className={styles.verticallyAlignedCellContent}>
                                                     {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
                                                 </span>
                                             </DataTableCell>
-                                            <DataTableCell>{deployment.description}</DataTableCell>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>{deployment.description}</DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 {deployment.instances?.map(({ stackName }) => (
                                                     <Tag className={styles.stackNameTag}>{stackName}</Tag>
                                                 ))}
                                             </DataTableCell>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 <Moment date={deployment.createdAt} fromNow />
                                             </DataTableCell>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 <Moment date={deployment.updatedAt} fromNow />
                                             </DataTableCell>
-                                            <DataTableCell>{deployment.user.email}</DataTableCell>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>{deployment.user.email}</DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 <Moment date={calculateExpiration(deployment)} fromNow />
                                             </DataTableCell>
-                                            <DataTableCell>
+                                            <DataTableCell staticStyle>
                                                 <ButtonStrip>
                                                     <OpenButton hostname={group.hostname} instanceName={deployment.name} />
                                                     <ActionsDropdownMenu id={deployment.id} name={deployment.name} refreshList={refetch} />
