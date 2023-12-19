@@ -50,13 +50,7 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackId; displayName: string;
                 <fieldset className={cx(styles.fieldset, styles.parameters, styles.primary)}>
                     <legend className={styles.legend}>
                         {optional ? (
-                            <Field
-                                type="checkbox"
-                                name={includeStackFieldName}
-                                label={`Include ${displayName}`}
-                                component={CheckboxFieldFF}
-                                className={styles.optionalStackCheckbox}
-                            />
+                            <Field type="checkbox" name={includeStackFieldName} label={displayName} component={CheckboxFieldFF} className={styles.optionalStackCheckbox} />
                         ) : (
                             displayName
                         )}

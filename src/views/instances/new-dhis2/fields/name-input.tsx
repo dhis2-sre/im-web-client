@@ -35,5 +35,5 @@ export const validateDnsLabel = (value = '') => {
 }
 
 export const NameInput = () => (
-    <Field helpText="Also used in the instance URL." className={styles.field} required name="name" label="Name" component={InputFieldFF} validate={validateDnsLabel} />
+    <Field helpText="Shown in the instance URL" className={styles.field} required name="name" label="Name" component={InputFieldFF} validate={validateDnsLabel} />
 )
