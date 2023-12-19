@@ -1,4 +1,4 @@
-import { SingleSelectField, SingleSelectOption, hasValue } from '@dhis2/ui'
+import { SingleSelectField, hasValue } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useMemo } from 'react'
 import { useAuthAxios } from '../../../../hooks'
