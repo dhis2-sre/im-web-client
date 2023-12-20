@@ -35,10 +35,9 @@ export const InstancesList: FC = () => {
         <div className={styles.wrapper}>
             <div className={styles.heading}>
                 <h1>All instances</h1>
-                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new-dhis2')}>
-                    New DHIS2 instance
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
+                    New instance
                 </Button>
-                <NavLink to="/instances/new">New custom instance</NavLink>
             </div>
 
             {error && (

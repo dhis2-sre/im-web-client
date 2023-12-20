@@ -14,7 +14,7 @@ export const Layout: FC = () => {
         (event) => {
             event.stopPropagation()
             event.preventDefault()
-            navigate('/instances/new-dhis2')
+            navigate('/instances/new')
         },
         [navigate]
     )
