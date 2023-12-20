@@ -23,19 +23,11 @@ import { StatusLabel } from './status-label'
 import styles from './instances-list.module.css'
 import { ActionsDropdownMenu } from './actions-dropdown-menu'
 
-type CustomizedDeployment = Deployment & {
-    public: boolean
-    ttl: number
-}
-interface CustomizedGroupsWithDeployments extends GroupsWithDeployments {
-    deployments?: Array<CustomizedDeployment>
-}
-
-const calculateExpiration = (deployment: CustomizedDeployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000
+const calculateExpiration = (deployment: Deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
-    const [{ data, error, loading }, refetch] = useAuthAxios<CustomizedGroupsWithDeployments[]>('/deployments', {
+    const [{ data, error, loading }, refetch] = useAuthAxios<GroupsWithDeployments[]>('/deployments', {
         useCache: false,
     })
 
