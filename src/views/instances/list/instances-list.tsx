@@ -15,7 +15,7 @@ import {
 } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
 import { GroupsWithInstances, Instance } from '../../../types'
 import { OpenButton } from './open-button'
