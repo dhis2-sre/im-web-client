@@ -1,0 +1,19 @@
+.wrapper {
+    width: 100%;
+    min-height: calc(100% - var(--spacers-dp16));
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--spacers-dp16);
+}
+.loaderWrap {
+    flex-grow: 1;
+}
+.cardWrap {
+    flex-grow: 0;
+    margin-bottom: var(--spacers-dp16);
+}
+.cardWrap > .card {
+    padding: var(--spacers-dp16);
+    width: auto;
+}

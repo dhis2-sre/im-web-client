@@ -1,23 +1,30 @@
 import { Button, IconMore24, Menu, Popover } from '@dhis2/ui'
 import { RefetchFunction } from 'axios-hooks'
 import { useCallback, useRef, useState } from 'react'
-import { GroupsWithInstances, Instance } from '../../../types'
+import { Deployment } from '../../../types'
 import { DeleteMenuItem } from './delete-menu-item'
 import { LogMenuItem } from './log-menu-item'
 import { ResetMenuItem } from './reset-menu-item'
 import { RestartMenuItem } from './restart-menu-item'
 import { SaveAsMenuItem } from './save-as-menu-item'
+import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
 
-type ActionsDropdownMenuProps = Pick<Instance, 'id' | 'name'> & { refreshList: RefetchFunction<any, GroupsWithInstances[]> }
-type OnActionCompletFn = (doListRefresh?: boolean) => void
-export type AsyncActionProps = {
+type ActionsDropdownMenuProps = {
+    deploymentId: number
     instanceId: number
-    instanceName: string
+    stackName: Dhis2StackName
+    refetch: RefetchFunction<any, Deployment>
+}
+type OnActionCompletFn = (shouldRefetch?: boolean) => void
+export type AsyncActionProps = {
+    deploymentId?: number
+    instanceId: number
+    stackName: string
     onStart: () => void
     onComplete: OnActionCompletFn
 }
 
-export const ActionsDropdownMenu = ({ id, name, refreshList }: ActionsDropdownMenuProps) => {
+export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refetch }: ActionsDropdownMenuProps) => {
     const anchor = useRef()
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -26,13 +33,13 @@ export const ActionsDropdownMenu = ({ id, name, refreshList }: ActionsDropdownMe
         setLoading(true)
     }, [])
     const onComplete: OnActionCompletFn = useCallback(
-        (doListRefresh = true) => {
+        (shouldRefetch) => {
             setLoading(false)
-            if (doListRefresh) {
-                refreshList()
+            if (shouldRefetch) {
+                refetch()
             }
         },
-        [refreshList]
+        [refetch]
     )
     const togglePopover = useCallback(() => {
         setOpen((currentOpen) => !currentOpen)
@@ -46,11 +53,11 @@ export const ActionsDropdownMenu = ({ id, name, refreshList }: ActionsDropdownMe
             {open && (
                 <Popover onClickOutside={togglePopover} reference={anchor} placement="bottom-start">
                     <Menu>
-                        <LogMenuItem instanceId={id} instanceName={name} />
-                        <SaveAsMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
-                        <RestartMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
-                        <ResetMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
-                        <DeleteMenuItem instanceId={id} instanceName={name} onComplete={onComplete} onStart={onStart} />
+                        <LogMenuItem instanceId={instanceId} stackName={stackName} />
+                        {stackName === 'dhis2-db' && <SaveAsMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />}
+                        <RestartMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />
+                        <ResetMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />
+                        <DeleteMenuItem deploymentId={deploymentId} instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />
                     </Menu>
                 </Popover>
             )}

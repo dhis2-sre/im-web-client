@@ -4,13 +4,17 @@ import type { FC } from 'react'
 
 type OpenButtonProps = {
     hostname: string
-    instanceName: string
+    name: string
 }
 
-export const OpenButton: FC<OpenButtonProps> = ({ hostname, instanceName }) => {
-    const onClick = useCallback(() => {
-        window.open(`https://${hostname}/${instanceName}`)
-    }, [hostname, instanceName])
+export const OpenButton: FC<OpenButtonProps> = ({ hostname, name }) => {
+    const onClick = useCallback(
+        (_, event) => {
+            event.stopPropagation()
+            window.open(`https://${hostname}/${name}`)
+        },
+        [hostname, name]
+    )
 
     return (
         <Button small secondary icon={<IconLaunch16 />} onClick={onClick}>

@@ -15,6 +15,8 @@ export type Deployment = {
     id?: number
     instances?: Array<DeploymentInstance>
     name?: string
+    public?: boolean
+    ttl?: number
     updatedAt?: string
     user?: User
     userId?: number

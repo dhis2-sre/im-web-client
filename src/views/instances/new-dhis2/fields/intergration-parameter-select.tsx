@@ -2,13 +2,14 @@ import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useMemo } from 'react'
 import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
-import { mapStringToValueLabel } from './helpers'
+import { mapStringToValueLabel } from './map-string-to-value-label'
 import { ParameterFieldProps } from './parameter-field'
 
-export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayName, parameterName }) => {
+export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayName, parameterName, stackId }) => {
+    const fieldName = `${stackId}.${parameterName}`
     const {
         meta: { initial: initialValue },
-    } = useField(parameterName, {
+    } = useField(fieldName, {
         subscription: { initial: true },
     })
     const [{ data, error, loading }] = useAuthAxios({
@@ -36,7 +37,7 @@ export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayNa
             required
             loading={loading}
             error={error}
-            name={parameterName}
+            name={fieldName}
             label={displayName}
             component={SingleSelectFieldFF}
             filterable={options.length > 7}

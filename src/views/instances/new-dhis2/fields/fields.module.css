@@ -7,3 +7,29 @@
 .parameterCheckbox {
     padding-top: 18px;
 }
+
+.customOption {
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--colors-grey900);
+    padding-block: var(--spacers-dp8);
+    padding-inline: var(--spacers-dp12);
+}
+.customOption:hover {
+    background-color: var(--colors-grey200);
+}
+.customOption:active,
+.customOption.active {
+    background-color: var(--colors-teal700);
+    color: var(--colors-white);
+    cursor: auto;
+}
+.customOption .secondaryText {
+    padding-top: var(--spacers-dp4);
+    color: var(--colors-grey600);
+}
+.customOption:active .secondaryText,
+.customOption.active .secondaryText {
+    color: var(--colors-grey400);
+}

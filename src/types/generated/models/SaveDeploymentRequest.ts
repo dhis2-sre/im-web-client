@@ -7,4 +7,6 @@ export type SaveDeploymentRequest = {
     description?: string
     group?: string
     name?: string
+    public?: boolean
+    ttl?: number
 }

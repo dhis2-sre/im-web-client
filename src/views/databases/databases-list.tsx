@@ -16,16 +16,16 @@ import { DownloadButton } from './download-button'
 import styles from './databases-list.module.css'
 import type { FC } from 'react'
 import { UploadButton } from './upload-button'
+import { Heading } from '../../components'
 
 export const DatabasesList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.heading}>
-                <h1>Databases</h1>
+            <Heading title="Databases">
                 <UploadButton onComplete={refetch} />
-            </div>
+            </Heading>
 
             {data?.map((group) => (
                 <div key={group.name}>

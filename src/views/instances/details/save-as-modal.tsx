@@ -17,7 +17,7 @@ const formats = new Map<string, { label: string; extension: string }>([
     ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
 ])
 
-export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, onClose, onStart, onComplete }) => {
+export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, stackName, onClose, onStart, onComplete }) => {
     const [name, setName] = useState<string>('')
     const [format, setFormat] = useState<string>(defaultFormat)
     const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
@@ -70,7 +70,7 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, on
 
     return (
         <Modal onClose={onClose}>
-            <ModalTitle>Save "{instanceName}" database as</ModalTitle>
+            <ModalTitle>Save "{stackName}" database as</ModalTitle>
             <ModalContent className={styles.container}>
                 <div className={styles.fileAndExtension}>
                     <InputField className={styles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />

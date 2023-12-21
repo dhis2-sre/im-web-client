@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
 import styles from './stack-details.module.css'
+import { Heading } from '../../components'
 
 export const StackDetails = () => {
     const { name } = useParams()
@@ -26,7 +27,7 @@ export const StackDetails = () => {
 
     return (
         <div key={stack.name}>
-            <h1>{stack.name}</h1>
+            <Heading title={stack.name} />
             <DataTableToolbar className={styles.tabletoolbar}>Parameters</DataTableToolbar>
             <DataTable className={styles.datatable}>
                 <DataTableHead>
@@ -40,15 +41,13 @@ export const StackDetails = () => {
                 <DataTableBody>
                     {stack.parameters
                         ?.sort((a, b) => (a.priority < b.priority ? -1 : 1))
-                        .map((parameter) => {
-                            return (
-                                <DataTableRow key={parameter.displayName}>
-                                    <DataTableCell>{parameter.displayName}</DataTableCell>
-                                    <DataTableCell>{parameter.defaultValue}</DataTableCell>
-                                    <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                                </DataTableRow>
-                            )
-                        })}
+                        .map((parameter) => (
+                            <DataTableRow key={parameter.displayName}>
+                                <DataTableCell>{parameter.displayName}</DataTableCell>
+                                <DataTableCell>{parameter.defaultValue}</DataTableCell>
+                                <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
+                            </DataTableRow>
+                        ))}
                 </DataTableBody>
             </DataTable>
             <DataTableToolbar className={styles.tabletoolbar}>Requires</DataTableToolbar>
