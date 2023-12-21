@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import {login, logout, uploadTestDatabase} from './utils'
+import {login, logout, uploadTestDatabase, deleteTestDatabase} from './utils'
 
 test.describe('new instance', () => {
     test.beforeEach(async ({ page }) => {
@@ -7,6 +7,7 @@ test.describe('new instance', () => {
         await uploadTestDatabase(page)
     })
     test.afterEach(async ({ page }) => {
+        await deleteTestDatabase(page)
         await logout(page)
     })
 
@@ -50,6 +51,6 @@ test.describe('new instance', () => {
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
         await page.getByRole('button', {name: 'Confirm'}).click()
 
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible()
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({timeout: 10000})
     })
 })
