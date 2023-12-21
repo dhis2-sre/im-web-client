@@ -39,7 +39,6 @@
     align-items: center;
     gap: var(--spacers-dp4);
 }
-
 .stackNameTag {
     margin-right: var(--spacers-dp4);
     margin-bottom: var(--spacers-dp4);
