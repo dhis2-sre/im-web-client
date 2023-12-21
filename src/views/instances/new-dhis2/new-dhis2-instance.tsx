@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDhis2DeploymentCreation } from '../../../hooks'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form'
 import styles from './styles.module.css'
+import { Heading } from '../../../components'
 
 export const NewDhis2Instance: FC = () => {
     const navigate = useNavigate()
@@ -16,7 +17,7 @@ export const NewDhis2Instance: FC = () => {
 
     return (
         <>
-            <h1>Create a new DHIS2 Core Instance</h1>
+            <Heading title="Create a new DHIS2 Core Instance" />
             <Card className={styles.container}>
                 <Form onSubmit={createDeployment} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => <NewDhis2InstanceForm handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} />}

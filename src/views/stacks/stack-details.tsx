@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
 import styles from './stack-details.module.css'
+import { Heading } from '../../components'
 
 export const StackDetails = () => {
     const { name } = useParams()
@@ -26,7 +27,7 @@ export const StackDetails = () => {
 
     return (
         <div key={stack.name}>
-            <h1>{stack.name}</h1>
+            <Heading title={stack.name} />
             <DataTableToolbar className={styles.tabletoolbar}>Parameters</DataTableToolbar>
             <DataTable className={styles.datatable}>
                 <DataTableHead>

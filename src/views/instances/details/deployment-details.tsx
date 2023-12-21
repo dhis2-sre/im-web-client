@@ -1,17 +1,22 @@
-import { Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
+import { Button, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
 import { FC } from 'react'
 import { useDeploymentDetails } from '../../../hooks'
 import styles from './deployment-details.module.css'
 import { DeploymentInstancesList } from './deployment-instances-list'
 import { DeploymentSummary } from './deployment-summary'
+import { Heading } from '../../../components'
+import { useNavigate } from 'react-router'
 
 export const DeploymentDetails: FC = () => {
+    const navigate = useNavigate()
     const [{ data: deployment, error, loading }, refetch] = useDeploymentDetails()
+    const title = deployment?.name ? `Instance details: ${deployment?.name}` : 'Instance details'
+
     return (
         <div className={styles.wrapper}>
-            <div className={styles.heading}>
-                <h1>Instance details{deployment?.name ? `: ${deployment?.name}` : ''}</h1>
-            </div>
+            <Heading title={title}>
+                <Button onClick={() => navigate('/instances')}>Back to list</Button>
+            </Heading>
 
             {error && !deployment && (
                 <NoticeBox error title="Could not retrieve instance details">

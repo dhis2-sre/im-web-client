@@ -1,20 +1,19 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
-import styles from './groups-list.module.css'
 import type { FC } from 'react'
 import { Group } from '../../types'
 import { NewGroupButton } from './new-group-button'
+import { Heading } from '../../components'
 
 export const GroupsList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<Group[]>('/groups', { useCache: false })
 
     return (
         <div>
-            <div className={styles.heading}>
-                <h1>Groups</h1>
+            <Heading title="Groups">
                 <NewGroupButton onComplete={refetch} />
-            </div>
+            </Heading>
             <DataTable>
                 <TableHead>
                     <DataTableRow>

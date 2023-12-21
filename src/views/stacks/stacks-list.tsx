@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
 import styles from './stacks-list.module.css'
+import { Heading } from '../../components'
 
 export const StacksList = () => {
     const [{ data, loading, error }] = useAuthAxios<Stack[]>('/stacks')
@@ -25,14 +26,11 @@ export const StacksList = () => {
 
     return (
         <div>
-            <div className={styles.heading}>
-                <h1>List of Stacks</h1>
-            </div>
+            <Heading title="List of Stacks" />
             <DataTable>
                 <DataTableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
-                        <DataTableColumnHeader>Date</DataTableColumnHeader>
                     </DataTableRow>
                 </DataTableHead>
                 <DataTableBody>

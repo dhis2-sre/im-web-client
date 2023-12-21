@@ -4,6 +4,7 @@ import { useAuthAxios } from '../../hooks'
 import { User } from '../../types'
 import { AddToGroupButton } from './add-to-group-button'
 import { RemoveFromGroupButton } from './remove-from-group-button'
+import { Heading } from '../../components'
 
 export const UserDetails = () => {
     const { id } = useParams()
@@ -27,7 +28,7 @@ export const UserDetails = () => {
 
     return (
         <div key={user.id}>
-            <h1>{user.email}</h1>
+            <Heading title={user.email} />
             <div>
                 Groups <AddToGroupButton onComplete={refetch} userId={user.id} />
             </div>

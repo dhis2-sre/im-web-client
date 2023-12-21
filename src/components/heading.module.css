@@ -1,0 +1,11 @@
+.heading {
+    display: flex;
+    align-items: center;
+    color: var(--colors-grey900);
+    gap: var(--spacers-dp16);
+}
+.heading h1 {
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 40px;
+}

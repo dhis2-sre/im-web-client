@@ -22,7 +22,7 @@ import { GroupsWithDeployments } from '../../../types'
 import { OpenButton } from './open-button'
 import styles from './instances-list.module.css'
 import { DeleteButton } from './delete-menu-button'
-import { MomentExpiresFromNow } from '../../../components'
+import { Heading, MomentExpiresFromNow } from '../../../components'
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
@@ -32,12 +32,11 @@ export const InstancesList: FC = () => {
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.heading}>
-                <h1>All instances</h1>
+            <Heading title="All instances">
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
-            </div>
+            </Heading>
 
             {error && !data && (
                 <NoticeBox error title="Could not retrieve instances">

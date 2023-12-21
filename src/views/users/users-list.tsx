@@ -1,10 +1,10 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
-import styles from './users-list.module.css'
 import type { FC } from 'react'
 import { User } from '../../types'
 import { Link } from 'react-router-dom'
+import { Heading } from '../../components'
 
 export const UsersList: FC = () => {
     const [{ data }] = useAuthAxios<User[]>('/users', {
@@ -13,9 +13,7 @@ export const UsersList: FC = () => {
 
     return (
         <div>
-            <div className={styles.heading}>
-                <h1>Users</h1>
-            </div>
+            <Heading title="Users" />
             <DataTable>
                 <TableHead>
                     <DataTableRow>
