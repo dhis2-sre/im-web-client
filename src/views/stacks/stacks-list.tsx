@@ -2,7 +2,6 @@ import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTa
 import { Link } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import { Stack } from '../../types'
-import styles from './stacks-list.module.css'
 import { Heading } from '../../components'
 
 export const StacksList = () => {
@@ -34,15 +33,13 @@ export const StacksList = () => {
                     </DataTableRow>
                 </DataTableHead>
                 <DataTableBody>
-                    {data.map((stack) => {
-                        return (
-                            <DataTableRow key={stack.name}>
-                                <DataTableCell>
-                                    <Link to={`/stacks/${stack.name}`}>{stack.name}</Link>
-                                </DataTableCell>
-                            </DataTableRow>
-                        )
-                    })}
+                    {data.map((stack) => (
+                        <DataTableRow key={stack.name}>
+                            <DataTableCell>
+                                <Link to={`/stacks/${stack.name}`}>{stack.name}</Link>
+                            </DataTableCell>
+                        </DataTableRow>
+                    ))}
                 </DataTableBody>
             </DataTable>
         </div>

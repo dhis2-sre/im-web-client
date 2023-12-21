@@ -26,21 +26,19 @@ export const GroupsList: FC = () => {
                 </TableHead>
 
                 <TableBody>
-                    {data?.map((group) => {
-                        return (
-                            <DataTableRow key={group.name}>
-                                <DataTableCell>{group.name}</DataTableCell>
-                                <DataTableCell>{group.hostname}</DataTableCell>
-                                <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
-                                <DataTableCell>
-                                    <Moment date={group.createdAt} fromNow />
-                                </DataTableCell>
-                                <DataTableCell>
-                                    <Moment date={group.updatedAt} fromNow />
-                                </DataTableCell>
-                            </DataTableRow>
-                        )
-                    })}
+                    {data?.map((group) => (
+                        <DataTableRow key={group.name}>
+                            <DataTableCell>{group.name}</DataTableCell>
+                            <DataTableCell>{group.hostname}</DataTableCell>
+                            <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
+                            <DataTableCell>
+                                <Moment date={group.createdAt} fromNow />
+                            </DataTableCell>
+                            <DataTableCell>
+                                <Moment date={group.updatedAt} fromNow />
+                            </DataTableCell>
+                        </DataTableRow>
+                    ))}
                 </TableBody>
             </DataTable>
         </div>

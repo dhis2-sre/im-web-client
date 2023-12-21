@@ -41,15 +41,13 @@ export const StackDetails = () => {
                 <DataTableBody>
                     {stack.parameters
                         ?.sort((a, b) => (a.priority < b.priority ? -1 : 1))
-                        .map((parameter) => {
-                            return (
-                                <DataTableRow key={parameter.displayName}>
-                                    <DataTableCell>{parameter.displayName}</DataTableCell>
-                                    <DataTableCell>{parameter.defaultValue}</DataTableCell>
-                                    <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
-                                </DataTableRow>
-                            )
-                        })}
+                        .map((parameter) => (
+                            <DataTableRow key={parameter.displayName}>
+                                <DataTableCell>{parameter.displayName}</DataTableCell>
+                                <DataTableCell>{parameter.defaultValue}</DataTableCell>
+                                <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
+                            </DataTableRow>
+                        ))}
                 </DataTableBody>
             </DataTable>
             <DataTableToolbar className={styles.tabletoolbar}>Requires</DataTableToolbar>

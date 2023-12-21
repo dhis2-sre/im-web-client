@@ -33,13 +33,11 @@ export const UserDetails = () => {
                 Groups <AddToGroupButton onComplete={refetch} userId={user.id} />
             </div>
             <ul>
-                {user.groups?.map((group) => {
-                    return (
-                        <li key={group.name}>
-                            {group.name} <RemoveFromGroupButton group={group.name} userId={user.id} onComplete={refetch} />
-                        </li>
-                    )
-                })}
+                {user.groups?.map((group) => (
+                    <li key={group.name}>
+                        {group.name} <RemoveFromGroupButton group={group.name} userId={user.id} onComplete={refetch} />
+                    </li>
+                ))}
             </ul>
             <div>Administrator groups</div>
             <ul>
