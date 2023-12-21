@@ -7,7 +7,7 @@ import { Instance } from '../../../types'
 import type { FC } from 'react'
 import { AsyncActionProps } from './actions-dropdown-menu'
 
-export const DeleteMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, onStart, instanceName }) => {
+export const DeleteMenuItem: FC<AsyncActionProps> = ({ deploymentId, instanceId, onComplete, onStart, stackName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(
@@ -17,7 +17,7 @@ export const DeleteMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, o
     const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
         {
             method: 'DELETE',
-            url: `/instances/${instanceId}`,
+            url: `/deployments/${deploymentId}/instance/${instanceId}`,
         },
         { manual: true, autoCancel: false }
     )
@@ -34,20 +34,20 @@ export const DeleteMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, o
         try {
             onStart()
             await deleteInstance()
-            showAlert({ message: `Successfully deleted instance "${instanceName}"`, isCritical: false })
-            onComplete()
+            showAlert({ message: `Successfully deleted instance "${stackName}"`, isCritical: false })
+            onComplete(true)
         } catch (error) {
             onComplete(false)
-            showAlert({ message: `There was an error when deleting instance "${instanceName}"`, isCritical: true })
+            showAlert({ message: `There was an error when deleting instance "${stackName}"`, isCritical: true })
             console.error(error)
         }
-    }, [deleteInstance, setShowConfirmationModal, instanceName, onStart, onComplete, showAlert])
+    }, [deleteInstance, setShowConfirmationModal, stackName, onStart, onComplete, showAlert])
 
     return (
         <>
             {showConfirmationModal && (
                 <ConfirmationModal destructive onCancel={onCancel} onConfirm={onConfirm}>
-                    Are you sure you want to delete instance "{instanceName}"
+                    Are you sure you want to delete instance "{stackName}"
                 </ConfirmationModal>
             )}
             <MenuItem dense label="Delete" destructive disabled={loading} icon={<IconDelete16 />} onClick={onClick} />

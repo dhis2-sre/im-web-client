@@ -20,6 +20,9 @@
 .loaderWrap {
     flex-grow: 1;
 }
+.clickableRow {
+    cursor: pointer;
+}
 .groupName {
     all: unset;
     font-size: 20px;
@@ -39,7 +42,9 @@
 
 .stackNameTag {
     margin-right: var(--spacers-dp4);
+    margin-bottom: var(--spacers-dp4);
 }
 .stackNameTag:last-child {
     margin-right: 0;
+    margin-bottom: 0;
 }

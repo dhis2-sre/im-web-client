@@ -6,11 +6,11 @@ import { FC, useEffect, useMemo } from 'react'
 import { ParameterField } from './fields/parameter-field'
 import styles from './styles.module.css'
 
-export type Dhis2StackId = 'dhis2-core' | 'dhis2-db' | 'pgadmin'
+export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin'
 export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_USERNAME' | 'PGADMIN_PASSWORD'
-export type Dhis2StackPrimaryParameters = Map<Dhis2StackId, Set<Dhis2PrimaryField>>
+export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryField>>
 
-export const ParameterFieldset: FC<{ stackId: Dhis2StackId; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
+export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
     const form = useForm()
     const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useDhis2StackParameters(stackId)
     const includeStackFieldName = `include_${stackId}`

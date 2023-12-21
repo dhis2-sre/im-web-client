@@ -1,11 +1,11 @@
 import { AnyObject } from 'react-final-form'
-import { Dhis2StackId } from '../views/instances/new-dhis2/parameter-fieldset'
+import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset'
 import { useAuthAxios } from './use-auth-axios'
 import { useCallback } from 'react'
 import { SaveDeploymentRequest, SaveInstanceRequest } from '../types'
 import { FORM_ERROR } from 'final-form'
 
-const STACK_NAMES: Record<string, Dhis2StackId> = {
+const STACK_NAMES: Record<string, Dhis2StackName> = {
     DB: 'dhis2-db',
     CORE: 'dhis2-core',
     PG_ADMIN: 'pgadmin',

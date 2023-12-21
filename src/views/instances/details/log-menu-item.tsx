@@ -4,13 +4,14 @@ import { useAuthAxios } from '../../../hooks'
 import { Instance } from '../../../types'
 import styles from './log-menu-item.module.css'
 import type { FC } from 'react'
+import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
 
 type LogMenuItemProps = {
     instanceId: number
-    instanceName: string
+    stackName: Dhis2StackName
 }
 
-export const LogMenuItem: FC<LogMenuItemProps> = ({ instanceId, instanceName }) => {
+export const LogMenuItem: FC<LogMenuItemProps> = ({ instanceId, stackName }) => {
     const [showLogModal, setShowLogModal] = useState(false)
     const [log, setLog] = useState('')
     const [{ error }, requestLog] = useAuthAxios<Instance>(
@@ -40,7 +41,7 @@ export const LogMenuItem: FC<LogMenuItemProps> = ({ instanceId, instanceName }) 
             <MenuItem dense icon={<IconTerminalWindow16 />} onClick={onClick} label="Logs" />
             {showLogModal && (
                 <Modal fluid onClose={onClose}>
-                    <ModalTitle>Instance: {instanceName}</ModalTitle>
+                    <ModalTitle>Instance: {stackName}</ModalTitle>
                     <ModalContent>
                         <div className={styles.container}>
                             {!log && !error && (

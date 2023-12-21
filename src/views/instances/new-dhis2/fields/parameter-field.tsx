@@ -5,12 +5,12 @@ import { ImageRepositorySelect } from './image-repository-select'
 import { ImageTagSelect } from './image-tag-select'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox'
 import { TextParameterInput } from './text-parameter-input'
-import { Dhis2StackId } from '../parameter-fieldset'
+import { Dhis2StackName } from '../parameter-fieldset'
 
 export type ParameterFieldProps = {
     displayName: string
     parameterName: string
-    stackId: Dhis2StackId
+    stackId: Dhis2StackName
 }
 
 export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {

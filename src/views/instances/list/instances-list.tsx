@@ -5,6 +5,7 @@ import {
     CircularLoader,
     colors,
     DataTable,
+    DataTableBody,
     DataTableCell,
     DataTableColumnHeader,
     DataTableRow,
@@ -17,13 +18,11 @@ import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
-import { Deployment, GroupsWithDeployments } from '../../../types'
+import { GroupsWithDeployments } from '../../../types'
 import { OpenButton } from './open-button'
-import { StatusLabel } from './status-label'
 import styles from './instances-list.module.css'
-import { ActionsDropdownMenu } from './actions-dropdown-menu'
-
-const calculateExpiration = (deployment: Deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000
+import { DeleteButton } from './delete-menu-button'
+import { MomentExpiresFromNow } from '../../../components'
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
@@ -40,7 +39,7 @@ export const InstancesList: FC = () => {
                 </Button>
             </div>
 
-            {error && (
+            {error && !data && (
                 <NoticeBox error title="Could not retrieve instances">
                     {error.message}
                 </NoticeBox>
@@ -56,65 +55,59 @@ export const InstancesList: FC = () => {
 
             {data?.length > 0 && (
                 <DataTable>
-                    {data?.map((group) => {
-                        return (
-                            <>
-                                <DataTableRow>
-                                    <DataTableCell staticStyle colspan="9">
-                                        <h2 className={styles.groupName}>{group.name}</h2>
-                                    </DataTableCell>
-                                </DataTableRow>
-                                <DataTableRow>
-                                    <DataTableColumnHeader>Status</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Description</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Components</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Created</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Owner</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Expires</DataTableColumnHeader>
-                                    <DataTableColumnHeader></DataTableColumnHeader>
-                                </DataTableRow>
+                    {data?.map((group) => (
+                        <DataTableBody key={group.name}>
+                            <DataTableRow>
+                                <DataTableCell staticStyle colSpan="9">
+                                    <h2 className={styles.groupName}>{group.name}</h2>
+                                </DataTableCell>
+                            </DataTableRow>
+                            <DataTableRow>
+                                <DataTableColumnHeader>Name</DataTableColumnHeader>
+                                <DataTableColumnHeader>Description</DataTableColumnHeader>
+                                <DataTableColumnHeader>Components</DataTableColumnHeader>
+                                <DataTableColumnHeader>Created</DataTableColumnHeader>
+                                <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                                <DataTableColumnHeader>Owner</DataTableColumnHeader>
+                                <DataTableColumnHeader>Expires</DataTableColumnHeader>
+                                <DataTableColumnHeader></DataTableColumnHeader>
+                            </DataTableRow>
 
-                                {group.deployments?.map((deployment) => {
-                                    return (
-                                        <DataTableRow key={deployment.id}>
-                                            <DataTableCell staticStyle>
-                                                <StatusLabel instanceId={deployment.id} />
-                                            </DataTableCell>
-                                            <DataTableCell staticStyle>
-                                                <span className={styles.verticallyAlignedCellContent}>
-                                                    {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
-                                                </span>
-                                            </DataTableCell>
-                                            <DataTableCell staticStyle>{deployment.description}</DataTableCell>
-                                            <DataTableCell staticStyle>
-                                                {deployment.instances?.map(({ stackName }) => (
-                                                    <Tag className={styles.stackNameTag}>{stackName}</Tag>
-                                                ))}
-                                            </DataTableCell>
-                                            <DataTableCell staticStyle>
-                                                <Moment date={deployment.createdAt} fromNow />
-                                            </DataTableCell>
-                                            <DataTableCell staticStyle>
-                                                <Moment date={deployment.updatedAt} fromNow />
-                                            </DataTableCell>
-                                            <DataTableCell staticStyle>{deployment.user.email}</DataTableCell>
-                                            <DataTableCell staticStyle>
-                                                <Moment date={calculateExpiration(deployment)} fromNow />
-                                            </DataTableCell>
-                                            <DataTableCell staticStyle>
-                                                <ButtonStrip>
-                                                    <OpenButton hostname={group.hostname} instanceName={deployment.name} />
-                                                    <ActionsDropdownMenu id={deployment.id} name={deployment.name} refreshList={refetch} />
-                                                </ButtonStrip>
-                                            </DataTableCell>
-                                        </DataTableRow>
-                                    )
-                                })}
-                            </>
-                        )
-                    })}
+                            {group.deployments?.map((deployment) => (
+                                <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
+                                    <DataTableCell>
+                                        <span className={styles.verticallyAlignedCellContent}>
+                                            {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
+                                        </span>
+                                    </DataTableCell>
+                                    <DataTableCell>{deployment.description}</DataTableCell>
+                                    <DataTableCell>
+                                        {deployment.instances?.map(({ stackName }) => (
+                                            <Tag key={stackName} className={styles.stackNameTag}>
+                                                {stackName}
+                                            </Tag>
+                                        ))}
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        <Moment date={deployment.createdAt} fromNow />
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        <Moment date={deployment.updatedAt} fromNow />
+                                    </DataTableCell>
+                                    <DataTableCell>{deployment.user.email}</DataTableCell>
+                                    <DataTableCell>
+                                        <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
+                                    </DataTableCell>
+                                    <DataTableCell>
+                                        <ButtonStrip>
+                                            <OpenButton hostname={group.hostname} name={deployment.name} />
+                                            <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
+                                        </ButtonStrip>
+                                    </DataTableCell>
+                                </tr>
+                            ))}
+                        </DataTableBody>
+                    ))}
                 </DataTable>
             )}
         </div>

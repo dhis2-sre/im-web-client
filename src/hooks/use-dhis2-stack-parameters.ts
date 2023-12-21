@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Stack, StackParameter } from '../types'
 import { useAuthAxios } from './use-auth-axios'
 import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants'
-import { Dhis2StackId } from '../views/instances/new-dhis2/parameter-fieldset'
+import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]
@@ -10,9 +10,9 @@ type SecondaryAndPrimaryParameters = {
 }
 type InitialValues = { [key: string]: string }
 
-const isPrimary = (stackName: Dhis2StackId, parameterName): boolean => STACK_PRIMARY_PARAMETERS.get(stackName).has(parameterName)
+const isPrimary = (stackName: Dhis2StackName, parameterName): boolean => STACK_PRIMARY_PARAMETERS.get(stackName).has(parameterName)
 
-export const useDhis2StackParameters = (stackName: Dhis2StackId) => {
+export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
     const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
     const { primaryParameters, secondaryParameters } = useMemo(
         () =>
