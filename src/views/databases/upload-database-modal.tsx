@@ -126,7 +126,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                     ))}
                 </SingleSelectField>
                 <div className={styles.fileAndExtension}>
-                    <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
+                    <InputField className={styles.field} dataTest="upload-database-name" label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
                     <span>{extension}</span>
                 </div>
                 <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
