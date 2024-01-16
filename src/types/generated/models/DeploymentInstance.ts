@@ -16,7 +16,9 @@ export type DeploymentInstance = {
     groupName?: string
     id?: number
     /**
-     * TODO: FK to name of Deployment?
+     * TODO: Delete name and group... Or at least don't persist
+     * TODO: Don't return the name
+     * ... Just delete both Name, Group and GroupName?
      */
     name?: string
     parameters?: DeploymentInstanceParameters
@@ -24,5 +26,6 @@ export type DeploymentInstance = {
      * Stack     *Stack `json:"stack,omitempty"`
      */
     stackName?: string
+    status?: string
     updatedAt?: string
 }

@@ -3,4 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type InstanceStatus = string
+export type Event = {
+    Data?: any
+    Event?: string
+    Id?: string
+    Retry?: number
+}
