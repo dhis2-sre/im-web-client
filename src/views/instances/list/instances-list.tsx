@@ -23,8 +23,8 @@ import { OpenButton } from './open-button'
 import styles from './instances-list.module.css'
 import { DeleteButton } from './delete-menu-button'
 import { Heading, MomentExpiresFromNow } from '../../../components'
-import {baseURL} from "../../../hooks/use-auth-axios";
-import {getAccessToken} from "axios-jwt";
+import {baseURL} from "../../../hooks/use-auth-axios"
+import {getAccessToken} from "axios-jwt"
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
