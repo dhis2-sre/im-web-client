@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
         inputs:
             api_url:
-                description: 'API URL target for the tests.'
+                description: "API URL target for the tests."
                 type: string
                 required: true
 

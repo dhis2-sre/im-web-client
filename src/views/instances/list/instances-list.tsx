@@ -14,7 +14,7 @@ import {
     NoticeBox,
     Tag,
 } from '@dhis2/ui'
-import {FC, useEffect} from 'react'
+import { FC, useEffect } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
@@ -23,8 +23,8 @@ import { OpenButton } from './open-button'
 import styles from './instances-list.module.css'
 import { DeleteButton } from './delete-menu-button'
 import { Heading, MomentExpiresFromNow } from '../../../components'
-import {baseURL} from "../../../hooks/use-auth-axios"
-import {getAccessToken} from "axios-jwt"
+import { baseURL } from '../../../hooks/use-auth-axios'
+import { getAccessToken } from 'axios-jwt'
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
@@ -33,17 +33,14 @@ export const InstancesList: FC = () => {
     })
 
     useEffect(() => {
-        const listenForSse = () => {
-            const token = getAccessToken()
-            const eventSource = new EventSource(`${baseURL}/subscribe?token=${token}`)
-            eventSource.addEventListener("instance-update", function (event) {
-                const parse = JSON.parse(event.data)
-                console.log(parse)
-                refetch()
-            })
-        }
         // TODO: Multiple listeners are added... After 5 connections are created no more can be instantiated
-        listenForSse()
+        const token = getAccessToken()
+        const eventSource = new EventSource(`${baseURL}/subscribe?token=${token}`)
+        eventSource.addEventListener('instance-update', (event) => {
+            const parse = JSON.parse(event.data)
+            console.log(parse)
+            refetch()
+        })
     }, [])
 
     return (
