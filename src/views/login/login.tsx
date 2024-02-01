@@ -6,14 +6,14 @@ import { useAuth } from '../../hooks'
 
 export const Login = () => {
     const { login, isAuthenticating, tokensRequestError } = useAuth()
-    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const onSubmit = useCallback(
         async (event) => {
             event.preventDefault()
-            await login(username, password)
+            await login(email, password)
         },
-        [login, username, password]
+        [login, email, password]
     )
 
     return (
@@ -24,19 +24,19 @@ export const Login = () => {
                     Instance manager login
                 </h2>
                 <InputField
-                    name="username"
-                    label="username"
-                    value={username}
-                    autoComplete="username email"
+                    name="email"
+                    label="Email"
+                    value={email}
+                    autoComplete="email"
                     onChange={({ value }) => {
-                        setUsername(value)
+                        setEmail(value)
                     }}
                     disabled={isAuthenticating}
                 />
                 <InputField
                     type="password"
                     name="password"
-                    label="password"
+                    label="Password"
                     value={password}
                     autoComplete="current-password"
                     onChange={({ value }) => {
