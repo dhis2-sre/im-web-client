@@ -5370,10 +5370,12 @@ dot-prop@^5.1.0:
   dependencies:
     is-obj "^2.0.0"
 
-dotenv-expand@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-10.0.0.tgz#12605d00fb0af6d0a592e6558585784032e4ef37"
-  integrity sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==
+dotenv-expand@^11.0.4:
+  version "11.0.4"
+  resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-11.0.4.tgz#58d1f885e47db512a052675f51e769cb5adda38e"
+  integrity sha512-1a/jdB9ZFVtAxt8QvXkLmIAcQw1lqAg+KaRB0Eh2BaG0yHCSUUPttyuPFqH36WhZvEVpjghSfUaobNzisuH4Ng==
+  dependencies:
+    dotenv "^16.4.1"
 
 dotenv-expand@^5.1.0:
   version "5.1.0"
@@ -5385,7 +5387,7 @@ dotenv@^10.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
-dotenv@^16.4.4:
+dotenv@^16.4.1, dotenv@^16.4.4:
   version "16.4.4"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.4.tgz#a26e7bb95ebd36272ebb56edb80b826aecf224c1"
   integrity sha512-XvPXc8XAQThSjAbY6cQ/9PcBXmFoWuw1sQ3b8HqUCR6ziGXjkTi//kB9SWa2UwqlgdAIuRqAa/9hVljzPehbYg==
