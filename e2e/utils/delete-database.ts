@@ -9,7 +9,7 @@ export const deleteTestDatabase = async (page) => {
     await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
     await expect(page.getByRole('cell', { name: testDbName })).toBeVisible()
 
-    const testDatabaseRow = page.locator(`//table[@data-test='dhis2-uicore-datatable']//tr[contains(td[1], '${testDbName}')]`)
+    const testDatabaseRow = page.getByRole('row', {name: testDbName})
     await testDatabaseRow.getByRole('button', {name: 'Delete'}).click()
 
     await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(testDbName)
