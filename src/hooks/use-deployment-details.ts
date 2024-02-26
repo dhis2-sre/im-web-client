@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { useLocation, useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router-dom'
 import { Deployment } from '../types'
 import { useAuthAxios } from './use-auth-axios'
 import { RefetchFunction } from 'axios-hooks'
