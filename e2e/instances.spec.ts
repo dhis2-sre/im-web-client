@@ -36,7 +36,8 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'Create instance' }).click()
         await expect(page.getByRole('cell', { name: randomName })).toBeVisible({timeout: 10000})
 
-        await page.getByRole('button', {name: 'Delete'}).click()
+        const newInstanceRow = page.getByRole('row', {name: randomName})
+        await newInstanceRow.getByRole('button', {name: 'Delete'}).click()
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
         await page.getByRole('button', {name: 'Confirm'}).click()
 

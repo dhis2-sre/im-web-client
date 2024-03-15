@@ -5,7 +5,7 @@ import styles from './deployment-details.module.css'
 import { DeploymentInstancesList } from './deployment-instances-list'
 import { DeploymentSummary } from './deployment-summary'
 import { Heading } from '../../../components'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
