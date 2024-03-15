@@ -2,7 +2,7 @@
 Our E2E tests are based on the Playwright framework.
 
 We're using the environment variables defined in .env as the rest of the application.
-Most noticeable `USER_EMAIL`, `USER_PASSWORD` and `HOST?` needs to be configured.
+Most noticeable `USER_EMAIL`, `USER_PASSWORD` and `API_URL` needs to be configured.
 
 ## Run in Docker
 ```sh
