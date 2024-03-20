@@ -1,11 +1,24 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
-import { useCallback, useState } from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import { Link } from 'react-router-dom'
 import styles from './login.module.css'
-import { useAuth } from '../../hooks'
+import {useAuth, useAuthAxios} from '../../hooks'
 
 export const Login = () => {
-    const { login, isAuthenticating, tokensRequestError } = useAuth()
+    const [, getCors] = useAuthAxios({
+        method: 'get',
+        url: 'https://play.im.dhis2.org/dev/api/42/locales/ui',
+    }, { manual: true, autoCatch: true })
+
+    useEffect(() => {
+        const getUrl = async () => {
+            const response = await getCors()
+            console.log(response)
+        }
+        getUrl()
+    }, [])
+
+    const {login, isAuthenticating, tokensRequestError} = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const onSubmit = useCallback(
@@ -20,7 +33,7 @@ export const Login = () => {
         <form className={styles.container} onSubmit={onSubmit}>
             <Card className={styles.box}>
                 <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
+                    <LogoIcon className={styles.logo}/>
                     Instance manager login
                 </h2>
                 <InputField
@@ -28,7 +41,7 @@ export const Login = () => {
                     label="Email"
                     value={email}
                     autoComplete="email"
-                    onChange={({ value }) => {
+                    onChange={({value}) => {
                         setEmail(value)
                     }}
                     disabled={isAuthenticating}
