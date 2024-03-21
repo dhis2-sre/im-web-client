@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FC } from 'react'
-import { getAccessToken, isLoggedIn, setAuthTokens, clearAuthTokens } from 'axios-jwt'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import type { User, Tokens } from '../types'
 import { useAuthAxios } from '../hooks'
@@ -28,18 +27,21 @@ export const AuthProvider: FC = () => {
         },
         { manual: true }
     )
-    const [accessToken, setAccessToken] = useState(getAccessToken())
-    const isAuthenticated = useMemo(isLoggedIn, [accessToken])
+    const [accessToken, setAccessToken] = useState<string>()
+//    const isAuthenticated = useMemo<boolean>(isLoggedIn, [accessToken])
     const currentUser = useMemo<User>(() => (accessToken ? jwtDecode<JwtPayloadWithUser>(accessToken).user : null), [accessToken])
     const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
     const [redirectPath, setRedirectPath] = useState('')
+
+    const isAuthenticated = useCallback(() => {
+        return currentUser !== null
+    }, [currentUser])
 
     const login = useCallback(
         async (username, password) => {
             const result = await getTokens({ auth: { username, password } })
             if (result?.data) {
                 const { accessToken, refreshToken } = result.data
-                setAuthTokens({ accessToken, refreshToken })
                 setAccessToken(accessToken)
             }
         },
@@ -47,6 +49,11 @@ export const AuthProvider: FC = () => {
     )
 
     const logout = useCallback(async () => {
+        const response = await requestLogout()
+        if (response.status === 200) {
+//            setC
+        }
+/*
         if (isLoggedIn()) {
             await requestLogout()
             clearAuthTokens()
@@ -54,12 +61,12 @@ export const AuthProvider: FC = () => {
         } else {
             return Promise.reject('Logout error: Already logged out')
         }
+ */
     }, [requestLogout])
 
     const handleUnauthorization = useCallback(
         (event) => {
             setRedirectPath(event.detail)
-            clearAuthTokens()
             setAccessToken(null)
             navigate('/login')
         },
@@ -78,11 +85,11 @@ export const AuthProvider: FC = () => {
         const { pathname } = window.location
 
         if (pathname !== redirectPath) {
-            if (!isAuthenticated && pathname !== '/login') {
+            if (!isAuthenticated() && pathname !== '/login') {
                 setRedirectPath(pathname)
                 navigate('/login')
             }
-            if (isAuthenticated) {
+            if (isAuthenticated()) {
                 if (pathname === '/login') {
                     navigate(redirectPath ?? '/instances')
                 }

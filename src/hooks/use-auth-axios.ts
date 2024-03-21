@@ -1,60 +1,46 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
 import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
-import { IAuthTokens, TokenRefreshRequest, applyAuthTokenInterceptor, clearAuthTokens, getBrowserLocalStorage } from 'axios-jwt'
 import { useCallback } from 'react'
+import {RefreshTokenRequest} from "../types"
 
 export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://dev.api.im.dhis2.org'
-
-/* Better make sure this is a unque string because the event
- * is going to be sent via the global window object */
-export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
 if (!baseURL) {
     throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
 }
 
+/* Better make sure this is a unque string because the event
+ * is going to be sent via the global window object */
+export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
+
 // Create an axios instance and we set the baseURL
-const axiosInstance = axios.create({ baseURL })
+const axiosInstance = axios.create({ baseURL, withCredentials: true})
+
+// Inspiration: https://stackoverflow.com/a/58395785/672009
+const onRejectedRefresh = async error => {
+    const originalRequest = error.config
+    if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true
+        const response = await axios
+            .post<RefreshTokenRequest>('/refresh', null, {baseURL, withCredentials: true})
+        if (response.status && response.status !== 201) {
+            //window.location.href = "/login"
+            dispatchUnauthorizedEvent()
+            // TODO: Should we return something here
+            return
+        }
+        // TODO: Store (potentially) updated user in LocalStorage
+        return axios(originalRequest)
+    }
+    return Promise.reject(error)
+}
+
+axiosInstance.interceptors.response.use(response => response, onRejectedRefresh)
 
 const dispatchUnauthorizedEvent = () => {
     const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })
     window.dispatchEvent(event)
 }
-
-type TokenRefreshResponse = {
-    data: IAuthTokens
-}
-
-const requestRefresh: TokenRefreshRequest = async (refreshToken: string): Promise<IAuthTokens | string> =>
-    /* We have to use the default axios instance here
-     * otherwise we get an infitine loop */
-    axios
-        .post(`${baseURL}/refresh`, {
-            refreshToken,
-        })
-        .then(
-            (response: TokenRefreshResponse): IAuthTokens => ({
-                accessToken: response.data.accessToken,
-                refreshToken: response.data.refreshToken,
-            })
-        )
-        .catch((error) => {
-            if (error.response.status === 401) {
-                clearAuthTokens()
-                dispatchUnauthorizedEvent()
-            }
-            return Promise.reject(error)
-        })
-
-const getStorage = getBrowserLocalStorage
-
-/* Enhance the created axios instance with JWT interceptors
- * which allow us to do authenticated requests, refresh the
- * token, etc */
-applyAuthTokenInterceptor(axiosInstance, {
-    requestRefresh,
-    getStorage,
-})
 
 /* Produce a custom version of the `useAxios` hook
  * which uses the axios instance we've just created */
@@ -66,14 +52,15 @@ const useAxiosWithJwt = makeUseAxios({
 })
 
 interface UseAuthAxiosOptions extends Options {
-    autoCatch?: boolean
+    autoCatch?: boolean,
+    withCredentials?: boolean,
 }
 
 interface UseAuthAxios {
     <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 
-const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, ...options } = {}) => {
+const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, withCredentials = true, ...options } = {}) => {
     const useAxiosResult: UseAxiosResult = useAxiosWithJwt(urlOrConfigObject, options)
     const [, execute] = useAxiosResult
 
