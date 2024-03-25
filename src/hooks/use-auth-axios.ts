@@ -16,15 +16,18 @@ export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL, withCredentials: true })
 
-// Inspiration: https://stackoverflow.com/a/58395785/672009
 const onRejectedRefresh = async (error) => {
     const originalRequest = error.config
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
-        const response = await axios.post<RefreshTokenRequest>('/refresh', null, {
-            baseURL,
-            withCredentials: true,
-        })
+        const response = await axios
+            .post<RefreshTokenRequest>('/refresh', null, {
+                baseURL,
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
         if (response.status && response.status !== 201) {
             //window.location.href = "/login"
             dispatchUnauthorizedEvent()
