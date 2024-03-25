@@ -1,7 +1,7 @@
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import { useCallback } from 'react'
-import {RefreshTokenRequest} from "../types"
+import { RefreshTokenRequest } from '../types'
 
 export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://dev.api.im.dhis2.org'
 
@@ -14,15 +14,17 @@ if (!baseURL) {
 export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
 // Create an axios instance and we set the baseURL
-const axiosInstance = axios.create({ baseURL, withCredentials: true})
+const axiosInstance = axios.create({ baseURL, withCredentials: true })
 
 // Inspiration: https://stackoverflow.com/a/58395785/672009
-const onRejectedRefresh = async error => {
+const onRejectedRefresh = async (error) => {
     const originalRequest = error.config
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
-        const response = await axios
-            .post<RefreshTokenRequest>('/refresh', null, {baseURL, withCredentials: true})
+        const response = await axios.post<RefreshTokenRequest>('/refresh', null, {
+            baseURL,
+            withCredentials: true,
+        })
         if (response.status && response.status !== 201) {
             //window.location.href = "/login"
             dispatchUnauthorizedEvent()
@@ -35,7 +37,7 @@ const onRejectedRefresh = async error => {
     return Promise.reject(error)
 }
 
-axiosInstance.interceptors.response.use(response => response, onRejectedRefresh)
+axiosInstance.interceptors.response.use((response) => response, onRejectedRefresh)
 
 const dispatchUnauthorizedEvent = () => {
     const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })
@@ -52,8 +54,8 @@ const useAxiosWithJwt = makeUseAxios({
 })
 
 interface UseAuthAxiosOptions extends Options {
-    autoCatch?: boolean,
-    withCredentials?: boolean,
+    autoCatch?: boolean
+    withCredentials?: boolean
 }
 
 interface UseAuthAxios {
