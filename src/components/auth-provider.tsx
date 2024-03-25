@@ -16,18 +16,13 @@ interface JwtPayloadWithUser extends JwtPayload {
 export const AuthProvider: FC = () => {
     const navigate = useNavigate()
 
-    const axiosInstance = axios.create({baseURL, withCredentials: true})
-    const useAxios = makeUseAxios({axios: axiosInstance})
-    const [{loading: isAuthenticating, error: tokensRequestError}, getTokens] = useAxios<Tokens>(
-        {url: '/tokens', method: 'POST'},
+    const [{loading: isAuthenticating, error: tokensRequestError}, getTokens] = useAuthAxios<Tokens>(
+        {method: 'POST', url: '/tokens'},
         {manual: true}
     )
 
     const [, requestLogout] = useAuthAxios(
-        {
-            method: 'DELETE',
-            url: '/users',
-        },
+        {method: 'DELETE', url: '/users'},
         {manual: true}
     )
     const [accessToken, setAccessToken] = useState<string>()
