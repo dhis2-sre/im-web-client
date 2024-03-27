@@ -1,13 +1,11 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
 import type {FC} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import jwtDecode, {JwtPayload} from 'jwt-decode'
-import type {User, Tokens} from '../types'
+import type {Tokens, User} from '../types'
 import {useAuthAxios} from '../hooks'
 import {AuthContext} from '../contexts'
-import {baseURL, UNAUTHORIZED_EVENT} from '../hooks/use-auth-axios'
+import {UNAUTHORIZED_EVENT} from '../hooks/use-auth-axios'
 import {Outlet, useNavigate} from 'react-router-dom'
-import {makeUseAxios} from 'axios-hooks'
-import axios from 'axios'
 
 interface JwtPayloadWithUser extends JwtPayload {
     user: User
@@ -26,7 +24,6 @@ export const AuthProvider: FC = () => {
         {manual: true}
     )
     const [accessToken, setAccessToken] = useState<string>()
-    //    const isAuthenticated = useMemo<boolean>(isLoggedIn, [accessToken])
     const currentUser = useMemo<User>(() => (accessToken ? jwtDecode<JwtPayloadWithUser>(accessToken).user : null), [accessToken])
     const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
     const [redirectPath, setRedirectPath] = useState('')
@@ -36,11 +33,15 @@ export const AuthProvider: FC = () => {
     }, [currentUser])
 
     const login = useCallback(
-        async (username, password) => {
-            const result = await getTokens({auth: {username, password}})
-            if (result?.data) {
-                const {accessToken, refreshToken} = result.data
-                setAccessToken(accessToken)
+        async (username: string, password: string) => {
+            try {
+                const response = await getTokens({auth: {username, password}})
+                if (response.status === 201) {
+                    const {accessToken, refreshToken} = response.data
+                    setAccessToken(accessToken)
+                }
+            } catch (e) {
+                console.log(e)
             }
         },
         [getTokens]
@@ -49,17 +50,9 @@ export const AuthProvider: FC = () => {
     const logout = useCallback(async () => {
         const response = await requestLogout()
         if (response.status === 200) {
-            //            setC
+            setAccessToken(null)
+            navigate("/login")
         }
-        /*
-                if (isLoggedIn()) {
-                    await requestLogout()
-                    clearAuthTokens()
-                    setAccessToken(null)
-                } else {
-                    return Promise.reject('Logout error: Already logged out')
-                }
-         */
     }, [requestLogout])
 
     const handleUnauthorization = useCallback(
