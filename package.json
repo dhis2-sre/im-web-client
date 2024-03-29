@@ -62,7 +62,7 @@
         "@types/jest": "^29.5.12",
         "@types/node": "^20.11.27",
         "@types/react": "^18.2.65",
-        "@types/react-dom": "^18.2.20",
+        "@types/react-dom": "^18.2.23",
         "@types/react-router-dom": "^5.3.3",
         "dotenv": "^16.4.5",
         "dotenv-expand": "^10.0.0",
