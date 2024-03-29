@@ -32,20 +32,17 @@ export const AuthProvider: FC = () => {
         return currentUser !== null
     }, [currentUser])
 
-    const login = useCallback(
-        async (username: string, password: string) => {
-            try {
-                const response = await getTokens({auth: {username, password}})
-                if (response.status === 201) {
-                    const {accessToken, refreshToken} = response.data
-                    setAccessToken(accessToken)
-                }
-            } catch (e) {
-                console.log(e)
+    const login = useCallback(async (username: string, password: string, rememberMe: boolean) => {
+        try {
+            const response = await getTokens({auth: {username, password}, data: {rememberMe}})
+            if (response.status === 201) {
+                const {accessToken, refreshToken} = response.data
+                setAccessToken(accessToken)
             }
-        },
-        [getTokens]
-    )
+        } catch (e) {
+            console.log(e)
+        }
+    }, [getTokens])
 
     const logout = useCallback(async () => {
         const response = await requestLogout()
@@ -55,14 +52,11 @@ export const AuthProvider: FC = () => {
         }
     }, [requestLogout])
 
-    const handleUnauthorization = useCallback(
-        (event) => {
-            setRedirectPath(event.detail)
-            setAccessToken(null)
-            navigate('/login')
-        },
-        [navigate]
-    )
+    const handleUnauthorization = useCallback((event) => {
+        setRedirectPath(event.detail)
+        setAccessToken(null)
+        navigate('/login')
+    }, [navigate])
 
     useEffect(() => {
         window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorization, false)

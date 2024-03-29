@@ -8,7 +8,7 @@ type AuthContextApi = {
     isAuthenticating: boolean
     isAuthenticated: () => boolean
     tokensRequestError: AxiosError | null
-    login: (username: string, password: string) => Promise<void>
+    login: (username: string, password: string, rememberMe: boolean) => Promise<void>
     logout: () => Promise<void>
 }
 const throwIfUninitialized = () => {
