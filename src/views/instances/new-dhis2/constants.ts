@@ -1,6 +1,7 @@
 import { Dhis2StackPrimaryParameters } from './parameter-fieldset'
 
 export const DHIS2_STACK_ID = 'dhis2'
+export const ENABLE_PERSISTENT_STORAGE = 'ENABLE_PERSISTENT_STORAGE'
 export const DATABASE_ID = 'DATABASE_ID'
 export const FLYWAY_MIGRATE_OUT_OF_ORDER = 'FLYWAY_MIGRATE_OUT_OF_ORDER'
 export const FLYWAY_REPAIR_BEFORE_MIGRATION = 'FLYWAY_REPAIR_BEFORE_MIGRATION'
