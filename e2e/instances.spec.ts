@@ -29,8 +29,10 @@ test.describe('new instance', () => {
         await page.getByRole('textbox', { name: 'Name'}).fill(randomName)
         await page.getByRole('textbox', { name: 'Description'}).fill('This is an e2e test instance.')
 
+        const dbName = 'whoami/test/empty-db.sql.gz'
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
-        await page.getByText('whoami/test/empty-db.sql.gz').click()
+        await page.locator('#filter').fill(dbName)
+        await page.getByText(dbName).click()
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
