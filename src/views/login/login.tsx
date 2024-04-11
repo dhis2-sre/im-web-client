@@ -21,7 +21,7 @@ export const Login = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance manager login
+                    Instance Manager login
                 </h2>
                 <InputField
                     name="email"

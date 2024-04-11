@@ -67,15 +67,15 @@ export const SignUp = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance manager sign up
+                    Instance Manager sign up
                 </h2>
-                <InputField disabled={loading} name="email" label="email" type="email" value={inputs.email} onChange={onInputChange} />
-                <InputField disabled={loading} type="password" name="password" label="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+                <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
+                <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
                 <InputField
                     disabled={loading}
-                    type="password"
                     name="confirmPassword"
-                    label="confirmPassword"
+                    label="Confirm password"
+                    type="password"
                     value={inputs.confirmPassword}
                     autoComplete="new-password"
                     onChange={onInputChange}
