@@ -48,7 +48,10 @@ export const Login = () => {
                 <Button primary type="submit" value="login" loading={isAuthenticating}>
                     Login
                 </Button>
-                <Link to={`/sign-up`}>Sign up?</Link>
+                <div className={styles.linkContainer}>
+                    <Link to={`/sign-up`}>Sign up</Link>
+                    <Link to={`/request-password-reset`}>Forgot password?</Link>
+                </div>
             </Card>
         </form>
     )
