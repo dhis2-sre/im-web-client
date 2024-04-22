@@ -20,14 +20,13 @@ const onRejectedRefresh = async (error) => {
     const originalRequest = error.config
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
-        const response = await axios
-            .post<RefreshTokenRequest>('/refresh', null, {
-                baseURL,
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
+        const response = await axios.post<RefreshTokenRequest>('/refresh', null, {
+            baseURL,
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
         if (response.status && response.status !== 201) {
             //window.location.href = "/login"
             dispatchUnauthorizedEvent()
