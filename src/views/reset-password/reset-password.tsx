@@ -1,9 +1,9 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import styles from './reset-password.module.css'
-import {useAlert} from "@dhis2/app-service-alerts";
+import { useAlert } from "@dhis2/app-service-alerts";
 
 const getInputsErrorMessage = ({ password, confirmPassword }) => {
     if (!password) {
@@ -39,9 +39,8 @@ export const ResetPassword = () => {
     }, [])
     const [{ loading }, postResetPassword] = useAuthAxios(
         {
-            url: '/users/reset-password',
             method: 'POST',
-            // data: { token, password },
+            url: '/users/reset-password',
         },
         { manual: true }
     )
@@ -50,19 +49,21 @@ export const ResetPassword = () => {
         async (event) => {
             event.preventDefault()
 
-            if (inputs.password) {
-                try {
-                    const password = inputs.password
-                    await postResetPassword({ data: { token, password } })
-                    showAlert({ message: `Password has been reset.`, isCritical: false })
-                    navigate('/login')
-                } catch (error) {
-                    console.error(error)
-                    setErrorMessage(error.message)
-                }
-            } else {
+            if (!inputs.password) {
                 setErrorMessage(getInputsErrorMessage(inputs))
+                return
             }
+
+            try {
+                const password = inputs.password
+                await postResetPassword({ data: { token, password } })
+                showAlert({ message: 'Password has been reset', isCritical: false })
+                navigate('/login')
+            } catch (error) {
+                console.error(error)
+                setErrorMessage(error.message)
+            }
+
         },
         [inputs, postResetPassword, navigate]
     )

@@ -7,26 +7,21 @@ import styles from './reset-password.module.css'
 
 export const RequestPasswordReset = () => {
     const navigate = useNavigate()
-    const [inputs, setInputs] = useState({
-        email: '',
-    })
+    const [email, setEmail] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const onInputChange = useCallback(({ value, name }) => {
+    const onInputChange = useCallback(({value}) => {
         // Always clear the error when user starts typing again
         setErrorMessage('')
-        setInputs((currentInputs) => ({
-            ...currentInputs,
-            [name]: value,
-        }))
+        setEmail(value)
     }, [])
-    const [{ loading }, postRequestReset] = useAuthAxios(
+    const [{ loading }, postRequestPasswordReset] = useAuthAxios(
         {
-            url: '/users/request-reset',
             method: 'POST',
+            url: '/users/request-reset',
         },
         { manual: true }
     )
@@ -35,21 +30,21 @@ export const RequestPasswordReset = () => {
         async (event) => {
             event.preventDefault()
 
-            if (inputs.email) {
-                try {
-                    const { email } = inputs
-                    await postRequestReset({ data: { email } })
-                    showAlert({ message: `Password reset link sent to "${email}".`, isCritical: false })
-                    navigate('/login')
-                } catch (error) {
-                    console.error(error)
-                    setErrorMessage(error.message)
-                }
-            } else {
-                setErrorMessage('Please provide an email address')
+            if (!email) {
+                setErrorMessage('Please provide a valid email address')
+                return
+            }
+
+            try {
+                await postRequestPasswordReset({ data: { email } })
+                showAlert({ message: `Password reset link sent to "${email}"`, isCritical: false })
+                navigate('/login')
+            } catch (error) {
+                console.error(error)
+                setErrorMessage(error.message)
             }
         },
-        [inputs, postRequestReset, navigate]
+        [email, postRequestPasswordReset, navigate]
     )
 
     return (
@@ -59,9 +54,9 @@ export const RequestPasswordReset = () => {
                     <LogoIcon className={styles.logo} />
                     Request password reset
                 </h2>
-                <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
+                <InputField disabled={loading} name="email" label="Email" type="email" value={email} onChange={onInputChange} />
                 {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Request password reset" disabled={!inputs.email}>
+                <Button primary type="submit" value="Request password reset" disabled={!email}>
                     Request password reset
                 </Button>
             </Card>
