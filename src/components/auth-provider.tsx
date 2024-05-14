@@ -18,6 +18,8 @@ export const AuthProvider: FC = () => {
         {
             url: '/tokens',
             method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            data: {}
         },
         { manual: true, autoCatch: true }
     )
