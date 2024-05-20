@@ -10,7 +10,7 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout } from './components'
 import './index.module.css'
-import { DatabasesList, DeploymentDetails, InstancesList, Login, NewDhis2Instance, SignUp, StackDetails, StacksList } from './views'
+import { DatabasesList, DeploymentDetails, InstancesList, Login, NewDhis2Instance, RequestPasswordReset, ResetPassword, SignUp, StackDetails, StacksList } from './views'
 import { UsersList } from './views/users'
 import { GroupsList } from './views/groups'
 import { Validate } from './views/validate'
@@ -21,6 +21,8 @@ const router = createBrowserRouter(
         <Route>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/validate/:token" element={<Validate />} />
+            <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route element={<AuthProvider />}>
                 <Route path="/login" element={<Login />} />
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
