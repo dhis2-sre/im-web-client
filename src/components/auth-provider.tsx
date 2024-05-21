@@ -7,6 +7,7 @@ import { AuthContext } from '../contexts'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import { Outlet, useNavigate } from 'react-router-dom'
 
+// TODO: Delete this
 interface JwtPayloadWithUser extends JwtPayload {
     user: User
 }
@@ -15,12 +16,18 @@ export const AuthProvider: FC = () => {
     const navigate = useNavigate()
 
     const [{ loading: isAuthenticating, error: tokensRequestError }, getTokens] = useAuthAxios<Tokens>(
-        { method: 'POST', url: '/tokens' },
+        { method: 'POST', url: '/tokens', headers: {'Content-Type': 'application/json'}, data: {} },
         { manual: true, autoCatch: true, withCredentials: false }
+    )
+
+    const [{ loading: loadingUser, error: userRequestError }, getUser] = useAuthAxios<User>(
+        { method: 'GET', url: '/me' },
+        { manual: true, autoCatch: true, withCredentials: true }
     )
 
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
     const [accessToken, setAccessToken] = useState<string>()
+//    const [currentUser, setCurrentUser] = useState<User>()
     const currentUser = useMemo<User>(() => (accessToken ? jwtDecode<JwtPayloadWithUser>(accessToken).user : null), [accessToken])
     const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
     const [redirectPath, setRedirectPath] = useState('')
@@ -29,20 +36,18 @@ export const AuthProvider: FC = () => {
         return currentUser !== null
     }, [currentUser])
 
-    const login = useCallback(
-        async (username: string, password: string) => {
-            try {
-                const response = await getTokens({ auth: { username, password } })
-                if (response.status === 201) {
-                    const { accessToken, refreshToken } = response.data
-                    setAccessToken(accessToken)
-                }
-            } catch (e) {
-                console.log(e)
+    const login = useCallback(async (username: string, password: string) => {
+        try {
+            const response = await getTokens({auth: {username, password}})
+            if (response.status === 201) {
+                const {accessToken, refreshToken} = response.data
+                // TODO: Don't set access token here, ignore it and use getUser to retrieve the user and set it using setCurrentUser
+                setAccessToken(accessToken)
             }
-        },
-        [getTokens]
-    )
+        } catch (e) {
+            console.log(e)
+        }
+    }, [getTokens])
 
     const logout = useCallback(async () => {
         const response = await requestLogout()

@@ -28,10 +28,9 @@ const onRejectedRefresh = async (error) => {
             },
         })
         if (response.status && response.status !== 201) {
-            //window.location.href = "/login"
+//            window.location.href = "/login"
             dispatchUnauthorizedEvent()
-            // TODO: Should we return something here
-            return
+            return null
         }
         // TODO: Store (potentially) updated user in LocalStorage
         return axios(originalRequest)
