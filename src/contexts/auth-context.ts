@@ -6,9 +6,9 @@ type AuthContextApi = {
     currentUser: User | null
     isAdministrator: boolean
     isAuthenticating: boolean
-    isAuthenticated: boolean
+    isAuthenticated: () => boolean
     tokensRequestError: AxiosError | null
-    login: (username: string, password: string) => Promise<void>
+    login: (username: string, password: string, rememberMe: boolean) => Promise<void>
     logout: () => Promise<void>
 }
 const throwIfUninitialized = () => {
@@ -19,7 +19,7 @@ export const AuthContext = createContext<AuthContextApi>({
     currentUser: null,
     isAdministrator: false,
     isAuthenticating: false,
-    isAuthenticated: false,
+    isAuthenticated: throwIfUninitialized,
     tokensRequestError: null,
     login: throwIfUninitialized,
     logout: throwIfUninitialized,
