@@ -66,14 +66,13 @@ const useAxiosWithJwt = makeUseAxios({
 
 interface UseAuthAxiosOptions extends Options {
     autoCatch?: boolean
-    withCredentials?: boolean
 }
 
 interface UseAuthAxios {
     <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 
-const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, withCredentials = true, ...options } = {}) => {
+const useAuthAxios: UseAuthAxios = (urlOrConfigObject, options = {}) => {
     const useAxiosResult: UseAxiosResult = useAxiosWithJwt(urlOrConfigObject, options)
     const [, execute] = useAxiosResult
 
@@ -96,7 +95,7 @@ const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, with
         [execute]
     )
 
-    if (autoCatch) {
+    if (options.autoCatch) {
         useAxiosResult[1] = executeWithAutoCatch
     }
     return useAxiosResult
