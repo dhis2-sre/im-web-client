@@ -30,13 +30,7 @@ axiosInstance.interceptors.response.use(
                 // we use this flag to avoid retrying indefinitely if
                 // getting a refresh token fails for any reason
                 config._retry = true
-                await axios.post<RefreshTokenRequest>('/refresh', null, {
-                    baseURL,
-                    withCredentials: true,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
+                await axiosInstance.post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })
                 return axios(config)
             } catch (refreshError) {
                 if (refreshError.response.status === 400) {
