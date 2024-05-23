@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import { useCallback } from 'react'
 import { RefreshTokenRequest } from '../types'
@@ -16,29 +16,39 @@ export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 // Create an axios instance and we set the baseURL
 const axiosInstance = axios.create({ baseURL, withCredentials: true })
 
-const onRejectedRefresh = async (error) => {
-    const originalRequest = error.config
-    if (error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true
-        const response = await axios.post<RefreshTokenRequest>('/refresh', null, {
-            baseURL,
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        if (response.status && response.status !== 201) {
-//            window.location.href = "/login"
-            dispatchUnauthorizedEvent()
-            return null
-        }
-        // TODO: Store (potentially) updated user in LocalStorage
-        return axios(originalRequest)
-    }
-    return Promise.reject(error)
+type AxiosRequestConfigWithRetry = AxiosRequestConfig & {
+    _retry: boolean
 }
 
-axiosInstance.interceptors.response.use((response) => response, onRejectedRefresh)
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+        const config = error.config as AxiosRequestConfigWithRetry
+
+        if (error.response.status === 401 && !config._retry) {
+            try {
+                // we use this flag to avoid retrying indefinitely if
+                // getting a refresh token fails for any reason
+                config._retry = true
+                await axios.post<RefreshTokenRequest>('/refresh', null, {
+                    baseURL,
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                return axios(config)
+            } catch (refreshError) {
+                if (refreshError.response.status === 400) {
+                    dispatchUnauthorizedEvent()
+                }
+                return Promise.reject(refreshError)
+            }
+        }
+
+        return Promise.reject(error)
+    }
+)
 
 const dispatchUnauthorizedEvent = () => {
     const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })

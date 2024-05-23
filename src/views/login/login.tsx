@@ -5,7 +5,7 @@ import styles from './login.module.css'
 import { useAuth } from '../../hooks'
 
 export const Login = () => {
-    const { login, isAuthenticating, tokensRequestError } = useAuth()
+    const { login, isAuthenticating, authenticationErrorMessage } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const onSubmit = useCallback(
@@ -44,7 +44,7 @@ export const Login = () => {
                     }}
                     disabled={isAuthenticating}
                 />
-                {tokensRequestError && <Help error>{tokensRequestError?.response?.data ?? tokensRequestError?.message ?? 'Could not fetch authentication tokens'}</Help>}
+                {authenticationErrorMessage && <Help error>{authenticationErrorMessage}</Help>}
                 <Button primary type="submit" value="login" loading={isAuthenticating}>
                     Login
                 </Button>

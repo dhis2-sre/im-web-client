@@ -1,66 +1,63 @@
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import jwtDecode, { JwtPayload } from 'jwt-decode'
 import type { Tokens, User } from '../types'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { AxiosError } from 'axios'
 
-// TODO: Delete this
-interface JwtPayloadWithUser extends JwtPayload {
-    user: User
-}
+const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
+const getCurrentUserFromLocalStorage = () => JSON.parse(localStorage.getItem(CURRENT_USER_LOCAL_STORAGE_KEY))
+const setCurrentUserToLocalStorage = (user: User) => localStorage.setItem(CURRENT_USER_LOCAL_STORAGE_KEY, JSON.stringify(user))
+const removeCurrentUserFromLocalStorage = () => localStorage.removeItem(CURRENT_USER_LOCAL_STORAGE_KEY)
 
 export const AuthProvider: FC = () => {
     const navigate = useNavigate()
-
-    const [{ loading: isAuthenticating, error: tokensRequestError }, getTokens] = useAuthAxios<Tokens>(
-        { method: 'POST', url: '/tokens', headers: {'Content-Type': 'application/json'}, data: {} },
-        { manual: true, autoCatch: true, withCredentials: false }
-    )
-
-    const [{ loading: loadingUser, error: userRequestError }, getUser] = useAuthAxios<User>(
-        { method: 'GET', url: '/me' },
-        { manual: true, autoCatch: true, withCredentials: true }
-    )
-
-    const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
-    const [accessToken, setAccessToken] = useState<string>()
-//    const [currentUser, setCurrentUser] = useState<User>()
-    const currentUser = useMemo<User>(() => (accessToken ? jwtDecode<JwtPayloadWithUser>(accessToken).user : null), [accessToken])
-    const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
+    const [isAuthenticating, setIsAuthenticating] = useState(false)
+    const [authenticationErrorMessage, setAuthenticationErrorMessage] = useState('')
     const [redirectPath, setRedirectPath] = useState('')
+    const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUserFromLocalStorage)
+    const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
 
-    const isAuthenticated = useCallback(() => {
-        return currentUser !== null
-    }, [currentUser])
+    const [, getTokens] = useAuthAxios<Tokens>({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
+    const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
+    const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 
-    const login = useCallback(async (username: string, password: string) => {
-        try {
-            const response = await getTokens({auth: {username, password}})
-            if (response.status === 201) {
-                const {accessToken, refreshToken} = response.data
-                // TODO: Don't set access token here, ignore it and use getUser to retrieve the user and set it using setCurrentUser
-                setAccessToken(accessToken)
+    const login = useCallback(
+        async (username: string, password: string) => {
+            setIsAuthenticating(true)
+            try {
+                await getTokens({ auth: { username, password } })
+                const userResponse = await getUser()
+
+                setAuthenticationErrorMessage('')
+                setCurrentUser(userResponse.data)
+                navigate(redirectPath || '/instances')
+            } catch (error) {
+                console.error(error)
+                const errorMessage = error instanceof AxiosError || error instanceof Error ? error.message : 'Unknown error'
+                setAuthenticationErrorMessage(errorMessage)
+                setCurrentUser(null)
+            } finally {
+                setIsAuthenticating(false)
             }
-        } catch (e) {
-            console.log(e)
-        }
-    }, [getTokens])
+        },
+        [getTokens, getUser, navigate, redirectPath]
+    )
 
     const logout = useCallback(async () => {
         const response = await requestLogout()
         if (response.status === 200) {
-            setAccessToken(null)
+            setCurrentUser(null)
             navigate('/login')
         }
-    }, [requestLogout])
+    }, [requestLogout, navigate])
 
     const handleUnauthorization = useCallback(
         (event) => {
             setRedirectPath(event.detail)
-            setAccessToken(null)
+            setCurrentUser(null)
             navigate('/login')
         },
         [navigate]
@@ -75,21 +72,12 @@ export const AuthProvider: FC = () => {
     }, [handleUnauthorization])
 
     useEffect(() => {
-        const { pathname } = window.location
-
-        if (pathname !== redirectPath) {
-            if (!isAuthenticated() && pathname !== '/login') {
-                setRedirectPath(pathname)
-                navigate('/login')
-            }
-            if (isAuthenticated()) {
-                if (pathname === '/login') {
-                    navigate(redirectPath ?? '/instances')
-                }
-                setRedirectPath('')
-            }
+        if (currentUser) {
+            setCurrentUserToLocalStorage(currentUser)
+        } else {
+            removeCurrentUserFromLocalStorage()
         }
-    }, [isAuthenticated, navigate, redirectPath])
+    }, [currentUser])
 
     return (
         <AuthContext.Provider
@@ -97,8 +85,7 @@ export const AuthProvider: FC = () => {
                 currentUser,
                 isAdministrator,
                 isAuthenticating,
-                isAuthenticated,
-                tokensRequestError,
+                authenticationErrorMessage,
                 login,
                 logout,
             }}
