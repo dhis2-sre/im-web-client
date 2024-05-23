@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import { useCallback } from 'react'
 import { RefreshTokenRequest } from '../types'
