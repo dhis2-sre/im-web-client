@@ -18,6 +18,7 @@ export const AuthProvider: FC = () => {
         {
             url: '/tokens',
             method: 'POST',
+            data: {},
         },
         { manual: true, autoCatch: true }
     )
