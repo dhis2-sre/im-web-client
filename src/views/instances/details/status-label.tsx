@@ -7,14 +7,14 @@ type Status = 'NotDeployed' | 'Pending' | 'Booting' | 'Booting (%d)' | 'Running'
 
 const getTagProps = (status: Status) => {
     if (!status) return
-    if (status.includes('Booting') || status === 'Pending') {
-        return { neutral: true };
+    if (status.startsWith('Booting') || status === 'Pending') {
+        return { neutral: true }
     } else if (status === 'Error') {
-        return { negative: true };
+        return { negative: true }
     } else if (status === 'Running') {
-        return { positive: true };
+        return { positive: true }
     } else {
-        return {};
+        return {}
     }
 }
 
