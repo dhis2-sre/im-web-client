@@ -10,26 +10,25 @@ import {
     DataTableColumnHeader,
     DataTableRow,
     IconAdd24,
-    IconWorld24,
     NoticeBox,
-    Tag,
+    IconWorld24,
 } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
+import { MomentExpiresFromNow } from '../../../components';
+import Moment from 'react-moment';
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
 import { GroupsWithDeployments } from '../../../types'
-import { OpenButton } from './open-button'
 import styles from './instances-list.module.css'
-import { DeleteButton } from './delete-menu-button'
-import { Heading, MomentExpiresFromNow } from '../../../components'
-
+import { Heading } from '../../../components'
+import InstanceTag from './instance-tag'
+import { OpenButton } from './open-button';
+import { DeleteButton } from './delete-menu-button';
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const [{ data, error, loading }, refetch] = useAuthAxios<GroupsWithDeployments[]>('/deployments', {
         useCache: false,
     })
-
     return (
         <div className={styles.wrapper}>
             <Heading title="All instances">
@@ -71,9 +70,8 @@ export const InstancesList: FC = () => {
                                 <DataTableColumnHeader>Expires</DataTableColumnHeader>
                                 <DataTableColumnHeader></DataTableColumnHeader>
                             </DataTableRow>
-
                             {group.deployments?.map((deployment) => (
-                                <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
+                                <DataTableRow className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
                                     <DataTableCell>
                                         <span className={styles.verticallyAlignedCellContent}>
                                             {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
@@ -81,10 +79,8 @@ export const InstancesList: FC = () => {
                                     </DataTableCell>
                                     <DataTableCell>{deployment.description}</DataTableCell>
                                     <DataTableCell>
-                                        {deployment.instances?.map(({ stackName }) => (
-                                            <Tag key={stackName} className={styles.stackNameTag}>
-                                                {stackName}
-                                            </Tag>
+                                        {deployment.instances?.map(({ stackName, id }) => (
+                                            <InstanceTag key={stackName} instanceId={id} stackName={stackName} />
                                         ))}
                                     </DataTableCell>
                                     <DataTableCell>
@@ -103,7 +99,7 @@ export const InstancesList: FC = () => {
                                             <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
                                         </ButtonStrip>
                                     </DataTableCell>
-                                </tr>
+                                </DataTableRow>
                             ))}
                         </DataTableBody>
                     ))}
