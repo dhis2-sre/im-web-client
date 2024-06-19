@@ -6,14 +6,15 @@ import styles from './status-label.module.css'
 type Status = 'NotDeployed' | 'Pending' | 'Booting' | 'Booting (%d)' | 'Running' | 'Error'
 
 const getTagProps = (status: Status) => {
-    if (status === 'Booting' || 'Pending' || 'BootingWithRestart') {
-        return { neutral: true } // blue
+    if (!status) return
+    if (status.includes('Booting') || status === 'Pending') {
+        return { neutral: true };
     } else if (status === 'Error') {
-        return { negative: true } // red
+        return { negative: true };
     } else if (status === 'Running') {
-        return { positive: true } // green
+        return { positive: true };
     } else {
-        return {} // grey (if status is unknow, or NotDeployed)
+        return {};
     }
 }
 

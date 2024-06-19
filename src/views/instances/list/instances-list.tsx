@@ -70,8 +70,9 @@ export const InstancesList: FC = () => {
                                 <DataTableColumnHeader>Expires</DataTableColumnHeader>
                                 <DataTableColumnHeader></DataTableColumnHeader>
                             </DataTableRow>
+
                             {group.deployments?.map((deployment) => (
-                                <DataTableRow className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
+                                <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
                                     <DataTableCell>
                                         <span className={styles.verticallyAlignedCellContent}>
                                             {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
@@ -99,7 +100,7 @@ export const InstancesList: FC = () => {
                                             <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
                                         </ButtonStrip>
                                     </DataTableCell>
-                                </DataTableRow>
+                                </tr>
                             ))}
                         </DataTableBody>
                     ))}

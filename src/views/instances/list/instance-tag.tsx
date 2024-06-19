@@ -10,7 +10,8 @@ const InstanceTag = ({ instanceId, stackName }) => {
     });
 
     const getTagProps = () => {
-        if (status === 'Booting' || status === 'Pending' || status === 'BootingWithRestart') {
+        if (!status) return
+        if (status.includes('Booting') || status === 'Pending') {
             return { neutral: true };
         } else if (status === 'Error') {
             return { negative: true };
