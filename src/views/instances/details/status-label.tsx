@@ -2,7 +2,7 @@ import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks'
 import styles from './status-label.module.css'
-import { getTagProps } from '../../../utils/tagUtils'
+import { getTagProps } from '../../../utils/tag-utils'
 
 type Status = 'NotDeployed' | 'Pending' | 'Booting' | 'Booting (%d)' | 'Running' | 'Error'
 
