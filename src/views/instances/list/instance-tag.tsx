@@ -1,7 +1,7 @@
 import { Tag } from '@dhis2/ui'
 import { useAuthAxios } from '../../../hooks'
 import styles from './instances-list.module.css'
-import { getTagProps } from '../../../utils/tag-utils'
+import { getTagProps } from '../../../utils/tag'
 
 const InstanceTag = ({ instanceId, stackName }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
