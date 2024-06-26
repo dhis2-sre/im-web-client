@@ -1,5 +1,5 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
-import { useAlert } from '@dhis2/app-service-alerts';
+import { useAlert } from '@dhis2/app-service-alerts'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
@@ -13,7 +13,7 @@ export const RequestPasswordReset = () => {
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const onInputChange = useCallback(({value}) => {
+    const onInputChange = useCallback(({ value }) => {
         // Always clear the error when user starts typing again
         setErrorMessage('')
         setEmail(value)
