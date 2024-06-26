@@ -17,7 +17,16 @@ export const AuthProvider: FC = () => {
     const [isAuthenticating, setIsAuthenticating] = useState(false)
     const [authenticationErrorMessage, setAuthenticationErrorMessage] = useState('')
     const [redirectPath, setRedirectPath] = useState('')
-    const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUserFromLocalStorage)
+    const [currentUser, _setCurrentUser] = useState<User | null>(getCurrentUserFromLocalStorage)
+    const setCurrentUser = useCallback((nextUser) => {
+        _setCurrentUser(nextUser)
+
+        if (nextUser) {
+            setCurrentUserToLocalStorage(nextUser)
+        } else {
+            removeCurrentUserFromLocalStorage()
+        }
+    }, [])
     const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
 
     const [, getTokens] = useAuthAxios<Tokens>({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
@@ -70,14 +79,6 @@ export const AuthProvider: FC = () => {
             window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorization, false)
         }
     }, [handleUnauthorization])
-
-    useEffect(() => {
-        if (currentUser) {
-            setCurrentUserToLocalStorage(currentUser)
-        } else {
-            removeCurrentUserFromLocalStorage()
-        }
-    }, [currentUser])
 
     return (
         <AuthContext.Provider
