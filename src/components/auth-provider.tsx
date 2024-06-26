@@ -1,12 +1,12 @@
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Login } from '../views/login/index'
 import type { Tokens, User } from '../types'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
+import { Login } from './login'
 
 const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
 const getCurrentUserFromLocalStorage = () => JSON.parse(localStorage.getItem(CURRENT_USER_LOCAL_STORAGE_KEY))
@@ -34,7 +34,7 @@ export const AuthProvider: FC = () => {
     const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 
-    // Redirect if already logged in when on /login
+    // Redirect if already logged
     useEffect(() => {
         async function checkLoggedIn() {
             try {
