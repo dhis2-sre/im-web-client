@@ -38,7 +38,7 @@ export const RequestPasswordReset = () => {
             try {
                 await postRequestPasswordReset({ data: { email } })
                 showAlert({ message: `Password reset link sent to "${email}"`, isCritical: false })
-                navigate('/login')
+                navigate('/')
             } catch (error) {
                 console.error(error)
                 setErrorMessage(error.message)
