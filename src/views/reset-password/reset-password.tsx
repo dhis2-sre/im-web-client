@@ -58,7 +58,7 @@ export const ResetPassword = () => {
                 const password = inputs.password
                 await postResetPassword({ data: { token, password } })
                 showAlert({ message: 'Password has been reset', isCritical: false })
-                navigate('/login')
+                navigate('/')
             } catch (error) {
                 console.error(error)
                 setErrorMessage(error.message)

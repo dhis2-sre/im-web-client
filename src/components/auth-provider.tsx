@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Login } from '../views/login/index'
 import type { Tokens, User } from '../types'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
@@ -33,6 +34,27 @@ export const AuthProvider: FC = () => {
     const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 
+    // Redirect if already logged in when on /login
+    useEffect(() => {
+        async function checkLoggedIn() {
+            try {
+                const userResponse = await getUser()
+
+                if (currentUser.id !== userResponse.data.id) {
+                  setCurrentUser(userResponse.data)
+                }
+
+                setTimeout(() => navigate(redirectPath || '/'), 0)
+            } catch (e) {
+              if (currentUser) {
+                setCurrentUser(null)
+              }
+            }
+        }
+
+        checkLoggedIn()
+    }, [currentUser, navigate])
+
     const login = useCallback(
         async (username: string, password: string) => {
             setIsAuthenticating(true)
@@ -42,7 +64,7 @@ export const AuthProvider: FC = () => {
 
                 setAuthenticationErrorMessage('')
                 setCurrentUser(userResponse.data)
-                navigate(redirectPath || '/instances')
+                navigate(redirectPath || '/')
             } catch (error) {
                 console.error(error)
                 const errorMessage = error instanceof AxiosError || error instanceof Error ? error.message : 'Unknown error'
@@ -59,7 +81,7 @@ export const AuthProvider: FC = () => {
         const response = await requestLogout()
         if (response.status === 200) {
             setCurrentUser(null)
-            navigate('/login')
+            navigate('/')
         }
     }, [requestLogout, navigate])
 
@@ -67,7 +89,7 @@ export const AuthProvider: FC = () => {
         (event) => {
             setRedirectPath(event.detail)
             setCurrentUser(null)
-            navigate('/login')
+            navigate('/')
         },
         [navigate]
     )
@@ -91,7 +113,8 @@ export const AuthProvider: FC = () => {
                 logout,
             }}
         >
-            <Outlet />
+          {currentUser && <Outlet />}
+          {!currentUser && <Login />}
         </AuthContext.Provider>
     )
 }
