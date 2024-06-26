@@ -9,6 +9,8 @@ export const IMAGE_TAG = 'IMAGE_TAG'
 export const IMAGE_PULL_POLICY = 'IMAGE_PULL_POLICY'
 export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const JAVA_OPTS = 'JAVA_OPTS'
+export const PGADMIN_USERNAME = 'PGADMIN_USERNAME'
+export const PGADMIN_PASSWORD = 'PGADMIN_PASSWORD'
 export const OPTIONAL_FIELDS = new Set([JAVA_OPTS])
 export const PUBLIC = 'public'
 
