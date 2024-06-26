@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import path from "path";
+import path from 'path'
 
 const testDbName = 'test/empty-db.sql.gz'
 const testGroup = 'whoami'
@@ -9,11 +9,11 @@ export const deleteTestDatabase = async (page) => {
     await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
     await expect(page.getByRole('cell', { name: testDbName })).toBeVisible()
 
-    const testDatabaseRow = page.getByRole('row', {name: testDbName})
-    await testDatabaseRow.getByRole('button', {name: 'Delete'}).click()
+    const testDatabaseRow = page.getByRole('row', { name: testDbName })
+    await testDatabaseRow.getByRole('button', { name: 'Delete' }).click()
 
     await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(testDbName)
-    await page.getByRole('button', {name: 'Confirm'}).click()
+    await page.getByRole('button', { name: 'Confirm' }).click()
 
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted ${testGroup}/${testDbName}`)).toBeVisible()
 }

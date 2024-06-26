@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
 import styles from './reset-password.module.css'
-import { useAlert } from "@dhis2/app-service-alerts";
+import { useAlert } from '@dhis2/app-service-alerts'
 
 const getInputsErrorMessage = ({ password, confirmPassword }) => {
     if (!password) {
@@ -63,7 +63,6 @@ export const ResetPassword = () => {
                 console.error(error)
                 setErrorMessage(error.message)
             }
-
         },
         [inputs, postResetPassword, navigate]
     )
@@ -76,7 +75,15 @@ export const ResetPassword = () => {
                     Reset password
                 </h2>
                 <InputField disabled={loading} name="password" label="New password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
-                <InputField disabled={loading} name="confirmPassword" label="Confirm new password" type="password" value={inputs.confirmPassword} autoComplete="new-password" onChange={onInputChange} />
+                <InputField
+                    disabled={loading}
+                    name="confirmPassword"
+                    label="Confirm new password"
+                    type="password"
+                    value={inputs.confirmPassword}
+                    autoComplete="new-password"
+                    onChange={onInputChange}
+                />
                 {errorMessage && <Help error>{errorMessage}</Help>}
                 <Button primary type="submit" value="Reset password" disabled={!inputs.password}>
                     Reset password
