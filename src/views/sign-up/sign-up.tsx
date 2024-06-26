@@ -50,7 +50,7 @@ export const SignUp = () => {
                 try {
                     const { email, password } = inputs
                     await postSignUp({ data: { email, password } })
-                    navigate('/login')
+                    navigate('/')
                 } catch (error) {
                     console.error(error)
                     setErrorMessage(error.message)
