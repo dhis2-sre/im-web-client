@@ -13,34 +13,30 @@ if (!baseURL) {
  * is going to be sent via the global window object */
 export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
-// Create an axios instance and we set the baseURL
-const axiosInstance = axios.create({ baseURL, withCredentials: true })
+const createAxiosInstance = () => axios.create({ baseURL, withCredentials: true })
 
-type AxiosRequestConfigWithRetry = AxiosRequestConfig & {
-    _retry: boolean
-}
+// Create an axios instance and we set the baseURL
+const axiosInstance = createAxiosInstance()
 
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        const config = error.config as AxiosRequestConfigWithRetry
-
-        if (error.response.status === 401 && !config._retry) {
-            try {
-                // we use this flag to avoid retrying indefinitely if
-                // getting a refresh token fails for any reason
-                config._retry = true
-                await axiosInstance.post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })
-                return axios(config)
-            } catch (refreshError) {
-                if (refreshError.response.status === 400) {
-                    dispatchUnauthorizedEvent()
-                }
-                return Promise.reject(refreshError)
-            }
+        if (error.response?.status !== 401) {
+            return Promise.reject(error)
         }
 
-        return Promise.reject(error)
+        try {
+            const result = await createAxiosInstance().post<RefreshTokenRequest>(
+                '/refresh',
+                null,
+                { headers: { 'Content-Type': 'application/json' } }
+            )
+
+            return axios(error.config)
+        } catch (refreshError) {
+            dispatchUnauthorizedEvent()
+            return Promise.reject(refreshError)
+        }
     }
 )
 
