@@ -48,7 +48,7 @@ export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refet
     return (
         <>
             <span ref={anchor}>
-                <Button onClick={togglePopover} dataTest='instances-list-menu-button' small secondary loading={loading} icon={<IconMore24 />} />
+                <Button onClick={togglePopover} dataTest="instances-list-menu-button" small secondary loading={loading} icon={<IconMore24 />} />
             </span>
             {open && (
                 <Popover onClickOutside={togglePopover} reference={anchor} placement="bottom-start">

@@ -1,13 +1,11 @@
 import { createContext } from 'react'
 import type { User } from '../types'
-import { AxiosError } from 'axios'
 
 type AuthContextApi = {
     currentUser: User | null
     isAdministrator: boolean
     isAuthenticating: boolean
-    isAuthenticated: boolean
-    tokensRequestError: AxiosError | null
+    authenticationErrorMessage: string
     login: (username: string, password: string) => Promise<void>
     logout: () => Promise<void>
 }
@@ -19,8 +17,7 @@ export const AuthContext = createContext<AuthContextApi>({
     currentUser: null,
     isAdministrator: false,
     isAuthenticating: false,
-    isAuthenticated: false,
-    tokensRequestError: null,
+    authenticationErrorMessage: '',
     login: throwIfUninitialized,
     logout: throwIfUninitialized,
 })

@@ -8,7 +8,6 @@ export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)
 
 export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text' }) => {
     const validate = type === 'email' ? validateEmail : isRequired(parameterName) ? hasValue : undefined
-    console.log(displayName, 'displayName')
     return (
         <Field
             required={isRequired(parameterName)}
