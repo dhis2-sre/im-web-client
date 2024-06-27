@@ -7,7 +7,7 @@ import { ParameterField } from './fields/parameter-field'
 import styles from './styles.module.css'
 
 export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin'
-export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_USERNAME' | 'PGADMIN_PASSWORD'
+export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_EMAIL' | 'PGADMIN_PASSWORD'
 export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryField>>
 
 export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {

@@ -3,6 +3,7 @@ ls:
         .dir: kebab-case
         .ts: kebab-case
         .tsx: kebab-case
+        .test.tsx: kebab-case
         .d.ts: kebab-case
         .module.css: kebab-case
 
