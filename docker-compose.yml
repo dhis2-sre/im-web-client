@@ -1,4 +1,3 @@
-version: "3.6"
 services:
     prod:
         image: dhis2/im-web-client:${IMAGE_TAG:-latest}
@@ -25,7 +24,7 @@ services:
             - "3000:3000"
 
     e2e-test:
-        image: mcr.microsoft.com/playwright:latest
+        image: mcr.microsoft.com/playwright:v1.44.1-jammy
         stdin_open: true
         tty: true
         command: sh -c "yarn install --frozen-lockfile && npx playwright test"
