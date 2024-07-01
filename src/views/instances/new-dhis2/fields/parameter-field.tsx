@@ -1,5 +1,15 @@
 import type { FC } from 'react'
-import { IMAGE_TAG, IMAGE_REPOSITORY, DATABASE_ID, IMAGE_PULL_POLICY, FLYWAY_MIGRATE_OUT_OF_ORDER, FLYWAY_REPAIR_BEFORE_MIGRATION, INSTALL_REDIS } from '../constants'
+import {
+    IMAGE_TAG,
+    IMAGE_REPOSITORY,
+    DATABASE_ID,
+    IMAGE_PULL_POLICY,
+    FLYWAY_MIGRATE_OUT_OF_ORDER,
+    FLYWAY_REPAIR_BEFORE_MIGRATION,
+    INSTALL_REDIS,
+    PGADMIN_USERNAME,
+    PGADMIN_PASSWORD,
+} from '../constants'
 import { IntergrationParameterSelect } from './intergration-parameter-select'
 import { ImageRepositorySelect } from './image-repository-select'
 import { ImageTagSelect } from './image-tag-select'
@@ -11,6 +21,7 @@ export type ParameterFieldProps = {
     displayName: string
     parameterName: string
     stackId: Dhis2StackName
+    type?: string
 }
 
 export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {
@@ -26,6 +37,10 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
         case INSTALL_REDIS:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
+        case PGADMIN_USERNAME:
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" />
+        case PGADMIN_PASSWORD:
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" />
         default:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} />
     }

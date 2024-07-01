@@ -1,67 +1,95 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FC } from 'react'
-import { getAccessToken, isLoggedIn, setAuthTokens, clearAuthTokens } from 'axios-jwt'
-import jwtDecode, { JwtPayload } from 'jwt-decode'
-import type { User, Tokens } from '../types'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { Tokens, User } from '../types'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { AxiosError } from 'axios'
+import { Login } from './login'
 
-interface JwtPayloadWithUser extends JwtPayload {
-    user: User
-}
+const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
+const getCurrentUserFromLocalStorage = () => JSON.parse(localStorage.getItem(CURRENT_USER_LOCAL_STORAGE_KEY))
+const setCurrentUserToLocalStorage = (user: User) => localStorage.setItem(CURRENT_USER_LOCAL_STORAGE_KEY, JSON.stringify(user))
+const removeCurrentUserFromLocalStorage = () => localStorage.removeItem(CURRENT_USER_LOCAL_STORAGE_KEY)
 
 export const AuthProvider: FC = () => {
     const navigate = useNavigate()
-    const [{ loading: isAuthenticating, error: tokensRequestError }, getTokens] = useAuthAxios<Tokens>(
-        {
-            url: '/tokens',
-            method: 'POST',
-        },
-        { manual: true, autoCatch: true }
-    )
-    const [, requestLogout] = useAuthAxios(
-        {
-            method: 'DELETE',
-            url: '/users',
-        },
-        { manual: true }
-    )
-    const [accessToken, setAccessToken] = useState(getAccessToken())
-    const isAuthenticated = useMemo(isLoggedIn, [accessToken])
-    const currentUser = useMemo<User>(() => (accessToken ? jwtDecode<JwtPayloadWithUser>(accessToken).user : null), [accessToken])
-    const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
+    const [isAuthenticating, setIsAuthenticating] = useState(false)
+    const [authenticationErrorMessage, setAuthenticationErrorMessage] = useState('')
     const [redirectPath, setRedirectPath] = useState('')
+    const [currentUser, _setCurrentUser] = useState<User | null>(getCurrentUserFromLocalStorage)
+    const setCurrentUser = useCallback((nextUser) => {
+        _setCurrentUser(nextUser)
+
+        if (nextUser) {
+            setCurrentUserToLocalStorage(nextUser)
+        } else {
+            removeCurrentUserFromLocalStorage()
+        }
+    }, [])
+    const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
+
+    const [, getTokens] = useAuthAxios<Tokens>({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
+    const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
+    const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
+
+    // Redirect if already logged
+    useEffect(() => {
+        async function checkLoggedIn() {
+            try {
+                const userResponse = await getUser()
+
+                if (currentUser.id !== userResponse.data.id) {
+                  setCurrentUser(userResponse.data)
+                }
+
+                setTimeout(() => navigate(redirectPath || '/'), 0)
+            } catch (e) {
+              if (currentUser) {
+                setCurrentUser(null)
+              }
+            }
+        }
+
+        checkLoggedIn()
+    }, [currentUser, navigate])
 
     const login = useCallback(
-        async (username, password) => {
-            const result = await getTokens({ auth: { username, password } })
-            if (result?.data) {
-                const { accessToken, refreshToken } = result.data
-                setAuthTokens({ accessToken, refreshToken })
-                setAccessToken(accessToken)
+        async (username: string, password: string) => {
+            setIsAuthenticating(true)
+            try {
+                await getTokens({ auth: { username, password } })
+                const userResponse = await getUser()
+
+                setAuthenticationErrorMessage('')
+                setCurrentUser(userResponse.data)
+                navigate(redirectPath || '/')
+            } catch (error) {
+                console.error(error)
+                const errorMessage = error instanceof AxiosError || error instanceof Error ? error.message : 'Unknown error'
+                setAuthenticationErrorMessage(errorMessage)
+                setCurrentUser(null)
+            } finally {
+                setIsAuthenticating(false)
             }
         },
-        [getTokens]
+        [getTokens, getUser, navigate, redirectPath]
     )
 
     const logout = useCallback(async () => {
-        if (isLoggedIn()) {
-            await requestLogout()
-            clearAuthTokens()
-            setAccessToken(null)
-        } else {
-            return Promise.reject('Logout error: Already logged out')
+        const response = await requestLogout()
+        if (response.status === 200) {
+            setCurrentUser(null)
+            navigate('/')
         }
-    }, [requestLogout])
+    }, [requestLogout, navigate])
 
     const handleUnauthorization = useCallback(
         (event) => {
             setRedirectPath(event.detail)
-            clearAuthTokens()
-            setAccessToken(null)
-            navigate('/login')
+            setCurrentUser(null)
+            navigate('/')
         },
         [navigate]
     )
@@ -74,36 +102,19 @@ export const AuthProvider: FC = () => {
         }
     }, [handleUnauthorization])
 
-    useEffect(() => {
-        const { pathname } = window.location
-
-        if (pathname !== redirectPath) {
-            if (!isAuthenticated && pathname !== '/login') {
-                setRedirectPath(pathname)
-                navigate('/login')
-            }
-            if (isAuthenticated) {
-                if (pathname === '/login') {
-                    navigate(redirectPath ?? '/instances')
-                }
-                setRedirectPath('')
-            }
-        }
-    }, [isAuthenticated, navigate, redirectPath])
-
     return (
         <AuthContext.Provider
             value={{
                 currentUser,
                 isAdministrator,
                 isAuthenticating,
-                isAuthenticated,
-                tokensRequestError,
+                authenticationErrorMessage,
                 login,
                 logout,
             }}
         >
-            <Outlet />
+          {currentUser && <Outlet />}
+          {!currentUser && <Login />}
         </AuthContext.Provider>
     )
 }
