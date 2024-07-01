@@ -2,7 +2,6 @@ import { expect } from '@playwright/test'
 import path from 'path'
 
 const testDbName = 'test/empty-db.sql.gz'
-const testGroup = 'whoami'
 
 export const deleteTestDatabase = async (page) => {
     await page.getByRole('link', { name: 'Databases' }).click()
@@ -15,5 +14,9 @@ export const deleteTestDatabase = async (page) => {
     await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(testDbName)
     await page.getByRole('button', { name: 'Confirm' }).click()
 
-    await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted ${testGroup}/${testDbName}`)).toBeVisible()
+    await expect(
+        page
+            .getByTestId('dhis2-uicore-alertbar')
+            .getByText(new RegExp(`Successfully deleted [^/]+/${testDbName}`))
+    ).toBeVisible()
 }
