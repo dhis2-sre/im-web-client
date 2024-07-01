@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import {login, logout, uploadTestDatabase, deleteTestDatabase} from './utils'
+import { login, logout, uploadTestDatabase, deleteTestDatabase } from './utils'
 
 test.describe('new instance', () => {
     test.beforeEach(async ({ page }) => {
@@ -26,21 +26,23 @@ test.describe('new instance', () => {
         await expect(page.getByRole('group', { name: 'Database' })).toBeVisible()
 
         const randomName = 'e2e-test-' + Math.random().toString().substring(8)
-        await page.getByRole('textbox', { name: 'Name'}).fill(randomName)
-        await page.getByRole('textbox', { name: 'Description'}).fill('This is an e2e test instance.')
+        await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
+        await page.getByRole('textbox', { name: 'Description' }).fill('This is an e2e test instance.')
 
+        const dbName = 'whoami/test/empty-db.sql.gz'
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
-        await page.getByText('whoami/test/empty-db.sql.gz').click()
+        await page.locator('#filter').fill(dbName)
+        await page.getByText(dbName).click()
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({timeout: 10000})
+        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 10000 })
 
-        const newInstanceRow = page.getByRole('row', {name: randomName})
-        await newInstanceRow.getByRole('button', {name: 'Delete'}).click()
+        const newInstanceRow = page.getByRole('row', { name: randomName })
+        await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
-        await page.getByRole('button', {name: 'Confirm'}).click()
+        await page.getByRole('button', { name: 'Confirm' }).click()
 
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({timeout: 10000})
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 10000 })
     })
 })

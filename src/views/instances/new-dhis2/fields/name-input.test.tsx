@@ -6,6 +6,7 @@ describe('<NameInput /> - DNS Label validation', () => {
             expect(validateDnsLabel(name)).toBe(undefined)
         })
     })
+
     describe('it rejects invalid names', () => {
         test.each([
             { name: '', errorMessage: 'Name is required' },
