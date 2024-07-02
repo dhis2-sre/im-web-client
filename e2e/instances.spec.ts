@@ -43,10 +43,6 @@ test.describe('new instance', () => {
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
         await page.getByRole('button', { name: 'Confirm' }).click()
 
-        await expect(
-          page
-            .getByTestId('dhis2-uicore-alertbar')
-            .getByText(`Successfully deleted instance "${randomName}"`)
-        ).toBeVisible({ timeout: 30000 })
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 30000 })
     })
 })
