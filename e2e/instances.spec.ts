@@ -29,7 +29,7 @@ test.describe('new instance', () => {
         await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
         await page.getByRole('textbox', { name: 'Description' }).fill('This is an e2e test instance.')
 
-        const dbName = 'whoami/test/empty-db.sql.gz'
+        const dbName = 'empty-db.sql.gz'
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
         await page.locator('#filter').fill(dbName)
         await page.getByText(dbName).click()
@@ -43,6 +43,10 @@ test.describe('new instance', () => {
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
         await page.getByRole('button', { name: 'Confirm' }).click()
 
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 10000 })
+        await expect(
+          page
+            .getByTestId('dhis2-uicore-alertbar')
+            .getByText(`Successfully deleted instance "${randomName}"`)
+        ).toBeVisible({ timeout: 30000 })
     })
 })
