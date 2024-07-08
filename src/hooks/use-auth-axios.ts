@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
 )
 
 const dispatchUnauthorizedEvent = () => {
-    const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })
+    const event = new CustomEvent(UNAUTHORIZED_EVENT)
     window.dispatchEvent(event)
 }
 
