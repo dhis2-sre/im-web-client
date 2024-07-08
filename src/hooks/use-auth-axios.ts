@@ -26,7 +26,7 @@ axiosInstance.interceptors.response.use(
         }
 
         try {
-            const result = await createAxiosInstance().post<RefreshTokenRequest>(
+            await createAxiosInstance().post<RefreshTokenRequest>(
                 '/refresh',
                 null,
                 { headers: { 'Content-Type': 'application/json' } }

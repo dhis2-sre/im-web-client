@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Tokens, User } from '../types'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
@@ -18,7 +18,7 @@ export const AuthProvider: FC = () => {
     const [isAuthenticating, setIsAuthenticating] = useState(false)
     const [authenticationErrorMessage, setAuthenticationErrorMessage] = useState('')
     const [redirectPath, setRedirectPath] = useState('')
-    const [currentUser, _setCurrentUser] = useState<User | null>(getCurrentUserFromLocalStorage)
+    const [currentUser, _setCurrentUser] = useState<User | null>(() => getCurrentUserFromLocalStorage())
     const setCurrentUser = useCallback((nextUser) => {
         _setCurrentUser(nextUser)
 
@@ -34,26 +34,34 @@ export const AuthProvider: FC = () => {
     const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 
-    // Redirect if already logged
-    useEffect(() => {
-        async function checkLoggedIn() {
-            try {
-                const userResponse = await getUser()
+    const checkedUserRef = useRef(null)
+    useEffect(
+        () => {
+            async function checkLoggedIn() {
+                try {
+                    const userResponse = await getUser()
 
-                if (currentUser.id !== userResponse.data.id) {
-                  setCurrentUser(userResponse.data)
+                    if (currentUser?.id !== userResponse.data.id) {
+                      setCurrentUser(userResponse.data)
+                    }
+
+                    setTimeout(() => navigate(redirectPath || '/'), 0)
+                } catch (e) {
+                  if (currentUser?.id) {
+                    setCurrentUser(null)
+                  }
                 }
-
-                setTimeout(() => navigate(redirectPath || '/'), 0)
-            } catch (e) {
-              if (currentUser) {
-                setCurrentUser(null)
-              }
             }
-        }
 
-        checkLoggedIn()
-    }, [currentUser, navigate])
+            // We don't want to run this just because the redirectPath changed.
+            // But we need the new values, so we need to add those to the hook's dependency array
+            if (currentUser.id !== checkedUserRef.current) {
+              checkedUserRef.current = currentUser.id
+              checkLoggedIn()
+            }
+        },
+        [currentUser?.id, navigate, getUser, redirectPath, setCurrentUser]
+    )
 
     const login = useCallback(
         async (username: string, password: string) => {
@@ -74,7 +82,7 @@ export const AuthProvider: FC = () => {
                 setIsAuthenticating(false)
             }
         },
-        [getTokens, getUser, navigate, redirectPath]
+        [getTokens, getUser, navigate, redirectPath, setCurrentUser]
     )
 
     const logout = useCallback(async () => {
@@ -83,7 +91,7 @@ export const AuthProvider: FC = () => {
             setCurrentUser(null)
             navigate('/')
         }
-    }, [requestLogout, navigate])
+    }, [requestLogout, navigate, setCurrentUser])
 
     const handleUnauthorization = useCallback(
         (event) => {
@@ -91,7 +99,7 @@ export const AuthProvider: FC = () => {
             setCurrentUser(null)
             navigate('/')
         },
-        [navigate]
+        [navigate, setCurrentUser]
     )
 
     useEffect(() => {

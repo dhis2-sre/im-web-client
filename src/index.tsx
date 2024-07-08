@@ -40,14 +40,25 @@ const router = createBrowserRouter(
     )
 )
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-root.render(
-    <React.StrictMode>
-        <AlertsProvider>
-            <CssReset />
-            <CssVariables colors theme layers spacers elevations />
-            <RouterProvider router={router} />
-            <Alerts />
-        </AlertsProvider>
-    </React.StrictMode>
+function render(tree) {
+    const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
+    if (process.env.REACT_APP_SUPRESS_STRICT_MODE) {
+        return root.render(tree)
+    }
+
+    return root.render(
+        <React.StrictMode>
+            {tree}
+        </React.StrictMode>
+    )
+}
+
+render(
+    <AlertsProvider>
+        <CssReset />
+        <CssVariables colors theme layers spacers elevations />
+        <RouterProvider router={router} />
+        <Alerts />
+    </AlertsProvider>
 )
