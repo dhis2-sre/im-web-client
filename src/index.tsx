@@ -40,7 +40,7 @@ const router = createBrowserRouter(
     )
 )
 
-function render(tree) {
+const render = (tree) => {
     const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
     if (process.env.REACT_APP_SUPRESS_STRICT_MODE) {

@@ -36,7 +36,7 @@ export const AuthProvider: FC = () => {
     const [checkingUser, setCheckingUser] = useState(true)
     useEffect(
         () => {
-            async function checkLoggedIn() {
+            const checkLoggedIn = async () => {
                 try {
                     const userResponse = await getUser()
                     if (currentUser?.id !== userResponse.data.id) {
