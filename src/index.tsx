@@ -43,7 +43,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
-        <AlertsProvider plugin={false} parentAlertsAdd={() => { }} showAlertsInPlugin={false}>
+        <AlertsProvider>
             <CssReset />
             <CssVariables colors theme layers spacers elevations />
             <RouterProvider router={router} />
