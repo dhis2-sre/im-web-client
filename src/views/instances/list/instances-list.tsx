@@ -36,13 +36,11 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
-                <div>
-                    <Checkbox
-                        checked={showOnlyMyInstances}
-                        label="Show only my instances"
-                        onChange={handleCheckboxChange}
-                    />
-                </div>
+                <Checkbox
+                    checked={showOnlyMyInstances}
+                    label="Show only my instances"
+                    onChange={handleCheckboxChange}
+                />
             </Heading>
 
             {error && !data && (
