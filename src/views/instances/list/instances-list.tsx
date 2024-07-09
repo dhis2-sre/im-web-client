@@ -22,7 +22,7 @@ import InstanceTag from './instance-tag'
 import { OpenButton } from './open-button'
 import { Heading, MomentExpiresFromNow } from '../../../components'
 import { DeleteButton } from './delete-menu-button'
-import useDeployments from './useDeployments'
+import useDeployments from './filter-deployments'
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
