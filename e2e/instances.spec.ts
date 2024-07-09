@@ -2,12 +2,17 @@ import { test, expect } from '@playwright/test'
 import { login, logout, uploadTestDatabase, deleteTestDatabase } from './utils'
 
 test.describe('new instance', () => {
+    let dbFileName
+    const dbName = `e2e-test-${Date.now()}`
+
     test.beforeEach(async ({ page }) => {
         await login(page)
-        await uploadTestDatabase(page)
+        const result = await uploadTestDatabase(page, dbName)
+        dbFileName = result.fileName
     })
+
     test.afterEach(async ({ page }) => {
-        await deleteTestDatabase(page)
+        await deleteTestDatabase(page, dbName)
         await logout(page)
     })
 
@@ -29,10 +34,9 @@ test.describe('new instance', () => {
         await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
         await page.getByRole('textbox', { name: 'Description' }).fill('This is an e2e test instance.')
 
-        const dbName = 'empty-db.sql.gz'
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
-        await page.locator('#filter').fill(dbName)
-        await page.getByText(dbName).click()
+        await page.locator('#filter').fill(dbFileName)
+        await page.getByText(dbFileName).click()
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
@@ -43,10 +47,6 @@ test.describe('new instance', () => {
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
         await page.getByRole('button', { name: 'Confirm' }).click()
 
-        await expect(
-          page
-            .getByTestId('dhis2-uicore-alertbar')
-            .getByText(`Successfully deleted instance "${randomName}"`)
-        ).toBeVisible({ timeout: 30000 })
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 30000 })
     })
 })
