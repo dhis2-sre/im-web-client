@@ -27,9 +27,6 @@ export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
 
-    const handleCheckboxChange = () => {
-        setShowOnlyMyInstances(!showOnlyMyInstances)
-    }
     return (
         <div className={styles.wrapper}>
             <Heading title="All instances">
@@ -39,7 +36,7 @@ export const InstancesList: FC = () => {
                 <Checkbox
                     checked={showOnlyMyInstances}
                     label="Show only my instances"
-                    onChange={handleCheckboxChange}
+                    onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)}
                 />
             </Heading>
 
