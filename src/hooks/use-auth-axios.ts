@@ -26,7 +26,7 @@ axiosInstance.interceptors.response.use(
         }
 
         try {
-            const result = await createAxiosInstance().post<RefreshTokenRequest>(
+            await createAxiosInstance().post<RefreshTokenRequest>(
                 '/refresh',
                 null,
                 { headers: { 'Content-Type': 'application/json' } }
@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
 )
 
 const dispatchUnauthorizedEvent = () => {
-    const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })
+    const event = new CustomEvent(UNAUTHORIZED_EVENT)
     window.dispatchEvent(event)
 }
 
