@@ -10,15 +10,31 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout } from './components'
 import './index.module.css'
-import { DatabasesList, DeploymentDetails, InstancesList, NewDhis2Instance, RequestPasswordReset, ResetPassword, SignUp, StackDetails, StacksList } from './views'
-import { UsersList } from './views/users'
-import { GroupsList } from './views/groups'
-import { Validate } from './views/validate'
-import { UserDetails } from './views/users/user-details'
+import {
+  DatabasesList,
+  DeploymentDetails,
+  GroupsList,
+  InstancesList,
+  NewDhis2Instance,
+  RequestPasswordReset,
+  ResetPassword,
+  RunningInstances,
+  SignUp,
+  StackDetails,
+  StacksList,
+  UserDetails,
+  UsersList,
+  Validate,
+} from './views'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
+        		<Route
+          		// @TODO(DEVOPS-272): what path should we use?
+          		path="/running-instances"
+          		element={<RunningInstances />}
+        		/>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/validate/:token" element={<Validate />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
