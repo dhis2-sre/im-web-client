@@ -1,15 +1,5 @@
 import type { FC } from 'react'
-import {
-    IMAGE_TAG,
-    IMAGE_REPOSITORY,
-    DATABASE_ID,
-    IMAGE_PULL_POLICY,
-    FLYWAY_MIGRATE_OUT_OF_ORDER,
-    FLYWAY_REPAIR_BEFORE_MIGRATION,
-    INSTALL_REDIS,
-    PGADMIN_USERNAME,
-    PGADMIN_PASSWORD,
-} from '../constants'
+import { IMAGE_TAG, IMAGE_REPOSITORY, DATABASE_ID, IMAGE_PULL_POLICY, FLYWAY_MIGRATE_OUT_OF_ORDER, FLYWAY_REPAIR_BEFORE_MIGRATION, INSTALL_REDIS, PGADMIN_USERNAME, PGADMIN_PASSWORD } from '../constants'
 import { IntergrationParameterSelect } from './intergration-parameter-select'
 import { ImageRepositorySelect } from './image-repository-select'
 import { ImageTagSelect } from './image-tag-select'

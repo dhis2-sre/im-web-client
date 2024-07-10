@@ -44,7 +44,7 @@ export const RequestPasswordReset = () => {
                 setErrorMessage(error.message)
             }
         },
-        [email, postRequestPasswordReset, navigate]
+        [email, postRequestPasswordReset, navigate, showAlert]
     )
 
     return (
