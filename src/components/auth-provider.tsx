@@ -1,95 +1,108 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FC } from 'react'
-import { getAccessToken, isLoggedIn, setAuthTokens, clearAuthTokens } from 'axios-jwt'
-import jwtDecode, { JwtPayload } from 'jwt-decode'
-import type { User, Tokens } from '../types'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { Tokens, User } from '../types'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { AxiosError } from 'axios'
+import { Login } from './login'
 
-interface JwtPayloadWithUser extends JwtPayload {
-    user: User
-}
+const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
+const getCurrentUserFromLocalStorage = () => JSON.parse(localStorage.getItem(CURRENT_USER_LOCAL_STORAGE_KEY))
+const setCurrentUserToLocalStorage = (user: User) => localStorage.setItem(CURRENT_USER_LOCAL_STORAGE_KEY, JSON.stringify(user))
+const removeCurrentUserFromLocalStorage = () => localStorage.removeItem(CURRENT_USER_LOCAL_STORAGE_KEY)
 
 export const AuthProvider: FC = () => {
     const navigate = useNavigate()
-    const [{ loading: isAuthenticating, error: tokensRequestError }, getTokens] = useAuthAxios<Tokens>(
-        {
-            url: '/tokens',
-            method: 'POST',
-        },
-        { manual: true, autoCatch: true }
-    )
-    const [, requestLogout] = useAuthAxios(
-        {
-            method: 'DELETE',
-            url: '/users',
-        },
-        { manual: true }
-    )
-    const [accessToken, setAccessToken] = useState(getAccessToken())
-    const isAuthenticated = useMemo(isLoggedIn, [accessToken])
-    const currentUser = useMemo<User>(() => (accessToken ? jwtDecode<JwtPayloadWithUser>(accessToken).user : null), [accessToken])
-    const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
-    const [redirectPath, setRedirectPath] = useState('')
+    const [isAuthenticating, setIsAuthenticating] = useState(false)
+    const [authenticationErrorMessage, setAuthenticationErrorMessage] = useState('')
+    const [currentUser, _setCurrentUser] = useState<User | null>(() => getCurrentUserFromLocalStorage())
+    const setCurrentUser = useCallback((nextUser) => {
+        _setCurrentUser(nextUser)
 
-    const login = useCallback(
-        async (username, password) => {
-            const result = await getTokens({ auth: { username, password } })
-            if (result?.data) {
-                const { accessToken, refreshToken } = result.data
-                setAuthTokens({ accessToken, refreshToken })
-                setAccessToken(accessToken)
+        if (nextUser) {
+            setCurrentUserToLocalStorage(nextUser)
+        } else {
+            removeCurrentUserFromLocalStorage()
+        }
+    }, [])
+    const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
+
+    const [, getTokens] = useAuthAxios<Tokens>({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
+    const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
+    const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
+
+    const [checkingUser, setCheckingUser] = useState(true)
+    useEffect(
+        () => {
+            const checkLoggedIn = async () => {
+                try {
+                    const userResponse = await getUser()
+                    if (currentUser?.id !== userResponse.data.id) {
+                      setCurrentUser(userResponse.data)
+                    }
+                } catch (e) {
+                  if (currentUser?.id) {
+                    setCurrentUser(null)
+                    navigate('/')
+                  }
+                }
+            }
+
+            if (currentUser?.id) {
+              checkLoggedIn().finally(() => setCheckingUser(false))
+            } else {
+              setCheckingUser(false)
             }
         },
-        [getTokens]
+
+        // We only want to check when the user opens the app
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    )
+
+    const login = useCallback(
+        async (username: string, password: string) => {
+            setIsAuthenticating(true)
+            try {
+                await getTokens({ auth: { username, password } })
+                const userResponse = await getUser()
+
+                setAuthenticationErrorMessage('')
+                setCurrentUser(userResponse.data)
+            } catch (error) {
+                console.error(error)
+                const errorMessage = error instanceof AxiosError || error instanceof Error ? error.message : 'Unknown error'
+                setAuthenticationErrorMessage(errorMessage)
+                setCurrentUser(null)
+            } finally {
+                setIsAuthenticating(false)
+            }
+        },
+        [getTokens, getUser, setCurrentUser]
     )
 
     const logout = useCallback(async () => {
-        if (isLoggedIn()) {
-            await requestLogout()
-            clearAuthTokens()
-            setAccessToken(null)
-        } else {
-            return Promise.reject('Logout error: Already logged out')
+        const response = await requestLogout()
+        if (response.status === 200) {
+            setCurrentUser(null)
+            navigate('/')
         }
-    }, [requestLogout])
-
-    const handleUnauthorization = useCallback(
-        (event) => {
-            setRedirectPath(event.detail)
-            clearAuthTokens()
-            setAccessToken(null)
-            navigate('/login')
-        },
-        [navigate]
-    )
+    }, [requestLogout, navigate, setCurrentUser])
 
     useEffect(() => {
+        const handleUnauthorization = (event) => {
+            setCurrentUser(null)
+            navigate('/')
+        }
+
         window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorization, false)
 
         return () => {
             window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorization, false)
         }
-    }, [handleUnauthorization])
-
-    useEffect(() => {
-        const { pathname } = window.location
-
-        if (pathname !== redirectPath) {
-            if (!isAuthenticated && pathname !== '/login') {
-                setRedirectPath(pathname)
-                navigate('/login')
-            }
-            if (isAuthenticated) {
-                if (pathname === '/login') {
-                    navigate(redirectPath ?? '/instances')
-                }
-                setRedirectPath('')
-            }
-        }
-    }, [isAuthenticated, navigate, redirectPath])
+    }, [setCurrentUser, navigate])
 
     return (
         <AuthContext.Provider
@@ -97,13 +110,22 @@ export const AuthProvider: FC = () => {
                 currentUser,
                 isAdministrator,
                 isAuthenticating,
-                isAuthenticated,
-                tokensRequestError,
+                authenticationErrorMessage,
                 login,
                 logout,
             }}
         >
-            <Outlet />
+            {// We're not validating a user on app load and there's a user
+             !checkingUser && currentUser && <Outlet />}
+
+            {// We're not validating a user on app load and there's a user
+             // and there's no user in the first place
+             // -> Prevents loading screen
+             !checkingUser && !currentUser && <Login />}
+
+            {// We won't display anything while we're still checking the user initially
+             // to prevent flickering
+             ''}
         </AuthContext.Provider>
     )
 }

@@ -10,25 +10,22 @@ import {
     DataTableColumnHeader,
     DataTableRow,
     IconAdd24,
-    IconWorld24,
     NoticeBox,
-    Tag,
+    IconWorld24,
+    Checkbox
 } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { useAuthAxios } from '../../../hooks'
-import { GroupsWithDeployments } from '../../../types'
-import { OpenButton } from './open-button'
 import styles from './instances-list.module.css'
-import { DeleteButton } from './delete-menu-button'
+import InstanceTag from './instance-tag'
+import { OpenButton } from './open-button'
 import { Heading, MomentExpiresFromNow } from '../../../components'
-
+import { DeleteButton } from './delete-menu-button'
+import useDeployments from './filter-deployments'
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
-    const [{ data, error, loading }, refetch] = useAuthAxios<GroupsWithDeployments[]>('/deployments', {
-        useCache: false,
-    })
+    const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
 
     return (
         <div className={styles.wrapper}>
@@ -36,6 +33,11 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
+                <Checkbox
+                    checked={showOnlyMyInstances}
+                    label="Show only my instances"
+                    onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)}
+                />
             </Heading>
 
             {error && !data && (
@@ -81,10 +83,8 @@ export const InstancesList: FC = () => {
                                     </DataTableCell>
                                     <DataTableCell>{deployment.description}</DataTableCell>
                                     <DataTableCell>
-                                        {deployment.instances?.map(({ stackName }) => (
-                                            <Tag key={stackName} className={styles.stackNameTag}>
-                                                {stackName}
-                                            </Tag>
+                                        {deployment.instances?.map(({ stackName, id }) => (
+                                            <InstanceTag key={stackName} instanceId={id} stackName={stackName} />
                                         ))}
                                     </DataTableCell>
                                     <DataTableCell>

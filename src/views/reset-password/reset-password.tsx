@@ -1,13 +1,12 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../hooks'
-import styles from './sign-up.module.css'
+import styles from './reset-password.module.css'
+import { useAlert } from '@dhis2/app-service-alerts'
 
-const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
-    if (!email) {
-        return 'Please provide an email address'
-    } else if (!password) {
+const getInputsErrorMessage = ({ password, confirmPassword }) => {
+    if (!password) {
         return 'Please provide a password'
     } else if (!confirmPassword) {
         return 'Please confirm your password'
@@ -18,14 +17,18 @@ const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
     }
 }
 
-export const SignUp = () => {
+export const ResetPassword = () => {
     const navigate = useNavigate()
+    const { token } = useParams()
     const [inputs, setInputs] = useState({
-        email: '',
         password: '',
         confirmPassword: '',
     })
     const [errorMessage, setErrorMessage] = useState('')
+    const { show: showAlert } = useAlert(
+        ({ message }) => message,
+        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
+    )
     const onInputChange = useCallback(({ value, name }) => {
         // Always clear the error when user starts typing again
         setErrorMessage('')
@@ -34,10 +37,10 @@ export const SignUp = () => {
             [name]: value,
         }))
     }, [])
-    const [{ loading }, postSignUp] = useAuthAxios(
+    const [{ loading }, postResetPassword] = useAuthAxios(
         {
-            url: '/users',
             method: 'POST',
+            url: '/users/reset-password',
         },
         { manual: true }
     )
@@ -46,20 +49,22 @@ export const SignUp = () => {
         async (event) => {
             event.preventDefault()
 
-            if (inputs.email && inputs.password && inputs.password === inputs.confirmPassword) {
-                try {
-                    const { email, password } = inputs
-                    await postSignUp({ data: { email, password } })
-                    navigate('/')
-                } catch (error) {
-                    console.error(error)
-                    setErrorMessage(error.message)
-                }
-            } else {
+            if (!inputs.password) {
                 setErrorMessage(getInputsErrorMessage(inputs))
+                return
+            }
+
+            try {
+                const password = inputs.password
+                await postResetPassword({ data: { token, password } })
+                showAlert({ message: 'Password has been reset', isCritical: false })
+                navigate('/')
+            } catch (error) {
+                console.error(error)
+                setErrorMessage(error.message)
             }
         },
-        [inputs, postSignUp, navigate]
+        [inputs, postResetPassword, navigate, showAlert, token]
     )
 
     return (
@@ -67,22 +72,21 @@ export const SignUp = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance Manager sign up
+                    Reset password
                 </h2>
-                <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
-                <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+                <InputField disabled={loading} name="password" label="New password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
                 <InputField
                     disabled={loading}
                     name="confirmPassword"
-                    label="Confirm password"
+                    label="Confirm new password"
                     type="password"
                     value={inputs.confirmPassword}
                     autoComplete="new-password"
                     onChange={onInputChange}
                 />
                 {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Sign up" disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}>
-                    Sign up
+                <Button primary type="submit" value="Reset password" disabled={!inputs.password}>
+                    Reset password
                 </Button>
             </Card>
         </form>
