@@ -9,6 +9,7 @@ import {
     INSTALL_REDIS,
     PGADMIN_USERNAME,
     PGADMIN_PASSWORD,
+    PGADMIN_CONFIRM_PASSWORD
 } from '../constants'
 import { IntergrationParameterSelect } from './intergration-parameter-select'
 import { ImageRepositorySelect } from './image-repository-select'
@@ -16,6 +17,7 @@ import { ImageTagSelect } from './image-tag-select'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox'
 import { TextParameterInput } from './text-parameter-input'
 import { Dhis2StackName } from '../parameter-fieldset'
+import { ConfirmPasswordInput } from './confirm-password'
 
 export type ParameterFieldProps = {
     displayName: string
@@ -41,6 +43,8 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" />
         case PGADMIN_PASSWORD:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" />
+        case PGADMIN_CONFIRM_PASSWORD:
+            return <ConfirmPasswordInput stackId={stackId} />
         default:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} />
     }

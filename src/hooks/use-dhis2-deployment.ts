@@ -84,7 +84,12 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                 await addStackToDeployment(deploymentId, STACK_NAMES.CORE, values)
 
                 if (values[`include_${STACK_NAMES.PG_ADMIN}`]) {
-                    await addStackToDeployment(deploymentId, STACK_NAMES.PG_ADMIN, values)
+                    const { PGADMIN_CONFIRM_PASSWORD, ...valuesWithoutConfirmPassword } = values[STACK_NAMES.PG_ADMIN]
+                    const newObjectWithoutConfirmPassword = {
+                        ...values,
+                        pgadmin: valuesWithoutConfirmPassword,
+                    }
+                    await addStackToDeployment(deploymentId, STACK_NAMES.PG_ADMIN, newObjectWithoutConfirmPassword)
                 }
 
                 await deployDeployment(deploymentId)
