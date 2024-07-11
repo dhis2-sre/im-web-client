@@ -17,8 +17,7 @@ export const AuthProvider: FC = () => {
     const navigate = useNavigate()
     const [isAuthenticating, setIsAuthenticating] = useState(false)
     const [authenticationErrorMessage, setAuthenticationErrorMessage] = useState('')
-    const [redirectPath, setRedirectPath] = useState('')
-    const [currentUser, _setCurrentUser] = useState<User | null>(getCurrentUserFromLocalStorage)
+    const [currentUser, _setCurrentUser] = useState<User | null>(() => getCurrentUserFromLocalStorage())
     const setCurrentUser = useCallback((nextUser) => {
         _setCurrentUser(nextUser)
 
@@ -34,26 +33,34 @@ export const AuthProvider: FC = () => {
     const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 
-    // Redirect if already logged
-    useEffect(() => {
-        async function checkLoggedIn() {
-            try {
-                const userResponse = await getUser()
-
-                if (currentUser.id !== userResponse.data.id) {
-                  setCurrentUser(userResponse.data)
+    const [checkingUser, setCheckingUser] = useState(true)
+    useEffect(
+        () => {
+            const checkLoggedIn = async () => {
+                try {
+                    const userResponse = await getUser()
+                    if (currentUser?.id !== userResponse.data.id) {
+                      setCurrentUser(userResponse.data)
+                    }
+                } catch (e) {
+                  if (currentUser?.id) {
+                    setCurrentUser(null)
+                    navigate('/')
+                  }
                 }
-
-                setTimeout(() => navigate(redirectPath || '/'), 0)
-            } catch (e) {
-              if (currentUser) {
-                setCurrentUser(null)
-              }
             }
-        }
 
-        checkLoggedIn()
-    }, [currentUser, navigate])
+            if (currentUser?.id) {
+              checkLoggedIn().finally(() => setCheckingUser(false))
+            } else {
+              setCheckingUser(false)
+            }
+        },
+
+        // We only want to check when the user opens the app
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    )
 
     const login = useCallback(
         async (username: string, password: string) => {
@@ -64,7 +71,6 @@ export const AuthProvider: FC = () => {
 
                 setAuthenticationErrorMessage('')
                 setCurrentUser(userResponse.data)
-                navigate(redirectPath || '/')
             } catch (error) {
                 console.error(error)
                 const errorMessage = error instanceof AxiosError || error instanceof Error ? error.message : 'Unknown error'
@@ -74,7 +80,7 @@ export const AuthProvider: FC = () => {
                 setIsAuthenticating(false)
             }
         },
-        [getTokens, getUser, navigate, redirectPath]
+        [getTokens, getUser, setCurrentUser]
     )
 
     const logout = useCallback(async () => {
@@ -83,24 +89,20 @@ export const AuthProvider: FC = () => {
             setCurrentUser(null)
             navigate('/')
         }
-    }, [requestLogout, navigate])
-
-    const handleUnauthorization = useCallback(
-        (event) => {
-            setRedirectPath(event.detail)
-            setCurrentUser(null)
-            navigate('/')
-        },
-        [navigate]
-    )
+    }, [requestLogout, navigate, setCurrentUser])
 
     useEffect(() => {
+        const handleUnauthorization = (event) => {
+            setCurrentUser(null)
+            navigate('/')
+        }
+
         window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorization, false)
 
         return () => {
             window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorization, false)
         }
-    }, [handleUnauthorization])
+    }, [setCurrentUser, navigate])
 
     return (
         <AuthContext.Provider
@@ -113,8 +115,17 @@ export const AuthProvider: FC = () => {
                 logout,
             }}
         >
-          {currentUser && <Outlet />}
-          {!currentUser && <Login />}
+            {// We're not validating a user on app load and there's a user
+             !checkingUser && currentUser && <Outlet />}
+
+            {// We're not validating a user on app load and there's a user
+             // and there's no user in the first place
+             // -> Prevents loading screen
+             !checkingUser && !currentUser && <Login />}
+
+            {// We won't display anything while we're still checking the user initially
+             // to prevent flickering
+             ''}
         </AuthContext.Provider>
     )
 }
