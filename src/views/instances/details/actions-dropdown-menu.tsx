@@ -56,7 +56,7 @@ export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refet
             {open && (
                 <Popover onClickOutside={togglePopover} reference={anchor} placement="bottom-start">
                     <Menu>
-                        {stackName === 'pgadmin' && <ViewInstanceMenuItem groupName={groupName} name={name} stackName={stackName} />}
+                        {stackName !== 'dhis2-db' && <ViewInstanceMenuItem groupName={groupName} name={name} stackName={stackName} />}
                         <LogMenuItem instanceId={instanceId} stackName={stackName} />
                         {stackName === 'dhis2-db' && <SaveAsMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />}
                         <RestartMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />

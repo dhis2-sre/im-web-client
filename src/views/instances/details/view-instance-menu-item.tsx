@@ -12,6 +12,8 @@ export const ViewInstanceMenuItem: FC<ViewInstanceMenuItemProps> = ({ groupName,
         switch (stackName) {
             case 'pgadmin':
                 return `${groupName}.im.dhis2.org/${name}-pgadmin`
+            case 'dhis2-core':
+                return `${groupName}.im.dhis2.org/${name}`
             default:
                 return `${groupName}.im.dhis2.org/${name}`
         }
