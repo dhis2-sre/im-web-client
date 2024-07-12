@@ -37,7 +37,14 @@ export const DeploymentInstancesList: FC<{
                         <Moment date={instance.updatedAt} fromNow />
                     </DataTableCell>
                     <DataTableCell staticStyle align="right">
-                        <ActionsDropdownMenu deploymentId={deploymentId} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
+                        <ActionsDropdownMenu
+                            deploymentId={deploymentId}
+                            instanceId={instance.id}
+                            stackName={instance.stackName as Dhis2StackName}
+                            refetch={refetch}
+                            groupName={instance.groupName}
+                            name={instance.name}
+                        />
                     </DataTableCell>
                 </DataTableRow>
             ))}
