@@ -1,11 +1,11 @@
-:global(body) {
+body {
     background-color: var(--colors-grey100);
 }
 
-:global(a) {
+a {
     color: var(--colors-blue600);
 }
 
-:global(a):hover {
+a:hover {
     color: var(--colors-blue800);
 }

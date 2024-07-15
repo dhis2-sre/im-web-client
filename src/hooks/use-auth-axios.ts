@@ -3,10 +3,10 @@ import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
 import { useCallback } from 'react'
 import { RefreshTokenRequest } from '../types'
 
-export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://dev.api.im.dhis2.org'
+export const baseURL = import.meta.env.API_URL ?? import.meta.env.VITE_API_URL ?? 'https://dev.api.im.dhis2.org'
 
 if (!baseURL) {
-    throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
+    throw new Error('No baseURL found. Ensure there is an environment variable called `VITE_API_URL` present')
 }
 
 /* Better make sure this is a unque string because the event
