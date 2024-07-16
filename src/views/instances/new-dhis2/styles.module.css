@@ -37,7 +37,7 @@
 }
 
 .fieldset.parameters.primary {
-    grid-template-columns: 320px 320px;
+    grid-template-columns: 320px 320px 320px;
 }
 
 .fieldset.parameters.secondary {
