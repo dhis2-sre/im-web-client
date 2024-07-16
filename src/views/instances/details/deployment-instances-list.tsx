@@ -6,6 +6,8 @@ import { ActionsDropdownMenu } from './actions-dropdown-menu'
 import { Deployment, DeploymentInstance } from '../../../types'
 import { RefetchFunction } from 'axios-hooks'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
+import { ViewInstanceMenuItem } from './view-instance-menu-item'
+import { VIEWABLE_INSTANCE_TYPES } from '../../../constants'
 
 export const DeploymentInstancesList: FC<{
     deploymentId: number
@@ -20,6 +22,7 @@ export const DeploymentInstancesList: FC<{
                 <DataTableColumnHeader>Type</DataTableColumnHeader>
                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                <DataTableColumnHeader></DataTableColumnHeader>
                 <DataTableColumnHeader></DataTableColumnHeader>
             </DataTableRow>
         </DataTableHead>
@@ -37,7 +40,21 @@ export const DeploymentInstancesList: FC<{
                         <Moment date={instance.updatedAt} fromNow />
                     </DataTableCell>
                     <DataTableCell staticStyle align="right">
-                        <ActionsDropdownMenu deploymentId={deploymentId} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
+                        {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
+                            <ViewInstanceMenuItem
+                                groupName={instance.groupName}
+                                name={instance.name}
+                                stackName={instance.stackName as Dhis2StackName}
+                            />
+                        )}
+                    </DataTableCell>
+                    <DataTableCell staticStyle align="right">
+                        <ActionsDropdownMenu
+                            deploymentId={deploymentId}
+                            instanceId={instance.id}
+                            stackName={instance.stackName as Dhis2StackName}
+                            refetch={refetch}
+                        />
                     </DataTableCell>
                 </DataTableRow>
             ))}
