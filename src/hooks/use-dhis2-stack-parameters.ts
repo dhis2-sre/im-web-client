@@ -3,6 +3,7 @@ import { Stack, StackParameter } from '../types'
 import { useAuthAxios } from './use-auth-axios'
 import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants'
 import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset'
+import { STACK_NAMES } from '../constants'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]
@@ -16,7 +17,7 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
     const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
 
     const extendedParameters = useMemo(() => {
-        if (stackName === 'pgadmin' && stack?.parameters) {
+        if (stackName === STACK_NAMES.PG_ADMIN && stack?.parameters) {
             return [
                 ...stack.parameters,
                 {
