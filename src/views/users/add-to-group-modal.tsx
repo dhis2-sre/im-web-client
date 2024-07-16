@@ -1,14 +1,4 @@
-import {
-  BaseButtonProps,
-  Button,
-  ButtonStrip,
-  Modal,
-  ModalActions,
-  ModalContent,
-  ModalTitle,
-  SingleSelectField,
-  SingleSelectOption,
-} from '@dhis2/ui'
+import { BaseButtonProps, Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import styles from './add-to-group-modal.module.css'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -76,10 +66,7 @@ export const AddToGroupModal: FC<AddToGroupModalProps> = ({ userId, onClose, onC
     }
 
     return (
-        <Modal onClose={() => onClose(
-          {},
-          undefined satisfies React.MouseEvent<HTMLDivElement>
-        )}>
+        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>Add user to group</ModalTitle>
             <ModalContent className={styles.container}>
                 <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">

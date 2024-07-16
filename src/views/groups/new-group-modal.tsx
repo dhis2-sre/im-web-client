@@ -1,16 +1,4 @@
-import {
-  BaseButtonProps,
-  Button,
-  ButtonStrip,
-  Center,
-  CheckboxField,
-  CircularLoader,
-  InputField,
-  Modal,
-  ModalActions,
-  ModalContent,
-  ModalTitle,
-} from '@dhis2/ui'
+import { BaseButtonProps, Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
 import cx from 'classnames'
 import styles from './groups-list.module.css'
 import type { FC } from 'react'
@@ -47,10 +35,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
     }, [createGroup, deployable, hostname, name, onComplete, showAlert])
 
     return (
-        <Modal onClose={() => onCancel(
-          {},
-          undefined satisfies React.MouseEvent<HTMLDivElement>
-        )}>
+        <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>New group</ModalTitle>
             <ModalContent>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required />

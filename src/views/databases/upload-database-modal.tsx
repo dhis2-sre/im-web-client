@@ -1,16 +1,16 @@
 import {
-  BaseButtonProps,
-  Button,
-  ButtonStrip,
-  FileInput,
-  InputField,
-  LinearLoader,
-  Modal,
-  ModalActions,
-  ModalContent,
-  ModalTitle,
-  SingleSelectField,
-  SingleSelectOption
+    BaseButtonProps,
+    Button,
+    ButtonStrip,
+    FileInput,
+    InputField,
+    LinearLoader,
+    Modal,
+    ModalActions,
+    ModalContent,
+    ModalTitle,
+    SingleSelectField,
+    SingleSelectOption,
 } from '@dhis2/ui'
 import styles from './upload-database-modal.module.css'
 import type { FC } from 'react'
@@ -130,10 +130,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
     }
 
     return (
-        <Modal onClose={() => onClose(
-          {},
-          undefined satisfies React.MouseEvent<HTMLDivElement>
-        )}>
+        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>Upload database</ModalTitle>
             <ModalContent className={styles.container}>
                 <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">

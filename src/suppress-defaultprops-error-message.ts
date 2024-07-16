@@ -11,9 +11,9 @@
 //        changed defaultProps to default parameters
 const originalConsoleError = console.error
 console.error = (...args: any[]) => {
-  if (typeof args[0] === "string" && /defaultProps/.test(args[0])) {
-    return
-  }
+    if (typeof args[0] === 'string' && /defaultProps/.test(args[0])) {
+        return
+    }
 
-  originalConsoleError(...args)
+    originalConsoleError(...args)
 }

@@ -12,7 +12,7 @@ import {
     IconAdd24,
     NoticeBox,
     IconWorld24,
-    Checkbox
+    Checkbox,
 } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
@@ -33,11 +33,7 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
-                <Checkbox
-                    checked={showOnlyMyInstances}
-                    label="Show only my instances"
-                    onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)}
-                />
+                <Checkbox checked={showOnlyMyInstances} label="Show only my instances" onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)} />
             </Heading>
 
             {error && !data && (

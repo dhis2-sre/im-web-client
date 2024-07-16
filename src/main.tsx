@@ -11,7 +11,7 @@ if (import.meta.env.VITE_SUPRESS_STRICT_MODE) {
 } else {
     root.render(
         <React.StrictMode>
-          <App />
-        </React.StrictMode>,
+            <App />
+        </React.StrictMode>
     )
 }
