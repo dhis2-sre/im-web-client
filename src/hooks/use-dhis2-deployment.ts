@@ -1,15 +1,9 @@
 import { AnyObject } from 'react-final-form'
-import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset'
 import { useAuthAxios } from './use-auth-axios'
 import { useCallback } from 'react'
 import { SaveDeploymentRequest, SaveInstanceRequest } from '../types'
 import { FORM_ERROR } from 'final-form'
-
-const STACK_NAMES: Record<string, Dhis2StackName> = {
-    DB: 'dhis2-db',
-    CORE: 'dhis2-core',
-    PG_ADMIN: 'pgadmin',
-}
+import { STACK_NAMES } from '../constants'
 
 const convertParameterFieldsToPayload = (values: AnyObject) =>
     Object.entries(values).reduce((parameterPayload, [parameterName, value]) => {
@@ -84,7 +78,12 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                 await addStackToDeployment(deploymentId, STACK_NAMES.CORE, values)
 
                 if (values[`include_${STACK_NAMES.PG_ADMIN}`]) {
-                    await addStackToDeployment(deploymentId, STACK_NAMES.PG_ADMIN, values)
+                    const { PGADMIN_CONFIRM_PASSWORD, ...valuesWithoutConfirmPassword } = values[STACK_NAMES.PG_ADMIN]
+                    const newObjectWithoutConfirmPassword = {
+                        ...values,
+                        [STACK_NAMES.PG_ADMIN]: valuesWithoutConfirmPassword,
+                    }
+                    await addStackToDeployment(deploymentId, STACK_NAMES.PG_ADMIN, newObjectWithoutConfirmPassword)
                 }
 
                 await deployDeployment(deploymentId)

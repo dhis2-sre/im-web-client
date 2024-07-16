@@ -3,6 +3,7 @@ import { Stack, StackParameter } from '../types'
 import { useAuthAxios } from './use-auth-axios'
 import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants'
 import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset'
+import { STACK_NAMES } from '../constants'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]
@@ -14,9 +15,26 @@ const isPrimary = (stackName: Dhis2StackName, parameterName): boolean => STACK_P
 
 export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
     const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
+
+    const extendedParameters = useMemo(() => {
+        if (stackName === STACK_NAMES.PG_ADMIN && stack?.parameters) {
+            return [
+                ...stack.parameters,
+                {
+                    parameterName: 'PGADMIN_CONFIRM_PASSWORD',
+                    displayName: 'Confirm Password',
+                    defaultValue: '',
+                    consumed: false,
+                    priority: 2,
+                },
+            ]
+        }
+        return stack?.parameters ?? []
+    }, [stack, stackName])
+
     const { primaryParameters, secondaryParameters } = useMemo(
         () =>
-            (stack?.parameters ?? [])
+            (extendedParameters ?? [])
                 .filter((parameter) => !parameter.consumed)
                 .sort((a, b) => (a.priority < b.priority ? -1 : 1))
                 .reduce<SecondaryAndPrimaryParameters>(
@@ -30,15 +48,16 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
                     },
                     { primaryParameters: [], secondaryParameters: [] }
                 ),
-        [stackName, stack]
+        [stackName, extendedParameters]
     )
+
     const initialParameterValues: InitialValues = useMemo(
         () =>
-            (stack?.parameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
+            (extendedParameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
                 valuesAccumulator[parameter.parameterName] = parameter.defaultValue
                 return valuesAccumulator
             }, {}),
-        [stack]
+        [extendedParameters]
     )
 
     return {
