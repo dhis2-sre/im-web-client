@@ -1,0 +1,51 @@
+services:
+    prod:
+        image: dhis2/im-web-client:${IMAGE_TAG:-latest}
+        build:
+            context: .
+            args:
+                REACT_APP_API_URL: ${API_URL}
+        ports:
+            - "8080:8080"
+
+    dev:
+        build:
+            context: .
+            target: builder
+            args:
+                REACT_APP_API_URL: ${API_URL}
+        stdin_open: true
+        tty: true
+        volumes:
+            - .:/src
+        working_dir: /src
+        command: yarn start
+        ports:
+            - "3000:3000"
+
+    e2e-test:
+        image: mcr.microsoft.com/playwright:v1.44.1-jammy
+        stdin_open: true
+        tty: true
+        command: sh -c "yarn install --frozen-lockfile && npx playwright test"
+        network_mode: host
+        volumes:
+            - ./:/e2e
+        working_dir: /e2e
+        environment:
+            CI: "true"
+            USER_EMAIL: ${USER_EMAIL}
+            USER_PASSWORD: ${USER_PASSWORD}
+            API_URL: ${API_URL}
+            REACT_APP_API_URL: ${API_URL}
+
+    test:
+        build:
+            context: .
+            target: builder
+        stdin_open: true
+        tty: true
+        volumes:
+            - .:/src
+        working_dir: /src
+        command: sh -c "yarn install --frozen-lockfile && yarn test -- --watchAll=false"
