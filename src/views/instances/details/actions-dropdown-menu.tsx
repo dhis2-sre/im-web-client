@@ -8,15 +8,12 @@ import { ResetMenuItem } from './reset-menu-item'
 import { RestartMenuItem } from './restart-menu-item'
 import { SaveAsMenuItem } from './save-as-menu-item'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
-import { ViewInstanceMenuItem } from './view-instance-menu-item'
 
 type ActionsDropdownMenuProps = {
     deploymentId: number
     instanceId: number
     stackName: Dhis2StackName
     refetch: RefetchFunction<any, Deployment>
-    groupName: string
-    name: string
 }
 type OnActionCompletFn = (shouldRefetch?: boolean) => void
 export type AsyncActionProps = {
@@ -27,7 +24,7 @@ export type AsyncActionProps = {
     onComplete: OnActionCompletFn
 }
 
-export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refetch, groupName, name }: ActionsDropdownMenuProps) => {
+export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refetch }: ActionsDropdownMenuProps) => {
     const anchor = useRef()
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -56,7 +53,6 @@ export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refet
             {open && (
                 <Popover onClickOutside={togglePopover} reference={anchor} placement="bottom-start">
                     <Menu>
-                        {stackName !== 'dhis2-db' && <ViewInstanceMenuItem groupName={groupName} name={name} stackName={stackName} />}
                         <LogMenuItem instanceId={instanceId} stackName={stackName} />
                         {stackName === 'dhis2-db' && <SaveAsMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />}
                         <RestartMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />
