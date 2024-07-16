@@ -85,7 +85,7 @@ export const ImageRepositorySelect: FC<{ displayName: string }> = ({ displayName
     const options = useMemo<CustomOption[]>(() => {
         if (!data) {
             if (meta.initial) {
-                return [predefinedOptions.get(meta.initial) ?? { value: meta.initial, primaryText: meta.initial, secondaryText: '' }]
+                return [predefinedOptions.get(meta.initial as string) ?? { value: meta.initial, primaryText: meta.initial, secondaryText: '' }]
             } else {
                 return []
             }
@@ -100,14 +100,13 @@ export const ImageRepositorySelect: FC<{ displayName: string }> = ({ displayName
     return (
         <SingleSelectField
             label={displayName}
-            name={input.name}
-            error={hasErrorState}
+            error={!!hasErrorState}
             loading={loading}
             validationText={errorMessage}
             onChange={({ selected }) => {
                 input.onChange(selected)
             }}
-            selected={input.value || ''}
+            selected={input.value as string}
             required
         >
             {options.map((option) => (

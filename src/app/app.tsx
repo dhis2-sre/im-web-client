@@ -40,7 +40,11 @@ const router = createBrowserRouter(
 )
 
 export const App = () => (
-    <AlertsProvider>
+    <AlertsProvider
+      plugin={false}
+      parentAlertsAdd={undefined as Function}
+      showAlertsInPlugin={false}
+    >
         <CssReset />
         <CssVariables colors theme layers spacers elevations />
         <RouterProvider router={router} />

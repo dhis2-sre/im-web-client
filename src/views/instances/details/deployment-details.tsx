@@ -38,7 +38,7 @@ export const DeploymentDetails: FC = () => {
                         </Card>
                     </div>
                     {!deployment?.instances?.length && (
-                        <NoticeBox info title="No stacks connected to this instance">
+                        <NoticeBox title="No stacks connected to this instance">
                             Currently you can only add components to an instance when creating one.
                         </NoticeBox>
                     )}
