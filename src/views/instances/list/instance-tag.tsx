@@ -1,4 +1,4 @@
-import { Tag } from '@dhis2/ui'
+import { Tag, IconCheckmarkCircle16 } from '@dhis2/ui'
 import { useAuthAxios } from '../../../hooks'
 import styles from './instances-list.module.css'
 import { getTagProps } from '../../../utils/tag'
