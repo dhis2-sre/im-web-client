@@ -1,14 +1,34 @@
-dl.list {
-    display: grid;
-    grid-gap: var(--spacers-dp8) var(--spacers-dp32);
-    grid-template-columns: max-content;
-    margin: 0;
-    color: var(--colors-grey900);
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 20px;
+    color: var(--colors-grey600);
+    font-size: 14px;
+    padding: var(--spacers-dp12);
+    margin-bottom: var(--spacers-dp16);
 }
-.list > dt {
-    font-weight: 500;
+.singleDetails {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
-.list > dd {
-    margin: 0;
-    grid-column-start: 2;
+.title {
+    padding: 0px var(--spacers-dp12);
+    font-size: large;
+    text-transform: capitalize;
+}
+.hr {
+    border: none;
+    border-top: 0.5px solid var(--colors-grey400);
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+.description {
+    width: 50%;
+    display: flex;
+    gap: 5px;
+    color: var(--colors-grey600);
+    margin-bottom: var(--spacers-dp16);
 }
