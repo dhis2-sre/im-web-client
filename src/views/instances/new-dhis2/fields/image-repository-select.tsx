@@ -53,7 +53,7 @@ const CustomSelectOption: FC<{
     secondaryText: string
     value: string
     active?: boolean
-    onClick?: (payload: {}, event: React.SyntheticEvent) => void
+    onClick?: (payload: object, event: React.SyntheticEvent) => void
 }> = ({ label, secondaryText, active, onClick, value }) => (
     <div
         className={cx(styles.customOption, {

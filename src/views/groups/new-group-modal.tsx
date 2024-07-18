@@ -7,7 +7,7 @@ import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
 
 type NewGroupModalProps = {
-    onComplete: Function
+    onComplete: () => void
     onCancel: BaseButtonProps['onClick']
 }
 

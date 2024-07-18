@@ -92,7 +92,7 @@ export const AuthProvider: FC = () => {
     }, [requestLogout, navigate, setCurrentUser])
 
     useEffect(() => {
-        const handleUnauthorization = (event) => {
+        const handleUnauthorization = () => {
             setCurrentUser(null)
             navigate('/')
         }

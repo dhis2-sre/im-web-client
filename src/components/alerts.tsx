@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import type { FC } from 'react'
 
 interface AlertStackOptions extends AlertOptions {
-    onHidden?: Function
+    onHidden?: () => void
 }
 
 interface AlertStackAlert extends Alert {

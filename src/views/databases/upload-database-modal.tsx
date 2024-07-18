@@ -21,7 +21,7 @@ import { Group, GroupsWithDatabases } from '../../types'
 
 type UploadDatabaseModalProps = {
     onClose: BaseButtonProps['onClick']
-    onComplete: Function
+    onComplete: () => void
 }
 
 const defaultFormat = 'custom'
@@ -103,7 +103,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         const uploadedFile = files[0]
         setDatabaseFile(uploadedFile)
 
-        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([format, { extension }]) => uploadedFile.name.endsWith(extension))
+        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([, { extension }]) => uploadedFile.name.endsWith(extension))
         if (matchingFormat) {
             setName(uploadedFile.name.replace(extension, ''))
             setExtension(extension)

@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 import { NewGroupModal } from './new-group-modal'
 
 type NewGroupButtonProps = {
-    onComplete: Function
+    onComplete: () => void
 }
 
 export const NewGroupButton: FC<NewGroupButtonProps> = ({ onComplete }) => {

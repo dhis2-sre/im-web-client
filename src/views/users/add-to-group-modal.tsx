@@ -7,9 +7,9 @@ import { Group, GroupsWithDatabases } from '../../types'
 import { useAlert } from '@dhis2/app-service-alerts'
 
 type AddToGroupModalProps = {
-    userId: Number
+    userId: number
     onClose: BaseButtonProps['onClick']
-    onComplete: Function
+    onComplete: () => void
 }
 
 export const AddToGroupModal: FC<AddToGroupModalProps> = ({ userId, onClose, onComplete }) => {

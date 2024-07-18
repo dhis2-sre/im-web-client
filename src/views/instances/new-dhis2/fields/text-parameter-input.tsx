@@ -4,6 +4,7 @@ import { ParameterFieldProps } from './parameter-field'
 import { OPTIONAL_FIELDS } from '../constants'
 import { FC } from 'react'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)
 
 export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text' }) => {

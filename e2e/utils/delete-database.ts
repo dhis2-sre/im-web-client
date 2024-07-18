@@ -1,5 +1,4 @@
 import { expect } from '@playwright/test'
-import path from 'path'
 
 const defaultDbName = 'empty-db'
 const dbNameExt = 'sql.gz'

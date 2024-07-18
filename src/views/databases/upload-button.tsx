@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { UploadDatabaseModal } from './upload-database-modal'
 
 type UploadButtonProps = {
-    onComplete: Function
+    onComplete: () => void
 }
 
 export const UploadButton: FC<UploadButtonProps> = ({ onComplete }) => {

@@ -55,6 +55,7 @@ interface UseAuthAxiosOptions extends Options {
 }
 
 interface UseAuthAxios {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 

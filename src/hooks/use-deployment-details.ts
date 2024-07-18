@@ -15,6 +15,7 @@ export const useDeploymentDetails = (): [
         data: Deployment
         error: Error | undefined
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     RefetchFunction<any, Deployment>
 ] => {
     const { state: dataFromRouter } = useLocation()

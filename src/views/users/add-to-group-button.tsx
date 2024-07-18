@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { AddToGroupModal } from './add-to-group-modal'
 
 type AddToGroupButtonProps = {
-    userId: Number
-    onComplete: Function
+    userId: number
+    onComplete: () => void
 }
 
 export const AddToGroupButton: FC<AddToGroupButtonProps> = ({ userId, onComplete }) => {

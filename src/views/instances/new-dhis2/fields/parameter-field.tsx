@@ -9,7 +9,7 @@ import {
     INSTALL_REDIS,
     PGADMIN_USERNAME,
     PGADMIN_PASSWORD,
-    PGADMIN_CONFIRM_PASSWORD
+    PGADMIN_CONFIRM_PASSWORD,
 } from '../constants'
 import { IntergrationParameterSelect } from './intergration-parameter-select'
 import { ImageRepositorySelect } from './image-repository-select'

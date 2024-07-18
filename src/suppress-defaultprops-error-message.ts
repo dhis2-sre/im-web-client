@@ -10,6 +10,7 @@
 // @TODO: Remove the following code once UI lib has moved to react@^18 and also
 //        changed defaultProps to default parameters
 const originalConsoleError = console.error
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 console.error = (...args: any[]) => {
     if (typeof args[0] === 'string' && /defaultProps/.test(args[0])) {
         return

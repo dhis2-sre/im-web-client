@@ -5,9 +5,9 @@ import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
 
 type RemoveFromGroupButtonProps = {
-    group: String
-    userId: Number
-    onComplete: Function
+    group: string
+    userId: number
+    onComplete: () => void
 }
 
 export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, userId, onComplete }) => {

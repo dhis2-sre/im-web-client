@@ -13,6 +13,7 @@ type ActionsDropdownMenuProps = {
     deploymentId: number
     instanceId: number
     stackName: Dhis2StackName
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     refetch: RefetchFunction<any, Deployment>
 }
 type OnActionCompletFn = (shouldRefetch?: boolean) => void

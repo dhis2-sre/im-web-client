@@ -10,7 +10,7 @@ type DeletButtonProps = {
     id: number
     databaseName: string
     groupName: string
-    onComplete: Function
+    onComplete: () => void
 }
 
 export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName, onComplete }) => {
