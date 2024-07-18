@@ -2,6 +2,7 @@
     "name": "my-vue-app",
     "private": true,
     "version": "0.0.0",
+    "__type": "module ;; doesn't work with our tooling setup, should be updated as it's deprecated! See https://vitejs.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated",
     "scripts": {
         "start": "vite --port 3000",
         "build": "tsc -b && vite build",

@@ -23,13 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 
-
 # dependencies
 /.pnp
 .pnp.js
 
 # testing
 /coverage
+!/e2e/fixtures/empty-db.sql.gz
 
 # production
 /build
