@@ -1,4 +1,4 @@
-FROM node:19-alpine AS builder
+FROM node:20 AS builder
 ARG REACT_APP_API_URL
 WORKDIR /app
 COPY package.json yarn.lock ./
