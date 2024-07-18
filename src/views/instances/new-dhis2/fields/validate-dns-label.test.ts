@@ -1,4 +1,4 @@
-import { validateDnsLabel } from './name-input'
+import { validateDnsLabel } from './validate-dns-label'
 
 describe('<NameInput /> - DNS Label validation', () => {
     describe('it accepts valid names', () => {
