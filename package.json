@@ -31,7 +31,8 @@
         "format": "yarn d2-style apply",
         "lint": "yarn d2-style check",
         "e2e": "yarn playwright test --ui",
-        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent"
+        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent",
+        "prepare": "husky install"
     },
     "eslintConfig": {
         "extends": [
@@ -52,7 +53,7 @@
         ]
     },
     "devDependencies": {
-        "@dhis2/cli-style": "^10.5.1",
+        "@dhis2/cli-style": "^10.7.3",
         "@ls-lint/ls-lint": "^2.2.2",
         "@playwright/test": "^1.44.1",
         "@testing-library/jest-dom": "^6.4.6",
@@ -65,6 +66,7 @@
         "@types/react-router-dom": "^5.3.3",
         "dotenv": "^16.4.5",
         "dotenv-expand": "^11.0.6",
+        "husky": "^8.0.0",
         "openapi-typescript-codegen": "^0.29.0"
     }
 }
