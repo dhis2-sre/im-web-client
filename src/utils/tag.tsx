@@ -14,11 +14,15 @@ export const getTagProps = (status: string) => {
     if (!status) return {};
     if (status.startsWith('Booting') || status === 'Pending') {
         return { neutral: true, icon: <IconClockHistory16 /> };
-    } else if (status === 'Error') {
-        return { negative: true, icon: <IconError16 /> };
-    } else if (status === 'Running') {
-        return { positive: true, icon: <IconCheckmarkCircle16 /> };
-    } else {
-        return { icon: <IconMore16 /> };
     }
+    
+    if (status === 'Error') {
+        return { negative: true, icon: <IconError16 /> };
+    }
+    
+    if (status === 'Running') {
+        return { positive: true, icon: <IconCheckmarkCircle16 /> };
+    }
+    
+    return { icon: <IconMore16 /> };
 };
