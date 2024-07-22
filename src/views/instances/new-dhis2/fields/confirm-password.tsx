@@ -21,13 +21,5 @@ export const ConfirmPasswordInput: FC<ConfirmPasswordInputProps> = ({ stackId })
         [password]
     )
 
-    return (
-        <Field
-            name={`${stackId}.${PGADMIN_CONFIRM_PASSWORD}`}
-            type="password"
-            component={InputFieldFF}
-            label="Confirm Password"
-            validate={validateConfirmPassword}
-        />
-    )
+    return <Field name={`${stackId}.${PGADMIN_CONFIRM_PASSWORD}`} type="password" component={InputFieldFF} label="Confirm Password" validate={validateConfirmPassword} />
 }

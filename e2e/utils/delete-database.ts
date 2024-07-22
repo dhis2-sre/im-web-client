@@ -17,9 +17,5 @@ export const deleteTestDatabase = async (page, dbName = defaultDbName) => {
     await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(dbFileName)
     await page.getByRole('button', { name: 'Confirm' }).click()
 
-    await expect(
-        page
-            .getByTestId('dhis2-uicore-alertbar')
-            .getByText(new RegExp(`Successfully deleted [^/]+/${dbFileName}`))
-    ).toBeVisible()
+    await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`Successfully deleted [^/]+/${dbFileName}`))).toBeVisible()
 }
