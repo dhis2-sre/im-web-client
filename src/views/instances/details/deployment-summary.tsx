@@ -13,11 +13,15 @@ export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }
             <div className={styles.row}>
                 <div className={styles.singleDetails}>
                     <IconClock16 />
-                    <p>Created <Moment date={deployment.createdAt} fromNow /></p>
+                    <p>
+                        Created <Moment date={deployment.createdAt} fromNow />
+                    </p>
                 </div>
                 <div className={styles.singleDetails}>
                     <IconWarning16 />
-                    <p>Stopping in <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} /></p>
+                    <p>
+                        Stopping in <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
+                    </p>
                 </div>
                 <div className={styles.singleDetails}>
                     <IconUser16 />
@@ -33,11 +37,13 @@ export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }
                 </div>
                 <div className={styles.singleDetails}>
                     <IconClockHistory16 />
-                    <p>Updated <Moment date={deployment.updatedAt} fromNow /></p>
+                    <p>
+                        Updated <Moment date={deployment.updatedAt} fromNow />
+                    </p>
                 </div>
                 <div className={styles.singleDetails}>
                     <IconInfo16 />
-                    {deployment.description || ` ${i18n.t("No instance description")} `}
+                    {deployment.description || ` ${i18n.t('No instance description')} `}
                 </div>
             </div>
         </div>

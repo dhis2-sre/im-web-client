@@ -10,15 +10,14 @@ const useDeployments = () => {
     const [showOnlyMyInstances, setShowOnlyMyInstances] = useState(false)
     const { currentUser } = useContext(AuthContext)
 
-
     const filterDeploymentsByUser = useMemo(() => {
-        return data?.map(group => ({
+        return data?.map((group) => ({
             ...group,
-            deployments: group.deployments.filter(deployment => deployment.user.id === currentUser.id)
+            deployments: group.deployments.filter((deployment) => deployment.user.id === currentUser.id),
         }))
-    }, [data, currentUser]);
+    }, [data, currentUser])
 
-    const filteredData = showOnlyMyInstances ? filterDeploymentsByUser : data;
+    const filteredData = showOnlyMyInstances ? filterDeploymentsByUser : data
 
     return {
         data: filteredData,

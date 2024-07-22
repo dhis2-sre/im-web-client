@@ -13,5 +13,9 @@ export const ViewInstanceMenuItem: FC<ViewInstanceMenuItemProps> = ({ groupName,
     const path = stackName === STACK_NAMES.PG_ADMIN ? `${name}-pgadmin` : name
     const url = `https://${host}/${path}`
 
-    return <Button small secondary icon={<IconLaunch16 />} onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}>Open</Button>
+    return (
+        <Button small secondary icon={<IconLaunch16 />} onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}>
+            Open
+        </Button>
+    )
 }

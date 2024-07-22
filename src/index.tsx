@@ -47,11 +47,7 @@ const render = (tree) => {
         return root.render(tree)
     }
 
-    return root.render(
-        <React.StrictMode>
-            {tree}
-        </React.StrictMode>
-    )
+    return root.render(<React.StrictMode>{tree}</React.StrictMode>)
 }
 
 render(
