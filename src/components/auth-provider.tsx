@@ -40,20 +40,20 @@ export const AuthProvider: FC = () => {
                 try {
                     const userResponse = await getUser()
                     if (currentUser?.id !== userResponse.data.id) {
-                      setCurrentUser(userResponse.data)
+                        setCurrentUser(userResponse.data)
                     }
                 } catch (e) {
-                  if (currentUser?.id) {
-                    setCurrentUser(null)
-                    navigate('/')
-                  }
+                    if (currentUser?.id) {
+                        setCurrentUser(null)
+                        navigate('/')
+                    }
                 }
             }
 
             if (currentUser?.id) {
-              checkLoggedIn().finally(() => setCheckingUser(false))
+                checkLoggedIn().finally(() => setCheckingUser(false))
             } else {
-              setCheckingUser(false)
+                setCheckingUser(false)
             }
         },
 
@@ -115,17 +115,23 @@ export const AuthProvider: FC = () => {
                 logout,
             }}
         >
-            {// We're not validating a user on app load and there's a user
-             !checkingUser && currentUser && <Outlet />}
+            {
+                // We're not validating a user on app load and there's a user
+                !checkingUser && currentUser && <Outlet />
+            }
 
-            {// We're not validating a user on app load and there's a user
-             // and there's no user in the first place
-             // -> Prevents loading screen
-             !checkingUser && !currentUser && <Login />}
+            {
+                // We're not validating a user on app load and there's a user
+                // and there's no user in the first place
+                // -> Prevents loading screen
+                !checkingUser && !currentUser && <Login />
+            }
 
-            {// We won't display anything while we're still checking the user initially
-             // to prevent flickering
-             ''}
+            {
+                // We won't display anything while we're still checking the user initially
+                // to prevent flickering
+                ''
+            }
         </AuthContext.Provider>
     )
 }

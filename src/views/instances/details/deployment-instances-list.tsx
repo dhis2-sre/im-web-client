@@ -41,20 +41,11 @@ export const DeploymentInstancesList: FC<{
                     </DataTableCell>
                     <DataTableCell staticStyle align="right">
                         {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
-                            <ViewInstanceMenuItem
-                                groupName={instance.groupName}
-                                name={instance.name}
-                                stackName={instance.stackName as Dhis2StackName}
-                            />
+                            <ViewInstanceMenuItem groupName={instance.groupName} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
                         )}
                     </DataTableCell>
                     <DataTableCell staticStyle align="right">
-                        <ActionsDropdownMenu
-                            deploymentId={deploymentId}
-                            instanceId={instance.id}
-                            stackName={instance.stackName as Dhis2StackName}
-                            refetch={refetch}
-                        />
+                        <ActionsDropdownMenu deploymentId={deploymentId} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
                     </DataTableCell>
                 </DataTableRow>
             ))}
