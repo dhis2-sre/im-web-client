@@ -19,7 +19,9 @@ export const AddToGroupButton: FC<AddToGroupButtonProps> = ({ user, onComplete }
 
     return (
         <>
-            <Button secondary icon={<IconAdd16 />} onClick={() => setShowModal(true)}>Add Groups</Button>
+            <Button secondary icon={<IconAdd16 />} onClick={() => setShowModal(true)}>
+                Add Groups
+            </Button>
             {showModal && <AddToGroupModal onClose={() => setShowModal(false)} onComplete={complete} user={user} />}
         </>
     )

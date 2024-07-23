@@ -53,7 +53,6 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
         onComplete()
     }, [onComplete, removeUser, showAlert])
 
-
     return (
         <>
             {showConfirmationModal && (

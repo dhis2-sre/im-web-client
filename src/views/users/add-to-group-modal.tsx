@@ -1,42 +1,41 @@
-import { Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui';
-import styles from './add-to-group-modal.module.css';
-import type { FC } from 'react';
-import { useState } from 'react';
-import { useAuthAxios } from '../../hooks/';
-import { Group, User } from '../../types';
-import { useAddGroups } from './useAddGroups';
+import { Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui'
+import styles from './add-to-group-modal.module.css'
+import type { FC } from 'react'
+import { useState } from 'react'
+import { useAuthAxios } from '../../hooks/'
+import { Group, User } from '../../types'
+import { useAddGroups } from './use-add-groups'
 
 type AddToGroupModalProps = {
-    user: User;
-    onClose: () => void;
-    onComplete: () => void;
-};
+    user: User
+    onClose: () => void
+    onComplete: () => void
+}
 
 export const AddToGroupModal: FC<AddToGroupModalProps> = ({ user, onClose, onComplete }) => {
     const [{ data: groups }] = useAuthAxios<Group[]>({
         method: 'GET',
         url: '/groups',
-    });
+    })
 
-    const { addGroups, addGroupLoading } = useAddGroups();
+    const { addGroups, addGroupLoading } = useAddGroups()
 
-    const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+    const [selectedGroups, setSelectedGroups] = useState<string[]>([])
 
-    const filteredGroups = groups?.filter(group =>
-        !user?.groups.some(userGroup => userGroup.name === group.name)
-    );
+    const filteredGroups = groups?.filter((group) => !user?.groups.some((userGroup) => userGroup.name === group.name))
 
-    const groupOptions = filteredGroups?.map(group => ({
-        label: group.name,
-        value: group.name
-    })) || [];
+    const groupOptions =
+        filteredGroups?.map((group) => ({
+            label: group.name,
+            value: group.name,
+        })) || []
 
     const onChange = async ({ selected }: { selected: string[] }) => {
-        setSelectedGroups(selected);
-        await addGroups(selected, user.id);
+        setSelectedGroups(selected)
+        await addGroups(selected, user.id)
         onComplete()
         onClose()
-    };
+    }
 
     return (
         <Modal onClose={onClose}>
@@ -54,5 +53,5 @@ export const AddToGroupModal: FC<AddToGroupModalProps> = ({ user, onClose, onCom
                 />
             </ModalContent>
         </Modal>
-    );
-};
+    )
+}
