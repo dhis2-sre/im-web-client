@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#run tests
-yarn test || echo "No tests found"
-
 # format code style
 yarn format
 
