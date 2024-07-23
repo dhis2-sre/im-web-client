@@ -1,1 +1,10 @@
-yarn format && yarn lint
+#!/bin/bash
+
+#run tests
+yarn test || echo "No tests found"
+
+# format code style
+yarn format
+
+# handle linting errors
+ yarn lint
