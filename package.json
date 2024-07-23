@@ -1,75 +1,72 @@
 {
-    "name": "instance-manager",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-        "@dhis2/app-runtime": "^3.10.1",
-        "@dhis2/app-service-alerts": "^3.9.4",
-        "@dhis2/d2-i18n": "^1.1.3",
-        "@dhis2/ui": "^8.16.0",
-        "@fontsource/roboto": "^5.0.12",
-        "axios": "^1.7.2",
-        "axios-hooks": "^5.0.2",
-        "final-form": "^4.20.10",
-        "moment": "^2.30.1",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-final-form": "^6.5.9",
-        "react-moment": "^1.1.3",
-        "react-router": "^6.24.1",
-        "react-router-dom": "^6.22.3",
-        "react-scripts": "5.0.1",
-        "styled-jsx": "^5.1.2",
-        "typescript": "^5.4.4",
-        "web-vitals": "^3.5.2"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject",
-        "format": "yarn d2-style apply",
-        "lint": "yarn d2-style check",
-        "e2e": "yarn playwright test --ui",
-        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent",
-        "prepare": "husky install",
-        "commitlint": "commitlint --edit"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    },
-    "devDependencies": {
-        "@commitlint/cli": "^19.3.0",
-        "@commitlint/config-conventional": "^19.2.2",
-        "@dhis2/cli-style": "^10.7.3",
-        "@ls-lint/ls-lint": "^2.2.2",
-        "@playwright/test": "^1.44.1",
-        "@testing-library/jest-dom": "^6.4.6",
-        "@testing-library/react": "^14.2.1",
-        "@testing-library/user-event": "^14.5.2",
-        "@types/jest": "^29.5.12",
-        "@types/node": "^20.12.2",
-        "@types/react": "^18.2.65",
-        "@types/react-dom": "^18.2.23",
-        "@types/react-router-dom": "^5.3.3",
-        "dotenv": "^16.4.5",
-        "dotenv-expand": "^11.0.6",
-        "husky": "^8.0.0",
-        "openapi-typescript-codegen": "^0.29.0"
-    }
+  "name": "instance-manager",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@dhis2/app-runtime": "^3.10.1",
+    "@dhis2/app-service-alerts": "^3.9.4",
+    "@dhis2/d2-i18n": "^1.1.3",
+    "@dhis2/ui": "^8.16.0",
+    "@fontsource/roboto": "^5.0.12",
+    "axios": "^1.7.2",
+    "axios-hooks": "^5.0.2",
+    "final-form": "^4.20.10",
+    "moment": "^2.30.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-final-form": "^6.5.9",
+    "react-moment": "^1.1.3",
+    "react-router": "^6.24.1",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "5.0.1",
+    "styled-jsx": "^5.1.2",
+    "typescript": "^5.4.4",
+    "web-vitals": "^3.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "format": "yarn d2-style apply",
+    "lint": "yarn d2-style check",
+    "e2e": "yarn playwright test --ui",
+    "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent",
+    "prepare": "husky"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@dhis2/cli-style": "^10.7.3",
+    "@ls-lint/ls-lint": "^2.2.2",
+    "@playwright/test": "^1.44.1",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.2",
+    "@types/react": "^18.2.65",
+    "@types/react-dom": "^18.2.23",
+    "@types/react-router-dom": "^5.3.3",
+    "dotenv": "^16.4.5",
+    "dotenv-expand": "^11.0.6",
+    "husky": "^9.1.1",
+    "openapi-typescript-codegen": "^0.29.0"
+  }
 }
