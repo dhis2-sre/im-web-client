@@ -1,14 +1,15 @@
-import { Button, IconAdd24 } from '@dhis2/ui'
+import { Button, IconAdd16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { AddToGroupModal } from './add-to-group-modal'
+import { User } from '../../types'
 
 type AddToGroupButtonProps = {
-    userId: Number
+    user: User
     onComplete: Function
 }
 
-export const AddToGroupButton: FC<AddToGroupButtonProps> = ({ userId, onComplete }) => {
+export const AddToGroupButton: FC<AddToGroupButtonProps> = ({ user, onComplete }) => {
     const [showModal, setShowModal] = useState<boolean>(false)
 
     const complete = () => {
@@ -18,8 +19,8 @@ export const AddToGroupButton: FC<AddToGroupButtonProps> = ({ userId, onComplete
 
     return (
         <>
-            <Button icon={<IconAdd24 />} onClick={() => setShowModal(true)} />
-            {showModal && <AddToGroupModal onClose={() => setShowModal(false)} onComplete={complete} userId={userId} />}
+            <Button secondary icon={<IconAdd16 />} onClick={() => setShowModal(true)}>Add Groups</Button>
+            {showModal && <AddToGroupModal onClose={() => setShowModal(false)} onComplete={complete} user={user} />}
         </>
     )
 }
