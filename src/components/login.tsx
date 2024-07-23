@@ -52,6 +52,9 @@ export const Login = () => {
                     <Link to={'/sign-up'}>Sign up</Link>
                     <Link to={'/request-password-reset'}>Forgot password?</Link>
                 </div>
+                <Button onClick={() => window.location.href = '/auth/google'}>
+                    Login with Google
+                </Button>
             </Card>
         </form>
     )
