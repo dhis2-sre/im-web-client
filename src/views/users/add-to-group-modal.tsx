@@ -1,88 +1,57 @@
-import { Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui'
 import styles from './add-to-group-modal.module.css'
 import type { FC } from 'react'
-import { useCallback, useEffect, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { Group, GroupsWithDatabases } from '../../types'
-import { useAlert } from '@dhis2/app-service-alerts'
+import { useState } from 'react'
+import { useAuthAxios } from '../../hooks/'
+import { Group, User } from '../../types'
+import { useAddGroups } from './use-add-groups'
 
 type AddToGroupModalProps = {
-    userId: Number
-    onClose: Function
-    onComplete: Function
+    user: User
+    onClose: () => void
+    onComplete: () => void
 }
 
-export const AddToGroupModal: FC<AddToGroupModalProps> = ({ userId, onClose, onComplete }) => {
-    const [group, setGroup] = useState('')
-
-    const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
+export const AddToGroupModal: FC<AddToGroupModalProps> = ({ user, onClose, onComplete }) => {
+    const [{ data: groups }] = useAuthAxios<Group[]>({
         method: 'GET',
         url: '/groups',
     })
 
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
+    const { addGroups, addGroupLoading } = useAddGroups()
 
-    if (groupsError) {
-        showAlert({ message: 'There was a problem loading the groups', isCritical: true })
-        console.error(groupsError)
-    }
+    const [selectedGroups, setSelectedGroups] = useState<string[]>([])
 
-    useEffect(() => {
-        if (groups && groups.length > 0) {
-            setGroup(groups[0].name)
-        }
-    }, [groups])
+    const filteredGroups = groups?.filter((group) => !user?.groups.some((userGroup) => userGroup.name === group.name))
 
-    const [{ loading }, addUser] = useAuthAxios<GroupsWithDatabases>(
-        {
-            url: `/groups/${group}/users/${userId}`,
-            method: 'post',
-        },
-        { manual: true }
-    )
+    const groupOptions =
+        filteredGroups?.map((group) => ({
+            label: group.name,
+            value: group.name,
+        })) || []
 
-    const submit = useCallback(async () => {
-        try {
-            await addUser()
-            showAlert({
-                message: 'User added successfully',
-                isCritical: false,
-            })
-            onComplete()
-        } catch (error) {
-            showAlert({
-                message: 'There was a problem adding the user',
-                isCritical: true,
-            })
-            console.error(error)
-        }
-    }, [addUser, onComplete, showAlert])
-
-    if (groupsLoading) {
-        return
+    const onChange = async ({ selected }: { selected: string[] }) => {
+        setSelectedGroups(selected)
+        await addGroups(selected, user.id)
+        onComplete()
+        onClose()
     }
 
     return (
         <Modal onClose={onClose}>
             <ModalTitle>Add user to group</ModalTitle>
             <ModalContent className={styles.container}>
-                <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
-                    {groups.map((group) => (
-                        <SingleSelectOption key={group.name} label={group.name} value={group.name} />
-                    ))}
-                </SingleSelectField>
+                <Transfer
+                    maxSelections={1}
+                    loadint={addGroupLoading}
+                    options={groupOptions}
+                    selected={selectedGroups}
+                    leftHeader={<p>Available Groups</p>}
+                    rightHeader={<p>Selected Groups</p>}
+                    onChange={onChange}
+                    disabled={addGroupLoading}
+                />
             </ModalContent>
-            <ModalActions>
-                <ButtonStrip end>
-                    <Button onClick={submit} disabled={loading}>
-                        Add
-                    </Button>
-                    <Button onClick={onClose}>Close</Button>
-                </ButtonStrip>
-            </ModalActions>
         </Modal>
     )
 }
