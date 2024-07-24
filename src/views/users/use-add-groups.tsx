@@ -1,5 +1,6 @@
 import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
+import { useCallback } from 'react'
 
 export const useAddGroups = () => {
     const [{ loading: addGroupLoading }, addGroup] = useAuthAxios({ method: 'POST' }, { manual: true })
@@ -9,22 +10,25 @@ export const useAddGroups = () => {
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
-    const addGroups = async (groups: string[], userId: number) => {
-        try {
-            const requests = groups.map((group) => addGroup({ url: `/groups/${group}/users/${userId}` }))
-            await Promise.all(requests)
-            showAlert({
-                message: 'User added successfully',
-                isCritical: false,
-            })
-        } catch (error) {
-            showAlert({
-                message: 'There was a problem adding groups to the user',
-                isCritical: true,
-            })
-            console.error(error)
-        }
-    }
+    const addGroups = useCallback(
+        async (groups: string[], userId: number) => {
+            try {
+                const requests = groups.map((group) => addGroup({ url: `/groups/${group}/users/${userId}` }))
+                await Promise.all(requests)
+                showAlert({
+                    message: 'User added successfully',
+                    isCritical: false,
+                })
+            } catch (error) {
+                showAlert({
+                    message: 'There was a problem adding groups to the user',
+                    isCritical: true,
+                })
+                console.error(error)
+            }
+        },
+        [addGroup, showAlert]
+    )
 
     return { addGroups, addGroupLoading }
 }

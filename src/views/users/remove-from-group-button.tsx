@@ -26,21 +26,15 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
-    const onClick = useCallback(
-        (_, event) => {
-            event.stopPropagation()
-            setShowConfirmationModal(true)
-        },
-        [setShowConfirmationModal]
-    )
+    const onClick = (_, event) => {
+        event.stopPropagation()
+        setShowConfirmationModal(true)
+    }
 
-    const onCancel = useCallback(
-        (_, event) => {
-            event.stopPropagation()
-            setShowConfirmationModal(false)
-        },
-        [setShowConfirmationModal]
-    )
+    const onCancel = (_, event) => {
+        event.stopPropagation()
+        setShowConfirmationModal(false)
+    }
 
     const submit = useCallback(async () => {
         try {
