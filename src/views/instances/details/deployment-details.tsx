@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
     const [{ data: deployment, error, loading }, refetch] = useDeploymentDetails()
-    const title = deployment?.name ? `Instance details: ${deployment?.name}` : 'Instance details'
+    const title = 'Instance details'
 
     return (
         <div className={styles.wrapper}>

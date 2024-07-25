@@ -1,4 +1,4 @@
-import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
+import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, Center, CircularLoader } from '@dhis2/ui'
 import Moment from 'react-moment'
 import { useAuthAxios } from '../../hooks'
 import type { FC } from 'react'
@@ -7,9 +7,17 @@ import { Link } from 'react-router-dom'
 import { Heading } from '../../components'
 
 export const UsersList: FC = () => {
-    const [{ data }] = useAuthAxios<User[]>('/users', {
+    const [{ data, loading }] = useAuthAxios<User[]>('/users', {
         useCache: false,
     })
+
+    if (loading) {
+        return (
+            <Center>
+                <CircularLoader />
+            </Center>
+        )
+    }
 
     return (
         <div>

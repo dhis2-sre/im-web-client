@@ -2,7 +2,6 @@
     width: 100%;
     min-height: calc(100% - var(--spacers-dp16));
     display: flex;
-    display: flex;
     flex-direction: column;
     margin-bottom: var(--spacers-dp16);
 }
@@ -14,6 +13,5 @@
     margin-bottom: var(--spacers-dp16);
 }
 .cardWrap > .card {
-    padding: var(--spacers-dp16);
-    width: auto;
+    width: 100%;
 }

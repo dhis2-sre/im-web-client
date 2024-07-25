@@ -1,8 +1,9 @@
-import { Button, Center, CircularLoader, IconSubtract16 } from '@dhis2/ui'
+import { Button, IconDelete16 } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
+import { ConfirmationModal } from '../../components'
 
 type RemoveFromGroupButtonProps = {
     group: string
@@ -11,6 +12,7 @@ type RemoveFromGroupButtonProps = {
 }
 
 export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, userId, onComplete }) => {
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const [{ loading }, removeUser] = useAuthAxios(
         {
             url: `/groups/${group}/users/${userId}`,
@@ -24,6 +26,16 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
+    const onClick = (_, event) => {
+        event.stopPropagation()
+        setShowConfirmationModal(true)
+    }
+
+    const onCancel = (_, event) => {
+        event.stopPropagation()
+        setShowConfirmationModal(false)
+    }
+
     const submit = useCallback(async () => {
         try {
             await removeUser()
@@ -35,17 +47,16 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
         onComplete()
     }, [onComplete, removeUser, showAlert])
 
-    if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
-    }
-
     return (
         <>
-            <Button icon={<IconSubtract16 />} onClick={submit} />
+            {showConfirmationModal && (
+                <ConfirmationModal destructive onCancel={onCancel} onConfirm={submit}>
+                    Are you sure you want to remove the group "{group}" from this user?
+                </ConfirmationModal>
+            )}
+            <Button small secondary destructive icon={<IconDelete16 />} onClick={onClick} disabled={loading}>
+                Delete
+            </Button>
         </>
     )
 }
