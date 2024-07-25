@@ -24,7 +24,7 @@ e2e-test-ui:
 	npx playwright test --ui
 
 test:
-	yarn install --frozen-lockfile && yarn test
+	docker compose run test
 
 .PHONY: docker-image push-docker-image test
 
