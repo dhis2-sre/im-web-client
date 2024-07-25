@@ -1,10 +1,11 @@
-import { BaseButtonProps, Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui'
-import styles from './add-to-group-modal.module.css'
+import { Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui'
+import type { BaseButtonProps } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { useAuthAxios } from '../../hooks/'
-import { Group, User } from '../../types'
-import { useAddGroups } from './use-add-groups'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Group, User } from '../../types/index.ts'
+import styles from './add-to-group-modal.module.css'
+import { useAddGroups } from './use-add-groups.tsx'
 
 type AddToGroupModalProps = {
     user: User

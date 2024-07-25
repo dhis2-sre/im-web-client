@@ -1,14 +1,14 @@
 import { Button, ButtonStrip, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
-import { AnyObject } from 'final-form'
-import { DescriptionTextarea } from './fields/description-textarea'
-import { GroupSelect } from './fields/group-select'
-import { NameInput } from './fields/name-input'
-import { PublicCheckbox } from './fields/public-checkbox'
-import { TtlSelect } from './fields/ttl-select'
-import { ParameterFieldset } from './parameter-fieldset'
-import styles from './styles.module.css'
+import type { AnyObject } from 'final-form'
 import { useFormState } from 'react-final-form'
+import { DescriptionTextarea } from './fields/description-textarea.tsx'
+import { GroupSelect } from './fields/group-select.tsx'
+import { NameInput } from './fields/name-input.tsx'
+import { PublicCheckbox } from './fields/public-checkbox.tsx'
+import { TtlSelect } from './fields/ttl-select.tsx'
+import { ParameterFieldset } from './parameter-fieldset.tsx'
+import styles from './styles.module.css'
 
 type NewDhis2InstanceFormProps = {
     handleCancel: () => void

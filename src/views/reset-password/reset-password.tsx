@@ -1,9 +1,9 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
+import { useAuthAxios } from '../../hooks/index.ts'
 import styles from './reset-password.module.css'
-import { useAlert } from '@dhis2/app-service-alerts'
 
 const getInputsErrorMessage = ({ password, confirmPassword }) => {
     if (!password) {

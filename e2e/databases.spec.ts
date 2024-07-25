@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, logout } from './utils'
+import { login, logout } from './utils/index.ts'
 
 test.describe('databases', () => {
     test.beforeEach(async ({ page }) => {

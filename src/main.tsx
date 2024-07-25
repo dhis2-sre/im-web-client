@@ -1,8 +1,8 @@
 import './index.css'
-import './suppress-defaultprops-error-message'
+import './suppress-defaultprops-error-message.ts'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { App } from './app'
+import { App } from './app/index.ts'
 
 const root = ReactDOM.createRoot(document.getElementById('root')!)
 

@@ -1,12 +1,11 @@
+import { AxiosError } from 'axios'
 import type { FC } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { Tokens, User } from '../types'
-import { useAuthAxios } from '../hooks'
-import { AuthContext } from '../contexts'
-import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { AxiosError } from 'axios'
-import { Login } from './login'
+import { AuthContext } from '../contexts/index.ts'
+import { useAuthAxios, UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios.ts'
+import type { Tokens, User } from '../types/index.ts'
+import { Login } from './login.tsx'
 
 const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
 const getCurrentUserFromLocalStorage = () => JSON.parse(localStorage.getItem(CURRENT_USER_LOCAL_STORAGE_KEY))

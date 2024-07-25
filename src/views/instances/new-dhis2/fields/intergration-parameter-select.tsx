@@ -1,9 +1,9 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useMemo } from 'react'
-import { useAuthAxios } from '../../../../hooks'
 import { Field, useField } from 'react-final-form'
-import { mapStringToValueLabel } from './map-string-to-value-label'
-import { ParameterFieldProps } from './parameter-field'
+import { useAuthAxios } from '../../../../hooks/index.ts'
+import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
+import { ParameterFieldProps } from './parameter-field.tsx'
 
 export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayName, parameterName, stackId }) => {
     const fieldName = `${stackId}.${parameterName}`

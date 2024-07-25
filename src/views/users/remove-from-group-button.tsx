@@ -1,9 +1,9 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDelete16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { useAlert } from '@dhis2/app-service-alerts'
-import { ConfirmationModal } from '../../components'
+import { ConfirmationModal } from '../../components/index.ts'
+import { useAuthAxios } from '../../hooks/index.ts'
 
 type RemoveFromGroupButtonProps = {
     group: string
@@ -51,7 +51,7 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
         <>
             {showConfirmationModal && (
                 <ConfirmationModal destructive onCancel={onCancel} onConfirm={submit}>
-                    Are you sure you want to remove the group "{group}" from this user?
+                    Are you sure you want to remove the group &quot;{group}&quot; from this user?
                 </ConfirmationModal>
             )}
             <Button small secondary destructive icon={<IconDelete16 />} onClick={onClick} disabled={loading}>

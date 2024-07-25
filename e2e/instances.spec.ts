@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, logout, uploadTestDatabase, deleteTestDatabase } from './utils'
+import { login, logout, uploadTestDatabase, deleteTestDatabase } from './utils/index.ts'
 
 test.describe('new instance', () => {
     let dbFileName

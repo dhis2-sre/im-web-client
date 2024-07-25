@@ -1,7 +1,9 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
+import axios, { AxiosError } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
+import { makeUseAxios } from 'axios-hooks'
+import type { Options, UseAxiosResult } from 'axios-hooks'
 import { useCallback } from 'react'
-import { RefreshTokenRequest } from '../types'
+import { RefreshTokenRequest } from '../types/index.ts'
 
 export const baseURL = import.meta.env.API_URL ?? import.meta.env.VITE_API_URL ?? 'https://dev.api.im.dhis2.org'
 

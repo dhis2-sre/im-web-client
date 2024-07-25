@@ -1,9 +1,9 @@
 import { SingleSelectField, hasValue } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useMemo } from 'react'
-import { useAuthAxios } from '../../../../hooks'
 import { useField } from 'react-final-form'
-import { IMAGE_REPOSITORY } from '../constants'
+import { useAuthAxios } from '../../../../hooks/index.ts'
+import { IMAGE_REPOSITORY } from '../constants.ts'
 import styles from './fields.module.css'
 
 type CustomOption = {
@@ -95,7 +95,7 @@ export const ImageRepositorySelect: FC<{ displayName: string }> = ({ displayName
     }, [data, meta.initial])
 
     const hasErrorState = error || (meta.touched && meta.invalid)
-    const errorMessage = hasErrorState ? error?.message ?? meta.error : ''
+    const errorMessage = hasErrorState ? (error?.message ?? meta.error) : ''
 
     return (
         <SingleSelectField

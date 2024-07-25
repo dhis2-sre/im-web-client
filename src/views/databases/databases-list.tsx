@@ -8,15 +8,15 @@ import {
     DataTableRow,
     DataTableToolbar as TableToolbar,
 } from '@dhis2/ui'
-import Moment from 'react-moment'
-import { useAuthAxios } from '../../hooks'
-import { GroupsWithDatabases } from '../../types'
-import { DeleteButton } from './delete-button'
-import { DownloadButton } from './download-button'
-import styles from './databases-list.module.css'
 import type { FC } from 'react'
-import { UploadButton } from './upload-button'
-import { Heading } from '../../components'
+import Moment from 'react-moment'
+import { Heading } from '../../components/index.ts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { GroupsWithDatabases } from '../../types/index.ts'
+import styles from './databases-list.module.css'
+import { DeleteButton } from './delete-button.tsx'
+import { DownloadButton } from './download-button.tsx'
+import { UploadButton } from './upload-button.tsx'
 
 export const DatabasesList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })

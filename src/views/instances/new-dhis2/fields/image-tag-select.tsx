@@ -1,10 +1,10 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useState } from 'react'
-import { useAuthAxios } from '../../../../hooks'
 import { Field, useField, useForm } from 'react-final-form'
-import { IMAGE_TAG } from '../constants'
-import { mapStringToValueLabel } from './map-string-to-value-label'
-import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select'
+import { useAuthAxios } from '../../../../hooks/index.ts'
+import { IMAGE_TAG } from '../constants.ts'
+import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'
+import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
 const IMAGE_TAG_FIELD_NAME = `dhis2-core.${IMAGE_TAG}`
 

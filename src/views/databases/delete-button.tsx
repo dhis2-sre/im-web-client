@@ -1,10 +1,10 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDelete16 } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { ConfirmationModal } from '../../components/confirmation-modal'
-import { useAuthAxios } from '../../hooks'
-import { Database } from '../../types'
 import type { FC } from 'react'
+import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Database } from '../../types/index.ts'
 
 type DeletButtonProps = {
     id: number
@@ -54,7 +54,7 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
             </Button>
             {showConfirmationModal && (
                 <ConfirmationModal destructive onConfirm={onConfirm} onCancel={onCancel}>
-                    Are you sure you wish to delete "{groupName}/{databaseName}"?
+                    Are you sure you wish to delete &quot;{groupName}/{databaseName}&quot;?
                 </ConfirmationModal>
             )}
         </>

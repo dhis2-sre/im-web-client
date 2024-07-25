@@ -1,13 +1,13 @@
 import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
+import type { RefetchFunction } from 'axios-hooks'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { StatusLabel } from './status-label'
-import { ActionsDropdownMenu } from './actions-dropdown-menu'
-import { Deployment, DeploymentInstance } from '../../../types'
-import { RefetchFunction } from 'axios-hooks'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
-import { ViewInstanceMenuItem } from './view-instance-menu-item'
-import { VIEWABLE_INSTANCE_TYPES } from '../../../constants'
+import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
+import { Deployment, DeploymentInstance } from '../../../types/index.ts'
+import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
+import { ActionsDropdownMenu } from './actions-dropdown-menu.tsx'
+import { StatusLabel } from './status-label.tsx'
+import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 
 export const DeploymentInstancesList: FC<{
     deploymentId: number

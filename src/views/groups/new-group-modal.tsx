@@ -1,10 +1,11 @@
-import { BaseButtonProps, Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
+import { useAlert } from '@dhis2/app-service-alerts'
+import { Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
+import type { BaseButtonProps } from '@dhis2/ui'
 import cx from 'classnames'
-import styles from './groups-list.module.css'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { useAlert } from '@dhis2/app-service-alerts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import styles from './groups-list.module.css'
 
 type NewGroupModalProps = {
     onComplete: () => void

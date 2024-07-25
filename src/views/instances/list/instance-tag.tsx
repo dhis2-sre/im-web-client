@@ -1,9 +1,9 @@
 import { Tag } from '@dhis2/ui'
-import { useAuthAxios } from '../../../hooks'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { getTagProps } from '../../../utils/tag.tsx'
 import styles from './instances-list.module.css'
-import { getTagProps } from '../../../utils/tag'
 
-const InstanceTag = ({ instanceId, stackName }) => {
+const InstanceTag = ({ instanceId, stackName }: { instanceId: number; stackName: string }) => {
     const [{ data: status }] = useAuthAxios(`/instances/${instanceId}/status`, {
         useCache: false,
     })

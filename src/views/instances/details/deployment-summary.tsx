@@ -1,9 +1,9 @@
-import { FC } from 'react'
-import { Deployment } from '../../../types'
-import Moment from 'react-moment'
 import i18n from '@dhis2/d2-i18n'
-import { MomentExpiresFromNow } from '../../../components'
 import { IconClock16, IconUser16, IconUserGroup16, IconWarning16, IconClockHistory16, IconWorld16, IconInfo16 } from '@dhis2/ui'
+import { FC } from 'react'
+import Moment from 'react-moment'
+import { MomentExpiresFromNow } from '../../../components/index.ts'
+import { Deployment } from '../../../types/index.ts'
 import styles from './deployment-summary.module.css'
 
 export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }) => {

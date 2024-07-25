@@ -1,7 +1,7 @@
 import { Button, NoticeBox } from '@dhis2/ui'
+import type { FC } from 'react'
 import { useNavigate, useRouteError } from 'react-router-dom'
 import styles from './error-view.module.css'
-import type { FC } from 'react'
 
 type Error = {
     statusText?: string

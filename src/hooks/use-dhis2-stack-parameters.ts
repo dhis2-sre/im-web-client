@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
-import { Stack, StackParameter } from '../types'
-import { useAuthAxios } from './use-auth-axios'
-import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants'
-import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset'
-import { STACK_NAMES } from '../constants'
+import { STACK_NAMES } from '../constants.ts'
+import { Stack, StackParameter } from '../types/index.ts'
+import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants.ts'
+import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset.tsx'
+import { useAuthAxios } from './use-auth-axios.ts'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]

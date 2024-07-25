@@ -1,11 +1,11 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { MenuItem, IconDelete16 } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { ConfirmationModal } from '../../../components'
-import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
 import type { FC } from 'react'
-import { AsyncActionProps } from './actions-dropdown-menu'
+import { ConfirmationModal } from '../../../components/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Instance } from '../../../types/index.ts'
+import { AsyncActionProps } from './actions-dropdown-menu.tsx'
 
 export const DeleteMenuItem: FC<AsyncActionProps> = ({ deploymentId, instanceId, onComplete, onStart, stackName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
@@ -47,7 +47,7 @@ export const DeleteMenuItem: FC<AsyncActionProps> = ({ deploymentId, instanceId,
         <>
             {showConfirmationModal && (
                 <ConfirmationModal destructive onCancel={onCancel} onConfirm={onConfirm}>
-                    Are you sure you want to delete instance "{stackName}"
+                    Are you sure you want to delete instance &quot;{stackName}&quot;
                 </ConfirmationModal>
             )}
             <MenuItem dense label="Delete" destructive disabled={loading} icon={<IconDelete16 />} onClick={onClick} />

@@ -1,8 +1,8 @@
+import type { RefetchFunction } from 'axios-hooks'
 import { useRef, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { Deployment } from '../types'
-import { useAuthAxios } from './use-auth-axios'
-import { RefetchFunction } from 'axios-hooks'
+import { Deployment } from '../types/index.ts'
+import { useAuthAxios } from './use-auth-axios.ts'
 
 /* To access the deployment details page a user can use the browser's address bar
  * or click on a row in the lists. The list already contains all the individual
@@ -16,7 +16,7 @@ export const useDeploymentDetails = (): [
         error: Error | undefined
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    RefetchFunction<any, Deployment>
+    RefetchFunction<any, Deployment>,
 ] => {
     const { state: dataFromRouter } = useLocation()
     const { id } = useParams()

@@ -1,2 +1,6 @@
 # The following files are yaml templates and produce SyntaxErrors with prettier
-helm
+helm/chart/templates/deployment.yaml
+helm/chart/templates/hpa.yaml
+helm/chart/templates/ingress.yaml
+helm/chart/templates/serviceaccount.yaml
+helm/chart/templates/tests/test-connection.yaml

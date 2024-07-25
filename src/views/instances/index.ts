@@ -1,3 +1,3 @@
-export { DeploymentDetails } from './details'
-export { InstancesList } from './list/instances-list'
-export { NewDhis2Instance } from './new-dhis2'
+export { DeploymentDetails } from './details/index.ts'
+export { InstancesList } from './list/instances-list.tsx'
+export { NewDhis2Instance } from './new-dhis2/index.ts'

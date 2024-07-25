@@ -6,7 +6,9 @@ import { IconMore16, IconError16, IconClockHistory16, IconCheckmarkCircle16 } fr
  * @returns {object} The props to be passed to the Tag component
  */
 export const getTagProps = (status: string) => {
-    if (!status) return {}
+    if (!status) {
+        return {}
+    }
     if (status.startsWith('Booting') || status === 'Pending') {
         return { neutral: true, icon: <IconClockHistory16 /> }
     }

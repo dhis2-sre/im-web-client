@@ -17,12 +17,12 @@ import {
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
+import { Heading, MomentExpiresFromNow } from '../../../components/index.ts'
+import { DeleteButton } from './delete-menu-button.tsx'
+import useDeployments from './filter-deployments.tsx'
+import InstanceTag from './instance-tag.tsx'
 import styles from './instances-list.module.css'
-import InstanceTag from './instance-tag'
-import { OpenButton } from './open-button'
-import { Heading, MomentExpiresFromNow } from '../../../components'
-import { DeleteButton } from './delete-menu-button'
-import useDeployments from './filter-deployments'
+import { OpenButton } from './open-button.tsx'
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
@@ -72,9 +72,7 @@ export const InstancesList: FC = () => {
                             {group.deployments?.map((deployment) => (
                                 <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
                                     <DataTableCell>
-                                        {deployment.instances?.map(({ stackName, id }) => (
-                                            <InstanceTag key={stackName} instanceId={id} stackName={stackName} />
-                                        ))}
+                                        {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
                                     </DataTableCell>
                                     <DataTableCell>
                                         <span className={styles.verticallyAlignedCellContent}>

@@ -1,10 +1,10 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDelete16 } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { ConfirmationModal } from '../../../components'
-import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
 import type { FC } from 'react'
+import { ConfirmationModal } from '../../../components/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Instance } from '../../../types/index.ts'
 
 export const DeleteButton: FC<{
     id: number
@@ -60,7 +60,7 @@ export const DeleteButton: FC<{
         <>
             {showConfirmationModal && (
                 <ConfirmationModal destructive onCancel={onCancel} onConfirm={onConfirm}>
-                    Are you sure you want to delete instance "{displayName}"
+                    Are you sure you want to delete instance &quot;{displayName}&quot;
                 </ConfirmationModal>
             )}
             <Button small secondary destructive icon={<IconDelete16 />} onClick={onClick} loading={loading}>

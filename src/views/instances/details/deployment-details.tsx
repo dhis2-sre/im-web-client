@@ -1,11 +1,11 @@
 import { Button, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
 import { FC } from 'react'
-import { useDeploymentDetails } from '../../../hooks'
-import styles from './deployment-details.module.css'
-import { DeploymentInstancesList } from './deployment-instances-list'
-import { DeploymentSummary } from './deployment-summary'
-import { Heading } from '../../../components'
 import { useNavigate } from 'react-router-dom'
+import { Heading } from '../../../components/index.ts'
+import { useDeploymentDetails } from '../../../hooks/index.ts'
+import styles from './deployment-details.module.css'
+import { DeploymentInstancesList } from './deployment-instances-list.tsx'
+import { DeploymentSummary } from './deployment-summary.tsx'
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()

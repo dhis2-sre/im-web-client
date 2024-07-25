@@ -1,8 +1,8 @@
 import { Button, IconAdd16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { AddToGroupModal } from './add-to-group-modal'
-import { User } from '../../types'
+import { User } from '../../types/index.ts'
+import { AddToGroupModal } from './add-to-group-modal.tsx'
 
 type AddToGroupButtonProps = {
     user: User

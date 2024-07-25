@@ -1,10 +1,9 @@
 import { InputFieldFF, hasValue } from '@dhis2/ui'
-import { Field } from 'react-final-form'
-import { ParameterFieldProps } from './parameter-field'
-import { OPTIONAL_FIELDS } from '../constants'
 import { FC } from 'react'
+import { Field } from 'react-final-form'
+import { OPTIONAL_FIELDS } from '../constants.ts'
+import { ParameterFieldProps } from './parameter-field.tsx'
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)
 
 export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text' }) => {

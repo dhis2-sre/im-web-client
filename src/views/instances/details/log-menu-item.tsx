@@ -1,10 +1,10 @@
 import { Button, ButtonStrip, Center, CircularLoader, IconTerminalWindow16, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, MenuItem } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
-import styles from './log-menu-item.module.css'
 import type { FC } from 'react'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Instance } from '../../../types/index.ts'
+import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
+import styles from './log-menu-item.module.css'
 
 type LogMenuItemProps = {
     instanceId: number

@@ -1,1 +1,1 @@
-export { DeploymentDetails } from './deployment-details'
+export { DeploymentDetails } from './deployment-details.tsx'

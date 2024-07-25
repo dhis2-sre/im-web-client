@@ -1,9 +1,9 @@
-import { AnyObject } from 'react-final-form'
-import { useAuthAxios } from './use-auth-axios'
-import { useCallback } from 'react'
-import { SaveDeploymentRequest, SaveInstanceRequest } from '../types'
 import { FORM_ERROR } from 'final-form'
-import { STACK_NAMES } from '../constants'
+import { useCallback } from 'react'
+import type { AnyObject } from 'react-final-form'
+import { STACK_NAMES } from '../constants.ts'
+import { SaveDeploymentRequest, SaveInstanceRequest } from '../types/index.ts'
+import { useAuthAxios } from './use-auth-axios.ts'
 
 const convertParameterFieldsToPayload = (values: AnyObject) =>
     Object.entries(values).reduce((parameterPayload, [parameterName, value]) => {

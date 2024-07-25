@@ -10,19 +10,21 @@ import {
     PGADMIN_USERNAME,
     PGADMIN_PASSWORD,
     PGADMIN_CONFIRM_PASSWORD,
-} from '../constants'
-import { IntergrationParameterSelect } from './intergration-parameter-select'
-import { ImageRepositorySelect } from './image-repository-select'
-import { ImageTagSelect } from './image-tag-select'
-import { BooleanParameterCheckbox } from './boolean-parameter-checkbox'
-import { TextParameterInput } from './text-parameter-input'
-import { Dhis2StackName } from '../parameter-fieldset'
-import { ConfirmPasswordInput } from './confirm-password'
+} from '../constants.ts'
+import { Dhis2StackName } from '../parameter-fieldset.tsx'
+import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
+import { ConfirmPasswordInput } from './confirm-password.tsx'
+import { ImageRepositorySelect } from './image-repository-select.tsx'
+import { ImageTagSelect } from './image-tag-select.tsx'
+import { IntergrationParameterSelect } from './intergration-parameter-select.tsx'
+import { TextParameterInput } from './text-parameter-input.tsx'
 
 export type ParameterFieldProps = {
     displayName: string
     parameterName: string
     stackId: Dhis2StackName
+    // Used by other components that use ParameterFieldProps
+    // eslint-disable-next-line react/no-unused-prop-types
     type?: string
 }
 

@@ -1,8 +1,8 @@
 import { MenuItem, IconSave16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { SaveAsModal } from './save-as-modal'
-import { AsyncActionProps } from './actions-dropdown-menu'
+import { AsyncActionProps } from './actions-dropdown-menu.tsx'
+import { SaveAsModal } from './save-as-modal.tsx'
 
 export const SaveAsMenuItem: FC<AsyncActionProps> = ({ instanceId, stackName, onStart, onComplete }) => {
     const [showModal, setShowModal] = useState<boolean>(false)

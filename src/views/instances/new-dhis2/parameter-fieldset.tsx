@@ -1,9 +1,9 @@
 import { Center, CircularLoader, CheckboxFieldFF, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
-import { Field, useField, useForm } from 'react-final-form'
-import { useDhis2StackParameters } from '../../../hooks'
 import { FC, useEffect, useMemo } from 'react'
-import { ParameterField } from './fields/parameter-field'
+import { Field, useField, useForm } from 'react-final-form'
+import { useDhis2StackParameters } from '../../../hooks/index.ts'
+import { ParameterField } from './fields/parameter-field.tsx'
 import styles from './styles.module.css'
 
 export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin'

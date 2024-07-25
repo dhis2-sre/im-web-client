@@ -1,23 +1,11 @@
-import {
-    BaseButtonProps,
-    Button,
-    ButtonStrip,
-    FileInput,
-    InputField,
-    LinearLoader,
-    Modal,
-    ModalActions,
-    ModalContent,
-    ModalTitle,
-    SingleSelectField,
-    SingleSelectOption,
-} from '@dhis2/ui'
-import styles from './upload-database-modal.module.css'
+import { useAlert } from '@dhis2/app-service-alerts'
+import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import type { BaseButtonProps } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { useAlert } from '@dhis2/app-service-alerts'
-import { Group, GroupsWithDatabases } from '../../types'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Group, GroupsWithDatabases } from '../../types/index.ts'
+import styles from './upload-database-modal.module.css'
 
 type UploadDatabaseModalProps = {
     onClose: BaseButtonProps['onClick']

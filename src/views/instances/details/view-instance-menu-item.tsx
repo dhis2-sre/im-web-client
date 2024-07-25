@@ -1,6 +1,6 @@
 import { Button, IconLaunch16 } from '@dhis2/ui'
 import type { FC } from 'react'
-import { STACK_NAMES } from '../../../constants'
+import { STACK_NAMES } from '../../../constants.ts'
 
 type ViewInstanceMenuItemProps = {
     groupName: string

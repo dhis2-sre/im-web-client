@@ -1,7 +1,7 @@
-import { Field, useField } from 'react-final-form'
 import { InputFieldFF } from '@dhis2/ui'
 import { FC, useCallback } from 'react'
-import { PGADMIN_PASSWORD, PGADMIN_CONFIRM_PASSWORD } from '../constants'
+import { Field, useField } from 'react-final-form'
+import { PGADMIN_PASSWORD, PGADMIN_CONFIRM_PASSWORD } from '../constants.ts'
 
 type ConfirmPasswordInputProps = {
     stackId: string

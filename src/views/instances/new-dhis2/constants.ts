@@ -1,4 +1,4 @@
-import { Dhis2StackPrimaryParameters } from './parameter-fieldset'
+import { Dhis2StackPrimaryParameters } from './parameter-fieldset.tsx'
 
 export const DHIS2_STACK_ID = 'dhis2'
 export const DATABASE_ID = 'DATABASE_ID'
