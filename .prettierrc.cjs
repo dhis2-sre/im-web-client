@@ -1,21 +1,5 @@
-// const { config } = require('@dhis2/cli-style')
-// const defaultConfig = require(config.prettier)
-
-// module.exports = {
-//     ...defaultConfig,
-//     printWidth: 180,
-//     overrides: [
-//         {
-//             files: '**/*.yml',
-//             options: {
-//                 singleQuote: false,
-//             },
-//         },
-//     ],
-// }
-
 module.exports = {
-    printWidth: 80,
+    printWidth: 180,
     tabWidth: 4,
     useTabs: false,
     semi: false,
