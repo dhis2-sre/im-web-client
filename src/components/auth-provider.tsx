@@ -1,6 +1,4 @@
-import type { FC } from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { Tokens, User } from '../types'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuthAxios } from '../hooks'
 import { AuthContext } from '../contexts'
 import { UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios'
@@ -31,6 +29,7 @@ export const AuthProvider: FC = () => {
 
     const [, getTokens] = useAuthAxios<Tokens>({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
     const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
+    const [, initiateGoogleLogin] = useAuthAxios({ method: 'GET', url: '/auth/google' }, { manual: true })
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 
     const [checkingUser, setCheckingUser] = useState(true)
@@ -83,6 +82,15 @@ export const AuthProvider: FC = () => {
         [getTokens, getUser, setCurrentUser]
     )
 
+    const googleLogin = useCallback(async () => {
+        try {
+            const response = await initiateGoogleLogin()
+            window.location.href = response.data.redirectUrl
+        } catch (error) {
+            console.error('Google login failed:', error)
+        }
+    }, [initiateGoogleLogin])
+
     const logout = useCallback(async () => {
         const response = await requestLogout()
         if (response.status === 200) {
@@ -112,7 +120,8 @@ export const AuthProvider: FC = () => {
                 isAuthenticating,
                 authenticationErrorMessage,
                 login,
-                logout,
+                googleLogin,
+                logout
             }}
         >
             {

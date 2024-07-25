@@ -7,6 +7,7 @@ type AuthContextApi = {
     isAuthenticating: boolean
     authenticationErrorMessage: string
     login: (username: string, password: string) => Promise<void>
+    googleLogin: () => Promise<void>
     logout: () => Promise<void>
 }
 const throwIfUninitialized = () => {
@@ -19,5 +20,6 @@ export const AuthContext = createContext<AuthContextApi>({
     isAuthenticating: false,
     authenticationErrorMessage: '',
     login: throwIfUninitialized,
-    logout: throwIfUninitialized,
+    googleLogin: throwIfUninitialized(),
+    logout: throwIfUninitialized
 })

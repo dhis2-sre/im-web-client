@@ -5,7 +5,7 @@ import styles from './login.module.css'
 import { useAuth } from '../hooks'
 
 export const Login = () => {
-    const { login, isAuthenticating, authenticationErrorMessage } = useAuth()
+    const { login, googleLogin, isAuthenticating, authenticationErrorMessage } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const onSubmit = useCallback(
@@ -52,7 +52,7 @@ export const Login = () => {
                     <Link to={'/sign-up'}>Sign up</Link>
                     <Link to={'/request-password-reset'}>Forgot password?</Link>
                 </div>
-                <Button onClick={() => window.location.href = '/auth/google'}>
+                <Button onClick={googleLogin}>
                     Login with Google
                 </Button>
             </Card>
