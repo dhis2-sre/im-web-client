@@ -1,8 +1,8 @@
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useAlert } from '@dhis2/app-service-alerts'
+import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
+import { useAuthAxios } from '../../hooks/index.ts'
 import styles from './reset-password.module.css'
 
 export const RequestPasswordReset = () => {

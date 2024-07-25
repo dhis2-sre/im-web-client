@@ -1,7 +1,7 @@
+import path from 'path'
 import { defineConfig, devices } from '@playwright/test'
 import * as dotenv from 'dotenv'
 import * as dotenvExpand from 'dotenv-expand'
-import path from 'path'
 
 function loadEnvVariables() {
     // Assume it's a development environment unless one of these indicates otherwise

@@ -1,6 +1,6 @@
-import { useAuthAxios } from '../../hooks'
 import { useAlert } from '@dhis2/app-service-alerts'
 import { useCallback } from 'react'
+import { useAuthAxios } from '../../hooks/index.ts'
 
 export const useAddGroups = () => {
     const [{ loading: addGroupLoading }, addGroup] = useAuthAxios({ method: 'POST' }, { manual: true })

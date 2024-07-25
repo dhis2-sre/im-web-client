@@ -1,8 +1,8 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/index.ts'
 import styles from './login.module.css'
-import { useAuth } from '../hooks'
 
 export const Login = () => {
     const { login, isAuthenticating, authenticationErrorMessage } = useAuth()

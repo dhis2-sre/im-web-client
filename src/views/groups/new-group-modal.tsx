@@ -1,14 +1,15 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
+import type { BaseButtonProps } from '@dhis2/ui'
 import cx from 'classnames'
-import styles from './groups-list.module.css'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { useAlert } from '@dhis2/app-service-alerts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import styles from './groups-list.module.css'
 
 type NewGroupModalProps = {
-    onComplete: Function
-    onCancel: Function
+    onComplete: () => void
+    onCancel: BaseButtonProps['onClick']
 }
 
 export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) => {
@@ -35,7 +36,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
     }, [createGroup, deployable, hostname, name, onComplete, showAlert])
 
     return (
-        <Modal onClose={onCancel}>
+        <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>New group</ModalTitle>
             <ModalContent>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required />

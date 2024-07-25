@@ -1,8 +1,8 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { useEffect, useMemo } from 'react'
-import { useAuthAxios } from '../../../../hooks'
-import { Group } from '../../../../types'
 import { Field, useForm } from 'react-final-form'
+import { useAuthAxios } from '../../../../hooks/index.ts'
+import { Group } from '../../../../types/index.ts'
 import styles from './fields.module.css'
 
 export const GroupSelect = () => {

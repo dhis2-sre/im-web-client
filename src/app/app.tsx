@@ -6,15 +6,23 @@ import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import React from 'react'
-import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { Alerts, AuthProvider, ErrorView, Layout } from './components'
-import './index.module.css'
-import { DatabasesList, DeploymentDetails, InstancesList, NewDhis2Instance, RequestPasswordReset, ResetPassword, SignUp, StackDetails, StacksList } from './views'
-import { UsersList } from './views/users'
-import { GroupsList } from './views/groups'
-import { Validate } from './views/validate'
-import { UserDetails } from './views/users/user-details'
+import { Alerts, AuthProvider, ErrorView, Layout } from '../components/index.ts'
+import {
+    DatabasesList,
+    DeploymentDetails,
+    InstancesList,
+    NewDhis2Instance,
+    RequestPasswordReset,
+    ResetPassword,
+    SignUp,
+    StackDetails,
+    StacksList,
+    GroupsList,
+    UsersList,
+    UserDetails,
+    Validate,
+} from '../views/index.ts'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -40,18 +48,13 @@ const router = createBrowserRouter(
     )
 )
 
-const render = (tree) => {
-    const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-
-    if (process.env.REACT_APP_SUPRESS_STRICT_MODE) {
-        return root.render(tree)
-    }
-
-    return root.render(<React.StrictMode>{tree}</React.StrictMode>)
-}
-
-render(
-    <AlertsProvider>
+export const App = () => (
+    <AlertsProvider
+        plugin={false}
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        parentAlertsAdd={undefined as Function}
+        showAlertsInPlugin={false}
+    >
         <CssReset />
         <CssVariables colors theme layers spacers elevations />
         <RouterProvider router={router} />

@@ -1,4 +1,4 @@
-import { Dhis2StackName } from './views/instances/new-dhis2/parameter-fieldset'
+import { Dhis2StackName } from './views/instances/new-dhis2/parameter-fieldset.tsx'
 
 export const STACK_NAMES: Record<string, Dhis2StackName> = {
     DB: 'dhis2-db',

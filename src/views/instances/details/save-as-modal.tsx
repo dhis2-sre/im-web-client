@@ -1,11 +1,11 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
-import styles from './save-as-modal.module.css'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
-import { useAuthAxios } from '../../../hooks'
-import { Database } from '../../../types'
-import { useAlert } from '@dhis2/app-service-alerts'
-import { AsyncActionProps } from './actions-dropdown-menu'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Database } from '../../../types/index.ts'
+import { AsyncActionProps } from './actions-dropdown-menu.tsx'
+import styles from './save-as-modal.module.css'
 
 interface SaveAsModalProps extends AsyncActionProps {
     onClose: () => void
@@ -70,7 +70,7 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, stackName, onClo
 
     return (
         <Modal onClose={onClose}>
-            <ModalTitle>Save "{stackName}" database as</ModalTitle>
+            <ModalTitle>Save &quot;{stackName}&quot; database as</ModalTitle>
             <ModalContent className={styles.container}>
                 <div className={styles.fileAndExtension}>
                     <InputField className={styles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />

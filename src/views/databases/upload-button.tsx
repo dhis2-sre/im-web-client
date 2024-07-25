@@ -1,10 +1,10 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { UploadDatabaseModal } from './upload-database-modal'
+import { UploadDatabaseModal } from './upload-database-modal.tsx'
 
 type UploadButtonProps = {
-    onComplete: Function
+    onComplete: () => void
 }
 
 export const UploadButton: FC<UploadButtonProps> = ({ onComplete }) => {

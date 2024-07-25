@@ -1,12 +1,14 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
+import axios, { AxiosError } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
+import { makeUseAxios } from 'axios-hooks'
+import type { Options, UseAxiosResult } from 'axios-hooks'
 import { useCallback } from 'react'
-import { RefreshTokenRequest } from '../types'
+import { RefreshTokenRequest } from '../types/index.ts'
 
-export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://dev.api.im.dhis2.org'
+export const baseURL = import.meta.env.API_URL ?? import.meta.env.VITE_API_URL ?? 'https://dev.api.im.dhis2.org'
 
 if (!baseURL) {
-    throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
+    throw new Error('No baseURL found. Ensure there is an environment variable called `VITE_API_URL` present')
 }
 
 /* Better make sure this is a unque string because the event
@@ -55,6 +57,7 @@ interface UseAuthAxiosOptions extends Options {
 }
 
 interface UseAuthAxios {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 

@@ -1,18 +1,19 @@
 import { Button, IconMore24, Menu, Popover } from '@dhis2/ui'
-import { RefetchFunction } from 'axios-hooks'
+import type { RefetchFunction } from 'axios-hooks'
 import { useCallback, useRef, useState } from 'react'
-import { Deployment } from '../../../types'
-import { DeleteMenuItem } from './delete-menu-item'
-import { LogMenuItem } from './log-menu-item'
-import { ResetMenuItem } from './reset-menu-item'
-import { RestartMenuItem } from './restart-menu-item'
-import { SaveAsMenuItem } from './save-as-menu-item'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset'
+import { Deployment } from '../../../types/index.ts'
+import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
+import { DeleteMenuItem } from './delete-menu-item.tsx'
+import { LogMenuItem } from './log-menu-item.tsx'
+import { ResetMenuItem } from './reset-menu-item.tsx'
+import { RestartMenuItem } from './restart-menu-item.tsx'
+import { SaveAsMenuItem } from './save-as-menu-item.tsx'
 
 type ActionsDropdownMenuProps = {
     deploymentId: number
     instanceId: number
     stackName: Dhis2StackName
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     refetch: RefetchFunction<any, Deployment>
 }
 type OnActionCompletFn = (shouldRefetch?: boolean) => void

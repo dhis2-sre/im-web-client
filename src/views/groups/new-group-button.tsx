@@ -1,10 +1,10 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
-import { NewGroupModal } from './new-group-modal'
+import { NewGroupModal } from './new-group-modal.tsx'
 
 type NewGroupButtonProps = {
-    onComplete: Function
+    onComplete: () => void
 }
 
 export const NewGroupButton: FC<NewGroupButtonProps> = ({ onComplete }) => {

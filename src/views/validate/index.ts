@@ -1,1 +1,1 @@
-export { Validate } from './validate'
+export { Validate } from './validate.tsx'

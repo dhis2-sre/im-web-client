@@ -1,10 +1,10 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { MenuItem, IconClockHistory16 } from '@dhis2/ui'
 import { FC, useCallback, useState } from 'react'
-import { ConfirmationModal } from '../../../components'
-import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
-import { AsyncActionProps } from './actions-dropdown-menu'
+import { ConfirmationModal } from '../../../components/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Instance } from '../../../types/index.ts'
+import { AsyncActionProps } from './actions-dropdown-menu.tsx'
 
 export const ResetMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, onStart, stackName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
@@ -46,7 +46,7 @@ export const ResetMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, on
         <>
             {showConfirmationModal && (
                 <ConfirmationModal onCancel={onCancel} onConfirm={onConfirm}>
-                    Are you sure you want to reset instance "{stackName}"
+                    Are you sure you want to reset instance &quot;{stackName}&quot;
                 </ConfirmationModal>
             )}
             <MenuItem dense destructive disabled={loading} icon={<IconClockHistory16 />} onClick={onClick} label="Reset" />

@@ -1,11 +1,11 @@
 import { Center, CircularLoader, NoticeBox, DataTable, TableHead, DataTableRow, DataTableColumnHeader, TableBody, DataTableCell, IconCheckmark16 } from '@dhis2/ui'
-import { useParams } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
-import { User } from '../../types'
-import { AddToGroupButton } from './add-to-group-button'
-import { RemoveFromGroupButton } from './remove-from-group-button'
-import { Heading } from '../../components'
 import Moment from 'react-moment'
+import { useParams } from 'react-router-dom'
+import { Heading } from '../../components/index.ts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { User } from '../../types/index.ts'
+import { AddToGroupButton } from './add-to-group-button.tsx'
+import { RemoveFromGroupButton } from './remove-from-group-button.tsx'
 
 export const UserDetails = () => {
     const { id } = useParams()

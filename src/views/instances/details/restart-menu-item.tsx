@@ -1,11 +1,11 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { MenuItem, IconSync16 } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { ConfirmationModal } from '../../../components'
-import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
 import type { FC } from 'react'
-import { AsyncActionProps } from './actions-dropdown-menu'
+import { ConfirmationModal } from '../../../components/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Instance } from '../../../types/index.ts'
+import { AsyncActionProps } from './actions-dropdown-menu.tsx'
 
 export const RestartMenuItem: FC<AsyncActionProps> = ({ instanceId, onStart, onComplete, stackName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
@@ -47,7 +47,7 @@ export const RestartMenuItem: FC<AsyncActionProps> = ({ instanceId, onStart, onC
         <>
             {showConfirmationModal && (
                 <ConfirmationModal onCancel={onCancel} onConfirm={onConfirm}>
-                    Are you sure you want to restart instance "{stackName}"
+                    Are you sure you want to restart instance &quot;{stackName}&quot;
                 </ConfirmationModal>
             )}
             <MenuItem dense disabled={loading} icon={<IconSync16 />} onClick={onClick} label="Restart" />

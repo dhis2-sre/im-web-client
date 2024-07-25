@@ -1,2 +1,2 @@
-export { GroupsList } from './groups-list'
-export { NewGroupModal } from './new-group-modal'
+export { GroupsList } from './groups-list.tsx'
+export { NewGroupModal } from './new-group-modal.tsx'

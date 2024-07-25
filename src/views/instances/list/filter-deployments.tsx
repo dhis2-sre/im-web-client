@@ -1,7 +1,7 @@
-import { useAuthAxios } from '../../../hooks'
-import { GroupsWithDeployments } from '../../../types'
 import { useState, useMemo, useContext } from 'react'
-import { AuthContext } from '../../../contexts/auth-context'
+import { AuthContext } from '../../../contexts/auth-context.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { GroupsWithDeployments } from '../../../types/index.ts'
 
 const useDeployments = () => {
     const [{ data, error, loading }, refetch] = useAuthAxios<GroupsWithDeployments[]>('/deployments', {

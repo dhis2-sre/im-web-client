@@ -1,14 +1,15 @@
 import { Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui'
-import styles from './add-to-group-modal.module.css'
+import type { BaseButtonProps } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { useAuthAxios } from '../../hooks/'
-import { Group, User } from '../../types'
-import { useAddGroups } from './use-add-groups'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Group, User } from '../../types/index.ts'
+import styles from './add-to-group-modal.module.css'
+import { useAddGroups } from './use-add-groups.tsx'
 
 type AddToGroupModalProps = {
     user: User
-    onClose: () => void
+    onClose: BaseButtonProps['onClick']
     onComplete: () => void
 }
 
@@ -34,16 +35,16 @@ export const AddToGroupModal: FC<AddToGroupModalProps> = ({ user, onClose, onCom
         setSelectedGroups(selected)
         await addGroups(selected, user.id)
         onComplete()
-        onClose()
+        onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)
     }
 
     return (
-        <Modal onClose={onClose}>
+        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>Add user to group</ModalTitle>
             <ModalContent className={styles.container}>
                 <Transfer
                     maxSelections={1}
-                    loadint={addGroupLoading}
+                    loading={addGroupLoading}
                     options={groupOptions}
                     selected={selectedGroups}
                     leftHeader={<p>Available Groups</p>}

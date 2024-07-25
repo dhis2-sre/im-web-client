@@ -1,14 +1,15 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
-import styles from './upload-database-modal.module.css'
+import type { BaseButtonProps } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { useAlert } from '@dhis2/app-service-alerts'
-import { Group, GroupsWithDatabases } from '../../types'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Group, GroupsWithDatabases } from '../../types/index.ts'
+import styles from './upload-database-modal.module.css'
 
 type UploadDatabaseModalProps = {
-    onClose: Function
-    onComplete: Function
+    onClose: BaseButtonProps['onClick']
+    onComplete: () => void
 }
 
 const defaultFormat = 'custom'
@@ -90,7 +91,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         const uploadedFile = files[0]
         setDatabaseFile(uploadedFile)
 
-        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([format, { extension }]) => uploadedFile.name.endsWith(extension))
+        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([, { extension }]) => uploadedFile.name.endsWith(extension))
         if (matchingFormat) {
             setName(uploadedFile.name.replace(extension, ''))
             setExtension(extension)
@@ -117,7 +118,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
     }
 
     return (
-        <Modal onClose={onClose}>
+        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>Upload database</ModalTitle>
             <ModalContent className={styles.container}>
                 <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">

@@ -1,10 +1,10 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconDownload16 } from '@dhis2/ui'
 import { useCallback } from 'react'
-import { useAuthAxios } from '../../hooks'
-import { baseURL } from '../../hooks/use-auth-axios'
-import { ExternalDownload } from '../../types'
 import type { FC } from 'react'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { baseURL } from '../../hooks/use-auth-axios.ts'
+import { ExternalDownload } from '../../types/index.ts'
 
 type DownloadButtonProps = { id: number }
 

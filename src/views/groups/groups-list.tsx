@@ -1,10 +1,10 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
-import Moment from 'react-moment'
-import { useAuthAxios } from '../../hooks'
 import type { FC } from 'react'
-import { Group } from '../../types'
-import { NewGroupButton } from './new-group-button'
-import { Heading } from '../../components'
+import Moment from 'react-moment'
+import { Heading } from '../../components/index.ts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Group } from '../../types/index.ts'
+import { NewGroupButton } from './new-group-button.tsx'
 
 export const GroupsList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<Group[]>('/groups', { useCache: false })
