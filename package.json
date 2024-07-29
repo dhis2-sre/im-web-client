@@ -15,7 +15,8 @@
         "e2e": "yarn playwright test --ui",
         "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier src/types/generated --write --loglevel silent",
         "lint-commit-msg": "npx --no-install commitlint --edit $1",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "pre-commit": "yarn format && yarn lint"
     },
     "dependencies": {
         "@commitlint/cli": "^19.3.0",
