@@ -4,7 +4,7 @@ services:
         build:
             context: .
             args:
-                REACT_APP_API_URL: ${API_URL}
+                VITE_API_URL: ${API_URL}
         ports:
             - "8080:8080"
 
@@ -13,7 +13,7 @@ services:
             context: .
             target: builder
             args:
-                REACT_APP_API_URL: ${API_URL}
+                VITE_API_URL: ${API_URL}
         stdin_open: true
         tty: true
         volumes:
@@ -37,7 +37,7 @@ services:
             USER_EMAIL: ${USER_EMAIL}
             USER_PASSWORD: ${USER_PASSWORD}
             API_URL: ${API_URL}
-            REACT_APP_API_URL: ${API_URL}
+            VITE_API_URL: ${API_URL}
 
     test:
         build:
