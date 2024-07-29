@@ -1,3 +1,4 @@
+export * from './account-verification/index.ts'
 export * from './databases/index.ts'
 export * from './instances/index.ts'
 export * from './sign-up/sign-up.tsx'
