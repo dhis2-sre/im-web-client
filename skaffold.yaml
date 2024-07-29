@@ -5,7 +5,7 @@ build:
         - image: dhis2/im-web-client
           docker:
               buildArgs:
-                  REACT_APP_API_URL: '{{ .API_URL }}'
+                  VITE_API_URL: '{{ .API_URL }}'
     tagPolicy:
         inputDigest: {}
 deploy:
