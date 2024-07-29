@@ -5,11 +5,10 @@ import type { Options, UseAxiosResult } from 'axios-hooks'
 import { useCallback } from 'react'
 import { RefreshTokenRequest } from '../types/index.ts'
 
-export const baseURL = import.meta.env.API_URL ?? import.meta.env.VITE_API_URL ?? 'https://dev.api.im.dhis2.org'
-
-if (!baseURL) {
+if (!import.meta.env.VITE_API_URL) {
     throw new Error('No baseURL found. Ensure there is an environment variable called `VITE_API_URL` present')
 }
+export const baseURL = import.meta.env.VITE_API_URL
 
 /* Better make sure this is a unque string because the event
  * is going to be sent via the global window object */
