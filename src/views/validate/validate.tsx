@@ -45,7 +45,7 @@ export const Validate = () => {
 
     return (
         <div>
-            {validated && <Navigate to="/login" />}
+            {validated && <Navigate to="/validate/success" />}
             <h3>Validating token... {token}</h3>
         </div>
     )
