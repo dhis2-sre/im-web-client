@@ -1,1 +1,1 @@
-export { DatabasePlay } from './list/database-play'
+export { DatabasePlay } from './list/database-play.tsx'

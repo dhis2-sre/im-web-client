@@ -1,1 +1,1 @@
-export { InstancePlay } from './list/instance-play'
+export { InstancePlay } from './list/instance-play.tsx'

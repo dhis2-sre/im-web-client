@@ -79,7 +79,7 @@ export const AuthProvider: FC = () => {
                 setIsAuthenticating(false)
             }
         },
-        [getTokens, getUser, setCurrentUser]
+        [getTokens, getUser, setCurrentUser, navigate]
     )
 
     const logout = useCallback(async () => {

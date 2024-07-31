@@ -18,9 +18,7 @@ export const PublicLayout: FC = () => {
                     Instance Manager
                 </h1>
                 <nav className={styles.navlist}>
-                    <NavLink to="/play/instances">
-                        View Public Instances
-                    </NavLink>
+                    <NavLink to="/play/instances">View Public Instances</NavLink>
                     <NavLink to="/play/databases">View Public Databases</NavLink>
                     <NavLink to="/sign-in">Login</NavLink>
                     <NavLink to="/sign-up">Signup</NavLink>

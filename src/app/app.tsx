@@ -24,9 +24,8 @@ import {
     UserDetails,
     Validate,
     InstancePlay,
-    DatabasePlay
+    DatabasePlay,
 } from '../views/index.ts'
-
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -44,7 +43,6 @@ const router = createBrowserRouter(
                         <Route path="success" element={<AccountVerificationSuccess />} />
                     </Route>
                 </Route>
-
 
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
                     <Route path="/stacks" element={<StacksList />} />

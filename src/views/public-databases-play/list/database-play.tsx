@@ -1,5 +1,3 @@
 export const DatabasePlay = () => {
-    return (
-        <div>instance-play</div>
-    )
+    return <div>instance-play</div>
 }
