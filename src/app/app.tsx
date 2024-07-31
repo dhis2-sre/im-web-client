@@ -9,7 +9,7 @@ import React from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout } from '../components/index.ts'
 import {
-    AccountVerificationSuccess,
+    ValidateSuccess,
     DatabasesList,
     DeploymentDetails,
     InstancesList,
@@ -29,17 +29,10 @@ const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/validate/:token" element={<Validate />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-
-            <Route
-                // allows us to have other routes,
-                // e.g. "/account-verification/expired" when the link has expired
-                path="/account-verification"
-            >
-                <Route path="success" element={<AccountVerificationSuccess />} />
-            </Route>
+            <Route path="/validate/success" element={<ValidateSuccess />} />
+            <Route path="/validate/:token" element={<Validate />} />
 
             <Route element={<AuthProvider />}>
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
