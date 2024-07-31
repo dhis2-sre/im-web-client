@@ -5,9 +5,8 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import React from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { Alerts, AuthProvider, ErrorView, Layout } from '../components/index.ts'
+import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import {
     AccountVerificationSuccess,
     DatabasesList,
@@ -16,6 +15,7 @@ import {
     NewDhis2Instance,
     RequestPasswordReset,
     ResetPassword,
+    Login,
     SignUp,
     StackDetails,
     StacksList,
@@ -23,25 +23,29 @@ import {
     UsersList,
     UserDetails,
     Validate,
+    InstancePlay,
+    DatabasePlay
 } from '../views/index.ts'
+
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/validate/:token" element={<Validate />} />
-            <Route path="/request-password-reset" element={<RequestPasswordReset />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-
-            <Route
-                // allows us to have other routes,
-                // e.g. "/account-verification/expired" when the link has expired
-                path="/account-verification"
-            >
-                <Route path="success" element={<AccountVerificationSuccess />} />
-            </Route>
-
             <Route element={<AuthProvider />}>
+                <Route path="/" element={<PublicLayout />}>
+                    <Route path="/sign-up" element={<SignUp />} />
+                    <Route path="/sign-in" element={<Login />} />
+                    <Route path="/play/instances" element={<InstancePlay />} />
+                    <Route path="/play/databases" element={<DatabasePlay />} />
+                    <Route path="/validate/:token" element={<Validate />} />
+                    <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+                    <Route path="/reset-password/:token" element={<ResetPassword />} />
+                    <Route path="/account-verification">
+                        <Route path="success" element={<AccountVerificationSuccess />} />
+                    </Route>
+                </Route>
+
+
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
                     <Route path="/stacks" element={<StacksList />} />
                     <Route path="/stacks/:name" element={<StackDetails />} />

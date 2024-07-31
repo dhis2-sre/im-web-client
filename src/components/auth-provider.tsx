@@ -5,7 +5,6 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../contexts/index.ts'
 import { useAuthAxios, UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios.ts'
 import type { Tokens, User } from '../types/index.ts'
-import { Login } from './login.tsx'
 
 const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
 const getCurrentUserFromLocalStorage = () => JSON.parse(localStorage.getItem(CURRENT_USER_LOCAL_STORAGE_KEY))
@@ -70,6 +69,7 @@ export const AuthProvider: FC = () => {
 
                 setAuthenticationErrorMessage('')
                 setCurrentUser(userResponse.data)
+                navigate('/instances')
             } catch (error) {
                 console.error(error)
                 const errorMessage = error instanceof AxiosError || error instanceof Error ? error.message : 'Unknown error'
@@ -103,6 +103,10 @@ export const AuthProvider: FC = () => {
         }
     }, [setCurrentUser, navigate])
 
+    if (checkingUser) {
+        return null
+    }
+
     return (
         <AuthContext.Provider
             value={{
@@ -114,7 +118,8 @@ export const AuthProvider: FC = () => {
                 logout,
             }}
         >
-            {
+            <Outlet />
+            {/* {
                 // We're not validating a user on app load and there's a user
                 !checkingUser && currentUser && <Outlet />
             }
@@ -130,7 +135,7 @@ export const AuthProvider: FC = () => {
                 // We won't display anything while we're still checking the user initially
                 // to prevent flickering
                 ''
-            }
+            } */}
         </AuthContext.Provider>
     )
 }
