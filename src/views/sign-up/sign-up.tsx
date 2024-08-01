@@ -54,7 +54,7 @@ export const SignUp = () => {
                 } catch (error) {
                     console.error(error)
 
-                    if (error.response?.data.match(/^password must be/)) {
+                    if (error.response?.data.match(/^password must be/) || error.response?.data.match(/^user .+ already exists$/)) {
                         setErrorMessage(error.response?.data)
                     } else {
                         setErrorMessage(error.message)
