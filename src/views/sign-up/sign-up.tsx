@@ -53,7 +53,12 @@ export const SignUp = () => {
                     navigate('/')
                 } catch (error) {
                     console.error(error)
-                    setErrorMessage(error.message)
+
+                    if (error.response?.data.match(/^password must be/)) {
+                        setErrorMessage(error.response?.data)
+                    } else {
+                        setErrorMessage(error.message)
+                    }
                 }
             } else {
                 setErrorMessage(getInputsErrorMessage(inputs))
