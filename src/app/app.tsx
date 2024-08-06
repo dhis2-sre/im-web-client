@@ -23,25 +23,24 @@ import {
     UsersList,
     UserDetails,
     Validate,
-    InstancePlay,
-    DatabasePlay,
+    InstancesTable,
 } from '../views/index.ts'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
             <Route element={<AuthProvider />}>
-                <Route path="/" element={<PublicLayout />}>
-                    <Route path="/sign-up" element={<SignUp />} />
-                    <Route path="/sign-in" element={<Login />} />
-                    <Route path="/play/instances" element={<InstancePlay />} />
-                    <Route path="/play/databases" element={<DatabasePlay />} />
-                    <Route path="/validate/:token" element={<Validate />} />
-                    <Route path="/request-password-reset" element={<RequestPasswordReset />} />
-                    <Route path="/reset-password/:token" element={<ResetPassword />} />
-                    <Route path="/account-verification">
-                        <Route path="success" element={<AccountVerificationSuccess />} />
-                    </Route>
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/sign-in" element={<Login />} />
+                <Route path="/validate/:token" element={<Validate />} />
+                <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/account-verification">
+                    <Route path="success" element={<AccountVerificationSuccess />} />
+                </Route>
+
+                <Route path="/play" element={<PublicLayout />}>
+                    <Route path="instances" element={<InstancesTable />} />
                 </Route>
 
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
