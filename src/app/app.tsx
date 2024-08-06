@@ -8,7 +8,7 @@ import '@fontsource/roboto/700.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import {
-    AccountVerificationSuccess,
+    ValidateSuccess,
     DatabasesList,
     DeploymentDetails,
     InstancesList,
@@ -36,7 +36,7 @@ const router = createBrowserRouter(
                 <Route path="/request-password-reset" element={<RequestPasswordReset />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
                 <Route path="/account-verification">
-                    <Route path="success" element={<AccountVerificationSuccess />} />
+                    <Route path="success" element={<ValidateSuccess />} />
                 </Route>
 
                 <Route path="/play" element={<PublicLayout />}>
