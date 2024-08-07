@@ -85,7 +85,7 @@
         "playwright-core": "1.45.3",
         "prettier": "^3.3.3",
         "styled-jsx": "^5.1.6",
-        "ts-jest": "^29.2.2",
+        "ts-jest": "^29.2.4",
         "typescript": "^5.2.2",
         "vite": "^5.3.5"
     }
