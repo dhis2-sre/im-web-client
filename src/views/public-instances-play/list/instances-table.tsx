@@ -14,18 +14,6 @@ interface TablesByCategoryProps {
     category: string
 }
 
-const Loading = () => (
-    <div className={styles.loadingWrapper}>
-        <Center>
-            <CircularLoader />
-        </Center>
-    </div>
-)
-
-const ErrorNotice = ({ message }: { message: string }) => <NoticeBox title="Error loading instances">{message}</NoticeBox>
-
-const NoInstancesNotice = () => <NoticeBox title="No instances available">There are no instances to display.</NoticeBox>
-
 const TableBody = ({ deployments, category }: TableBodyProps) => {
     const { getCoreInstanceLink } = useInstanceTableData()
 
@@ -43,7 +31,7 @@ const TableBody = ({ deployments, category }: TableBodyProps) => {
                             <LogoIcon /> {deployment.name}
                         </span>
                     </DataTableCell>
-                    <DataTableCell>{deployment.description}</DataTableCell>
+                    <DataTableCell>{deployment.description || "No description provided"}</DataTableCell>
                 </DataTableRow>
             ))}
         </>
@@ -59,23 +47,27 @@ const TablesByCategory = ({ categorizedDeployments, category }: TablesByCategory
 )
 
 export const InstancesTable = () => {
-    const { instances, error, loading, categorizedCoreDeployments } = useInstanceTableData()
+    const { groupsWithDeployments, error, loading, categorizedCoreDeployments } = useInstanceTableData()
 
     if (loading) {
-        return <Loading />
+        return (<div className={styles.loadingWrapper}>
+            <Center>
+                <CircularLoader />
+            </Center>
+        </div>)
     }
     if (error) {
-        return <ErrorNotice message={error.message} />
+        return <NoticeBox title="Error loading instances">{error.message}</NoticeBox>
     }
-    if (instances.length === 0) {
-        return <NoInstancesNotice />
+    if (groupsWithDeployments.length === 0) {
+        return <NoticeBox title="No instances available">There are no instances to display.</NoticeBox>
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
                 <TabBar>
-                    <Tab selected>Core</Tab>
+                    <Tab selected>Play</Tab>
                 </TabBar>
                 <div className={styles.tableWrapper}>
                     <InstancePlay />

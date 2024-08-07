@@ -38,14 +38,15 @@ const categorizeInstances = (deployments: Deployment[]): CategorizedDeployments 
 }
 
 export const useInstanceTableData = () => {
-    const [{ data: instances, error, loading }] = useAuthAxios('/deployments/public', { useCache: false })
+    const [{ data: groupsWithDeployments, error, loading }] = useAuthAxios('/deployments/public', { useCache: true })
+    const playGroup = groupsWithDeployments?.filter(groupWithDeployments => groupWithDeployments.name === "play")
 
-    const coreDeployments = filterInstancesByCondition(instances, (deployment) => deployment.instances.some((instance) => instance.stackName === 'dhis2-core'))
+    const coreDeployments = filterInstancesByCondition(playGroup, (deployment) => deployment.instances.some((instance) => instance.stackName === 'dhis2-core'))
 
     const categorizedCoreDeployments = categorizeInstances(coreDeployments)
 
     return {
-        instances,
+        groupsWithDeployments,
         error,
         loading,
         getCoreInstanceLink,
