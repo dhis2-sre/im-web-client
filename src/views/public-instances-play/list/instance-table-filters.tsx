@@ -1,4 +1,4 @@
-// useInstanceTableData.tsx
+import { DEPLOYMENT_NAME, INSTANCE_NAME, STACK_NAMES } from '../../../constants.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
 
@@ -9,7 +9,7 @@ export interface CategorizedDeployments {
 }
 
 const getCoreInstanceLink = (deployments: Deployment) => {
-    const coreInstance = deployments.instances.find((instance) => instance.stackName === 'dhis2-core')
+    const coreInstance = deployments.instances.find((instance) => instance.stackName === STACK_NAMES.CORE)
     return coreInstance ? `https://${deployments.groupName}.im.dhis2.org/${coreInstance.name}` : '#'
 }
 
@@ -25,9 +25,9 @@ const categorizeInstances = (deployments: Deployment[]): CategorizedDeployments 
     }
 
     deployments.forEach((deployment) => {
-        if (deployment.name.includes('dev')) {
+        if (deployment.name.includes(INSTANCE_NAME.DEV)) {
             categories.underDevelopment.push(deployment)
-        } else if (deployment.name.includes('nightly')) {
+        } else if (deployment.name.includes(INSTANCE_NAME.STABLE)) {
             categories.canary.push(deployment)
         } else {
             categories.stable.push(deployment)
@@ -39,9 +39,9 @@ const categorizeInstances = (deployments: Deployment[]): CategorizedDeployments 
 
 export const useInstanceTableData = () => {
     const [{ data: groupsWithDeployments, error, loading }] = useAuthAxios('/deployments/public', { useCache: true })
-    const playGroup = groupsWithDeployments?.filter(groupWithDeployments => groupWithDeployments.name === "play")
+    const playGroup = groupsWithDeployments?.filter((groupWithDeployments) => groupWithDeployments.name === DEPLOYMENT_NAME.PLAY)
 
-    const coreDeployments = filterInstancesByCondition(playGroup, (deployment) => deployment.instances.some((instance) => instance.stackName === 'dhis2-core'))
+    const coreDeployments = filterInstancesByCondition(playGroup, (deployment) => deployment.instances.some((instance) => instance.stackName === STACK_NAMES.CORE))
 
     const categorizedCoreDeployments = categorizeInstances(coreDeployments)
 

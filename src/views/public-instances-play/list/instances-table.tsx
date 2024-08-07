@@ -3,6 +3,7 @@ import { Deployment } from '../../../types/index.ts'
 import { InstancePlay } from './instance-play.tsx'
 import { CategorizedDeployments, useInstanceTableData } from './instance-table-filters.tsx'
 import styles from './instances-table.module.css'
+import { DePLOYMENT_CATEGORIES } from '../../../constants.ts'
 
 interface TableBodyProps {
     deployments: Deployment[]
@@ -11,7 +12,6 @@ interface TableBodyProps {
 
 interface TablesByCategoryProps {
     categorizedDeployments: CategorizedDeployments
-    category: string
 }
 
 const TableBody = ({ deployments, category }: TableBodyProps) => {
@@ -31,18 +31,18 @@ const TableBody = ({ deployments, category }: TableBodyProps) => {
                             <LogoIcon /> {deployment.name}
                         </span>
                     </DataTableCell>
-                    <DataTableCell>{deployment.description || "No description provided"}</DataTableCell>
+                    <DataTableCell>{deployment.description || 'No description provided'}</DataTableCell>
                 </DataTableRow>
             ))}
         </>
     )
 }
 
-const TablesByCategory = ({ categorizedDeployments, category }: TablesByCategoryProps) => (
+const TablesByCategory = ({ categorizedDeployments }: TablesByCategoryProps) => (
     <>
-        {categorizedDeployments.stable.length > 0 && <TableBody deployments={categorizedDeployments.stable} category={`${category} - Stable`} />}
-        {categorizedDeployments.canary.length > 0 && <TableBody deployments={categorizedDeployments.canary} category={`${category} - Canary`} />}
-        {categorizedDeployments.underDevelopment.length > 0 && <TableBody deployments={categorizedDeployments.underDevelopment} category={`${category} - Under Development`} />}
+        {categorizedDeployments.stable.length > 0 && <TableBody deployments={categorizedDeployments.stable} category={DePLOYMENT_CATEGORIES.STABLE} />}
+        {categorizedDeployments.canary.length > 0 && <TableBody deployments={categorizedDeployments.canary} category={DePLOYMENT_CATEGORIES.CANARY} />}
+        {categorizedDeployments.underDevelopment.length > 0 && <TableBody deployments={categorizedDeployments.underDevelopment} category={DePLOYMENT_CATEGORIES.UNDER_DEVELOPMENT} />}
     </>
 )
 
@@ -50,11 +50,13 @@ export const InstancesTable = () => {
     const { groupsWithDeployments, error, loading, categorizedCoreDeployments } = useInstanceTableData()
 
     if (loading) {
-        return (<div className={styles.loadingWrapper}>
-            <Center>
-                <CircularLoader />
-            </Center>
-        </div>)
+        return (
+            <div className={styles.loadingWrapper}>
+                <Center>
+                    <CircularLoader />
+                </Center>
+            </div>
+        )
     }
     if (error) {
         return <NoticeBox title="Error loading instances">{error.message}</NoticeBox>
@@ -79,7 +81,7 @@ export const InstancesTable = () => {
                             </DataTableRow>
                         </DataTableHead>
                         <DataTableBody>
-                            <TablesByCategory categorizedDeployments={categorizedCoreDeployments} category="Core" />
+                            <TablesByCategory categorizedDeployments={categorizedCoreDeployments} />
                         </DataTableBody>
                     </DataTable>
                 </div>
