@@ -1,9 +1,9 @@
 import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableRow, NoticeBox, Center, CircularLoader, LogoIcon, DataTableHead, TabBar, Tab } from '@dhis2/ui'
+import { DePLOYMENT_CATEGORIES } from '../../../constants.ts'
 import { Deployment } from '../../../types/index.ts'
 import { InstancePlay } from './instance-play.tsx'
 import { CategorizedDeployments, useInstanceTableData } from './instance-table-filters.tsx'
 import styles from './instances-table.module.css'
-import { DePLOYMENT_CATEGORIES } from '../../../constants.ts'
 
 interface TableBodyProps {
     deployments: Deployment[]
@@ -42,7 +42,9 @@ const TablesByCategory = ({ categorizedDeployments }: TablesByCategoryProps) => 
     <>
         {categorizedDeployments.stable.length > 0 && <TableBody deployments={categorizedDeployments.stable} category={DePLOYMENT_CATEGORIES.STABLE} />}
         {categorizedDeployments.canary.length > 0 && <TableBody deployments={categorizedDeployments.canary} category={DePLOYMENT_CATEGORIES.CANARY} />}
-        {categorizedDeployments.underDevelopment.length > 0 && <TableBody deployments={categorizedDeployments.underDevelopment} category={DePLOYMENT_CATEGORIES.UNDER_DEVELOPMENT} />}
+        {categorizedDeployments.underDevelopment.length > 0 && (
+            <TableBody deployments={categorizedDeployments.underDevelopment} category={DePLOYMENT_CATEGORIES.UNDER_DEVELOPMENT} />
+        )}
     </>
 )
 
