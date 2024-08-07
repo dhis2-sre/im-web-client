@@ -5,9 +5,8 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import React from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { Alerts, AuthProvider, ErrorView, Layout } from '../components/index.ts'
+import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import {
     ValidateSuccess,
     DatabasesList,
@@ -16,6 +15,7 @@ import {
     NewDhis2Instance,
     RequestPasswordReset,
     ResetPassword,
+    Login,
     SignUp,
     StackDetails,
     StacksList,
@@ -23,18 +23,26 @@ import {
     UsersList,
     UserDetails,
     Validate,
+    InstancesTable,
 } from '../views/index.ts'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/request-password-reset" element={<RequestPasswordReset />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/validate/success" element={<ValidateSuccess />} />
-            <Route path="/validate/:token" element={<Validate />} />
-
             <Route element={<AuthProvider />}>
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/sign-in" element={<Login />} />
+                <Route path="/validate/:token" element={<Validate />} />
+                <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/account-verification">
+                    <Route path="success" element={<ValidateSuccess />} />
+                </Route>
+
+                <Route path="/play" element={<PublicLayout />}>
+                    <Route path="instances" element={<InstancesTable />} />
+                </Route>
+
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
                     <Route path="/stacks" element={<StacksList />} />
                     <Route path="/stacks/:name" element={<StackDetails />} />
