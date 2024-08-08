@@ -19,7 +19,7 @@
         "pre-commit": "yarn format && yarn lint"
     },
     "dependencies": {
-        "@commitlint/cli": "^19.3.0",
+        "@commitlint/cli": "^19.4.0",
         "@dhis2/app-runtime": "^3",
         "@dhis2/app-service-alerts": "^3.10.5",
         "@dhis2/d2-i18n": "^1.1.3",
