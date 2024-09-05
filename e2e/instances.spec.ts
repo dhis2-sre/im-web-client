@@ -43,6 +43,18 @@ test.describe('new instance', () => {
         await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 10000 })
 
         const newInstanceRow = page.getByRole('row', { name: randomName })
+
+        let coreStatus: string
+        let dbStatus: string
+
+        do {
+            await page.waitForTimeout(10000)
+            await newInstanceRow.click()
+            coreStatus = await page.getByRole('row', { name: 'dhis2-core' }).getByTestId('dhis2-uicore-tag-text').textContent()
+            dbStatus = await page.getByRole('row', { name: 'dhis2-db' }).getByTestId('dhis2-uicore-tag-text').textContent()
+            await page.getByRole('button', { name: 'Back to list' }).click()
+        } while (coreStatus !== 'Running' || dbStatus !== 'Running')
+
         await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
         await expect(page.getByTestId('dhis2-uicore-modalcontent')).toContainText(randomName)
         await page.getByRole('button', { name: 'Confirm' }).click()
