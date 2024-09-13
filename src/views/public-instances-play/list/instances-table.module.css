@@ -91,3 +91,8 @@
 .button:hover {
     background-color: var(--colors-blue700);
 }
+
+.clickableRow{
+    width: 100%;
+    background: #000;
+}

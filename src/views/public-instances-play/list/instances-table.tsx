@@ -1,55 +1,51 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableRow, NoticeBox, Center, CircularLoader, LogoIcon, DataTableHead, TabBar, Tab } from '@dhis2/ui'
-import { DePLOYMENT_CATEGORIES } from '../../../constants.ts'
-import { Deployment } from '../../../types/index.ts'
+import { DataTable, DataTableBody, DataTableHead, DataTableRow, DataTableCell, NoticeBox, Center, CircularLoader, LogoIcon, DataTableColumnHeader } from '@dhis2/ui'
 import { InstancePlay } from './instance-play.tsx'
-import { CategorizedDeployments, useInstanceTableData } from './instance-table-filters.tsx'
+import { useInstanceTableData, GroupWithCategories, Instance } from './instance-table-filters.tsx'
 import styles from './instances-table.module.css'
 
 interface TableBodyProps {
-    deployments: Deployment[]
+    instances: Instance[]
     category: string
 }
 
-interface TablesByCategoryProps {
-    categorizedDeployments: CategorizedDeployments
-}
-
-const TableBody = ({ deployments, category }: TableBodyProps) => {
-    const { getCoreInstanceLink } = useInstanceTableData()
-
-    return (
-        <>
-            <DataTableRow>
-                <DataTableColumnHeader colSpan="3">
-                    <span className={styles.groupName}>{category}</span>
-                </DataTableColumnHeader>
-            </DataTableRow>
-            {deployments.map((deployment) => (
-                <DataTableRow className={styles.clickableRow} key={deployment.id}>
-                    <DataTableCell>
-                        <span className={styles.instance} onClick={() => window.open(getCoreInstanceLink(deployment), '_blank', 'noopener,noreferrer')}>
-                            <LogoIcon /> {deployment.name}
-                        </span>
-                    </DataTableCell>
-                    <DataTableCell>{deployment.description || 'No description provided'}</DataTableCell>
-                </DataTableRow>
-            ))}
-        </>
-    )
-}
-
-const TablesByCategory = ({ categorizedDeployments }: TablesByCategoryProps) => (
+const TableBody = ({ instances, category }: TableBodyProps) => (
     <>
-        {categorizedDeployments.stable.length > 0 && <TableBody deployments={categorizedDeployments.stable} category={DePLOYMENT_CATEGORIES.STABLE} />}
-        {categorizedDeployments.canary.length > 0 && <TableBody deployments={categorizedDeployments.canary} category={DePLOYMENT_CATEGORIES.CANARY} />}
-        {categorizedDeployments.underDevelopment.length > 0 && (
-            <TableBody deployments={categorizedDeployments.underDevelopment} category={DePLOYMENT_CATEGORIES.UNDER_DEVELOPMENT} />
-        )}
+        <DataTableRow>
+            <DataTableColumnHeader colSpan="3">
+                <span className={styles.groupName}>{category}</span>
+            </DataTableColumnHeader>
+        </DataTableRow>
+        {instances.map((instance) => (
+            <DataTableRow key={instance.name} className={styles.clickableRow}>
+                <DataTableCell onClick={() => window.open(instance.hostname, '_blank', 'noopener,noreferrer')}>
+                    <span className={styles.instance}>
+                        <LogoIcon /> {instance.name}
+                    </span>
+                </DataTableCell>
+                <DataTableCell onClick={() => window.open(instance.hostname, '_blank', 'noopener,noreferrer')}>{instance.description || 'No description provided'}</DataTableCell>
+            </DataTableRow>
+        ))}
+    </>
+)
+
+interface TablesByCategoryProps {
+    groupsWithCategories: GroupWithCategories[]
+}
+
+const TablesByCategory = ({ groupsWithCategories }: TablesByCategoryProps) => (
+    <>
+        {groupsWithCategories.map((group) => (
+            <>
+                {group.categories.map((category) => (
+                    <TableBody key={category.label} instances={category.instances} category={category.label} />
+                ))}
+            </>
+        ))}
     </>
 )
 
 export const InstancesTable = () => {
-    const { groupsWithDeployments, error, loading, categorizedCoreDeployments } = useInstanceTableData()
+    const { groupsWithCategories, error, loading } = useInstanceTableData()
 
     if (loading) {
         return (
@@ -63,16 +59,13 @@ export const InstancesTable = () => {
     if (error) {
         return <NoticeBox title="Error loading instances">{error.message}</NoticeBox>
     }
-    if (groupsWithDeployments.length === 0) {
+    if (!groupsWithCategories || groupsWithCategories.length === 0) {
         return <NoticeBox title="No instances available">There are no instances to display.</NoticeBox>
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
-                <TabBar>
-                    <Tab selected>Play</Tab>
-                </TabBar>
                 <div className={styles.tableWrapper}>
                     <InstancePlay />
                     <DataTable>
@@ -83,7 +76,7 @@ export const InstancesTable = () => {
                             </DataTableRow>
                         </DataTableHead>
                         <DataTableBody>
-                            <TablesByCategory categorizedDeployments={categorizedCoreDeployments} />
+                            <TablesByCategory groupsWithCategories={groupsWithCategories} />
                         </DataTableBody>
                     </DataTable>
                 </div>

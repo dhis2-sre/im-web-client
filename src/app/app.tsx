@@ -39,7 +39,7 @@ const router = createBrowserRouter(
                     <Route path="success" element={<ValidateSuccess />} />
                 </Route>
 
-                <Route path="/play" element={<PublicLayout />}>
+                <Route path="/public" element={<PublicLayout />}>
                     <Route path="instances" element={<InstancesTable />} />
                 </Route>
 
