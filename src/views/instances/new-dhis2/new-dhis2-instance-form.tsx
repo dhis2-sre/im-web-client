@@ -32,9 +32,9 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
                 <legend className={styles.legend}>Basic information</legend>
                 <NameInput />
                 <DescriptionTextarea />
+                <PublicCheckbox />
                 <TtlSelect />
                 <GroupSelect />
-                <PublicCheckbox />
             </fieldset>
             <hr className={styles.hr} />
             <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
