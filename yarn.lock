@@ -2197,7 +2197,7 @@
     "@dhis2/app-service-offline" "3.11.0"
     "@dhis2/app-service-plugin" "3.11.0"
 
-"@dhis2/app-service-alerts@3.11.0", "@dhis2/app-service-alerts@^3.10.5":
+"@dhis2/app-service-alerts@3.11.0", "@dhis2/app-service-alerts@^3.11.0":
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/@dhis2/app-service-alerts/-/app-service-alerts-3.11.0.tgz#7fbc26749ecd7fe472bddadebdc0bb17777beefa"
   integrity sha512-+tUX43XpnGarS102JCcyskbKE3T6cLE0VCI4AzWeleycC4jgc2G9lI2SwTa0w4WwW9IaKR7geLnyc63trytfGA==

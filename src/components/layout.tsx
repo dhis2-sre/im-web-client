@@ -20,7 +20,7 @@ export const Layout: FC = () => {
     )
 
     if (location.pathname === '/') {
-        return <Navigate to="/sign-in" />
+        return <Navigate to="/instances" />
     }
 
     return (

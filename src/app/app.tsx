@@ -15,7 +15,6 @@ import {
     NewDhis2Instance,
     RequestPasswordReset,
     ResetPassword,
-    Login,
     SignUp,
     StackDetails,
     StacksList,
@@ -23,26 +22,22 @@ import {
     UsersList,
     UserDetails,
     Validate,
-    InstancesTable,
 } from '../views/index.ts'
+import { InstancesTable } from '../views/public-instances/index.ts'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
-            <Route element={<AuthProvider />}>
-                <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/sign-in" element={<Login />} />
-                <Route path="/validate/:token" element={<Validate />} />
-                <Route path="/request-password-reset" element={<RequestPasswordReset />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-                <Route path="/account-verification">
-                    <Route path="success" element={<ValidateSuccess />} />
-                </Route>
-
-                <Route path="/public" element={<PublicLayout />}>
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/validate/success" element={<ValidateSuccess />} />
+            <Route path="/validate/:token" element={<Validate />} />
+            <Route path="/public" element={<PublicLayout />}>
                     <Route path="instances" element={<InstancesTable />} />
                 </Route>
 
+            <Route element={<AuthProvider />}>
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
                     <Route path="/stacks" element={<StacksList />} />
                     <Route path="/stacks/:name" element={<StackDetails />} />
