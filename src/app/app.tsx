@@ -34,8 +34,8 @@ const router = createBrowserRouter(
             <Route path="/validate/success" element={<ValidateSuccess />} />
             <Route path="/validate/:token" element={<Validate />} />
             <Route path="/public" element={<PublicLayout />}>
-                    <Route path="instances" element={<InstancesTable />} />
-                </Route>
+                <Route path="instances" element={<InstancesTable />} />
+            </Route>
 
             <Route element={<AuthProvider />}>
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
