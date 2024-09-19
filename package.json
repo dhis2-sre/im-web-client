@@ -54,7 +54,7 @@
     "devDependencies": {
         "@babel/preset-env": "^7.25.3",
         "@babel/preset-react": "^7.24.7",
-        "@dhis2/cli-style": "^10.5.1",
+        "@dhis2/cli-style": "^10.7.4",
         "@ls-lint/ls-lint": "^2.2.2",
         "@playwright/test": "1.46.1",
         "@testing-library/jest-dom": "^6.5.0",
