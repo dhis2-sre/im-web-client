@@ -4,16 +4,16 @@ import {
     DataTableColumnHeader,
     DataTableHead,
     DataTableRow,
-    IconDownload24,
-    IconEdit24,
-    IconCopy24,
-    IconDelete24,
-    IconFolder24,
+    IconDownload16,
+    IconEdit16,
+    IconCopy16,
+    IconDelete16,
+    IconFolder16,
     IconDimensionData16,
-    IconUserGroup24,
+    IconUserGroup16,
     Tooltip,
-    IconChevronDown24,
-    IconChevronRight24,
+    IconChevronDown16,
+    IconChevronRight16,
 } from '@dhis2/ui'
 import { TreeView, TreeItem } from '@mui/x-tree-view'
 import type { FC } from 'react'
@@ -75,28 +75,28 @@ export const DatabasesList: FC = () => {
                     <div className={styles.treeRow}>
                         {node.database ? (
                             <>
-                                <IconDimensionData16 className={styles.icon} />
+                                <IconDimensionData16 className={`${styles.icon} ${styles.smallerIcon}`} />
                                 <span className={styles.name}>{node.name}</span>
                                 <span className={styles.date}>{formatDate(node.database.createdAt)}</span>
                                 <span className={styles.date}>{formatDate(node.database.updatedAt)}</span>
                                 <div className={styles.actions}>
                                     <Tooltip content="Download">
-                                        <IconDownload24 className={styles.actionIcon} />
+                                        <IconDownload16 className={`${styles.actionIcon} ${styles.smallerIcon}`} />
                                     </Tooltip>
                                     <Tooltip content="Rename">
-                                        <IconEdit24 className={styles.actionIcon} />
+                                        <IconEdit16 className={`${styles.actionIcon} ${styles.smallerIcon}`} />
                                     </Tooltip>
                                     <Tooltip content="Copy">
-                                        <IconCopy24 className={styles.actionIcon} />
+                                        <IconCopy16 className={`${styles.actionIcon} ${styles.smallerIcon}`} />
                                     </Tooltip>
                                     <Tooltip content="Delete">
-                                        <IconDelete24 className={styles.actionIcon} />
+                                        <IconDelete16 className={`${styles.actionIcon} ${styles.smallerIcon} ${styles.danger}`} />
                                     </Tooltip>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <IconFolder24 className={styles.icon} />
+                                <IconFolder16 className={`${styles.icon} ${styles.smallerIcon}`} />
                                 <span className={styles.name}>{node.name}</span>
                             </>
                         )}
@@ -135,8 +135,8 @@ export const DatabasesList: FC = () => {
                     {data?.map((group) => (
                         <TreeView
                             key={group.name}
-                            defaultCollapseIcon={<IconChevronDown24 />}
-                            defaultExpandIcon={<IconChevronRight24 />}
+                            defaultCollapseIcon={<IconChevronDown16 className={styles.smallerIcon} /> }
+                            defaultExpandIcon={<IconChevronRight16 className={styles.smallerIcon} /> }
                             expanded={expanded}
                             onNodeToggle={handleToggle}
                         >
@@ -144,7 +144,7 @@ export const DatabasesList: FC = () => {
                                 itemId={group.name}
                                 label={
                                     <div className={styles.treeRow}>
-                                        <IconUserGroup24 className={styles.icon} />
+                                        <IconUserGroup16 className={`${styles.icon} ${styles.smallerIcon}`} />
                                         <span className={styles.name}>{group.name}</span>
                                     </div>
                                 }

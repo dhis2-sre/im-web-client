@@ -30,7 +30,7 @@
 
 .groupLabel {
     _font-weight: bold;
-    font-size: 1.0em;
+    font-size: 1em;
     margin-bottom: 0.5em;
 }
 
@@ -48,6 +48,7 @@
 
 .name {
     flex: 2;
+    margin-left: 8px;
 }
 
 .date {
@@ -98,4 +99,12 @@
 
 :global(.MuiTreeItem-content.Mui-selected:hover) {
     background-color: transparent !important;
+}
+
+.smallerIcon {
+    transform: scale(0.7);  /* This makes the icons 30% smaller */
+}
+
+.danger {
+    color: #f44336;
 }
