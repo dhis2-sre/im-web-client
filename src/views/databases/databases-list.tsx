@@ -1,25 +1,120 @@
 import {
-    ButtonStrip,
     DataTable,
-    DataTableBody as TableBody,
-    DataTableCell,
+    DataTableBody,
     DataTableColumnHeader,
-    DataTableHead as TableHead,
+    DataTableHead,
     DataTableRow,
-    DataTableToolbar as TableToolbar,
+    IconDownload24,
+    IconEdit24,
+    IconCopy24,
+    IconDelete24,
+    IconFolder24,
+    IconDimensionData16,
+    IconUserGroup24,
+    Tooltip,
+    IconChevronDown24,
+    IconChevronRight24,
 } from '@dhis2/ui'
+import { TreeView, TreeItem } from '@mui/x-tree-view'
 import type { FC } from 'react'
-import Moment from 'react-moment'
+import { useState } from 'react'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { GroupsWithDatabases } from '../../types/index.ts'
 import styles from './databases-list.module.css'
-import { DeleteButton } from './delete-button.tsx'
-import { DownloadButton } from './download-button.tsx'
 import { UploadButton } from './upload-button.tsx'
+
+interface TreeNode {
+    id: string
+    name: string
+    children?: TreeNode[]
+    database?: GroupsWithDatabases['databases'][0]
+}
 
 export const DatabasesList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
+    const [expanded, setExpanded] = useState<string[]>([])
+
+    const buildTree = (databases: GroupsWithDatabases['databases']): TreeNode[] => {
+        const tree: TreeNode[] = []
+        const paths: { [key: string]: TreeNode } = {}
+
+        databases.forEach((db) => {
+            const parts = db.name.split('/')
+            let currentPath = ''
+
+            parts.forEach((part, index) => {
+                currentPath += (currentPath ? '/' : '') + part
+                if (!paths[currentPath]) {
+                    const newNode: TreeNode = { id: currentPath, name: part }
+                    paths[currentPath] = newNode
+                    if (index === 0) {
+                        tree.push(newNode)
+                    } else {
+                        const parentPath = parts.slice(0, index).join('/')
+                        if (!paths[parentPath].children) {
+                            paths[parentPath].children = []
+                        }
+                        paths[parentPath].children!.push(newNode)
+                    }
+                }
+            })
+
+            paths[currentPath].database = db
+        })
+
+        return tree
+    }
+
+    const renderTree = (nodes: TreeNode[]) =>
+        nodes.map((node) => (
+            <TreeItem
+                key={node.id}
+                itemId={node.id}
+                label={
+                    <div className={styles.treeRow}>
+                        {node.database ? (
+                            <>
+                                <IconDimensionData16 className={styles.icon} />
+                                <span className={styles.name}>{node.name}</span>
+                                <span className={styles.date}>{formatDate(node.database.createdAt)}</span>
+                                <span className={styles.date}>{formatDate(node.database.updatedAt)}</span>
+                                <div className={styles.actions}>
+                                    <Tooltip content="Download">
+                                        <IconDownload24 className={styles.actionIcon} />
+                                    </Tooltip>
+                                    <Tooltip content="Rename">
+                                        <IconEdit24 className={styles.actionIcon} />
+                                    </Tooltip>
+                                    <Tooltip content="Copy">
+                                        <IconCopy24 className={styles.actionIcon} />
+                                    </Tooltip>
+                                    <Tooltip content="Delete">
+                                        <IconDelete24 className={styles.actionIcon} />
+                                    </Tooltip>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <IconFolder24 className={styles.icon} />
+                                <span className={styles.name}>{node.name}</span>
+                            </>
+                        )}
+                    </div>
+                }
+            >
+                {node.children && renderTree(node.children)}
+            </TreeItem>
+        ))
+
+    // Helper function to format date
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toISOString().split('T')[0]
+    }
+
+    const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
+        setExpanded(nodeIds)
+    }
 
     return (
         <div className={styles.wrapper}>
@@ -27,51 +122,39 @@ export const DatabasesList: FC = () => {
                 <UploadButton onComplete={refetch} />
             </Heading>
 
-            {data?.map((group) => (
-                <div key={group.name}>
-                    <TableToolbar className={styles.tabletoolbar}>
-                        <h2>{group.name}</h2>
-                    </TableToolbar>
-                    <DataTable>
-                        <TableHead>
-                            <DataTableRow>
-                                <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                <DataTableColumnHeader>slug</DataTableColumnHeader>
-                                <DataTableColumnHeader>Created</DataTableColumnHeader>
-                                <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                                <DataTableColumnHeader></DataTableColumnHeader>
-                            </DataTableRow>
-                        </TableHead>
-                        <TableBody>
-                            {(!group.databases || group.databases.length === 0) && (
-                                <DataTableRow>
-                                    <DataTableCell colSpan="4">
-                                        <h3>No databases</h3>
-                                    </DataTableCell>
-                                </DataTableRow>
-                            )}
-                            {group.databases?.map((database) => (
-                                <DataTableRow key={database.id}>
-                                    <DataTableCell>{database.name}</DataTableCell>
-                                    <DataTableCell>{database.slug}</DataTableCell>
-                                    <DataTableCell>
-                                        <Moment date={database.createdAt} fromNow />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <Moment date={database.updatedAt} fromNow />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <ButtonStrip>
-                                            <DownloadButton id={database.id} />
-                                            <DeleteButton id={database.id} databaseName={database.name} groupName={group.name} onComplete={refetch} />
-                                        </ButtonStrip>
-                                    </DataTableCell>
-                                </DataTableRow>
-                            ))}
-                        </TableBody>
-                    </DataTable>
-                </div>
-            ))}
+            <DataTable>
+                <DataTableHead>
+                    <DataTableRow>
+                        <DataTableColumnHeader className={styles.name}>Database</DataTableColumnHeader>
+                        <DataTableColumnHeader className={styles.date}>Created</DataTableColumnHeader>
+                        <DataTableColumnHeader className={styles.date}>Updated</DataTableColumnHeader>
+                        <DataTableColumnHeader className={styles.actions}>Actions</DataTableColumnHeader>
+                    </DataTableRow>
+                </DataTableHead>
+                <DataTableBody>
+                    {data?.map((group) => (
+                        <TreeView
+                            key={group.name}
+                            defaultCollapseIcon={<IconChevronDown24 />}
+                            defaultExpandIcon={<IconChevronRight24 />}
+                            expanded={expanded}
+                            onNodeToggle={handleToggle}
+                        >
+                            <TreeItem
+                                itemId={group.name}
+                                label={
+                                    <div className={styles.treeRow}>
+                                        <IconUserGroup24 className={styles.icon} />
+                                        <span className={styles.name}>{group.name}</span>
+                                    </div>
+                                }
+                            >
+                                {renderTree(buildTree(group.databases || []))}
+                            </TreeItem>
+                        </TreeView>
+                    ))}
+                </DataTableBody>
+            </DataTable>
         </div>
     )
 }

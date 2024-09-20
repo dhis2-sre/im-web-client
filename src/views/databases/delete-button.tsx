@@ -6,14 +6,12 @@ import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/index.ts'
 
-type DeletButtonProps = {
-    id: number
-    databaseName: string
-    groupName: string
+interface DeleteButtonProps {
+    databaseId: string
     onComplete: () => void
 }
 
-export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName, onComplete }) => {
+export const DeleteButton: FC<DeleteButtonProps> = ({ databaseId, onComplete }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -21,7 +19,7 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
     )
     const [{ loading }, deleteDatabase] = useAuthAxios<Database>(
         {
-            url: `/databases/${id}`,
+            url: `/databases/${databaseId}`,
             method: 'delete',
         },
         { manual: true }
@@ -39,13 +37,13 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
         try {
             setShowConfirmationModal(false)
             await deleteDatabase()
-            showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
+            showAlert({ message: `Successfully deleted database`, isCritical: false })
             onComplete()
         } catch (error) {
             console.error(error)
-            showAlert({ message: `There was an error when deleting ${groupName}/${databaseName}`, isCritical: true })
+            showAlert({ message: `There was an error when deleting database`, isCritical: true })
         }
-    }, [deleteDatabase, setShowConfirmationModal, showAlert, groupName, databaseName, onComplete])
+    }, [deleteDatabase, setShowConfirmationModal, showAlert, onComplete])
 
     return (
         <>
@@ -54,7 +52,7 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
             </Button>
             {showConfirmationModal && (
                 <ConfirmationModal destructive onConfirm={onConfirm} onCancel={onCancel}>
-                    Are you sure you wish to delete &quot;{groupName}/{databaseName}&quot;?
+                    Are you sure you wish to delete &quot;database&quot;?
                 </ConfirmationModal>
             )}
         </>

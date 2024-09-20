@@ -4,15 +4,17 @@ import { useCallback } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { baseURL } from '../../hooks/use-auth-axios.ts'
-import { ExternalDownload } from '../../types/index.ts'
+import { ExternalDownload, GroupsWithDatabases } from '../../types/index.ts'
 
-type DownloadButtonProps = { id: number }
+interface DownloadButtonProps {
+    database: GroupsWithDatabases['databases'][0]
+}
 
-export const DownloadButton: FC<DownloadButtonProps> = ({ id }) => {
+export const DownloadButton: FC<DownloadButtonProps> = ({ database }) => {
     const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
     const [{ loading }, fetchDownloadLink] = useAuthAxios<ExternalDownload>(
         {
-            url: `/databases/${id}/external`,
+            url: `/databases/${database.id}/external`,
             method: 'post',
             data: {
                 expiration: 5,

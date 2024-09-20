@@ -16,3 +16,86 @@
     left: 50%;
     z-index: 1000;
 }
+
+.databaseRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.databaseRow > * {
+    margin-right: 1rem;
+}
+
+.groupLabel {
+    _font-weight: bold;
+    font-size: 1.0em;
+    margin-bottom: 0.5em;
+}
+
+.treeRow {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.icon {
+    margin-right: 8px;
+    color: #757575;
+}
+
+.name {
+    flex: 2;
+}
+
+.date {
+    flex: 1;
+}
+
+.owner {
+    flex: 1;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionIcon {
+    cursor: pointer;
+    color: #757575;
+}
+
+.actionIcon:hover {
+    color: #1976d2;
+}
+
+/* Add these styles for the header */
+.header {
+    display: flex;
+    font-weight: bold;
+    padding: 8px 0;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.header > * {
+    _flex: 1;
+}
+
+.header > :first-child {
+    flex: 2;
+}
+
+:global(.MuiTreeItem-content.Mui-selected) {
+    background-color: transparent !important;
+}
+
+:global(.MuiTreeItem-label) {
+    font-size: 0.8rem !important;
+}
+
+:global(.MuiTreeItem-content.Mui-selected:hover) {
+    background-color: transparent !important;
+}
