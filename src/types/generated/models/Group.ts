@@ -14,6 +14,7 @@ export type Group = {
     createdAt?: string
     deployable?: boolean
     hostname?: string
+    description?: string
     name?: string
     updatedAt?: string
     users?: Array<User>
