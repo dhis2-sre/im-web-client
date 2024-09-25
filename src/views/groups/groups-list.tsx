@@ -19,6 +19,7 @@ export const GroupsList: FC = () => {
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
                         <DataTableColumnHeader>Hostname</DataTableColumnHeader>
+                        <DataTableColumnHeader>Description</DataTableColumnHeader>
                         <DataTableColumnHeader>Deployable</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
@@ -30,6 +31,7 @@ export const GroupsList: FC = () => {
                         <DataTableRow key={group.name}>
                             <DataTableCell>{group.name}</DataTableCell>
                             <DataTableCell>{group.hostname}</DataTableCell>
+                            <DataTableCell>{group?.description}</DataTableCell>
                             <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
                             <DataTableCell>
                                 <Moment date={group.createdAt} fromNow />
