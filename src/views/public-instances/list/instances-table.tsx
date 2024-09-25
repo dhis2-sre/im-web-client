@@ -16,7 +16,7 @@ const TableBody = ({ instances, category }: TableBodyProps) => (
             </DataTableColumnHeader>
         </DataTableRow>
         {instances.map((instance) => (
-            <DataTableRow key={instance.name} className={styles.clickableRow}>
+            <DataTableRow key={instance.name}>
                 <DataTableCell onClick={() => window.open(instance.hostname, '_blank', 'noopener,noreferrer')}>
                     <span className={styles.instance}>
                         <LogoIcon /> {instance.name}
