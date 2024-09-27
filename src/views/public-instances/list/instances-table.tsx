@@ -1,8 +1,8 @@
 import { DataTable, DataTableBody, DataTableHead, DataTableRow, DataTableCell, NoticeBox, Center, CircularLoader, LogoIcon, DataTableColumnHeader } from '@dhis2/ui'
+import React from 'react'
 import { InstancePlay } from './instance-play.tsx'
 import { useInstanceTableData, GroupWithCategories, Instance } from './instance-table-filters.tsx'
 import styles from './instances-table.module.css'
-import React from 'react'
 
 interface TableBodyProps {
     instances: Instance[]
@@ -38,11 +38,7 @@ const TablesByCategory = ({ groupsWithCategories }: TablesByCategoryProps) => (
         {groupsWithCategories.map((group, groupIndex) => (
             <React.Fragment key={groupIndex}>
                 {group.categories.map((category) => (
-                    <TableBody 
-                        key={category.label} 
-                        instances={category.instances} 
-                        category={category.label} 
-                    />
+                    <TableBody key={category.label} instances={category.instances} category={category.label} />
                 ))}
             </React.Fragment>
         ))}
