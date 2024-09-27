@@ -28,14 +28,15 @@ import { InstancesTable } from '../views/public-instances/index.ts'
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
+                        <Route path="/public" element={<PublicLayout />}>
+                <Route path="instances" element={<InstancesTable />} />
+            </Route>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/validate/success" element={<ValidateSuccess />} />
             <Route path="/validate/:token" element={<Validate />} />
-            <Route path="/public" element={<PublicLayout />}>
-                <Route path="instances" element={<InstancesTable />} />
-            </Route>
+
 
             <Route element={<AuthProvider />}>
                 <Route errorElement={<ErrorView />} path="/" element={<Layout />}>
