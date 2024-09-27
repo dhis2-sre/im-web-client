@@ -6,5 +6,4 @@ export const STACK_NAMES: Record<string, Dhis2StackName> = {
     PG_ADMIN: 'pgadmin',
 }
 
-
 export const VIEWABLE_INSTANCE_TYPES = ['pgadmin', 'dhis2-core']
