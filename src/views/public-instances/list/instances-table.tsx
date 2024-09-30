@@ -1,7 +1,7 @@
 import { DataTable, DataTableBody, DataTableHead, DataTableRow, DataTableCell, NoticeBox, Center, CircularLoader, LogoIcon, DataTableColumnHeader } from '@dhis2/ui'
 import React from 'react'
 import { InstancePlay } from './instance-play.tsx'
-import { useInstanceTableData, GroupWithCategories, Instance } from './instance-table-filters.tsx'
+import { useInstanceTableData, GroupWithCategories, Instance } from './use-instance-table-data.tsx'
 import styles from './instances-table.module.css'
 
 interface TableBodyProps {
