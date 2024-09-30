@@ -6,6 +6,7 @@ import {
     IMAGE_PULL_POLICY,
     FLYWAY_MIGRATE_OUT_OF_ORDER,
     FLYWAY_REPAIR_BEFORE_MIGRATION,
+    ENABLE_QUERY_LOGGING,
     INSTALL_REDIS,
     PGADMIN_USERNAME,
     PGADMIN_PASSWORD,
@@ -39,6 +40,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
             return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
+        case ENABLE_QUERY_LOGGING:
         case INSTALL_REDIS:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
