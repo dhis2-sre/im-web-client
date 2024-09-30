@@ -428,7 +428,7 @@ export const DatabasesList: FC = () => {
                                             )
                                         }
                                     })()}
-                                    {item.name}
+                                    {'name' in item ? item.name.split('/').pop() : item.name}
                                 </DataTableCell>
                                 <DataTableCell>{'size' in item ? item.size || '-' : '-'}</DataTableCell>
                                 <DataTableCell>{'createdAt' in item ? formatDate(item.createdAt) : '-'}</DataTableCell>
