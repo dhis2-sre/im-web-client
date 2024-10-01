@@ -37,7 +37,7 @@ test.describe('new instance', () => {
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
 
         // If there are more than 7 databases uploaded, we need to interact with the conditional #filter field.
-        const numberOfDatabases = await page.$$eval('[data-test="dhis2-uicore-singleselectoption"]', (options) => options.length)
+        const numberOfDatabases = await page.getByTestId('dhis2-uicore-singleselectoption').count()
         if (numberOfDatabases > 7) {
             await page.locator('#filter').fill(dbFileName)
         }
