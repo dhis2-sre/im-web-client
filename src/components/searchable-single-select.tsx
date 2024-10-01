@@ -1,4 +1,3 @@
-import i18n from '@dhis2/d2-i18n'
 import { Input, SingleSelect, SingleSelectOption } from '@dhis2/ui'
 import { FC, useEffect, useState } from 'react'
 import { useDebouncedState } from '../hooks/use-debounce-state.ts'
@@ -19,13 +18,13 @@ interface SearchableSingleSelectProps {
     placeholder: string
     loading: boolean
     selected?: string
-    setTagExists: (value: boolean) => void
-    tagExists: boolean
-    onTagCheck: (tag: string) => Promise<boolean>
+    setFoundSearchValue: (value: boolean) => void
+    foundSearchValue: boolean
+    checkSearchValueExists: (tag: string) => Promise<boolean>
     refetch: () => void
 }
 
-export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({ onChange, options, loading, selected, refetch, onTagCheck, placeholder, tagExists, setTagExists }) => {
+export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({ onChange, options, loading, selected, refetch, checkSearchValueExists, placeholder, foundSearchValue, setFoundSearchValue }) => {
     const [inputValue, setInputValue] = useState<string>('')
 
     const { setValue: setDebouncedValue } = useDebouncedState({
@@ -33,8 +32,8 @@ export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({ onChan
         delay: 500,
         onSetDebouncedValue: async (value: string) => {
             if (value) {
-                const exists = await onTagCheck(value)
-                setTagExists(exists)
+                const exists = await checkSearchValueExists(value)
+                setFoundSearchValue(exists)
             }
         },
     })
@@ -50,11 +49,9 @@ export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({ onChan
         }
     }, [inputValue, refetch])
 
-    console.log(tagExists)
-
     return (
         <div>
-            <SingleSelect selected={selected} onChange={onChange} loading={loading}>
+            <SingleSelect selected={selected} onChange={onChange}>
                 <div>
                     <Input
                         dense
@@ -62,15 +59,16 @@ export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({ onChan
                         value={inputValue}
                         className={classes.searchField}
                         onChange={handleInputChange}
-                        placeholder={i18n.t(placeholder || 'Type and press Enter')}
+                        loading={loading}
+                        placeholder={placeholder || 'Type and press Enter'}
                         onKeyDown={(_, event) => {
                             if (event.key === 'Enter') {
-                                onTagCheck(inputValue)
+                                checkSearchValueExists(inputValue)
                             }
                         }}
                     />
                 </div>
-                {!tagExists && inputValue && <div className={classes.error}>{i18n.t('Image tag does not exist')}</div>}
+                {!foundSearchValue && inputValue && <div className={classes.error}>{'Image tag does not exist'}</div>}
 
                 {options.map(({ value, label }) => (
                     <SingleSelectOption key={value} value={value} label={label} />

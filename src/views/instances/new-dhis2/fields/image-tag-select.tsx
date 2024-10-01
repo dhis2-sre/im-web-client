@@ -60,7 +60,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
 
     const handleTagCheck = useCallback(
         async (tag: string): Promise<boolean> => {
-            const existsInOptions = options.some((option) => option.value === tag)
+            const existsInOptions = options.some((option) => option.label.startsWith(tag));
             setTagExists(existsInOptions)
 
             if (existsInOptions) {
@@ -110,13 +110,13 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
             <label className={classes.label}>{displayName} *</label>
             <SearchableSingleSelect
                 onChange={handleChange}
-                tagExists={tagExists}
-                setTagExists={setTagExists}
+                foundSearchValue={tagExists}
+                setFoundSearchValue={setTagExists}
                 selected={form.getState().values['dhis2-core']?.IMAGE_TAG || tag || ''}
                 options={options.length === 0 && initialValue ? [{ value: initialValue, label: initialValue }] : options}
                 loading={imageLoading}
                 placeholder={displayName}
-                onTagCheck={handleTagCheck}
+                checkSearchValueExists={handleTagCheck}
                 refetch={refetch}
             />
         </div>
