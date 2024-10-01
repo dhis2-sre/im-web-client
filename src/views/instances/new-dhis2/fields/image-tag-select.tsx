@@ -60,7 +60,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
 
     const handleTagCheck = useCallback(
         async (tag: string): Promise<boolean> => {
-            const existsInOptions = options.some((option) => option.label.startsWith(tag));
+            const existsInOptions = options.some((option) => option.label.startsWith(tag))
             setTagExists(existsInOptions)
 
             if (existsInOptions) {

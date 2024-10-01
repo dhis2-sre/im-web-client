@@ -24,7 +24,17 @@ interface SearchableSingleSelectProps {
     refetch: () => void
 }
 
-export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({ onChange, options, loading, selected, refetch, checkSearchValueExists, placeholder, foundSearchValue, setFoundSearchValue }) => {
+export const SearchableSingleSelect: FC<SearchableSingleSelectProps> = ({
+    onChange,
+    options,
+    loading,
+    selected,
+    refetch,
+    checkSearchValueExists,
+    placeholder,
+    foundSearchValue,
+    setFoundSearchValue,
+}) => {
     const [inputValue, setInputValue] = useState<string>('')
 
     const { setValue: setDebouncedValue } = useDebouncedState({
