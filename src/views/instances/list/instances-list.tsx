@@ -42,12 +42,6 @@ export const InstancesList: FC = () => {
                 </NoticeBox>
             )}
 
-            {loading && (
-                <Center className={styles.loaderWrap}>
-                    <CircularLoader />
-                </Center>
-            )}
-
             {data?.length === 0 && <h3>No instances</h3>}
 
             {data?.length > 0 && (
@@ -100,6 +94,12 @@ export const InstancesList: FC = () => {
                         </DataTableBody>
                     ))}
                 </DataTable>
+            )}
+
+            {loading && (
+                <Center className={styles.loaderWrap}>
+                    <CircularLoader />
+                </Center>
             )}
         </div>
     )
