@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState, useCallback } from 'react'
 import { useField, useForm } from 'react-final-form'
-import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
 import classes from '../../../../components/searchable-single-select.module.css'
+import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_TAG } from '../constants.ts'
 import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'

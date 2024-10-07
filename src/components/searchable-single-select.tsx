@@ -57,8 +57,8 @@ export const SearchableSingleSelect = ({
     const hasSelectedInOptionList = !!options.find(({ value }) => value === selected)
 
     const onRetryClick = () => {
-        console.log("Retry clicked");
-    };
+        console.log('Retry clicked')
+    }
 
     return (
         <SingleSelect
@@ -72,14 +72,7 @@ export const SearchableSingleSelect = ({
         >
             <div className={classes.searchField}>
                 <div className={classes.searchInput}>
-                    <Input
-                        dense
-                        initialFocus
-                        value={filter}
-                        onChange={({ value }) => setFilterValue(value ?? '')}
-                        placeholder="Filter options"
-                        loading={!error && loading}
-                    />
+                    <Input dense initialFocus value={filter} onChange={({ value }) => setFilterValue(value ?? '')} placeholder="Filter options" loading={!error && loading} />
                 </div>
 
                 <button className={classes.clearButton} disabled={!filter} onClick={() => setFilterValue('')}>
