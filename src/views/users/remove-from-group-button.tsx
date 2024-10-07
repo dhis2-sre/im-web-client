@@ -42,7 +42,6 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
             showAlert({ message: 'User removed from group successfully', isCritical: false })
         } catch (error) {
             showAlert({ message: 'Error while removing user from group', isCritical: true })
-            console.log(error)
         }
         onComplete()
     }, [onComplete, removeUser, showAlert])

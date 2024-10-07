@@ -1,7 +1,7 @@
-import { FC, useEffect, useState, useCallback } from 'react'
+import { FC, useEffect, useMemo, useState, useCallback } from 'react'
 import { useField, useForm } from 'react-final-form'
-import classes from '../../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
+import classes from '../../../../components/searchable-single-select.module.css'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_TAG } from '../constants.ts'
 import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'
@@ -13,23 +13,16 @@ interface ImageTagSelectProps {
     displayName: string
 }
 
-export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
-    const form = useForm()
-    const [options, setOptions] = useState<Option[]>([])
-    const [tag, setTag] = useState<string>('')
-    const [tagExists, setTagExists] = useState<boolean>(false)
+function useImageTagField() {
+    const { input } = useField<string>(IMAGE_TAG_FIELD_NAME)
+    const { value, onChange } = input
+    return { value, onChange }
+}
 
-    const {
-        meta: { initial: initialValue },
-    } = useField<string>(IMAGE_TAG_FIELD_NAME, { subscription: { initial: true } })
-
-    const {
-        input: { value: repository },
-    } = useField<string>(IMAGE_REPOSITORY_FIELD_NAME, { subscription: { value: true } })
-
-    const [{ data }, refetch] = useAuthAxios({ url: '/integrations', method: 'POST', data: {} }, { manual: true, autoCatch: true })
-
-    const [{ loading: imageLoading }, checkImageExists] = useAuthAxios({ url: `/integrations/image-exists/${repository}/{tag}`, method: 'GET' }, { manual: true, autoCatch: false })
+function useIntegrationsOptions(repository) {
+    const payload = { url: '/integrations', method: 'POST', data: {} }
+    const options = { manual: true, autoCatch: true }
+    const [{ data }, refetch] = useAuthAxios(payload, options)
 
     useEffect(() => {
         if (repository) {
@@ -45,79 +38,133 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
         }
     }, [repository, refetch])
 
-    useEffect(() => {
-        if (data) {
-            const mappedOptions = data.map(mapStringToValueLabel)
-            setOptions(mappedOptions)
+    const images = useMemo(() => data || [], [data])
+    return images
+}
 
+function useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form) {
+    useEffect(() => {
+        if (loadedOptions.length) {
             const currentSelectedValue = form.getState().values['dhis2-core']?.IMAGE_TAG
-            if (currentSelectedValue && !mappedOptions.some((option) => option.value === currentSelectedValue)) {
+
+            if (currentSelectedValue && !loadedOptions.some((option) => option.value === currentSelectedValue)) {
                 form.change(IMAGE_TAG_FIELD_NAME, undefined)
                 form.blur(IMAGE_TAG_FIELD_NAME)
             }
         }
-    }, [data, form])
+    }, [loadedOptions, form])
+}
 
-    const handleTagCheck = useCallback(
-        async (tag: string): Promise<boolean> => {
-            const existsInOptions = options.some((option) => option.label.startsWith(tag))
-            setTagExists(existsInOptions)
+function useRepositoryValue() {
+    const {
+        input: { value: repository },
+    } = useField<string>(IMAGE_REPOSITORY_FIELD_NAME, { subscription: { value: true } })
 
-            if (existsInOptions) {
-                setOptions((prevOptions) => {
-                    const filteredOptions = prevOptions.filter((option) => option.value !== tag)
-                    return [{ value: tag, label: tag }, ...filteredOptions]
-                })
-                return true
-            }
+    return repository
+}
+
+function useCheckImageExists(repository) {
+    const payload = { url: `/integrations/image-exists/${repository}/{tag}`, method: 'GET' }
+    const options = { manual: true, autoCatch: false }
+    const [{ loading: imageLoading }, _checkImageExists] = useAuthAxios(payload, options)
+
+    const checkImageExists = useCallback(
+        async ({ tag, repository }) => {
+            const url = `/integrations/image-exists/${repository}/${tag}`
 
             try {
-                const response = await checkImageExists({
-                    url: `/integrations/image-exists/${repository}/${tag}`,
-                })
+                const response = await _checkImageExists({ url })
 
                 if (response.status === 200) {
-                    // Add the new tag at the top of the options list
-                    setOptions((prevOptions) => {
-                        const filteredOptions = prevOptions.filter((option) => option.value !== tag)
-                        return [{ value: tag, label: tag }, ...filteredOptions]
-                    })
-
-                    setTag(tag)
-                    form.change(IMAGE_TAG_FIELD_NAME, tag)
-                    setTagExists(true)
                     return true
-                }
-            } catch (error) {
-                if (error?.response?.status === 404) {
-                    setTag('')
-                    form.change(IMAGE_TAG_FIELD_NAME, undefined)
-                    setTagExists(false)
+                } else {
+                    if (process.env.NODE_ENV === 'development') {
+                        console.error(new Error('Status code not 200'))
+                    }
+
                     return false
                 }
+            } catch (error) {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error(error)
+                }
+
+                return false
             }
-            return false
         },
-        [checkImageExists, form, repository, options]
+        [_checkImageExists]
     )
 
-    const handleChange = (selected: { selected: string }) => {
-        form.change(IMAGE_TAG_FIELD_NAME, selected.selected)
-    }
+    return { imageLoading, checkImageExists }
+}
+
+export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
+    const form = useForm()
+    const { value: imageValue, onChange: onImageChange } = useImageTagField()
+    const repository = useRepositoryValue()
+    const { imageLoading, checkImageExists } = useCheckImageExists(repository)
+    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<Option[]>([])
+    const loadedOptions = useIntegrationsOptions(repository)
+
+    useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form)
+
+    const [options, setOptions] = useState(loadedOptions)
+    const [filteredOptions, setFilteredOptions] = useState(options)
+    const [filtered, setFiltered] = useState(false)
+
+    useEffect(() => {
+        if (loadedOptions) {
+            const unique = new Set([...additionallyLoadedOptions, ...loadedOptions])
+            setOptions(Array.from(unique))
+        }
+    }, [additionallyLoadedOptions, loadedOptions])
+
+    const filterOptions = useCallback(
+        async ({ value: tag }) => {
+            // Reset then filter value is being removed
+            if (!tag) {
+                setFiltered(false)
+                return
+            }
+
+            // Set filtered options to what matches
+            const filteredExistingOptions = options.filter((option) => option.startsWith(tag))
+            if (filteredExistingOptions.length) {
+                setFilteredOptions(filteredExistingOptions)
+                setFiltered(true)
+                return
+            }
+
+            const tagExists = await checkImageExists({ repository, tag })
+
+            if (tagExists) {
+                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) => [...prevAdditionallyLoadedOptions, tag])
+                const nextOptions = [...options, tag]
+                setOptions(nextOptions)
+                setFilteredOptions([tag])
+                setFiltered(true)
+                return
+            }
+
+            setFilteredOptions([])
+            setFiltered(true)
+        },
+        [options, checkImageExists, repository]
+    )
+
+    const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
 
     return (
         <div>
             <label className={classes.label}>{displayName} *</label>
+
             <SearchableSingleSelect
-                onChange={handleChange}
-                foundSearchValue={tagExists}
-                setFoundSearchValue={setTagExists}
-                selected={form.getState().values['dhis2-core']?.IMAGE_TAG || tag || ''}
-                options={options.length === 0 && initialValue ? [{ value: initialValue, label: initialValue }] : options}
+                onChange={(selected: { selected: string }) => onImageChange(selected.selected)}
+                selected={imageValue}
+                options={displayOptions}
                 loading={imageLoading}
                 placeholder={displayName}
-                checkSearchValueExists={handleTagCheck}
-                refetch={refetch}
+                onFilterChange={filterOptions}
             />
         </div>
     )
