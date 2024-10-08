@@ -40,9 +40,7 @@ module.exports = {
         sourceType: 'module',
     },
 
-    plugins: [
-        'prefer-arrow',
-    ],
+    plugins: ['prefer-arrow'],
 
     rules: {
         'react/react-in-jsx-scope': 'off',
