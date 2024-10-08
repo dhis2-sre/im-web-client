@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
-export function useDebouncedState<T>({
+export const useDebouncedState = <T>({
     initialValue,
     delay = 200,
     onSetDebouncedValue,
@@ -11,7 +11,7 @@ export function useDebouncedState<T>({
     delay?: number
     onSetDebouncedValue?: (value: T) => void
     onSetLiveValue?: (value: T) => void
-}) {
+}) => {
     const [debouncedValue, _setDebouncedValue] = useState(initialValue)
     const updateDebouncedValue = useCallback(
         (nextValue: T) => {
