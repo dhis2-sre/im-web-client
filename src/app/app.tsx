@@ -5,9 +5,8 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import React from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { Alerts, AuthProvider, ErrorView, Layout } from '../components/index.ts'
+import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import {
     ValidateSuccess,
     DatabasesList,
@@ -24,10 +23,14 @@ import {
     UserDetails,
     Validate,
 } from '../views/index.ts'
+import { InstancesTable } from '../views/public-instances/index.ts'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
+            <Route path="/public" element={<PublicLayout />}>
+                <Route path="instances" element={<InstancesTable />} />
+            </Route>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
