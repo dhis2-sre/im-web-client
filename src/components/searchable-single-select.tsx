@@ -85,7 +85,6 @@ export const SearchableSingleSelect = ({
             ))}
 
             {hasSelectedInOptionList && selected && <SingleSelectOption className={classes.invisibleOption} value={selected} label="" />}
-            {!hasSelectedInOptionList && <div className={classes.error}>Image tag does not exist</div>}
             {error && <Error msg={error} onRetryClick={onRetryClick} />}
         </SingleSelect>
     )
