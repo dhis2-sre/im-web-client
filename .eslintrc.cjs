@@ -10,7 +10,6 @@ module.exports = {
         'plugin:prettier/recommended',
     ],
 
-    // unignore implicit rules about what types of files can be linted
     ignorePatterns: ['!.*', 'dist'],
 
     env: {
@@ -34,13 +33,16 @@ module.exports = {
     },
 
     parserOptions: {
-        // latest standard is ok, eq. to 9
         ecmaVersion: 2018,
         ecmaFeatures: {
             jsx: true,
         },
         sourceType: 'module',
     },
+
+    plugins: [
+        'prefer-arrow', // Ensure this line is included
+    ],
 
     rules: {
         'react/react-in-jsx-scope': 'off',
@@ -81,5 +83,17 @@ module.exports = {
             },
         ],
         'react/no-unused-prop-types': 'error',
+
+        // Arrow function rules
+        'prefer-arrow/prefer-arrow-functions': [
+            'error',
+            {
+                disallowPrototype: true,
+                singleReturnOnly: false,
+                classPropertiesAllowed: false,
+            },
+        ],
+        'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
+        'func-style': ['error', 'expression', { allowArrowFunctions: true }],
     },
 }

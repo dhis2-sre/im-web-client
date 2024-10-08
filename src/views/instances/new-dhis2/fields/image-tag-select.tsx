@@ -13,13 +13,13 @@ interface ImageTagSelectProps {
     displayName: string
 }
 
-function useImageTagField() {
+const useImageTagField = () => {
     const { input } = useField<string>(IMAGE_TAG_FIELD_NAME)
     const { value, onChange } = input
     return { value, onChange }
 }
 
-function useIntegrationsOptions(repository) {
+const useIntegrationsOptions = (repository) => {
     const payload = { url: '/integrations', method: 'POST', data: {} }
     const options = { manual: true, autoCatch: true }
     const [{ data }, refetch] = useAuthAxios(payload, options)
@@ -42,7 +42,7 @@ function useIntegrationsOptions(repository) {
     return images
 }
 
-function useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form) {
+const useResetImageTagFieldWhenSelectionNotAvailable = (loadedOptions, form) => {
     useEffect(() => {
         if (loadedOptions.length) {
             const currentSelectedValue = form.getState().values['dhis2-core']?.IMAGE_TAG
@@ -55,7 +55,7 @@ function useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form) {
     }, [loadedOptions, form])
 }
 
-function useRepositoryValue() {
+const useRepositoryValue = () => {
     const {
         input: { value: repository },
     } = useField<string>(IMAGE_REPOSITORY_FIELD_NAME, { subscription: { value: true } })
@@ -63,7 +63,7 @@ function useRepositoryValue() {
     return repository
 }
 
-function useCheckImageExists(repository) {
+const useCheckImageExists = (repository) => {
     const payload = { url: `/integrations/image-exists/${repository}/{tag}`, method: 'GET' }
     const options = { manual: true, autoCatch: false }
     const [{ loading: imageLoading }, _checkImageExists] = useAuthAxios(payload, options)

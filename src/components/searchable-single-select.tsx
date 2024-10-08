@@ -7,7 +7,7 @@ export interface Option {
     label: string
 }
 
-function Error({ msg, onRetryClick }: { msg: string; onRetryClick: () => void }) {
+const Error = ({ msg, onRetryClick }: { msg: string; onRetryClick: () => void }) => {
     return (
         <div className={classes.error}>
             <div className={classes.errorInnerWrapper}>
