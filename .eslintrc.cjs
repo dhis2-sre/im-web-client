@@ -41,7 +41,7 @@ module.exports = {
     },
 
     plugins: [
-        'prefer-arrow', // Ensure this line is included
+        'prefer-arrow',
     ],
 
     rules: {
