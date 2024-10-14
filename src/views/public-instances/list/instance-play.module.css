@@ -1,0 +1,41 @@
+.wrapper {
+    padding: 20px;
+}
+.heading {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--colors-grey900);
+}
+
+.description {
+    font-size: 1rem;
+    margin-bottom: 24px;
+}
+
+.loginInfo {
+    margin-bottom: 24px;
+}
+
+.loginInfo h2 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.loginInfo ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.loginInfo li {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.additionalInfo a {
+    color: var(--colors-blue800);
+    text-decoration: none;
+}
+
+.additionalInfo a:hover {
+    text-decoration: underline;
+}
