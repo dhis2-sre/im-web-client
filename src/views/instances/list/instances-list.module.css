@@ -13,12 +13,11 @@
     cursor: pointer;
 }
 .groupName {
-    all: unset;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 23px;
-    color: var(--colors-grey800) !important;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--colors-blue600) !important;
 }
+
 td {
     font-weight: 400;
     color: var(--colors-grey600) !important;
