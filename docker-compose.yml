@@ -24,7 +24,7 @@ services:
             - "3000:3000"
 
     e2e-test:
-        image: mcr.microsoft.com/playwright:v1.47.1-jammy
+        image: mcr.microsoft.com/playwright:v1.48.0-jammy
         stdin_open: true
         tty: true
         command: sh -c "yarn install --frozen-lockfile && npx playwright test"
