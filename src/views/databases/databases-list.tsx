@@ -10,7 +10,6 @@ import {
     IconDimensionData16,
     IconUserGroup16,
     Button,
-    IconAdd24,
     IconDownload16,
     IconEdit16,
     IconCopy16,
@@ -20,13 +19,16 @@ import {
 import { Breadcrumbs, Link, Typography } from '@mui/material'
 import { SimpleTreeView } from '@mui/x-tree-view'
 import { TreeItem } from '@mui/x-tree-view/TreeItem'
+import { orderBy } from 'lodash'
 import type { FC } from 'react'
 import { useState, useCallback, useMemo } from 'react'
 import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { baseURL } from '../../hooks/use-auth-axios.ts'
-import { ExternalDownload, GroupsWithDatabases, Database } from '../../types/index.ts'
+import { ExternalDownload, GroupsWithDatabases, Database, TreeNode } from '../../types/index.ts'
 import styles from './databases-list.module.css'
+import { UploadButton } from './upload-button.tsx'
+import { UploadDatabaseModal } from './upload-database-modal.tsx'
 
 interface TreeNode {
     id: string
@@ -87,9 +89,12 @@ const buildGroupTree = (databases: GroupsWithDatabases['databases'], groupPrefix
 
 export const DatabasesList: FC = () => {
     const [{ data, refetch }] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
-    const [selectedPath, setSelectedPath] = useState<string | null>(null)
+    const [selectedPath, setSelectedPath] = useState('')
     const [expanded, setExpanded] = useState<string[]>([])
     const [searchTerm, setSearchTerm] = useState('')
+    const [isUploadModalVisible, setIsUploadModalVisible] = useState(false)
+    const [sortColumn, setSortColumn] = useState<string | null>(null)
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
     const filteredData = useMemo(() => {
         if (!searchTerm.trim()) {
@@ -136,15 +141,68 @@ export const DatabasesList: FC = () => {
                 }
             })
 
-            return contents
+            // Sort the contents
+            return orderBy(
+                contents,
+                [
+                    (item) => 'children' in item, // Folders first
+                    (item) => ('url' in item ? item.url.toLowerCase() : item.name.toLowerCase()), // Then sort by url or name
+                ],
+                ['desc', 'asc']
+            )
         },
         [filteredData, folderTree]
     )
 
     const selectedContents = useMemo(() => getSelectedContents(selectedPath), [getSelectedContents, selectedPath])
 
+    const sortedSelectedContents = useMemo(() => {
+        if (!sortColumn) {
+            return selectedContents
+        }
+
+        return [...selectedContents].sort((a, b) => {
+            if ('children' in a || 'children' in b) {
+                return 0
+            } // Don't sort folders
+
+            const aDatabase = a as Database
+            const bDatabase = b as Database
+
+            let aValue: string | number | Date = aDatabase[sortColumn as keyof Database]
+            let bValue: string | number | Date = bDatabase[sortColumn as keyof Database]
+
+            if (sortColumn === 'name') {
+                aValue = (aDatabase.name.split('/').pop() || '').toLowerCase()
+                bValue = (bDatabase.name.split('/').pop() || '').toLowerCase()
+            } else if (sortColumn === 'size') {
+                aValue = typeof aValue === 'string' ? parseInt(aValue) || 0 : aValue
+                bValue = typeof bValue === 'string' ? parseInt(bValue) || 0 : bValue
+            } else if (sortColumn === 'createdAt' || sortColumn === 'updatedAt') {
+                aValue = aValue instanceof Date ? aValue : new Date(aValue as string)
+                bValue = bValue instanceof Date ? bValue : new Date(bValue as string)
+            }
+
+            if (aValue < bValue) {
+                return sortDirection === 'asc' ? -1 : 1
+            }
+            if (aValue > bValue) {
+                return sortDirection === 'asc' ? 1 : -1
+            }
+            return 0
+        })
+    }, [selectedContents, sortColumn, sortDirection])
+
+    const handleSort = (column: string) => {
+        if (sortColumn === column) {
+            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+        } else {
+            setSortColumn(column)
+            setSortDirection('asc')
+        }
+    }
+
     const handleSelect = useCallback((nodeId: string) => {
-        console.log('handleSelect called with nodeId:', nodeId)
         setSelectedPath(nodeId)
         const parts = nodeId.split('/')
         const newExpanded = new Set<string>()
@@ -153,7 +211,6 @@ export const DatabasesList: FC = () => {
             currentPath += (currentPath ? '/' : '') + part
             newExpanded.add(currentPath)
         }
-        console.log('newExpanded:', newExpanded)
         setExpanded(Array.from(newExpanded))
     }, [])
 
@@ -332,6 +389,27 @@ export const DatabasesList: FC = () => {
         }
     }
 
+    // Add this callback function to handle successful uploads
+    const handleUploadSuccess = useCallback(() => {
+        // Refetch the database list after a successful upload
+        refetch()
+    }, [refetch])
+
+    // const handleOpenUploadModal = () => {
+    //     setIsUploadModalVisible(true)
+    // }
+
+    const handleCloseUploadModal = () => {
+        setIsUploadModalVisible(false)
+    }
+
+    const handleUploadComplete = () => {
+        handleCloseUploadModal()
+        handleUploadSuccess()
+    }
+
+    const isPathSelected = selectedPath !== '' && selectedPath !== 'my groups'
+
     return (
         <div className={styles.twoPanel}>
             <div className={styles.leftPanel}>
@@ -358,43 +436,30 @@ export const DatabasesList: FC = () => {
             <div className={styles.rightPanel}>
                 <div className={styles.topBar}>
                     {renderBreadcrumb(selectedPath)}
-                    <Button icon={<IconAdd24 />} className={styles.uploadButton}>
-                        Upload database
-                    </Button>
+                    {/* Replace the existing Button with UploadButton */}
+                    <UploadButton groupName={selectedPath?.split('/')[0] || ''} path={selectedPath || ''} onUploadSuccess={handleUploadSuccess} disabled={!isPathSelected} />
                 </div>
                 <h2>{selectedPath || 'My groups'}</h2>
                 <DataTable>
                     <DataTableHead>
                         <DataTableRow>
-                            <DataTableColumnHeader
-                            // name="Name"
-                            // onSortIconClick={function zA(){}}
-                            // sortDirection="default"
-                            // sortIconTitle="Sort by name"
-                            >
+                            <DataTableColumnHeader onSortIconClick={() => handleSort('name')} sortDirection={sortColumn === 'name' ? sortDirection : 'default'} name="Name">
                                 Name
                             </DataTableColumnHeader>
-                            <DataTableColumnHeader
-                            // name="Size"
-                            // onSortIconClick={function zA(){}}
-                            // sortDirection="default"
-                            // sortIconTitle="Sort by size"
-                            >
+                            <DataTableColumnHeader onSortIconClick={() => handleSort('size')} sortDirection={sortColumn === 'size' ? sortDirection : 'default'} name="Size">
                                 Size
                             </DataTableColumnHeader>
                             <DataTableColumnHeader
-                            // name="Created"
-                            // onSortIconClick={function zA(){}}
-                            // sortDirection="default"
-                            // sortIconTitle="Sort by created"
+                                onSortIconClick={() => handleSort('createdAt')}
+                                sortDirection={sortColumn === 'createdAt' ? sortDirection : 'default'}
+                                name="Created"
                             >
                                 Created
                             </DataTableColumnHeader>
                             <DataTableColumnHeader
-                            // name="Last Updated"
-                            // onSortIconClick={function zA(){}}
-                            // sortDirection="default"
-                            // sortIconTitle="Sort by last updated"
+                                onSortIconClick={() => handleSort('updatedAt')}
+                                sortDirection={sortColumn === 'updatedAt' ? sortDirection : 'default'}
+                                name="Last Updated"
                             >
                                 Last Updated
                             </DataTableColumnHeader>
@@ -402,7 +467,7 @@ export const DatabasesList: FC = () => {
                         </DataTableRow>
                     </DataTableHead>
                     <DataTableBody>
-                        {selectedContents.map((item) => (
+                        {sortedSelectedContents.map((item) => (
                             <DataTableRow key={'id' in item ? item.id : item.name} onDoubleClick={() => ('children' in item ? handleRightPanelSelect(item) : null)}>
                                 <DataTableCell>
                                     {(() => {
@@ -445,10 +510,10 @@ export const DatabasesList: FC = () => {
                                                         loading={loading}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip content="Rename">
+                                                <Tooltip content="Rename (not implemented)">
                                                     <Button icon={<IconEdit16 />} onClick={() => handleAction('rename', item)} className={styles.iconButton} />
                                                 </Tooltip>
-                                                <Tooltip content="Copy">
+                                                <Tooltip content="Copy (not implemented)">
                                                     <Button icon={<IconCopy16 />} onClick={() => handleAction('copy', item)} className={styles.iconButton} />
                                                 </Tooltip>
                                                 <Tooltip content="Delete">
@@ -473,6 +538,7 @@ export const DatabasesList: FC = () => {
                     Are you sure you wish to delete this database?
                 </ConfirmationModal>
             )}
+            {isUploadModalVisible && <UploadDatabaseModal onClose={handleCloseUploadModal} onComplete={handleUploadComplete} currentPath={selectedPath?.split('/')[0] || ''} />}
         </div>
     )
 }
