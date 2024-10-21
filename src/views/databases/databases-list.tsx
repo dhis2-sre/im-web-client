@@ -26,7 +26,9 @@ import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { baseURL } from '../../hooks/use-auth-axios.ts'
 import { ExternalDownload, GroupsWithDatabases, Database, TreeNode } from '../../types/index.ts'
+import { CopyDatabaseModal } from './copy-database-modal.tsx'
 import styles from './databases-list.module.css'
+import { RenameModal } from './rename-modal.tsx'
 import { UploadButton } from './upload-button.tsx'
 import { UploadDatabaseModal } from './upload-database-modal.tsx'
 
@@ -88,13 +90,15 @@ const buildGroupTree = (databases: GroupsWithDatabases['databases'], groupPrefix
 }
 
 export const DatabasesList: FC = () => {
-    const [{ data, refetch }] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
+    const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
     const [selectedPath, setSelectedPath] = useState('')
     const [expanded, setExpanded] = useState<string[]>([])
     const [searchTerm, setSearchTerm] = useState('')
     const [isUploadModalVisible, setIsUploadModalVisible] = useState(false)
     const [sortColumn, setSortColumn] = useState<string | null>(null)
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+    const [renameModalData, setRenameModalData] = useState<{ id: string; name: string } | null>(null)
+    const [copyModalData, setCopyModalData] = useState<{ id: string; name: string; group: string } | null>(null)
 
     const filteredData = useMemo(() => {
         if (!searchTerm.trim()) {
@@ -389,10 +393,15 @@ export const DatabasesList: FC = () => {
         }
     }
 
-    // Add this callback function to handle successful uploads
+    // Modify this callback function to handle successful uploads
     const handleUploadSuccess = useCallback(() => {
-        // Refetch the database list after a successful upload
-        refetch()
+        // Check if refetch is a function before calling it
+        if (typeof refetch === 'function') {
+            refetch()
+        } else {
+            console.warn('refetch is not a function, unable to refresh database list')
+            // Optionally, you could implement a fallback refresh method here
+        }
     }, [refetch])
 
     // const handleOpenUploadModal = () => {
@@ -409,6 +418,27 @@ export const DatabasesList: FC = () => {
     }
 
     const isPathSelected = selectedPath !== '' && selectedPath !== 'my groups'
+
+    const handleRename = useCallback((item: GroupsWithDatabases['databases'][0]) => {
+        setRenameModalData({ id: item.id, name: item.name })
+    }, [])
+
+    const handleRenameComplete = useCallback(() => {
+        setRenameModalData(null)
+        refetch()
+    }, [refetch])
+
+    const handleCopy = useCallback((item: GroupsWithDatabases['databases'][0]) => {
+        setCopyModalData({ id: item.id, name: item.name, group: item.groupName })
+    }, [])
+
+    const handleCopyComplete = useCallback(() => {
+        setCopyModalData(null)
+        refetch()
+    }, [refetch])
+
+    // Get unique groups from the data
+    const groups = useMemo(() => [...new Set(data?.map((group) => group.name))], [data])
 
     return (
         <div className={styles.twoPanel}>
@@ -510,11 +540,11 @@ export const DatabasesList: FC = () => {
                                                         loading={loading}
                                                     />
                                                 </Tooltip>
-                                                <Tooltip content="Rename (not implemented)">
-                                                    <Button icon={<IconEdit16 />} onClick={() => handleAction('rename', item)} className={styles.iconButton} />
+                                                <Tooltip content="Rename">
+                                                    <Button icon={<IconEdit16 />} onClick={() => handleRename(item)} className={styles.iconButton} />
                                                 </Tooltip>
-                                                <Tooltip content="Copy (not implemented)">
-                                                    <Button icon={<IconCopy16 />} onClick={() => handleAction('copy', item)} className={styles.iconButton} />
+                                                <Tooltip content="Copy">
+                                                    <Button icon={<IconCopy16 />} onClick={() => handleCopy(item)} className={styles.iconButton} />
                                                 </Tooltip>
                                                 <Tooltip content="Delete">
                                                     <Button
@@ -539,6 +569,19 @@ export const DatabasesList: FC = () => {
                 </ConfirmationModal>
             )}
             {isUploadModalVisible && <UploadDatabaseModal onClose={handleCloseUploadModal} onComplete={handleUploadComplete} currentPath={selectedPath?.split('/')[0] || ''} />}
+            {renameModalData && (
+                <RenameModal databaseId={renameModalData.id} currentName={renameModalData.name} onClose={() => setRenameModalData(null)} onComplete={handleRenameComplete} />
+            )}
+            {copyModalData && (
+                <CopyDatabaseModal
+                    databaseId={copyModalData.id}
+                    currentName={copyModalData.name}
+                    currentGroup={copyModalData.group}
+                    groups={groups}
+                    onClose={() => setCopyModalData(null)}
+                    onComplete={handleCopyComplete}
+                />
+            )}
         </div>
     )
 }

@@ -86,7 +86,9 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             const formData = new FormData()
             formData.append('group', groupName)
             formData.append('database', databaseFile)
-            formData.append('name', destinationName + fileExtension)
+            const path = currentPath === groupName ? '' : currentPath.replace(groupName + '/', '')
+            const fullPath = path ? path + '/' + destinationName : destinationName
+            formData.append('name', fullPath + fileExtension)
             await postDatabase({ data: formData })
             showAlert({
                 message: 'Database added successfully',
@@ -100,7 +102,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, groupName, destinationName, fileExtension, onComplete, postDatabase, showAlert, formatValidation])
+    }, [databaseFile, groupName, currentPath, destinationName, fileExtension, postDatabase, showAlert, formatValidation, onComplete])
 
     return (
         <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)} large>
