@@ -1,20 +1,18 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
-import type { BaseButtonProps } from '@dhis2/ui'
-import type { FC } from 'react'
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { GroupsWithDatabases } from '../../types/index.ts'
 import styles from './upload-database-modal.module.css'
 
-type UploadDatabaseModalProps = {
-    onClose: BaseButtonProps['onClick']
+interface UploadDatabaseModalProps {
+    onClose: () => void
     onComplete: () => void
     currentPath: string
     groupName: string
 }
 
-export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete, currentPath, groupName }) => {
+const UploadDatabaseModal = ({ onClose, onComplete, currentPath, groupName }: UploadDatabaseModalProps) => {
     const [databaseFile, setDatabaseFile] = useState<File | null>(null)
     const [destinationName, setDestinationName] = useState<string>('')
     const [formatValidation, setFormatValidation] = useState<string>('')
@@ -156,3 +154,6 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         </Modal>
     )
 }
+
+// Make sure there's a default export as well
+export default UploadDatabaseModal

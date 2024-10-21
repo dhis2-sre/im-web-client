@@ -232,7 +232,7 @@ export const DatabasesList: FC = () => {
     )
 
     const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
-    const [{ loading }, fetchDownloadLink] = useAuthAxios<ExternalDownload>(
+    const [fetchDownloadLink] = useAuthAxios<ExternalDownload>(
         {
             url: '/databases/:id/external',
             method: 'post',
@@ -248,9 +248,9 @@ export const DatabasesList: FC = () => {
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ loading: deleteLoading }, deleteDatabase] = useAuthAxios<Database>(
+    const [, deleteDatabase] = useAuthAxios<Database>(
         {
-            url: '/databases/:id',
+            url: `/databases/${databaseToDelete?.id}`,
             method: 'delete',
         },
         { manual: true }
@@ -379,12 +379,6 @@ export const DatabasesList: FC = () => {
             case 'download':
                 handleDownload(item.id)
                 break
-            case 'rename':
-                console.log(`Rename action for item ${item.id}`)
-                break
-            case 'copy':
-                console.log(`Copy action for item ${item.id}`)
-                break
             case 'delete':
                 handleDeleteConfirmation(item.id)
                 break
@@ -419,7 +413,7 @@ export const DatabasesList: FC = () => {
 
     const isPathSelected = selectedPath !== '' && selectedPath !== 'my groups'
 
-    const handleRename = useCallback((item: GroupsWithDatabases['databases'][0]) => {
+    const handleRename = useCallback((item: Database) => {
         setRenameModalData({ id: item.id, name: item.name })
     }, [])
 
@@ -428,7 +422,7 @@ export const DatabasesList: FC = () => {
         refetch()
     }, [refetch])
 
-    const handleCopy = useCallback((item: GroupsWithDatabases['databases'][0]) => {
+    const handleCopy = useCallback((item: Database) => {
         setCopyModalData({ id: item.id, name: item.name, group: item.groupName })
     }, [])
 
@@ -439,6 +433,30 @@ export const DatabasesList: FC = () => {
 
     // Get unique groups from the data
     const groups = useMemo(() => [...new Set(data?.map((group) => group.name))], [data])
+
+    const renderActionButtons = (item: TreeNode | GroupsWithDatabases['databases'][0]) => {
+        // Check if the item is a database (not a folder or group)
+        if ('children' in item || item.isGroup || item.isFolder) {
+            return null
+        }
+
+        return (
+            <div className={styles.actionIcons}>
+                <Tooltip content="Download">
+                    <Button icon={<IconDownload16 />} onClick={() => handleAction('download', item)} className={styles.iconButton} />
+                </Tooltip>
+                <Tooltip content="Rename/Move...">
+                    <Button icon={<IconEdit16 />} onClick={() => handleRename(item)} className={styles.iconButton} />
+                </Tooltip>
+                <Tooltip content="Copy...">
+                    <Button icon={<IconCopy16 />} onClick={() => handleCopy(item)} className={styles.iconButton} />
+                </Tooltip>
+                <Tooltip content="Delete...">
+                    <Button icon={<IconDelete16 />} onClick={() => handleAction('delete', item)} className={`${styles.iconButton} ${styles.danger}`} />
+                </Tooltip>
+            </div>
+        )
+    }
 
     return (
         <div className={styles.twoPanel}>
@@ -498,7 +516,7 @@ export const DatabasesList: FC = () => {
                     </DataTableHead>
                     <DataTableBody>
                         {sortedSelectedContents.map((item) => (
-                            <DataTableRow key={'id' in item ? item.id : item.name} onDoubleClick={() => ('children' in item ? handleRightPanelSelect(item) : null)}>
+                            <DataTableRow key={item.id || item.name} onDoubleClick={() => handleRightPanelSelect(item)}>
                                 <DataTableCell>
                                     {(() => {
                                         if ('children' in item) {
@@ -525,39 +543,10 @@ export const DatabasesList: FC = () => {
                                     })()}
                                     {'name' in item ? item.name.split('/').pop() : item.name}
                                 </DataTableCell>
-                                <DataTableCell>{'size' in item ? item.size || '-' : '-'}</DataTableCell>
-                                <DataTableCell>{'createdAt' in item ? formatDate(item.createdAt) : '-'}</DataTableCell>
-                                <DataTableCell>{'updatedAt' in item ? formatDate(item.updatedAt) : '-'}</DataTableCell>
-                                <DataTableCell>
-                                    <div className={styles.actionIcons}>
-                                        {'id' in item && (
-                                            <>
-                                                <Tooltip content="Download">
-                                                    <Button
-                                                        icon={<IconDownload16 />}
-                                                        onClick={() => handleAction('download', item)}
-                                                        className={styles.iconButton}
-                                                        loading={loading}
-                                                    />
-                                                </Tooltip>
-                                                <Tooltip content="Rename">
-                                                    <Button icon={<IconEdit16 />} onClick={() => handleRename(item)} className={styles.iconButton} />
-                                                </Tooltip>
-                                                <Tooltip content="Copy">
-                                                    <Button icon={<IconCopy16 />} onClick={() => handleCopy(item)} className={styles.iconButton} />
-                                                </Tooltip>
-                                                <Tooltip content="Delete">
-                                                    <Button
-                                                        icon={<IconDelete16 />}
-                                                        onClick={() => handleAction('delete', item)}
-                                                        className={`${styles.iconButton} ${styles.danger}`}
-                                                        loading={deleteLoading && databaseToDelete === item.id}
-                                                    />
-                                                </Tooltip>
-                                            </>
-                                        )}
-                                    </div>
-                                </DataTableCell>
+                                <DataTableCell>{'size' in item ? item.size || '-' : ''}</DataTableCell>
+                                <DataTableCell>{'createdAt' in item ? formatDate(item.createdAt) : ''}</DataTableCell>
+                                <DataTableCell>{'updatedAt' in item ? formatDate(item.updatedAt) : ''}</DataTableCell>
+                                <DataTableCell>{renderActionButtons(item)}</DataTableCell>
                             </DataTableRow>
                         ))}
                     </DataTableBody>

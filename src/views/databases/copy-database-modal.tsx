@@ -15,9 +15,10 @@ interface CopyDatabaseModalProps {
 
 export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ databaseId, currentName, currentGroup, groups, onClose, onComplete }) => {
     const [newName, setNewName] = useState(() => {
-        const nameParts = currentName.split('.')
-        const extension = nameParts.length > 1 ? `.${nameParts.pop()}` : ''
-        return `${nameParts.join('.')}-copy${extension}`
+        // const nameParts = currentName.split('.')
+        const extension = currentName.endsWith('.sql.gz') ? '.sql.gz' : (currentName.match(/\.[^.]+$/) || [''])[0]
+        const baseName = currentName.slice(0, -extension.length)
+        return `${baseName}-copy${extension}`
     })
     const [selectedGroup, setSelectedGroup] = useState(currentGroup)
 

@@ -1,7 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Modal, ModalTitle, ModalContent, ModalActions, ButtonStrip, Button, InputField } from '@dhis2/ui'
-import { useState, useCallback } from 'react'
-import type { FC } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
 
 interface RenameModalProps {
@@ -11,7 +10,7 @@ interface RenameModalProps {
     onComplete: () => void
 }
 
-export const RenameModal: FC<RenameModalProps> = ({ databaseId, currentName, onClose, onComplete }) => {
+export const RenameModal: React.FC<RenameModalProps> = ({ databaseId, currentName, onClose, onComplete }) => {
     const [newName, setNewName] = useState(currentName)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -41,7 +40,7 @@ export const RenameModal: FC<RenameModalProps> = ({ databaseId, currentName, onC
         <Modal onClose={onClose}>
             <ModalTitle>Rename Database</ModalTitle>
             <ModalContent>
-                <InputField label="New name" value={newName} onChange={({ value }) => setNewName(value)} />
+                <InputField label="New name (rename with different path in order to move the file)" value={newName} onChange={({ value }) => setNewName(value)} />
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
@@ -56,3 +55,6 @@ export const RenameModal: FC<RenameModalProps> = ({ databaseId, currentName, onC
         </Modal>
     )
 }
+
+// Make sure there's a default export as well
+export default RenameModal
