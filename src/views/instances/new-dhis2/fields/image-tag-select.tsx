@@ -1,53 +1,28 @@
-import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
-import { FC, useEffect, useState } from 'react'
-import { Field, useField, useForm } from 'react-final-form'
+import { FC, useEffect, useMemo, useState, useCallback } from 'react'
+import { useField, useForm } from 'react-final-form'
+import classes from '../../../../components/searchable-single-select.module.css'
+import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_TAG } from '../constants.ts'
 import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
-const IMAGE_TAG_FIELD_NAME = `dhis2-core.${IMAGE_TAG}`
+const IMAGE_TAG_FIELD_NAME = `['dhis2-core'].${IMAGE_TAG}`
 
-export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => {
-    const form = useForm()
-    const [options, setOptions] = useState([])
+interface ImageTagSelectProps {
+    displayName: string
+}
 
-    const {
-        meta: { initial: initialValue },
-    } = useField(IMAGE_TAG_FIELD_NAME, {
-        subscription: { initial: true },
-    })
-    const {
-        input: { value: repository },
-    } = useField(IMAGE_REPOSITORY_FIELD_NAME, {
-        subscription: { value: true },
-    })
-    const [{ data, error, loading }, refetch] = useAuthAxios(
-        {
-            url: '/integrations',
-            method: 'POST',
-            data: {},
-        },
-        { manual: true, autoCatch: true }
-    )
-    useEffect(() => {
-        if (data) {
-            /* If the component has data already and has
-             * gone back into a loading state then this means
-             * a new list is being fetched due to a repository
-             * change. Since the currently selected image tag
-             * won't be available under the new repository,
-             * the selection now needs to be cleared. */
-            if (loading) {
-                form.change(IMAGE_TAG_FIELD_NAME, undefined)
-                /* Also blur so the field validation kicks in
-                 * and user's attention is caught by the error
-                 * message */
-                form.blur(IMAGE_TAG_FIELD_NAME)
-            }
-            setOptions(data.map(mapStringToValueLabel))
-        }
-    }, [data, loading, form])
+const useImageTagField = () => {
+    const { input } = useField<string>(IMAGE_TAG_FIELD_NAME)
+    const { value, onChange } = input
+    return { value, onChange }
+}
+
+const useIntegrationsOptions = (repository) => {
+    const payload = { url: '/integrations', method: 'POST', data: {} }
+    const options = { manual: true, autoCatch: true }
+    const [{ data }, refetch] = useAuthAxios(payload, options)
 
     useEffect(() => {
         if (repository) {
@@ -63,19 +38,134 @@ export const ImageTagSelect: FC<{ displayName: string }> = ({ displayName }) => 
         }
     }, [repository, refetch])
 
-    const optionsWithFallback = options.length === 0 && initialValue ? [{ value: initialValue, label: initialValue }] : options
+    const images = useMemo(() => data || [], [data])
+    return images
+}
+
+const useResetImageTagFieldWhenSelectionNotAvailable = (loadedOptions, form) => {
+    useEffect(() => {
+        if (loadedOptions.length) {
+            const currentSelectedValue = form.getState().values['dhis2-core']?.IMAGE_TAG
+
+            if (currentSelectedValue && !loadedOptions.some((option) => option.value === currentSelectedValue)) {
+                form.change(IMAGE_TAG_FIELD_NAME, undefined)
+                form.blur(IMAGE_TAG_FIELD_NAME)
+            }
+        }
+    }, [loadedOptions, form])
+}
+
+const useRepositoryValue = () => {
+    const {
+        input: { value: repository },
+    } = useField<string>(IMAGE_REPOSITORY_FIELD_NAME, { subscription: { value: true } })
+
+    return repository
+}
+
+const useCheckImageExists = (repository) => {
+    const payload = { url: `/integrations/image-exists/${repository}/{tag}`, method: 'GET' }
+    const options = { manual: true, autoCatch: false }
+    const [{ loading: imageLoading }, _checkImageExists] = useAuthAxios(payload, options)
+
+    const checkImageExists = useCallback(
+        async ({ tag, repository }) => {
+            const url = `/integrations/image-exists/${repository}/${tag}`
+
+            try {
+                const response = await _checkImageExists({ url })
+
+                if (response.status === 200) {
+                    return true
+                } else {
+                    if (process.env.NODE_ENV === 'development') {
+                        console.error(new Error('Status code not 200'))
+                    }
+
+                    return false
+                }
+            } catch (error) {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error(error)
+                }
+
+                return false
+            }
+        },
+        [_checkImageExists]
+    )
+
+    return { imageLoading, checkImageExists }
+}
+
+export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
+    const form = useForm()
+    const { value: imageValue, onChange: onImageChange } = useImageTagField()
+    const repository = useRepositoryValue()
+    const { imageLoading, checkImageExists } = useCheckImageExists(repository)
+    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<Option[]>([])
+    const loadedOptions = useIntegrationsOptions(repository)
+
+    useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form)
+
+    const [options, setOptions] = useState(loadedOptions)
+    const [filteredOptions, setFilteredOptions] = useState(options)
+    const [filtered, setFiltered] = useState(false)
+
+    useEffect(() => {
+        if (loadedOptions) {
+            const unique = new Set([...additionallyLoadedOptions, ...loadedOptions])
+            setOptions(Array.from(unique))
+        }
+    }, [additionallyLoadedOptions, loadedOptions])
+
+    const filterOptions = useCallback(
+        async ({ value: tag }) => {
+            // Reset then filter value is being removed
+            if (!tag) {
+                setFiltered(false)
+                return
+            }
+
+            // Set filtered options to what matches
+            const filteredExistingOptions = options.filter((option) => option.startsWith(tag))
+            if (filteredExistingOptions.length) {
+                setFilteredOptions(filteredExistingOptions)
+                setFiltered(true)
+                return
+            }
+
+            const tagExists = await checkImageExists({ repository, tag })
+
+            if (tagExists) {
+                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) => [...prevAdditionallyLoadedOptions, tag])
+                const nextOptions = [...options, tag]
+                setOptions(nextOptions)
+                setFilteredOptions([tag])
+                setFiltered(true)
+                return
+            }
+
+            setFilteredOptions([])
+            setFiltered(true)
+        },
+        [options, checkImageExists, repository]
+    )
+
+    const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
 
     return (
-        <Field
-            required
-            loading={loading}
-            error={error}
-            name={IMAGE_TAG_FIELD_NAME}
-            label={displayName}
-            component={SingleSelectFieldFF}
-            filterable={optionsWithFallback.length > 7}
-            options={optionsWithFallback}
-            validate={hasValue}
-        />
+        <div>
+            <label className={classes.label}>{displayName} *</label>
+
+            <SearchableSingleSelect
+                onChange={(selected: { selected: string }) => onImageChange(selected.selected)}
+                selected={imageValue}
+                options={displayOptions}
+                loading={imageLoading}
+                placeholder={displayName}
+                onFilterChange={filterOptions}
+            />
+        </div>
     )
 }

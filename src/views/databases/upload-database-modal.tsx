@@ -12,7 +12,7 @@ interface UploadDatabaseModalProps {
     groupName: string
 }
 
-const UploadDatabaseModal = ({ onClose, onComplete, currentPath, groupName }: UploadDatabaseModalProps) => {
+export const UploadDatabaseModal: React.FC<UploadDatabaseModalProps> = ({ onClose, onComplete, currentPath, groupName }) => {
     const [databaseFile, setDatabaseFile] = useState<File | null>(null)
     const [destinationName, setDestinationName] = useState<string>('')
     const [formatValidation, setFormatValidation] = useState<string>('')

@@ -1,4 +1,3 @@
-import i18n from '@dhis2/d2-i18n'
 import { IconClock16, IconUser16, IconUserGroup16, IconWarning16, IconClockHistory16, IconWorld16, IconInfo16 } from '@dhis2/ui'
 import { FC } from 'react'
 import Moment from 'react-moment'
@@ -43,7 +42,7 @@ export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }
                 </div>
                 <div className={styles.singleDetails}>
                     <IconInfo16 />
-                    {deployment.description || ` ${i18n.t('No instance description')} `}
+                    {deployment.description || 'No instance description'}
                 </div>
             </div>
         </div>

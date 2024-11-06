@@ -35,7 +35,12 @@ test.describe('new instance', () => {
         await page.getByRole('textbox', { name: 'Description' }).fill('This is an e2e test instance.')
 
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
-        await page.locator('#filter').fill(dbFileName)
+
+        // If there are more than 7 databases uploaded, we need to interact with the conditional #filter field.
+        const numberOfDatabases = await page.getByTestId('dhis2-uicore-singleselectoption').count()
+        if (numberOfDatabases > 7) {
+            await page.locator('#filter').fill(dbFileName)
+        }
         await page.getByText(dbFileName).click()
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
