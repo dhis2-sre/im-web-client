@@ -4,10 +4,10 @@ import { useCallback } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { baseURL } from '../../hooks/use-auth-axios.ts'
-import { ExternalDownload, GroupsWithDatabases } from '../../types/index.ts'
+import styles from './databases-list.module.css'
 
 interface DownloadButtonProps {
-    database: GroupsWithDatabases['databases'][0]
+    database: Database
 }
 
 export const DownloadButton: FC<DownloadButtonProps> = ({ database }) => {
@@ -37,9 +37,5 @@ export const DownloadButton: FC<DownloadButtonProps> = ({ database }) => {
         }
     }, [fetchDownloadLink, showError])
 
-    return (
-        <Button small secondary loading={loading} icon={<IconDownload16 />} onClick={onClick}>
-            Download
-        </Button>
-    )
+    return <Button loading={loading} icon={<IconDownload16 />} onClick={onClick} className={styles.iconButton} />
 }

@@ -1,4 +1,3 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import {
     DataTable,
     DataTableBody,
@@ -10,10 +9,8 @@ import {
     IconDimensionData16,
     IconUserGroup16,
     Button,
-    IconDownload16,
     IconEdit16,
     IconCopy16,
-    IconDelete16,
     Tooltip,
 } from '@dhis2/ui'
 import { Breadcrumbs, Link, Typography } from '@mui/material'
@@ -22,12 +19,12 @@ import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import { orderBy } from 'lodash'
 import type { FC } from 'react'
 import { useState, useCallback, useMemo } from 'react'
-import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
+// import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
 import { useAuthAxios } from '../../hooks/index.ts'
-import { baseURL } from '../../hooks/use-auth-axios.ts'
-import { ExternalDownload, GroupsWithDatabases, Database, TreeNode } from '../../types/index.ts'
 import { CopyDatabaseModal } from './copy-database-modal.tsx'
 import styles from './databases-list.module.css'
+import { DeleteButton } from './delete-button.tsx'
+import { DownloadButton } from './download-button.tsx'
 import { RenameModal } from './rename-modal.tsx'
 import { UploadButton } from './upload-button.tsx'
 import { UploadDatabaseModal } from './upload-database-modal.tsx'
@@ -38,6 +35,13 @@ interface TreeNode {
     children?: TreeNode[]
     isGroup?: boolean
     isFolder?: boolean
+}
+
+interface Database {
+    id: string
+    name: string
+    groupName?: string
+    // ... other properties
 }
 
 const buildTree = (groups: GroupsWithDatabases[]): TreeNode[] => {
@@ -231,30 +235,12 @@ export const DatabasesList: FC = () => {
         [handleSelect]
     )
 
-    const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
-    const [fetchDownloadLink] = useAuthAxios<ExternalDownload>(
-        {
-            url: '/databases/:id/external',
-            method: 'post',
-            data: {
-                expiration: 5,
-            },
-        },
-        { manual: true }
-    )
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false)
-    const [databaseToDelete, setDatabaseToDelete] = useState<string | null>(null)
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
-    const [, deleteDatabase] = useAuthAxios<Database>(
-        {
-            url: `/databases/${databaseToDelete?.id}`,
-            method: 'delete',
-        },
-        { manual: true }
-    )
+    // const { show: showError } = useAlert(({ message }) => message, { critical: true })
+
+    // const { show: showAlert } = useAlert(
+    //     ({ message }) => message,
+    //     ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
+    // )
 
     const renderTree = (nodes: TreeNode[]) =>
         nodes
@@ -318,74 +304,29 @@ export const DatabasesList: FC = () => {
         )
     }
 
-    const handleDownload = useCallback(
-        async (databaseId: string) => {
-            try {
-                const { data } = await fetchDownloadLink({
-                    url: `/databases/${databaseId}/external`,
-                    method: 'post',
-                    data: {
-                        expiration: 5,
-                    },
-                })
-                if (data && data.uuid) {
-                    const link = document.createElement('a')
-                    link.href = `${baseURL}/databases/external/${data.uuid}`
-                    link.target = '_blank'
-                    link.click()
-                    link.remove()
-                } else {
-                    throw new Error('No UUID received from server')
-                }
-            } catch (error) {
-                console.error('Download error:', error)
-                showError()
+    const handleRename = useCallback((item: Database) => {
+        setRenameModalData({ id: item.id, name: item.name })
+    }, [])
+
+    const handleCopy = useCallback((item: Database) => {
+        setCopyModalData({ id: item.id, name: item.name, group: item.groupName })
+    }, [])
+
+    const handleAction = useCallback(
+        (action: string, item: Database) => {
+            switch (action) {
+                case 'rename':
+                    handleRename(item)
+                    break
+                case 'copy':
+                    handleCopy(item)
+                    break
+                default:
+                    console.warn(`Unknown action: ${action}`)
             }
         },
-        [fetchDownloadLink, showError]
+        [handleRename, handleCopy]
     )
-
-    const handleDeleteConfirmation = useCallback((databaseId: string) => {
-        setDatabaseToDelete(databaseId)
-        setShowConfirmationModal(true)
-    }, [])
-
-    const handleDeleteCancel = useCallback(() => {
-        setShowConfirmationModal(false)
-        setDatabaseToDelete(null)
-    }, [])
-
-    const handleDeleteConfirm = useCallback(async () => {
-        if (!databaseToDelete) {
-            return
-        }
-
-        try {
-            setShowConfirmationModal(false)
-            await deleteDatabase({ url: `/databases/${databaseToDelete}` })
-            showAlert({ message: `Successfully deleted database`, isCritical: false })
-            // Refetch the database list
-            refetch()
-        } catch (error) {
-            console.error(error)
-            showAlert({ message: `There was an error when deleting database`, isCritical: true })
-        } finally {
-            setDatabaseToDelete(null)
-        }
-    }, [databaseToDelete, deleteDatabase, showAlert, refetch])
-
-    const handleAction = (action: string, item: GroupsWithDatabases['databases'][0]) => {
-        switch (action) {
-            case 'download':
-                handleDownload(item.id)
-                break
-            case 'delete':
-                handleDeleteConfirmation(item.id)
-                break
-            default:
-                console.log(`Unknown action ${action} for item ${item.id}`)
-        }
-    }
 
     // Modify this callback function to handle successful uploads
     const handleUploadSuccess = useCallback(() => {
@@ -413,18 +354,10 @@ export const DatabasesList: FC = () => {
 
     const isPathSelected = selectedPath !== '' && selectedPath !== 'my groups'
 
-    const handleRename = useCallback((item: Database) => {
-        setRenameModalData({ id: item.id, name: item.name })
-    }, [])
-
     const handleRenameComplete = useCallback(() => {
         setRenameModalData(null)
         refetch()
     }, [refetch])
-
-    const handleCopy = useCallback((item: Database) => {
-        setCopyModalData({ id: item.id, name: item.name, group: item.groupName })
-    }, [])
 
     const handleCopyComplete = useCallback(() => {
         setCopyModalData(null)
@@ -434,47 +367,54 @@ export const DatabasesList: FC = () => {
     // Get unique groups from the data
     const groups = useMemo(() => [...new Set(data?.map((group) => group.name))], [data])
 
-    const renderActionButtons = (item: TreeNode | GroupsWithDatabases['databases'][0]) => {
-        // Check if the item is a database (not a folder or group)
-        if ('children' in item || item.isGroup || item.isFolder) {
-            return null
-        }
+    const renderActionButtons = useCallback(
+        (item: TreeNode | Database) => {
+            // Don't render action buttons for folders or groups
+            if ('children' in item || item.isGroup || item.isFolder) {
+                return null
+            }
 
-        return (
-            <div className={styles.actionIcons}>
-                <Tooltip content="Download">
-                    <Button icon={<IconDownload16 />} onClick={() => handleAction('download', item)} className={styles.iconButton} />
-                </Tooltip>
-                <Tooltip content="Rename/Move...">
-                    <Button icon={<IconEdit16 />} onClick={() => handleRename(item)} className={styles.iconButton} />
-                </Tooltip>
-                <Tooltip content="Copy...">
-                    <Button icon={<IconCopy16 />} onClick={() => handleCopy(item)} className={styles.iconButton} />
-                </Tooltip>
-                <Tooltip content="Delete...">
-                    <Button icon={<IconDelete16 />} onClick={() => handleAction('delete', item)} className={`${styles.iconButton} ${styles.danger}`} />
-                </Tooltip>
-            </div>
-        )
-    }
+            // Type guard to ensure we have a Database object
+            if (!('id' in item)) {
+                return null
+            }
+
+            return (
+                <div className={styles.actionIcons}>
+                    <DownloadButton
+                        database={item}
+                        className={styles.iconButton}
+                    />
+                    <Tooltip content="Rename/Move...">
+                        <Button 
+                            icon={<IconEdit16 />} 
+                            onClick={() => handleAction('rename', item)} 
+                            className={styles.iconButton} 
+                        />
+                    </Tooltip>
+                    <Tooltip content="Copy...">
+                        <Button 
+                            icon={<IconCopy16 />} 
+                            onClick={() => handleAction('copy', item)} 
+                            className={styles.iconButton} 
+                        />
+                    </Tooltip>
+                    <DeleteButton 
+                        database={item} 
+                        onComplete={refetch} 
+                    />
+                </div>
+            )
+        },
+        [handleAction, refetch]
+    )
 
     return (
         <div className={styles.twoPanel}>
             <div className={styles.leftPanel}>
                 <input type="text" placeholder="Filter databases..." className={styles.searchInput} value={searchTerm} onChange={handleSearch} />
                 {folderTree.length > 0 ? (
-                    <SimpleTreeView
-                        expanded={expanded}
-                        onExpanded={(nodeIds) => {
-                            console.log('Nodes expanded:', nodeIds)
-                            setExpanded(nodeIds)
-                        }}
-                        selected={selectedPath}
-                        onSelected={(nodeId) => {
-                            console.log('Node selected phil:', nodeId)
-                            handleSelect(nodeId)
-                        }}
-                    >
+                    <SimpleTreeView expanded={expanded} selected={selectedPath}>
                         {renderTree(folderTree)}
                     </SimpleTreeView>
                 ) : (
@@ -552,11 +492,6 @@ export const DatabasesList: FC = () => {
                     </DataTableBody>
                 </DataTable>
             </div>
-            {showConfirmationModal && (
-                <ConfirmationModal destructive onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel}>
-                    Are you sure you wish to delete this database?
-                </ConfirmationModal>
-            )}
             {isUploadModalVisible && <UploadDatabaseModal onClose={handleCloseUploadModal} onComplete={handleUploadComplete} currentPath={selectedPath?.split('/')[0] || ''} />}
             {renameModalData && (
                 <RenameModal databaseId={renameModalData.id} currentName={renameModalData.name} onClose={() => setRenameModalData(null)} onComplete={handleRenameComplete} />

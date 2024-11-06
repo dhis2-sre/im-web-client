@@ -1,5 +1,5 @@
-import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import { IconFolder24, IconFolderOpen24, IconDimensionData16 } from '@dhis2/ui-icons'
+import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import React from 'react'
 import styles from './CustomTreeItem.module.css'
 
