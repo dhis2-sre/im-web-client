@@ -381,28 +381,18 @@ export const DatabasesList: FC = () => {
 
             return (
                 <div className={styles.actionIcons}>
-                    <DownloadButton
-                        database={item}
-                        className={styles.iconButton}
-                    />
+                    <Tooltip content="Download">
+                        <DownloadButton database={item} className={styles.iconButton} />
+                    </Tooltip>
                     <Tooltip content="Rename/Move...">
-                        <Button 
-                            icon={<IconEdit16 />} 
-                            onClick={() => handleAction('rename', item)} 
-                            className={styles.iconButton} 
-                        />
+                        <Button icon={<IconEdit16 />} onClick={() => handleAction('rename', item)} className={styles.iconButton} />
                     </Tooltip>
                     <Tooltip content="Copy...">
-                        <Button 
-                            icon={<IconCopy16 />} 
-                            onClick={() => handleAction('copy', item)} 
-                            className={styles.iconButton} 
-                        />
+                        <Button icon={<IconCopy16 />} onClick={() => handleAction('copy', item)} className={styles.iconButton} />
                     </Tooltip>
-                    <DeleteButton 
-                        database={item} 
-                        onComplete={refetch} 
-                    />
+                    <Tooltip content="Delete...">
+                        <DeleteButton database={item} onComplete={refetch} />
+                    </Tooltip>
                 </div>
             )
         },
