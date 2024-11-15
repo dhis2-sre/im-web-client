@@ -1,16 +1,17 @@
 import type { FC } from 'react'
 import {
-    IMAGE_TAG,
-    IMAGE_REPOSITORY,
     DATABASE_ID,
-    IMAGE_PULL_POLICY,
+    ENABLE_QUERY_LOGGING,
     FLYWAY_MIGRATE_OUT_OF_ORDER,
     FLYWAY_REPAIR_BEFORE_MIGRATION,
-    ENABLE_QUERY_LOGGING,
+    IMAGE_PULL_POLICY,
+    IMAGE_REPOSITORY,
+    IMAGE_TAG,
     INSTALL_REDIS,
-    PGADMIN_USERNAME,
-    PGADMIN_PASSWORD,
     PGADMIN_CONFIRM_PASSWORD,
+    PGADMIN_PASSWORD,
+    PGADMIN_USERNAME,
+    STORAGE_TYPE,
 } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -37,6 +38,8 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
             return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
         case IMAGE_PULL_POLICY:
+            return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
+        case STORAGE_TYPE:
             return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
