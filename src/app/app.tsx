@@ -6,11 +6,11 @@ import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
+import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components'
 import {
-    ValidateSuccess,
     DatabasesList,
     DeploymentDetails,
+    GroupsList,
     InstancesList,
     NewDhis2Instance,
     RequestPasswordReset,
@@ -18,19 +18,24 @@ import {
     SignUp,
     StackDetails,
     StacksList,
-    GroupsList,
-    UsersList,
     UserDetails,
+    UsersList,
     Validate,
-} from '../views/index.ts'
-import { InstancesTable } from '../views/public-instances/index.ts'
+    ValidateSuccess,
+} from '../views'
+import { InstancesTable } from '../views/public-instances'
+import { ReactElement } from 'react'
 
-const router = createBrowserRouter(
-    createRoutesFromElements(
+let routes: ReactElement
+if (location.hostname === 'play.dhis2.org') {
+    routes = (
+        <Route element={<PublicLayout />}>
+            <Route path="/" element={<InstancesTable />} />
+        </Route>
+    )
+} else {
+    routes = (
         <Route>
-            <Route path="/public" element={<PublicLayout />}>
-                <Route path="instances" element={<InstancesTable />} />
-            </Route>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -52,7 +57,9 @@ const router = createBrowserRouter(
             </Route>
         </Route>
     )
-)
+}
+
+const router = createBrowserRouter(createRoutesFromElements(routes))
 
 export const App = () => (
     <AlertsProvider
