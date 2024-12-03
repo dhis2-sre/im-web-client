@@ -36,6 +36,9 @@ if (location.hostname === 'play.dhis2.org') {
 } else {
     routes = (
         <Route>
+            <Route path="/public" element={<PublicLayout />}>
+                <Route path="instances" element={<InstancesTable />} />
+            </Route>
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
