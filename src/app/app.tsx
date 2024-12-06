@@ -26,6 +26,15 @@ import {
 import { InstancesTable } from '../views/public-instances'
 import { ReactElement } from 'react'
 
+const NotFound = () => {
+    return (
+        <>
+            <h1>404 - Page Not Found</h1>
+            <p>Sorry, the page you are looking for could not be found.</p>
+        </>
+    )
+}
+
 let routes: ReactElement
 if (location.hostname === 'play.dhis2.org') {
     routes = (
@@ -58,6 +67,8 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/users/:id" element={<UserDetails />} />
                 </Route>
             </Route>
+
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
 }
