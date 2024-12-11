@@ -5,8 +5,9 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
+import { ReactElement } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components'
+import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import {
     DatabasesList,
     DeploymentDetails,
@@ -22,9 +23,9 @@ import {
     UsersList,
     Validate,
     ValidateSuccess,
-} from '../views'
-import { InstancesTable } from '../views/public-instances'
-import { ReactElement } from 'react'
+    NotFound,
+} from '../views/index.ts'
+import { InstancesTable } from '../views/public-instances/index.ts'
 
 let routes: ReactElement
 if (location.hostname === 'play.dhis2.org') {
@@ -58,6 +59,8 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/users/:id" element={<UserDetails />} />
                 </Route>
             </Route>
+
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
 }
