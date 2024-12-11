@@ -1,17 +1,17 @@
-import {Button, Card, CheckboxField, Help, InputField, LogoIcon} from '@dhis2/ui'
+import { Button, Card, CheckboxField, Help, InputField, LogoIcon } from '@dhis2/ui'
 import cx from 'classnames'
-import {useCallback, useState} from 'react'
-import {Link} from 'react-router-dom'
+import { useCallback, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/index.ts'
 import styles from './login.module.css'
-import {useAuth} from '../../hooks'
 
 export const Login = () => {
-    const { login, isAuthenticating, tokensRequestError } = useAuth()
+    const { login, isAuthenticating, authenticationErrorMessage } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [rememberMe, setRememberMe] = useState<boolean>(false)
     const onSubmit = useCallback(
-        async (event) => {
+        async (event: React.FormEvent) => {
             event.preventDefault()
             await login(email, password, rememberMe)
         },
@@ -23,7 +23,7 @@ export const Login = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance manager login
+                    Instance Manager login
                 </h2>
                 <InputField
                     name="email"
@@ -48,19 +48,21 @@ export const Login = () => {
                 />
                 <CheckboxField
                     className={cx(styles.field, styles.checkboxfield)}
-                    type="checkbox"
                     name="rememberMe"
                     label="Remember me?"
                     checked={rememberMe}
-                    onChange={({checked}) => {
+                    onChange={({ checked }) => {
                         setRememberMe(checked)
                     }}
                 />
-                {tokensRequestError && <Help error>{tokensRequestError?.response?.data ?? tokensRequestError?.message ?? 'Could not fetch authentication tokens'}</Help>}
+                {authenticationErrorMessage && <Help error>{authenticationErrorMessage}</Help>}
                 <Button primary type="submit" value="login" loading={isAuthenticating}>
                     Login
                 </Button>
-                <Link to={`/sign-up`}>Sign up?</Link>
+                <div className={styles.linkContainer}>
+                    <Link to={'/sign-up'}>Sign up</Link>
+                    <Link to={'/request-password-reset'}>Forgot password?</Link>
+                </div>
             </Card>
         </form>
     )

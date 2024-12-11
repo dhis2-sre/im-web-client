@@ -1,21 +1,10 @@
 import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useAuthAxios } from '../../../hooks'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { getTagProps } from '../../../utils/tag.tsx'
 import styles from './status-label.module.css'
 
 type Status = 'NotDeployed' | 'Pending' | 'Booting' | 'Booting (%d)' | 'Running' | 'Error'
-
-const getTagProps = (status: Status) => {
-    if (status?.startsWith('Booting')) {
-        return { neutral: true } // blue
-    } else if (status === 'Error' || status === 'NotDeployed') {
-        return { negative: true } // red
-    } else if (status === 'Running') {
-        return { positive: true } // green
-    } else {
-        return {} // grey (if status is unknow, or Pending)
-    }
-}
 
 const Content: FC<{ status: string; loading: boolean }> = ({ status, loading }) => {
     if (loading) {

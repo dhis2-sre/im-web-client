@@ -1,8 +1,8 @@
 import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, NoticeBox } from '@dhis2/ui'
 import { Link } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
-import { Stack } from '../../types'
-import { Heading } from '../../components'
+import { Heading } from '../../components/index.ts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Stack } from '../../types/index.ts'
 
 export const StacksList = () => {
     const [{ data, loading, error }] = useAuthAxios<Stack[]>('/stacks')

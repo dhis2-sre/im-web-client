@@ -1,8 +1,9 @@
 import { expect } from '@playwright/test'
-import { password, username } from './env'
+import { password, username } from './env.ts'
 
 export const login = async (page) => {
-    await page.goto('/login')
+    await page.goto('/')
+
     await page.getByLabel('email').click()
     await page.getByLabel('email').fill(username)
     await page.getByLabel('password').click()

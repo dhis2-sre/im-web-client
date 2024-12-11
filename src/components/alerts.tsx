@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import type { FC } from 'react'
 
 interface AlertStackOptions extends AlertOptions {
-    onHidden?: Function
+    onHidden?: () => void
 }
 
 interface AlertStackAlert extends Alert {
@@ -48,7 +48,7 @@ const Alerts: FC = () => {
     )
 }
 
-function mergeAlertStackAlerts(alertStackAlerts, alertManagerAlerts): AlertStackAlert[] {
+const mergeAlertStackAlerts = (alertStackAlerts, alertManagerAlerts): AlertStackAlert[] => {
     return Object.values({
         /*
          * Assume that all alerts in the alertStackAlerts array are hiding.
@@ -65,7 +65,7 @@ function mergeAlertStackAlerts(alertStackAlerts, alertManagerAlerts): AlertStack
     })
 }
 
-function toIdBasedObjectWithHiddenOption(arr, hidden) {
+const toIdBasedObjectWithHiddenOption = (arr, hidden) => {
     return arr.reduce((obj, item) => {
         obj[item.id] = {
             ...item,

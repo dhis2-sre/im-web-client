@@ -1,10 +1,10 @@
 import { LogoIconWhite, IconAdd16, Tooltip } from '@dhis2/ui'
-import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { LogoutButton } from './logout-button'
-import styles from './layout.module.css'
 import type { FC } from 'react'
 import { useCallback } from 'react'
-import { useAuth } from '../hooks'
+import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/index.ts'
+import styles from './layout.module.css'
+import { LogoutButton } from './logout-button.tsx'
 
 export const Layout: FC = () => {
     const navigate = useNavigate()

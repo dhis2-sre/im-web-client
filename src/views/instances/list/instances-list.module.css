@@ -13,20 +13,26 @@
     cursor: pointer;
 }
 .groupName {
-    all: unset;
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 23px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--colors-blue600) !important;
+}
+
+td {
+    font-weight: 400;
+    color: var(--colors-grey600) !important;
 }
 .opendeletewrap {
     min-width: 180px;
     display: flex;
     gap: var(--spacers-dp8);
 }
+
 .verticallyAlignedCellContent {
     display: inline-flex;
     align-items: center;
     gap: var(--spacers-dp4);
+    color: var(--colors-grey800) !important;
 }
 .stackNameTag {
     margin-right: var(--spacers-dp4);

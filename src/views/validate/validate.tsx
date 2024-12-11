@@ -1,7 +1,7 @@
 import { Center, CircularLoader, NoticeBox } from '@dhis2/ui'
-import { Navigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { useAuthAxios } from '../../hooks'
+import { Navigate, useParams } from 'react-router-dom'
+import { useAuthAxios } from '../../hooks/index.ts'
 
 export const Validate = () => {
     const { token } = useParams()
@@ -45,7 +45,7 @@ export const Validate = () => {
 
     return (
         <div>
-            {validated && <Navigate to="/login" />}
+            {validated && <Navigate to="/validate/success" />}
             <h3>Validating token... {token}</h3>
         </div>
     )

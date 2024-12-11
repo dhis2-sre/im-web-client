@@ -2,7 +2,9 @@ ls:
     src:
         .dir: kebab-case
         .ts: kebab-case
+        .test.ts: kebab-case
         .tsx: kebab-case
+        .test.tsx: kebab-case
         .d.ts: kebab-case
         .module.css: kebab-case
 
@@ -12,3 +14,4 @@ ignore:
     - src/setupTests.ts
     - src/reportWebVitals.ts
     - src/types/generated
+    - .test.ts

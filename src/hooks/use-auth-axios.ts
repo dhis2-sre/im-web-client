@@ -1,49 +1,44 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { Options, UseAxiosResult, makeUseAxios } from 'axios-hooks'
+import axios, { AxiosError } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
+import { makeUseAxios } from 'axios-hooks'
+import type { Options, UseAxiosResult } from 'axios-hooks'
 import { useCallback } from 'react'
-import { RefreshTokenRequest } from '../types'
+import { RefreshTokenRequest } from '../types/index.ts'
 
-export const baseURL = process.env.API_URL ?? process.env.REACT_APP_API_URL ?? 'https://dev.api.im.dhis2.org'
-
-if (!baseURL) {
-    throw new Error('No baseURL found. Ensure there is an environment variable called `REACT_APP_API_URL` present')
+if (!import.meta.env.VITE_API_URL) {
+    throw new Error('No baseURL found. Ensure there is an environment variable called `VITE_API_URL` present')
 }
+export const baseURL = import.meta.env.VITE_API_URL
 
 /* Better make sure this is a unque string because the event
  * is going to be sent via the global window object */
 export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
+const createAxiosInstance = () => axios.create({ baseURL, withCredentials: true })
+
 // Create an axios instance and we set the baseURL
-const axiosInstance = axios.create({ baseURL, withCredentials: true })
+const axiosInstance = createAxiosInstance()
 
-const onRejectedRefresh = async (error) => {
-    const originalRequest = error.config
-    if (error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true
-        const response = await axios
-            .post<RefreshTokenRequest>('/refresh', null, {
-                baseURL,
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-        if (response.status && response.status !== 201) {
-            //window.location.href = "/login"
-            dispatchUnauthorizedEvent()
-            // TODO: Should we return something here
-            return
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+        if (error.response?.status !== 401) {
+            return Promise.reject(error)
         }
-        // TODO: Store (potentially) updated user in LocalStorage
-        return axios(originalRequest)
-    }
-    return Promise.reject(error)
-}
 
-axiosInstance.interceptors.response.use((response) => response, onRejectedRefresh)
+        try {
+            await createAxiosInstance().post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })
+
+            return axios(error.config)
+        } catch (refreshError) {
+            dispatchUnauthorizedEvent()
+            return Promise.reject(refreshError)
+        }
+    }
+)
 
 const dispatchUnauthorizedEvent = () => {
-    const event = new CustomEvent(UNAUTHORIZED_EVENT, { detail: window.location.pathname })
+    const event = new CustomEvent(UNAUTHORIZED_EVENT)
     window.dispatchEvent(event)
 }
 
@@ -62,10 +57,11 @@ interface UseAuthAxiosOptions extends Options {
 }
 
 interface UseAuthAxios {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <TResponse = any, TBody = any, TError = any>(config: AxiosRequestConfig<TBody> | string, options?: UseAuthAxiosOptions): UseAxiosResult<TResponse, TBody, TError>
 }
 
-const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, withCredentials = true, ...options } = {}) => {
+const useAuthAxios: UseAuthAxios = (urlOrConfigObject, options = {}) => {
     const useAxiosResult: UseAxiosResult = useAxiosWithJwt(urlOrConfigObject, options)
     const [, execute] = useAxiosResult
 
@@ -88,7 +84,7 @@ const useAuthAxios: UseAuthAxios = (urlOrConfigObject, { autoCatch = false, with
         [execute]
     )
 
-    if (autoCatch) {
+    if (options.autoCatch) {
         useAxiosResult[1] = executeWithAutoCatch
     }
     return useAxiosResult

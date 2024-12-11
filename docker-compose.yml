@@ -1,11 +1,10 @@
-version: "3.6"
 services:
     prod:
         image: dhis2/im-web-client:${IMAGE_TAG:-latest}
         build:
             context: .
             args:
-                REACT_APP_API_URL: ${API_URL}
+                VITE_API_URL: ${API_URL}
         ports:
             - "8080:8080"
 
@@ -14,7 +13,7 @@ services:
             context: .
             target: builder
             args:
-                REACT_APP_API_URL: ${API_URL}
+                VITE_API_URL: ${API_URL}
         stdin_open: true
         tty: true
         volumes:
@@ -25,7 +24,7 @@ services:
             - "3000:3000"
 
     e2e-test:
-        image: mcr.microsoft.com/playwright:latest
+        image: mcr.microsoft.com/playwright:v1.48.0-jammy
         stdin_open: true
         tty: true
         command: sh -c "yarn install --frozen-lockfile && npx playwright test"
@@ -38,7 +37,7 @@ services:
             USER_EMAIL: ${USER_EMAIL}
             USER_PASSWORD: ${USER_PASSWORD}
             API_URL: ${API_URL}
-            REACT_APP_API_URL: ${API_URL}
+            VITE_API_URL: ${API_URL}
 
     test:
         build:

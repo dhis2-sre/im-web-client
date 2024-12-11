@@ -1,11 +1,17 @@
-:global(body) {
+body {
     background-color: var(--colors-grey100);
 }
 
-:global(a) {
+#root {
+    height: 100%;
+    width: 100vw;
+    overflow: auto;
+}
+
+a {
     color: var(--colors-blue600);
 }
 
-:global(a):hover {
+a:hover {
     color: var(--colors-blue800);
 }

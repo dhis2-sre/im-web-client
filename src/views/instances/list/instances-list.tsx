@@ -10,25 +10,22 @@ import {
     DataTableColumnHeader,
     DataTableRow,
     IconAdd24,
-    IconWorld24,
     NoticeBox,
-    Tag,
+    IconWorld24,
+    Checkbox,
 } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { useAuthAxios } from '../../../hooks'
-import { GroupsWithDeployments } from '../../../types'
-import { OpenButton } from './open-button'
+import { Heading, MomentExpiresFromNow } from '../../../components/index.ts'
+import { DeleteButton } from './delete-menu-button.tsx'
+import useDeployments from './filter-deployments.tsx'
+import InstanceTag from './instance-tag.tsx'
 import styles from './instances-list.module.css'
-import { DeleteButton } from './delete-menu-button'
-import { Heading, MomentExpiresFromNow } from '../../../components'
-
+import { OpenButton } from './open-button.tsx'
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
-    const [{ data, error, loading }, refetch] = useAuthAxios<GroupsWithDeployments[]>('/deployments', {
-        useCache: false,
-    })
+    const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
 
     return (
         <div className={styles.wrapper}>
@@ -36,18 +33,13 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
+                <Checkbox checked={showOnlyMyInstances} label="Show only my instances" onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)} />
             </Heading>
 
             {error && !data && (
                 <NoticeBox error title="Could not retrieve instances">
                     {error.message}
                 </NoticeBox>
-            )}
-
-            {loading && (
-                <Center className={styles.loaderWrap}>
-                    <CircularLoader />
-                </Center>
             )}
 
             {data?.length === 0 && <h3>No instances</h3>}
@@ -62,9 +54,8 @@ export const InstancesList: FC = () => {
                                 </DataTableCell>
                             </DataTableRow>
                             <DataTableRow>
+                                <DataTableColumnHeader>Status</DataTableColumnHeader>
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                <DataTableColumnHeader>Description</DataTableColumnHeader>
-                                <DataTableColumnHeader>Components</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                 <DataTableColumnHeader>Owner</DataTableColumnHeader>
@@ -75,17 +66,12 @@ export const InstancesList: FC = () => {
                             {group.deployments?.map((deployment) => (
                                 <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
                                     <DataTableCell>
+                                        {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
+                                    </DataTableCell>
+                                    <DataTableCell>
                                         <span className={styles.verticallyAlignedCellContent}>
                                             {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
                                         </span>
-                                    </DataTableCell>
-                                    <DataTableCell>{deployment.description}</DataTableCell>
-                                    <DataTableCell>
-                                        {deployment.instances?.map(({ stackName }) => (
-                                            <Tag key={stackName} className={styles.stackNameTag}>
-                                                {stackName}
-                                            </Tag>
-                                        ))}
                                     </DataTableCell>
                                     <DataTableCell>
                                         <Moment date={deployment.createdAt} fromNow />
@@ -108,6 +94,12 @@ export const InstancesList: FC = () => {
                         </DataTableBody>
                     ))}
                 </DataTable>
+            )}
+
+            {loading && (
+                <Center className={styles.loaderWrap}>
+                    <CircularLoader />
+                </Center>
             )}
         </div>
     )

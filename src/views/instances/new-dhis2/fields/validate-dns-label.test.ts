@@ -1,4 +1,4 @@
-import { validateDnsLabel } from './name-input'
+import { validateDnsLabel } from './validate-dns-label.ts'
 
 describe('<NameInput /> - DNS Label validation', () => {
     describe('it accepts valid names', () => {
@@ -6,6 +6,7 @@ describe('<NameInput /> - DNS Label validation', () => {
             expect(validateDnsLabel(name)).toBe(undefined)
         })
     })
+
     describe('it rejects invalid names', () => {
         test.each([
             { name: '', errorMessage: 'Name is required' },

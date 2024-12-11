@@ -1,7 +1,6 @@
 /* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
-/* eslint-disable */
 
 export type { ClusterConfiguration } from './models/ClusterConfiguration'
 export type { CopyDatabaseRequest } from './models/CopyDatabaseRequest'
@@ -29,6 +28,8 @@ export type { parameter } from './models/parameter'
 export type { parameters } from './models/parameters'
 export type { RefreshTokenRequest } from './models/RefreshTokenRequest'
 export type { Request } from './models/Request'
+export type { RequestPasswordResetRequest } from './models/RequestPasswordResetRequest'
+export type { ResetPasswordRequest } from './models/ResetPasswordRequest'
 export type { Response } from './models/Response'
 export type { saveAsRequest } from './models/saveAsRequest'
 export type { SaveDeploymentRequest } from './models/SaveDeploymentRequest'

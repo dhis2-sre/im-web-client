@@ -1,1 +1,1 @@
-export { DatabasesList } from './databases-list'
+export { DatabasesList } from './databases-list.tsx'

@@ -1,9 +1,9 @@
 import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, DataTableToolbar, NoticeBox } from '@dhis2/ui'
 import { useParams } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
-import { Stack } from '../../types'
+import { Heading } from '../../components/index.ts'
+import { useAuthAxios } from '../../hooks/index.ts'
+import { Stack } from '../../types/index.ts'
 import styles from './stack-details.module.css'
-import { Heading } from '../../components'
 
 export const StackDetails = () => {
     const { name } = useParams()

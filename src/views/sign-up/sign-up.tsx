@@ -1,7 +1,7 @@
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthAxios } from '../../hooks'
+import { useAuthAxios } from '../../hooks/index.ts'
 import styles from './sign-up.module.css'
 
 const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
@@ -50,10 +50,15 @@ export const SignUp = () => {
                 try {
                     const { email, password } = inputs
                     await postSignUp({ data: { email, password } })
-                    navigate('/login')
+                    navigate('/')
                 } catch (error) {
                     console.error(error)
-                    setErrorMessage(error.message)
+
+                    if (error.response?.data.match(/^password must be/) || error.response?.data.match(/^user .+ already exists$/)) {
+                        setErrorMessage(error.response?.data)
+                    } else {
+                        setErrorMessage(error.message)
+                    }
                 }
             } else {
                 setErrorMessage(getInputsErrorMessage(inputs))
@@ -67,15 +72,15 @@ export const SignUp = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance manager sign up
+                    Instance Manager sign up
                 </h2>
-                <InputField disabled={loading} name="email" label="email" type="email" value={inputs.email} onChange={onInputChange} />
-                <InputField disabled={loading} type="password" name="password" label="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+                <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
+                <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
                 <InputField
                     disabled={loading}
-                    type="password"
                     name="confirmPassword"
-                    label="confirmPassword"
+                    label="Confirm password"
+                    type="password"
                     value={inputs.confirmPassword}
                     autoComplete="new-password"
                     onChange={onInputChange}

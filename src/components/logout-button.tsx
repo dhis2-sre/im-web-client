@@ -1,7 +1,7 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { FC, useCallback } from 'react'
+import { useAuth } from '../hooks/index.ts'
 import styles from './logout-button.module.css'
-import { useAuth } from '../hooks'
 
 export const LogoutButton: FC = () => {
     const { logout } = useAuth()

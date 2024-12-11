@@ -1,7 +1,6 @@
 /* generated using openapi-typescript-codegen -- do no edit */
 /* istanbul ignore file */
 /* tslint:disable */
-/* eslint-disable */
 
 import type { ClusterConfiguration } from './ClusterConfiguration'
 import type { User } from './User'
@@ -15,6 +14,7 @@ export type Group = {
     createdAt?: string
     deployable?: boolean
     hostname?: string
+    description?: string
     name?: string
     updatedAt?: string
     users?: Array<User>
