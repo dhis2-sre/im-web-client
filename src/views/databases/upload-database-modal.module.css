@@ -1,42 +1,56 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacers-dp16);
-    align-items: flex-start;
-    /* Prevent content shift when showing filename and progress */
-    min-height: 180px;
+    padding: 16px;
+}
+
+.field {
+    margin-bottom: 16px;
 }
 
 .progressWrap {
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 16px;
 }
 
 .label {
-    color: var(--colors-grey900);
-    font-size: 14px;
-    line-height: 16px;
+    display: block;
+    margin-bottom: 8px;
+    _font-weight: 400;
 }
 
-.container .progressWrap .loader {
-    margin-left: 0;
+.loader {
+    margin-top: 8px;
 }
 
 .cancelButton {
-    all: unset;
-    color: var(--colors-blue600);
-    text-decoration: underline;
+    margin-left: 8px;
     cursor: pointer;
-    margin-inline-start: 4px;
 }
 
-.cancelButton:hover {
-    color: var(--colors-blue700);
+.destinationFolder {
+    padding: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    word-break: break-all;
 }
 
-.fileAndExtension {
+.destinationNameWrapper {
     display: flex;
-    flex-direction: row;
-    gap: 12px;
-    align-items: center;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.destinationNameInput {
+    flex-grow: 1;
+    min-width: 200px;
+    margin-right: 8px;
+}
+
+.fileExtension {
+    font-size: 14px;
+    color: #666;
+    padding-bottom: 4px;
+    white-space: nowrap;
+}
+
+.invalidFormat {
+    color: #d32f2f;
 }
