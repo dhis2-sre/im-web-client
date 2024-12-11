@@ -23,6 +23,7 @@ import {
     UsersList,
     Validate,
     ValidateSuccess,
+    NotFound,
 } from '../views/index.ts'
 import { InstancesTable } from '../views/public-instances/index.ts'
 
@@ -58,6 +59,8 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/users/:id" element={<UserDetails />} />
                 </Route>
             </Route>
+
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
 }
