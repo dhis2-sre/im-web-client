@@ -1,4 +1,5 @@
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Card, CheckboxField, Help, InputField, LogoIcon } from '@dhis2/ui'
+import cx from 'classnames'
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
@@ -8,12 +9,13 @@ export const Login = () => {
     const { login, isAuthenticating, authenticationErrorMessage } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [rememberMe, setRememberMe] = useState<boolean>(false)
     const onSubmit = useCallback(
-        async (event) => {
+        async (event: React.FormEvent) => {
             event.preventDefault()
-            await login(email, password)
+            await login(email, password, rememberMe)
         },
-        [login, email, password]
+        [login, email, password, rememberMe]
     )
 
     return (
@@ -43,6 +45,15 @@ export const Login = () => {
                         setPassword(value)
                     }}
                     disabled={isAuthenticating}
+                />
+                <CheckboxField
+                    className={cx(styles.field, styles.checkboxfield)}
+                    name="rememberMe"
+                    label="Remember me?"
+                    checked={rememberMe}
+                    onChange={({ checked }) => {
+                        setRememberMe(checked)
+                    }}
                 />
                 {authenticationErrorMessage && <Help error>{authenticationErrorMessage}</Help>}
                 <Button primary type="submit" value="login" loading={isAuthenticating}>
