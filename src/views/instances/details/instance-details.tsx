@@ -45,14 +45,12 @@ export const InstanceDetails = () => {
                     </DataTableRow>
                 </DataTableHead>
                 <DataTableBody loading={loadingDetails || loadingDecryptedDetails}>
-                    {Object.keys(instance?.parameters).map((name) => {
-                        return (
-                            <DataTableRow key={name}>
-                                <DataTableCell staticStyle>{name}</DataTableCell>
-                                <DataTableCell staticStyle>{instance.parameters[name].value}</DataTableCell>
-                            </DataTableRow>
-                        )
-                    })}
+                    {Object.keys(instance.parameters).map((name) => (
+                        <DataTableRow key={name}>
+                            <DataTableCell staticStyle>{name}</DataTableCell>
+                            <DataTableCell staticStyle>{instance.parameters[name].value}</DataTableCell>
+                        </DataTableRow>
+                    ))}
                 </DataTableBody>
             </DataTable>
         </>
