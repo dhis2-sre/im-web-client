@@ -1,14 +1,18 @@
-import { Button, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
+import { Button, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuthAxios } from '../../../hooks'
-import { Instance } from '../../../types'
+import { DeploymentInstance } from '../../../types'
+import styles from '../list/instances-list.module.css'
+import { Heading } from '../../../components'
 
 export const InstanceDetails = () => {
+    const navigate = useNavigate()
     const { id } = useParams()
-    const [instance, setInstance] = useState<Instance>()
-    const [{ data, loading: loadingDetails }] = useAuthAxios<Instance>({ url: `/instances/${id}/details` })
-    const [{ loading: loadingDecryptedDetails }, instanceDecryptedDetails] = useAuthAxios<Instance>({ url: `/instances/${id}/decrypted-details` }, { manual: true })
+    const [instance, setInstance] = useState<DeploymentInstance>()
+    const [decrypted, setDecrypted] = useState<boolean>()
+    const [{ data, loading: loadingDetails }] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
+    const [{ loading: loadingDecryptedDetails }, instanceDecryptedDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/decrypted-details` }, { manual: true })
 
     const decryptInstanceDetailsCallback = useCallback(async () => {
         const response = await instanceDecryptedDetails()
@@ -19,6 +23,7 @@ export const InstanceDetails = () => {
 
         if (response.status === 200) {
             setInstance(response.data)
+            setDecrypted(true)
         }
     }, [instanceDecryptedDetails])
 
@@ -26,14 +31,23 @@ export const InstanceDetails = () => {
         setInstance(data)
     }, [data])
 
-    if (!data || !instance) {
-        // TODO: Show spinner
-        return <>Loading...</>
+    if (loadingDetails || loadingDecryptedDetails || !instance) {
+        return (
+            <Center className={styles.loaderWrap}>
+                <CircularLoader />
+            </Center>
+        )
     }
 
     return (
         <>
-            <Button onClick={decryptInstanceDetailsCallback}>decrypt</Button>
+            <Heading title="Instance details">
+                <Button onClick={() => navigate(`/instances/${instance.deploymentId}/details`)}>Back to list</Button>
+            </Heading>
+
+            <Button onClick={decryptInstanceDetailsCallback} disabled={decrypted}>
+                Decrypt
+            </Button>
             <div>{instance.name}</div>
             <div>{instance.stackName}</div>
             <div>{instance.groupName}</div>
