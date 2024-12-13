@@ -5,7 +5,7 @@ export const NotFound = () => {
     return (
         <div className={style.wrapper}>
             <NoticeBox title="404 - Page Not Found">
-                Dashboard data can take a few hours to update, so the most recent data might not be shown.
+                Sorry, the page you are looking for could not be found.
                 <p>
                     If you&apos;re looking for all public instances, they can be found on the{' '}
                     <a href="https://play.dhis2.org" target="_blank" rel="noopener noreferrer" className={style.link}>
