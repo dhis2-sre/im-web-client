@@ -33,15 +33,15 @@ export const DeploymentInstancesList: FC<{
             </DataTableHead>
             <DataTableBody loading={loading}>
                 {instances?.map((instance) => (
-                    <tr className={styles.clickableRow} key={instance.id} onClick={() => navigate(`/instance/${instance.id}/details`)}>
-                        <DataTableCell staticStyle>
+                    <tr className={styles.clickableRow} key={instance.id}>
+                        <DataTableCell staticStyle onClick={() => navigate(`/instance/${instance.id}/details`)}>
                             <StatusLabel instanceId={instance.id} />
                         </DataTableCell>
-                        <DataTableCell staticStyle>{instance.stackName}</DataTableCell>
-                        <DataTableCell staticStyle>
+                        <DataTableCell staticStyle onClick={() => navigate(`/instance/${instance.id}/details`)}>{instance.stackName}</DataTableCell>
+                        <DataTableCell staticStyle onClick={() => navigate(`/instance/${instance.id}/details`)}>
                             <Moment date={instance.createdAt} fromNow />
                         </DataTableCell>
-                        <DataTableCell staticStyle>
+                        <DataTableCell staticStyle onClick={() => navigate(`/instance/${instance.id}/details`)}>
                             <Moment date={instance.updatedAt} fromNow />
                         </DataTableCell>
                         <DataTableCell staticStyle align="right">
