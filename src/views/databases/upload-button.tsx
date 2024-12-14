@@ -4,23 +4,26 @@ import { useState } from 'react'
 import { UploadDatabaseModal } from './upload-database-modal.tsx'
 
 type UploadButtonProps = {
-    onComplete: () => void
+    onUploadSuccess: () => void
+    path: string
+    groupName: string
+    disabled: boolean
 }
 
-export const UploadButton: FC<UploadButtonProps> = ({ onComplete }) => {
+export const UploadButton: FC<UploadButtonProps> = ({ onUploadSuccess, path, groupName, disabled }) => {
     const [showModal, setShowModal] = useState<boolean>(false)
 
-    const complete = () => {
+    const handleUploadComplete = () => {
         setShowModal(false)
-        onComplete()
+        onUploadSuccess()
     }
 
     return (
         <>
-            <Button icon={<IconAdd24 />} onClick={() => setShowModal(true)}>
+            <Button icon={<IconAdd24 />} onClick={() => setShowModal(true)} disabled={disabled}>
                 Upload database
             </Button>
-            {showModal && <UploadDatabaseModal onClose={() => setShowModal(false)} onComplete={complete} />}
+            {showModal && <UploadDatabaseModal onClose={() => setShowModal(false)} onComplete={handleUploadComplete} currentPath={path} groupName={groupName} />}
         </>
     )
 }

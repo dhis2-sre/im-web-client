@@ -1,29 +1,22 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
-import type { BaseButtonProps } from '@dhis2/ui'
-import type { FC } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
+import React, { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
-import { Group, GroupsWithDatabases } from '../../types/index.ts'
+import { GroupsWithDatabases } from '../../types/index.ts'
 import styles from './upload-database-modal.module.css'
 
-type UploadDatabaseModalProps = {
-    onClose: BaseButtonProps['onClick']
+interface UploadDatabaseModalProps {
+    onClose: () => void
     onComplete: () => void
+    currentPath: string
+    groupName: string
 }
 
-const defaultFormat = 'custom'
-const formats = new Map<string, { label: string; extension: string }>([
-    ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
-    ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
-])
-
-export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete }) => {
-    const [group, setGroup] = useState('')
-    const [databaseFile, setDatabaseFile] = useState<File>(new Blob() as File)
-    const [name, setName] = useState<string>('')
-    const [format, setFormat] = useState<string>(defaultFormat)
-    const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
+export const UploadDatabaseModal: React.FC<UploadDatabaseModalProps> = ({ onClose, onComplete, currentPath, groupName }) => {
+    const [databaseFile, setDatabaseFile] = useState<File | null>(null)
+    const [destinationName, setDestinationName] = useState<string>('')
+    const [formatValidation, setFormatValidation] = useState<string>('')
+    const [fileExtension, setFileExtension] = useState<string>('')
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -47,9 +40,31 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         { manual: true }
     )
 
+    const validateFormat = (fileName: string) => {
+        if (fileName.endsWith('.sql.gz')) {
+            setFormatValidation('plain format')
+            setFileExtension('.sql.gz')
+        } else if (fileName.endsWith('.pgc')) {
+            setFormatValidation('custom format')
+            setFileExtension('.pgc')
+        } else {
+            setFormatValidation('invalid format')
+            setFileExtension('')
+        }
+    }
+
+    const onFileSelect = useCallback(async ({ files }) => {
+        const uploadedFile = files[0]
+        setDatabaseFile(uploadedFile)
+        validateFormat(uploadedFile.name)
+
+        // Set initial destination name, but allow user to change it
+        const fileNameWithoutExtension = uploadedFile.name.replace(/\.(sql\.gz|pgc)$/, '')
+        setDestinationName(fileNameWithoutExtension)
+    }, [])
+
     const onUpload = useCallback(async () => {
-        // TODO: How do I disable the upload button until a file is selected
-        if (databaseFile.size === 0) {
+        if (!databaseFile) {
             showAlert({
                 message: 'No file selected',
                 isCritical: true,
@@ -57,11 +72,21 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             return
         }
 
+        if (formatValidation === 'invalid format') {
+            showAlert({
+                message: 'Invalid file format. Please select a .sql.gz or .pgc file.',
+                isCritical: true,
+            })
+            return
+        }
+
         try {
             const formData = new FormData()
-            formData.append('group', group)
+            formData.append('group', groupName)
             formData.append('database', databaseFile)
-            formData.append('name', name + extension)
+            const path = currentPath === groupName ? '' : currentPath.replace(groupName + '/', '')
+            const fullPath = path ? path + '/' + destinationName : destinationName
+            formData.append('name', fullPath + fileExtension)
             await postDatabase({ data: formData })
             showAlert({
                 message: 'Database added successfully',
@@ -75,103 +100,60 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, group, name, extension, onComplete, postDatabase, showAlert])
-
-    const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
-        method: 'GET',
-        url: '/groups',
-    })
-
-    if (groupsError) {
-        showAlert({ message: 'There was a problem loading the groups', isCritical: true })
-        console.error(groupsError)
-    }
-
-    const onFileSelect = useCallback(async ({ files }) => {
-        const uploadedFile = files[0]
-        setDatabaseFile(uploadedFile)
-
-        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([, { extension }]) => uploadedFile.name.endsWith(extension))
-        if (matchingFormat) {
-            setName(uploadedFile.name.replace(extension, ''))
-            setExtension(extension)
-            setFormat(matchingFormat)
-        }
-    }, [])
-
-    useEffect(() => {
-        if (groups && groups.length > 0) {
-            setGroup(groups[0].name)
-        }
-    }, [groups])
-
-    const onSelectChange = useCallback(
-        ({ selected }) => {
-            setFormat(selected)
-            setExtension(formats.get(selected).extension)
-        },
-        [setFormat, setExtension]
-    )
-
-    if (groupsLoading) {
-        return
-    }
+    }, [databaseFile, groupName, currentPath, destinationName, fileExtension, postDatabase, showAlert, formatValidation, onComplete])
 
     return (
-        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
+        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)} large>
             <ModalTitle>Upload database</ModalTitle>
             <ModalContent className={styles.container}>
-                <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
-                    {groups.map((group) => (
-                        <SingleSelectOption key={group.name} label={group.name} value={group.name} />
-                    ))}
-                </SingleSelectField>
-                <div className={styles.fileAndExtension}>
-                    <InputField
-                        className={styles.field}
-                        dataTest="upload-database-name"
-                        label="Name"
-                        value={name}
-                        onChange={({ value }) => setName(value)}
-                        required
-                        disabled={loading}
-                    />
-                    <span>{extension}</span>
-                </div>
-                <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
-                    {Array.from(formats.keys()).map((key) => (
-                        <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
-                    ))}
-                </SingleSelectField>
-                <FileInput buttonLabel="Select database" onChange={onFileSelect} disabled={loading} />
-                {databaseFile.size > 0 && (
+                <FileInput buttonLabel="Select database" onChange={onFileSelect} disabled={loading} className={styles.field} />
+                {databaseFile && (
                     <div className={styles.progressWrap}>
-                        <span className={styles.label}>
+                        <span className={`${styles.label} ${formatValidation === 'invalid format' ? styles.invalidFormat : ''}`}>
                             {loading ? (
                                 <>
-                                    Uploading database file: <b>{name + extension}</b> ({uploadProgress}%)
+                                    Uploading database file: <b>{databaseFile.name}</b> ({uploadProgress}%)
                                     <button className={styles.cancelButton} onClick={cancelPostRequest}>
                                         Cancel
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    Selected database file: <b>{name + extension}</b>
+                                    Selected database file: <b>{databaseFile.name}</b> ({formatValidation})
                                 </>
                             )}
                         </span>
                         {loading && <LinearLoader amount={uploadProgress} className={styles.loader} />}
                     </div>
                 )}
+                <div className={styles.field}>
+                    <label className={styles.label}>Destination folder</label>
+                    <div className={styles.destinationFolder}>{currentPath}</div>
+                </div>
+                <div className={styles.destinationNameWrapper}>
+                    <InputField
+                        className={styles.destinationNameInput}
+                        dataTest="upload-database-name"
+                        label="Destination Name (use '/' to create additional subfolders)"
+                        value={destinationName}
+                        onChange={({ value }) => setDestinationName(value)}
+                        required
+                        disabled={loading}
+                    />
+                    <span className={styles.fileExtension}>{fileExtension}</span>
+                </div>
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={onUpload} disabled={loading || databaseFile.size === 0}>
+                    <Button onClick={onClose}>Cancel</Button>
+                    <Button primary onClick={onUpload} disabled={loading || !databaseFile || formatValidation === 'invalid format'}>
                         Upload
                     </Button>
-                    <Button onClick={onClose}>Close</Button>
                 </ButtonStrip>
             </ModalActions>
         </Modal>
     )
 }
+
+// Make sure there's a default export as well
+export default UploadDatabaseModal

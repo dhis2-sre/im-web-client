@@ -5,15 +5,14 @@ import type { FC } from 'react'
 import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/index.ts'
+import styles from './databases-list.module.css'
 
-type DeletButtonProps = {
-    id: number
-    databaseName: string
-    groupName: string
+interface DeleteButtonProps {
+    database: Database
     onComplete: () => void
 }
 
-export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName, onComplete }) => {
+export const DeleteButton: FC<DeleteButtonProps> = ({ database, onComplete }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -21,7 +20,7 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
     )
     const [{ loading }, deleteDatabase] = useAuthAxios<Database>(
         {
-            url: `/databases/${id}`,
+            url: `/databases/${database.id}`,
             method: 'delete',
         },
         { manual: true }
@@ -39,22 +38,36 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
         try {
             setShowConfirmationModal(false)
             await deleteDatabase()
-            showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
+            showAlert({ message: `Successfully deleted database "${database.name}"`, isCritical: false })
             onComplete()
         } catch (error) {
             console.error(error)
-            showAlert({ message: `There was an error when deleting ${groupName}/${databaseName}`, isCritical: true })
+            showAlert({ message: `There was an error when deleting database "${database.name}"`, isCritical: true })
         }
-    }, [deleteDatabase, setShowConfirmationModal, showAlert, groupName, databaseName, onComplete])
+    }, [deleteDatabase, setShowConfirmationModal, showAlert, onComplete, database.name])
+
+    const confirmationMessage = (
+        <>
+            Are you sure you wish to delete<br></br>
+            <br />
+            <i>{database.name}</i>
+            <br />
+            {database.groupName && (
+                <>
+                    <br />
+                    from Group {database.groupName}
+                </>
+            )}
+            ?
+        </>
+    )
 
     return (
         <>
-            <Button small secondary loading={loading} icon={<IconDelete16 />} onClick={onClick}>
-                Delete
-            </Button>
+            <Button loading={loading} icon={<IconDelete16 />} onClick={onClick} className={`${styles.iconButton} ${styles.danger}`} />
             {showConfirmationModal && (
                 <ConfirmationModal destructive onConfirm={onConfirm} onCancel={onCancel}>
-                    Are you sure you wish to delete &quot;{groupName}/{databaseName}&quot;?
+                    {confirmationMessage}
                 </ConfirmationModal>
             )}
         </>
