@@ -3,7 +3,7 @@ import { MenuItem, IconClockHistory16 } from '@dhis2/ui'
 import { FC, useCallback, useState } from 'react'
 import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Instance } from '../../../types/index.ts'
+import { DeploymentInstance } from '../../../types/index.ts'
 import { AsyncActionProps } from './actions-dropdown-menu.tsx'
 
 export const ResetMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, onStart, stackName }) => {
@@ -13,7 +13,7 @@ export const ResetMenuItem: FC<AsyncActionProps> = ({ instanceId, onComplete, on
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
+    const [{ loading }, deleteInstance] = useAuthAxios<DeploymentInstance>(
         {
             method: 'PUT',
             url: `/instances/${instanceId}/reset`,

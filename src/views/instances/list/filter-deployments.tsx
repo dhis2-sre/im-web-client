@@ -1,10 +1,10 @@
 import { useState, useMemo, useContext } from 'react'
 import { AuthContext } from '../../../contexts/auth-context.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { GroupsWithDeployments } from '../../../types/index.ts'
+import { GroupWithDeployments } from '../../../types/index.ts'
 
 const useDeployments = () => {
-    const [{ data, error, loading }, refetch] = useAuthAxios<GroupsWithDeployments[]>('/deployments', {
+    const [{ data, error, loading }, refetch] = useAuthAxios<GroupWithDeployments[]>('/deployments', {
         useCache: false,
     })
     const [showOnlyMyInstances, setShowOnlyMyInstances] = useState(false)

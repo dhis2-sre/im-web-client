@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 import type { FC } from 'react'
 import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Instance } from '../../../types/index.ts'
+import { DeploymentInstance } from '../../../types/index.ts'
 import { AsyncActionProps } from './actions-dropdown-menu.tsx'
 
 export const DeleteMenuItem: FC<AsyncActionProps> = ({ deploymentId, instanceId, onComplete, onStart, stackName }) => {
@@ -14,7 +14,7 @@ export const DeleteMenuItem: FC<AsyncActionProps> = ({ deploymentId, instanceId,
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ loading }, deleteInstance] = useAuthAxios<Instance>(
+    const [{ loading }, deleteInstance] = useAuthAxios<DeploymentInstance>(
         {
             method: 'DELETE',
             url: `/deployments/${deploymentId}/instance/${instanceId}`,

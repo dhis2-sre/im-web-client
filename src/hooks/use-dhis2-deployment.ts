@@ -30,7 +30,6 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                     group: values.groupName,
                     description: values.description,
                     ttl: values.ttl,
-                    public: values.public,
                 }
                 const { data } = await executePost({ data: payload })
                 return data.id
