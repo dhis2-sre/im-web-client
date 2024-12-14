@@ -49,7 +49,9 @@ export const DeleteButton: FC<DeleteButtonProps> = ({ database, onComplete }) =>
     const confirmationMessage = (
         <>
             Are you sure you wish to delete<br></br>
-            <br/><i>{database.name}</i><br/>
+            <br />
+            <i>{database.name}</i>
+            <br />
             {database.groupName && (
                 <>
                     <br />

@@ -28,6 +28,7 @@ import { DownloadButton } from './download-button.tsx'
 import { RenameModal } from './rename-modal.tsx'
 import { UploadButton } from './upload-button.tsx'
 import { UploadDatabaseModal } from './upload-database-modal.tsx'
+import { GroupsWithDatabases } from '../../types/index.ts'
 
 interface TreeNode {
     id: string
@@ -229,11 +230,29 @@ export const DatabasesList: FC = () => {
     const handleRightPanelSelect = useCallback(
         (item: TreeNode | GroupsWithDatabases['databases'][0]) => {
             if ('children' in item) {
-                handleSelect(item.id)
+                // For folders
+                const nodeId = item.id;
+                console.log('Double-clicked folder:', nodeId);
+                
+                // Expand all parent folders
+                const parts = nodeId.split('/');
+                const newExpanded = new Set<string>(expanded); // Keep currently expanded nodes
+                let currentPath = '';
+                
+                for (const part of parts) {
+                    currentPath += (currentPath ? '/' : '') + part;
+                    newExpanded.add(currentPath);
+                    console.log('Adding to expanded:', currentPath);
+                }
+                
+                const newExpandedArray = Array.from(newExpanded);
+                console.log('Setting expanded to:', newExpandedArray);
+                setExpanded(newExpandedArray);
+                handleSelect(nodeId);
             }
         },
-        [handleSelect]
-    )
+        [expanded, handleSelect]
+    );
 
     // const { show: showError } = useAlert(({ message }) => message, { critical: true })
 
@@ -253,12 +272,17 @@ export const DatabasesList: FC = () => {
                         key={node.id}
                         itemId={node.id}
                         label={
-                            <div className={`${styles.treeRow} ${selectedPath === node.id ? styles.selected : ''}`}>
+                            <div 
+                                className={`${styles.treeRow} ${selectedPath === node.id ? styles.selected : ''}`}
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent event from bubbling up
+                                    handleSelect(node.id);
+                                }}
+                            >
                                 {node.isGroup ? <IconUserGroup16 /> : <IconFolder16 />}
                                 <span>{node.name}</span>
                             </div>
                         }
-                        onClick={() => handleSelect(node.id)}
                     >
                         {Array.isArray(node.children) && node.children.length > 0 && renderTree(node.children)}
                     </TreeItem>
@@ -404,7 +428,13 @@ export const DatabasesList: FC = () => {
             <div className={styles.leftPanel}>
                 <input type="text" placeholder="Filter databases..." className={styles.searchInput} value={searchTerm} onChange={handleSearch} />
                 {folderTree.length > 0 ? (
-                    <SimpleTreeView expanded={expanded} selected={selectedPath}>
+                    <SimpleTreeView 
+                        expanded={expanded} 
+                        selected={selectedPath}
+                        onNodeToggle={(event: React.SyntheticEvent, nodeIds: string[]) => {
+                            setExpanded(nodeIds);
+                        }}
+                    >
                         {renderTree(folderTree)}
                     </SimpleTreeView>
                 ) : (
@@ -446,7 +476,10 @@ export const DatabasesList: FC = () => {
                     </DataTableHead>
                     <DataTableBody>
                         {sortedSelectedContents.map((item) => (
-                            <DataTableRow key={item.id || item.name} onDoubleClick={() => handleRightPanelSelect(item)}>
+                            <DataTableRow 
+                                key={item.id || item.name} 
+                                onDoubleClick={() => handleRightPanelSelect(item)}  // Make sure this is here
+                            >
                                 <DataTableCell>
                                     {(() => {
                                         if ('children' in item) {

@@ -8,7 +8,7 @@ export const deleteTestDatabase = async (page, dbName = defaultDbName) => {
 
     // Navigate to Databases
     await page.getByRole('link', { name: 'Databases' }).click()
-    
+
     // Wait for the view to load
     await expect(page.getByText('My groups')).toBeVisible()
 
@@ -18,7 +18,7 @@ export const deleteTestDatabase = async (page, dbName = defaultDbName) => {
 
     // Find the row containing our database
     const databaseRow = databaseCell.locator('xpath=ancestor::tr')
-    
+
     // Click the delete button in the actions column
     // Note: We now look for it within the actions cell
     const actionsCell = databaseRow.locator('td').last()
@@ -30,7 +30,7 @@ export const deleteTestDatabase = async (page, dbName = defaultDbName) => {
 
     // Verify success message
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`Successfully deleted [^/]+/${dbFileName}`))).toBeVisible()
-    
+
     // Verify database is removed from table
     await expect(page.getByRole('cell', { name: new RegExp(dbFileName) })).not.toBeVisible()
 }
