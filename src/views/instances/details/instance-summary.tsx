@@ -22,7 +22,7 @@ export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance, toggleEncr
     return (
         <div className={styles.wrapper}>
             <h2 className={styles.title}>
-                {instance.name}&nbsp;
+                {instance.name}&nbsp;&nbsp;
                 <Button onClick={toggleEncryption} disabled={isDecrypted && canDecrypt}>
                     {!isDecrypted && <IconLock16 />}
                     {isDecrypted && <IconLockOpen16 />}

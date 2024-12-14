@@ -1,4 +1,4 @@
-import { Button, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
+import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import type { AxiosResponse } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -52,9 +52,12 @@ export const InstanceDetails = () => {
             <Heading title="Instance details">
                 <Button onClick={() => navigate(`/instances/${instance.deploymentId}/details`)}>Back to list</Button>
             </Heading>
-
-            <InstanceSummary instance={instance} toggleEncryption={toggleEncryption} isDecrypted={isDecrypted} />
-
+            <div className={styles.cardWrap}>
+                <Card className={styles.card}>
+                    <InstanceSummary instance={instance} toggleEncryption={toggleEncryption} isDecrypted={isDecrypted} />
+                </Card>
+            </div>
+            <br />
             <DataTable>
                 <DataTableHead>
                     <DataTableRow>
