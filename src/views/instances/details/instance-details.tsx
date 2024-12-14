@@ -1,21 +1,29 @@
 import { Button, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
+import type { AxiosResponse } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAuthAxios } from '../../../hooks'
-import { DeploymentInstance } from '../../../types'
+import { Heading } from '../../../components/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { DeploymentInstance } from '../../../types/index.ts'
 import styles from '../list/instances-list.module.css'
-import { Heading } from '../../../components'
+import { InstanceSummary } from './instance-summary.tsx'
 
 export const InstanceDetails = () => {
     const navigate = useNavigate()
     const { id } = useParams()
     const [instance, setInstance] = useState<DeploymentInstance>()
-    const [decrypted, setDecrypted] = useState<boolean>()
-    const [{ data, loading: loadingDetails }] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
+    const [isDecrypted, setIsDecrypted] = useState<boolean>()
+    const [{ data, loading: loadingDetails }, instanceDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
     const [{ loading: loadingDecryptedDetails }, instanceDecryptedDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/decrypted-details` }, { manual: true })
+    const toggleDecryption = useCallback(async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let response: AxiosResponse<DeploymentInstance, any>
+        if (isDecrypted) {
+            response = await instanceDetails()
+        } else {
+            response = await instanceDecryptedDetails()
+        }
 
-    const decryptInstanceDetailsCallback = useCallback(async () => {
-        const response = await instanceDecryptedDetails()
         if (response.status === 400) {
             // TODO: Notification... Only owner, group admin or admin can decrypt
             console.log(400)
@@ -23,9 +31,9 @@ export const InstanceDetails = () => {
 
         if (response.status === 200) {
             setInstance(response.data)
-            setDecrypted(true)
+            setIsDecrypted(!isDecrypted)
         }
-    }, [instanceDecryptedDetails])
+    }, [instanceDecryptedDetails, instanceDetails, isDecrypted])
 
     useEffect(() => {
         setInstance(data)
@@ -45,12 +53,8 @@ export const InstanceDetails = () => {
                 <Button onClick={() => navigate(`/instances/${instance.deploymentId}/details`)}>Back to list</Button>
             </Heading>
 
-            <Button onClick={decryptInstanceDetailsCallback} disabled={decrypted}>
-                Decrypt
-            </Button>
-            <div>{instance.name}</div>
-            <div>{instance.stackName}</div>
-            <div>{instance.groupName}</div>
+            <InstanceSummary instance={instance} decrypt={toggleDecryption} isDecrypted={isDecrypted} />
+
             <DataTable>
                 <DataTableHead>
                     <DataTableRow>

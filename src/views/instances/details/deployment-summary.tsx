@@ -1,4 +1,4 @@
-import { IconClock16, IconUser16, IconUserGroup16, IconWarning16, IconClockHistory16, IconWorld16, IconInfo16 } from '@dhis2/ui'
+import { IconClock16, IconUser16, IconUserGroup16, IconWarning16, IconClockHistory16, IconInfo16 } from '@dhis2/ui'
 import { FC } from 'react'
 import Moment from 'react-moment'
 import { MomentExpiresFromNow } from '../../../components/index.ts'
@@ -29,10 +29,6 @@ export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }
                 <div className={styles.singleDetails}>
                     <IconUserGroup16 />
                     <p>User group {deployment.groupName}</p>
-                </div>
-                <div className={styles.singleDetails}>
-                    <IconWorld16 />
-                    <p>Public {deployment.public ? 'Yes' : 'No'}</p>
                 </div>
                 <div className={styles.singleDetails}>
                     <IconClockHistory16 />
