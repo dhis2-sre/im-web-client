@@ -15,7 +15,7 @@ export const InstanceDetails = () => {
     const [isDecrypted, setIsDecrypted] = useState<boolean>()
     const [{ data, loading: loadingDetails }, instanceDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
     const [{ loading: loadingDecryptedDetails }, instanceDecryptedDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/decrypted-details` }, { manual: true })
-    const toggleDecryption = useCallback(async () => {
+    const toggleEncryption = useCallback(async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: AxiosResponse<DeploymentInstance, any>
         if (isDecrypted) {
@@ -53,7 +53,7 @@ export const InstanceDetails = () => {
                 <Button onClick={() => navigate(`/instances/${instance.deploymentId}/details`)}>Back to list</Button>
             </Heading>
 
-            <InstanceSummary instance={instance} decrypt={toggleDecryption} isDecrypted={isDecrypted} />
+            <InstanceSummary instance={instance} toggleEncryption={toggleEncryption} isDecrypted={isDecrypted} />
 
             <DataTable>
                 <DataTableHead>

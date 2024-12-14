@@ -8,11 +8,11 @@ import styles from './instance-summary.module.css'
 
 type InstanceSummaryProps = {
     instance: DeploymentInstance
-    decrypt: () => void
+    toggleEncryption: () => void
     isDecrypted: boolean
 }
 
-export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance, decrypt, isDecrypted }) => {
+export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance, toggleEncryption, isDecrypted }) => {
     const { currentUser } = useContext(AuthContext)
     const { isAdministrator } = useAuth()
     const canDecrypt = currentUser.id === instance?.deployment?.user.id || currentUser.adminGroups.some((group) => group.name === instance.groupName) || isAdministrator
@@ -23,7 +23,7 @@ export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance, decrypt, i
         <div className={styles.wrapper}>
             <h2 className={styles.title}>
                 {instance.name}&nbsp;
-                <Button onClick={decrypt} disabled={isDecrypted && canDecrypt}>
+                <Button onClick={toggleEncryption} disabled={isDecrypted && canDecrypt}>
                     {!isDecrypted && <IconLock16 />}
                     {isDecrypted && <IconLockOpen16 />}
                 </Button>
