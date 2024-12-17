@@ -68,11 +68,7 @@ export const InstancesList: FC = () => {
                                     <DataTableCell>
                                         {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
                                     </DataTableCell>
-                                    <DataTableCell>
-                                        <span className={styles.verticallyAlignedCellContent}>
-                                            {deployment.name} {deployment.public && <IconWorld24 color={colors.grey600} />}
-                                        </span>
-                                    </DataTableCell>
+                                    <DataTableCell>{deployment.name}</DataTableCell>
                                     <DataTableCell>
                                         <Moment date={deployment.createdAt} fromNow />
                                     </DataTableCell>

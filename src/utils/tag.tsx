@@ -17,6 +17,10 @@ export const getTagProps = (status: string) => {
         return { negative: true, icon: <IconError16 /> }
     }
 
+    if (status === 'NotDeployed') {
+        return { neutral: true, icon: <IconClockHistory16 /> }
+    }
+
     if (status === 'Running') {
         return { positive: true, icon: <IconCheckmarkCircle16 /> }
     }
