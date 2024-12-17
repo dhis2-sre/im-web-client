@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 
-export type CreateGroupRequest = {
-    deployable?: boolean
+import type { Category } from './Category'
+export type GroupWithPublicInstances = {
+    categories?: Array<Category>
     description?: string
-    hostname?: string
     name?: string
 }

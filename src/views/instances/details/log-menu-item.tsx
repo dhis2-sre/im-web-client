@@ -2,7 +2,7 @@ import { Button, ButtonStrip, Center, CircularLoader, IconTerminalWindow16, Moda
 import { useCallback, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Instance } from '../../../types/index.ts'
+import { DeploymentInstance } from '../../../types/index.ts'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
 import styles from './log-menu-item.module.css'
 
@@ -14,7 +14,7 @@ type LogMenuItemProps = {
 export const LogMenuItem: FC<LogMenuItemProps> = ({ instanceId, stackName }) => {
     const [showLogModal, setShowLogModal] = useState(false)
     const [log, setLog] = useState('')
-    const [{ error }, requestLog] = useAuthAxios<Instance>(
+    const [{ error }, requestLog] = useAuthAxios<DeploymentInstance>(
         {
             method: 'GET',
             url: `/instances/${instanceId}/logs`,

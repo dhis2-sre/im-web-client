@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 import type { FC } from 'react'
 import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Instance } from '../../../types/index.ts'
+import { DeploymentInstance } from '../../../types/index.ts'
 
 export const DeleteButton: FC<{
     id: number
@@ -17,7 +17,7 @@ export const DeleteButton: FC<{
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
-    const [{ loading }, executeDelete] = useAuthAxios<Instance>(
+    const [{ loading }, executeDelete] = useAuthAxios<DeploymentInstance>(
         {
             method: 'DELETE',
             url: `/deployments/${id}`,

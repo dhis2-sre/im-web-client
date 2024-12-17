@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../contexts/index.ts'
 import { useAuthAxios, UNAUTHORIZED_EVENT } from '../hooks/use-auth-axios.ts'
-import type { Tokens, User } from '../types/index.ts'
+import type { User } from '../types/index.ts'
 import { Login } from './login.tsx'
 
 const CURRENT_USER_LOCAL_STORAGE_KEY = 'DHIS2_IM_CURRENT_USER'
@@ -28,7 +28,7 @@ export const AuthProvider: FC = () => {
     }, [])
     const isAdministrator = useMemo(() => currentUser?.groups.some((group) => group.name === 'administrators'), [currentUser])
 
-    const [, getTokens] = useAuthAxios<Tokens>({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
+    const [, getTokens] = useAuthAxios({ method: 'POST', url: '/tokens', headers: { 'Content-Type': 'application/json' }, data: {} }, { manual: true, autoCatch: false })
     const [, getUser] = useAuthAxios<User>({ method: 'GET', url: '/me' }, { manual: true, autoCatch: false })
     const [, requestLogout] = useAuthAxios({ method: 'DELETE', url: '/users' }, { manual: true })
 

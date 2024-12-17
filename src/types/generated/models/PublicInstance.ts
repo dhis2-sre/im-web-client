@@ -2,6 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 
-export type LockDatabaseRequest = {
-    instanceId?: number
+export type PublicInstance = {
+    description?: string
+    hostname?: string
+    name?: string
 }
