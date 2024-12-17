@@ -6,7 +6,7 @@ type AuthContextApi = {
     isAdministrator: boolean
     isAuthenticating: boolean
     authenticationErrorMessage: string
-    login: (username: string, password: string) => Promise<void>
+    login: (username: string, password: string, rememberMe: boolean) => Promise<void>
     logout: () => Promise<void>
 }
 const throwIfUninitialized = () => {
