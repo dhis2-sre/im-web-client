@@ -1,7 +1,7 @@
-import { Button, ButtonStrip, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, Calendar, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
 import type { AnyObject } from 'final-form'
-import { useFormState } from 'react-final-form'
+import { useField, useFormState } from 'react-final-form'
 import { DescriptionTextarea } from './fields/description-textarea.tsx'
 import { GroupSelect } from './fields/group-select.tsx'
 import { NameInput } from './fields/name-input.tsx'
@@ -25,7 +25,15 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
             invalid: true,
         },
     })
+
     const shouldDisableSubmit = pristine || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
+
+    const { value: ttlValue } = useField('ttl', {
+        subscription: { value: true },
+    })
+
+    console.log('TTL Value:', ttlValue, typeof ttlValue)
+
     return (
         <form onSubmit={handleSubmit}>
             <fieldset className={cx(styles.fieldset, styles.main)}>
@@ -34,6 +42,15 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 <TtlSelect />
+                {ttlValue === -1 && (
+                    <Calendar
+                        onDateSelect={(date) => {
+                            // Handle date selection
+                            console.log(date)
+                        }}
+                        calendar={'iso8601'}
+                    />
+                )}
                 <GroupSelect />
             </fieldset>
             <hr className={styles.hr} />

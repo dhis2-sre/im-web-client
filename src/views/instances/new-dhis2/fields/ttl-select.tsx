@@ -13,6 +13,7 @@ const options: { label: string; value: string }[] = [
     { label: '1 week', value: (60 * 60 * 24 * 7).toString() },
     { label: '2 weeks', value: (60 * 60 * 24 * 7 * 2).toString() },
     { label: '1 month', value: (60 * 60 * 24 * 7 * 4).toString() },
+    { label: 'Custom', value: '-1' },
 ]
 const parse = (str: string): number => parseInt(str)
 const format = (integer: number): string => integer.toString()
