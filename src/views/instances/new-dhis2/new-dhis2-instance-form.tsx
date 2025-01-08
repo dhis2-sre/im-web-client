@@ -28,11 +28,18 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
 
     const shouldDisableSubmit = pristine || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
 
-    const { value: ttlValue } = useField('ttl', {
+    const { input: ttlInput } = useField('ttl', {
         subscription: { value: true },
     })
 
-    console.log('TTL Value:', ttlValue, typeof ttlValue)
+    console.log('TTL Value:', ttlInput.value, typeof ttlInput)
+
+    const handleCustomDateChange = (date: any) => {
+        const newDate = new Date(date.calendarDateString)
+        const timestamp = newDate.getTime() / 1000 // Convert to seconds
+        ttlInput.onChange(timestamp) // Update TTL field
+        console.log('Selected Timestamp:', timestamp)
+    }
 
     return (
         <form onSubmit={handleSubmit}>
@@ -42,13 +49,10 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 <TtlSelect />
-                {ttlValue === -1 && (
+                {ttlInput.value === -1 && (
                     <Calendar
-                        onDateSelect={(date) => {
-                            // Handle date selection
-                            console.log(date)
-                        }}
-                        calendar={'iso8601'}
+                        onDateSelect={handleCustomDateChange}
+                        calendar="iso8601"
                     />
                 )}
                 <GroupSelect />
