@@ -1,7 +1,7 @@
-import { Button, ButtonStrip, Calendar, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
 import type { AnyObject } from 'final-form'
-import { useField, useFormState } from 'react-final-form'
+import { useFormState } from 'react-final-form'
 import { DescriptionTextarea } from './fields/description-textarea.tsx'
 import { GroupSelect } from './fields/group-select.tsx'
 import { NameInput } from './fields/name-input.tsx'
@@ -25,22 +25,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
             invalid: true,
         },
     })
-
     const shouldDisableSubmit = pristine || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
-
-    const { input: ttlInput } = useField('ttl', {
-        subscription: { value: true },
-    })
-
-    console.log('TTL Value:', ttlInput.value, typeof ttlInput)
-
-    const handleCustomDateChange = (date: any) => {
-        const newDate = new Date(date.calendarDateString)
-        const timestamp = newDate.getTime() / 1000 // Convert to seconds
-        ttlInput.onChange(timestamp) // Update TTL field
-        console.log('Selected Timestamp:', timestamp)
-    }
-
     return (
         <form onSubmit={handleSubmit}>
             <fieldset className={cx(styles.fieldset, styles.main)}>
@@ -49,12 +34,6 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 <TtlSelect />
-                {ttlInput.value === -1 && (
-                    <Calendar
-                        onDateSelect={handleCustomDateChange}
-                        calendar="iso8601"
-                    />
-                )}
                 <GroupSelect />
             </fieldset>
             <hr className={styles.hr} />
