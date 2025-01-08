@@ -34,11 +34,14 @@ export const TtlSelect = () => {
     }
 
     const handleCustomDateChange = (date) => {
-        const newDate = new Date(date.calendarDateString)
-        const timestamp = Math.floor(newDate.getTime() / 1000)
-        ttlInput.onChange(timestamp)
+        const currentDate = new Date()
+        const targetDate = new Date(date.calendarDateString + 'T00:00:00Z')
+        const differenceInMs = targetDate.getTime() - currentDate.getTime()
+
+        const differenceInSeconds = Math.floor(differenceInMs / 1000)
+        ttlInput.onChange(differenceInSeconds)
         setSelectedValue('-1')
-        setCalendarDate(newDate.toISOString().split('T')[0])
+        setCalendarDate(targetDate.toISOString().split('T')[0])
     }
 
     return (
