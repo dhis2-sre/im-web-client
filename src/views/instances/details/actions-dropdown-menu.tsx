@@ -8,6 +8,7 @@ import { LogMenuItem } from './log-menu-item.tsx'
 import { ResetMenuItem } from './reset-menu-item.tsx'
 import { RestartMenuItem } from './restart-menu-item.tsx'
 import { SaveAsMenuItem } from './save-as-menu-item.tsx'
+import { SaveFsMenuItem } from './save-fs-menu-item.tsx'
 
 type ActionsDropdownMenuProps = {
     deploymentId: number
@@ -56,6 +57,7 @@ export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refet
                     <Menu>
                         <LogMenuItem instanceId={instanceId} stackName={stackName} />
                         {stackName === 'dhis2-db' && <SaveAsMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />}
+                        {stackName === 'dhis2-core' && <SaveFsMenuItem instanceId={instanceId} stackName="" onComplete={onComplete} onStart={onStart} />}
                         <RestartMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />
                         <ResetMenuItem instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />
                         <DeleteMenuItem deploymentId={deploymentId} instanceId={instanceId} stackName={stackName} onComplete={onComplete} onStart={onStart} />

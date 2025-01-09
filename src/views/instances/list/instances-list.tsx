@@ -2,8 +2,8 @@ import {
     Button,
     ButtonStrip,
     Center,
+    Checkbox,
     CircularLoader,
-    colors,
     DataTable,
     DataTableBody,
     DataTableCell,
@@ -11,8 +11,6 @@ import {
     DataTableRow,
     IconAdd24,
     NoticeBox,
-    IconWorld24,
-    Checkbox,
 } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
@@ -23,6 +21,7 @@ import useDeployments from './filter-deployments.tsx'
 import InstanceTag from './instance-tag.tsx'
 import styles from './instances-list.module.css'
 import { OpenButton } from './open-button.tsx'
+
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
