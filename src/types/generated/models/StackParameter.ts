@@ -8,4 +8,5 @@ export type StackParameter = {
     displayName?: string
     parameterName?: string
     priority?: number
+    sensitive?: boolean
 }
