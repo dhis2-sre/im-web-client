@@ -1,6 +1,7 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLock16 } from '@dhis2/ui'
 import type { AxiosResponse } from 'axios'
+import { AxiosError } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
@@ -17,7 +18,7 @@ export const InstanceDetails = () => {
     const navigate = useNavigate()
     const { id } = useParams()
     const [instance, setInstance] = useState<DeploymentInstance>()
-    const [isDecrypted, setIsDecrypted] = useState<boolean>()
+    const [isDecrypted, setIsDecrypted] = useState<boolean>(false)
     const [stackParameters, setStackParameters] = useState<Stack>(null)
     const [{ data, loading: loadingDetails }, instanceDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
     const [{ loading: loadingDecryptedDetails }, instanceDecryptedDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/decrypted-details` }, { manual: true })
@@ -26,15 +27,21 @@ export const InstanceDetails = () => {
     const toggleEncryption = useCallback(async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: AxiosResponse<DeploymentInstance, any>
-        if (isDecrypted) {
-            response = await instanceDetails()
-        } else {
-            response = await instanceDecryptedDetails()
-        }
-
-        if (response.status === 400) {
-            showAlert({ message: 'Access denied!', isCritical: true })
-            return
+        try {
+            if (isDecrypted) {
+                response = await instanceDetails()
+            } else {
+                response = await instanceDecryptedDetails()
+            }
+        } catch (err: unknown) {
+            if (err instanceof AxiosError) {
+                if (err.status === 401) {
+                    showAlert({ message: 'Access denied!', isCritical: true })
+                    return
+                }
+            } else {
+                console.error('Unexpected error:', err)
+            }
         }
 
         if (response.status === 200) {

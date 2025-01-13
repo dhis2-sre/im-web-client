@@ -1,8 +1,6 @@
 import { Button, IconClock16, IconClockHistory16, IconDimensionData16, IconLock16, IconLockOpen16, IconWorld16 } from '@dhis2/ui'
-import { FC, useContext } from 'react'
+import { FC } from 'react'
 import Moment from 'react-moment'
-import { AuthContext } from '../../../contexts/index.ts'
-import { useAuth } from '../../../hooks/index.ts'
 import { DeploymentInstance } from '../../../types/index.ts'
 import styles from './instance-summary.module.css'
 
@@ -13,17 +11,11 @@ type InstanceSummaryProps = {
 }
 
 export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance, toggleEncryption, isDecrypted }) => {
-    const { currentUser } = useContext(AuthContext)
-    const { isAdministrator } = useAuth()
-    const canDecrypt = currentUser.id === instance?.deployment?.user.id || currentUser.adminGroups.some((group) => group.name === instance.groupName) || isAdministrator
-    // TODO: Remove load and preload deployment and user server side
-    console.log(instance)
-
     return (
         <div className={styles.wrapper}>
             <h2 className={styles.title}>
                 {instance.name}&nbsp;&nbsp;
-                <Button onClick={toggleEncryption} disabled={isDecrypted && canDecrypt} title={(isDecrypted ? 'Encrypt' : 'Decrypt') + ' parameters'}>
+                <Button onClick={toggleEncryption} disabled={isDecrypted} title={(isDecrypted ? 'Encrypt' : 'Decrypt') + ' parameters'}>
                     {!isDecrypted && <IconLock16 />}
                     {isDecrypted && <IconLockOpen16 />}
                 </Button>
