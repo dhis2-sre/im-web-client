@@ -2151,10 +2151,15 @@
     "@dhis2/app-service-offline" "3.11.2"
     "@dhis2/app-service-plugin" "3.11.2"
 
-"@dhis2/app-service-alerts@3.11.2", "@dhis2/app-service-alerts@^3.11.0":
+"@dhis2/app-service-alerts@3.11.2":
   version "3.11.2"
   resolved "https://registry.yarnpkg.com/@dhis2/app-service-alerts/-/app-service-alerts-3.11.2.tgz#c5a013b524facfc79a0be6e83870a4c593c686cb"
   integrity sha512-MLkDhrka66cO7lAOE4RaN/m+4l4NwagUxw4j3qhh4YXEihIJmH+kticEHCvuqYT3ySYPjkC74jrjl7CID08Yiw==
+
+"@dhis2/app-service-alerts@^3.12.0":
+  version "3.12.1"
+  resolved "https://registry.yarnpkg.com/@dhis2/app-service-alerts/-/app-service-alerts-3.12.1.tgz#e8a33bfb22f07e2eec6e0d3a4935bd3d7af85889"
+  integrity sha512-P2aAfzjZDLFzSAOvKm4DWUlrIUaNORNEm1UWfeKo62bowHU5aLB1E9fxa6XVNMrQmSSEZOhhvWfQzKdw4C2/hA==
 
 "@dhis2/app-service-config@3.11.2":
   version "3.11.2"
