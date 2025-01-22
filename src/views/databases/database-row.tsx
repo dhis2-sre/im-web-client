@@ -88,7 +88,6 @@ export const DatabaseRow: FC<DatabaseRowProps> = ({ database, groupName, refetch
                                     databaseId={database.id}
                                     setOpen={setOpenPopoverId}
                                     currentName={database.name}
-                                    groupName={groupName}
                                 />
                             )}
                         </FlyoutMenu>

@@ -10,7 +10,6 @@ type CopyDatabaseModalProps = {
     onComplete: () => void
     databaseId: number
     currentName: string
-    groupName?: string
     setOpen: (id: number | null) => void
 }
 
