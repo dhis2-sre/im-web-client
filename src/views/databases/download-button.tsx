@@ -34,6 +34,7 @@ export const DownloadButton: FC<DownloadButtonProps> = ({ id, setOpen }) => {
         } catch (error) {
             console.error(error)
             showError()
+            setOpen(null)
         }
     }, [fetchDownloadLink, showError, setOpen])
 

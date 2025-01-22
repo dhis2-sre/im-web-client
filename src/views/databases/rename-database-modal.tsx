@@ -9,9 +9,10 @@ type RenameDatabaseModalProps = {
     onComplete: () => void
     databaseId: number
     currentName: string
+    setOpen: (id: number | null) => void
 }
 
-export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName }) => {
+export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, setOpen }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -33,12 +34,14 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
                 isCritical: false,
             })
             onComplete()
+            setOpen(null)
         } catch (error) {
             showAlert({
-                message: 'There was a problem renaming the database',
+                message: error.response?.data?.message || 'There was a problem renaming the database',
                 isCritical: true,
             })
             console.error(error)
+            setOpen(null)
         }
     }
 
@@ -46,7 +49,7 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
         <Modal onClose={onClose}>
             <ModalTitle>Rename Database</ModalTitle>
             <ModalContent>
-                <InputField label="New Name" value={newName} onChange={({ value }) => setNewName(value)} required disabled={loading} />
+                <InputField label="New Name" value={newName} onChange={({ value }: { value: string }) => setNewName(value)} required disabled={loading} />
             </ModalContent>
             <ModalActions>
                 <ButtonStrip>

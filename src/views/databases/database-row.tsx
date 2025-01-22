@@ -71,10 +71,25 @@ export const DatabaseRow: FC<DatabaseRowProps> = ({ database, groupName, refetch
                             <DownloadButton id={database.id} setOpen={setOpenPopoverId} />
                             <DeleteButton id={database.id} databaseName={database.name} groupName={groupName} onComplete={refetch} setOpen={setOpenPopoverId} />
                             <MenuItem dense label="Rename" icon={<IconEditItems24 />} onClick={openRenameModal} />
-                            {isRenameModalOpen && <RenameDatabaseModal onClose={closeRenameModal} onComplete={onComplete} databaseId={database.id} currentName={database.name} />}
+                            {isRenameModalOpen && (
+                                <RenameDatabaseModal
+                                    onClose={closeRenameModal}
+                                    onComplete={onComplete}
+                                    databaseId={database.id}
+                                    currentName={database.name}
+                                    setOpen={setOpenPopoverId}
+                                />
+                            )}
                             <MenuItem dense label="Copy" icon={<IconCopy16 />} onClick={openCopyModal} />
                             {isCopyModalOpen && (
-                                <CopyDatabaseModal onClose={closeCopyModal} onComplete={onComplete} databaseId={database.id} currentName={database.name} groupName={groupName} />
+                                <CopyDatabaseModal
+                                    onClose={closeCopyModal}
+                                    onComplete={onComplete}
+                                    databaseId={database.id}
+                                    setOpen={setOpenPopoverId}
+                                    currentName={database.name}
+                                    groupName={groupName}
+                                />
                             )}
                         </FlyoutMenu>
                     </Popover>
