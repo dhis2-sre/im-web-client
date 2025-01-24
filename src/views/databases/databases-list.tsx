@@ -1,25 +1,16 @@
-import {
-    ButtonStrip,
-    DataTable,
-    DataTableBody as TableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead as TableHead,
-    DataTableRow,
-    DataTableToolbar as TableToolbar,
-} from '@dhis2/ui'
-import type { FC } from 'react'
-import Moment from 'react-moment'
+import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, DataTableToolbar as TableToolbar } from '@dhis2/ui'
+import { useRef, useState, FC } from 'react'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
-import { GroupsWithDatabases } from '../../types/index.ts'
+import { Database, GroupsWithDatabases } from '../../types/index.ts'
+import { DatabaseRow } from './database-row.tsx'
 import styles from './databases-list.module.css'
-import { DeleteButton } from './delete-button.tsx'
-import { DownloadButton } from './download-button.tsx'
 import { UploadButton } from './upload-button.tsx'
 
 export const DatabasesList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
+    const [openPopoverId, setOpenPopoverId] = useState<number | null>(null)
+    const rowRefs = useRef<(HTMLTableCellElement | null)[]>([])
 
     return (
         <div className={styles.wrapper}>
@@ -36,7 +27,7 @@ export const DatabasesList: FC = () => {
                         <TableHead>
                             <DataTableRow>
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                <DataTableColumnHeader>slug</DataTableColumnHeader>
+                                <DataTableColumnHeader>Slug</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                 <DataTableColumnHeader></DataTableColumnHeader>
@@ -45,29 +36,30 @@ export const DatabasesList: FC = () => {
                         <TableBody>
                             {(!group.databases || group.databases.length === 0) && (
                                 <DataTableRow>
-                                    <DataTableCell colSpan="4">
+                                    <DataTableCell colSpan="5">
                                         <h3>No databases</h3>
                                     </DataTableCell>
                                 </DataTableRow>
                             )}
-                            {group.databases?.map((database) => (
-                                <DataTableRow key={database.id}>
-                                    <DataTableCell>{database.name}</DataTableCell>
-                                    <DataTableCell>{database.slug}</DataTableCell>
-                                    <DataTableCell>
-                                        <Moment date={database.createdAt} fromNow />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <Moment date={database.updatedAt} fromNow />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <ButtonStrip>
-                                            <DownloadButton id={database.id} />
-                                            <DeleteButton id={database.id} databaseName={database.name} groupName={group.name} onComplete={refetch} />
-                                        </ButtonStrip>
-                                    </DataTableCell>
-                                </DataTableRow>
-                            ))}
+                            {group.databases?.map((database: Database, index) => {
+                                const rowRef = (el: HTMLTableCellElement | null) => {
+                                    rowRefs.current[index] = el
+                                }
+
+                                return (
+                                    <DatabaseRow
+                                        key={database.id}
+                                        database={database}
+                                        groupName={group.name}
+                                        refetch={refetch}
+                                        openPopoverId={openPopoverId}
+                                        setOpenPopoverId={setOpenPopoverId}
+                                        rowRef={rowRef}
+                                        rowRefs={rowRefs}
+                                        index={index}
+                                    />
+                                )
+                            })}
                         </TableBody>
                     </DataTable>
                 </div>

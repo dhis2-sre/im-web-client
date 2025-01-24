@@ -5,13 +5,13 @@
 import type { ExternalDownload } from './ExternalDownload'
 import type { Lock } from './Lock'
 export type Database = {
-    createdAt?: string
+    createdAt: string
     externalDownloads?: Array<ExternalDownload>
-    groupName?: string
-    id?: number
+    groupName: string
+    id: number
     lock?: Lock
-    name?: string
-    slug?: string
-    updatedAt?: string
+    name: string
+    slug: string
+    updatedAt: string
     url?: string
 }
