@@ -47,6 +47,7 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                 const payload: SaveInstanceRequest = {
                     stackName,
                     parameters: convertParameterFieldsToPayload(values[stackName]),
+                    ...(stackName === 'dhis2-core' && { public: values.public }),
                 }
                 await executePost({ url: `/deployments/${deploymentId}/instance`, data: payload })
             } catch (error) {
