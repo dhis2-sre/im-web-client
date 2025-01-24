@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:23-alpine AS builder
 ARG VITE_API_URL
 WORKDIR /app
 COPY package.json yarn.lock ./
