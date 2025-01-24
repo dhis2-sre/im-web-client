@@ -19,23 +19,26 @@ const GroupSelect: FC<{ groups: Group[]; selectedGroup: string; setSelectedGroup
     setSelectedGroup,
     loading,
 }) => {
+    const renderOptions = () => {
+        if (loading) {
+            return <option disabled>Loading...</option>
+        }
+        if (groups.length === 0) {
+            return <option disabled>No groups available</option>
+        }
+        return groups.map((group) => (
+            <option key={group.name} value={group.name}>
+                {group.name}
+            </option>
+        ))
+    }
     return (
         <div className={styles.field}>
             <label htmlFor="group-select" className={styles.label}>
                 Select Group *
             </label>
             <select id="group-select" value={selectedGroup} onChange={({ target }) => setSelectedGroup(target.value)} disabled={loading} className={styles.select}>
-                {loading ? (
-                    <option disabled>Loading...</option>
-                ) : groups.length === 0 ? (
-                    <option disabled>No groups available</option>
-                ) : (
-                    groups.map((group) => (
-                        <option key={group.name} value={group.name}>
-                            {group.name}
-                        </option>
-                    ))
-                )}
+                {renderOptions()}
             </select>
         </div>
     )
