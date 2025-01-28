@@ -1,6 +1,7 @@
 import { FORM_ERROR } from 'final-form'
 import { useCallback } from 'react'
 import type { AnyObject } from 'react-final-form'
+import { useNavigate } from 'react-router'
 import { STACK_NAMES } from '../constants.ts'
 import { SaveDeploymentRequest, SaveInstanceRequest } from '../types/index.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
@@ -13,7 +14,8 @@ const convertParameterFieldsToPayload = (values: AnyObject) =>
         return parameterPayload
     }, {})
 
-export const useDhis2DeploymentCreation = ({ onComplete }) => {
+export const useDhis2DeploymentCreation = () => {
+    const navigate = useNavigate()
     const [, executePost] = useAuthAxios(
         {
             url: '/deployments',
@@ -88,7 +90,7 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                 }
 
                 await deployDeployment(deploymentId)
-                onComplete()
+                navigate(`/instances/${deploymentId}/details`)
                 return true
             } catch (error) {
                 /* Note that all function called in the try block have implemented
@@ -99,7 +101,7 @@ export const useDhis2DeploymentCreation = ({ onComplete }) => {
                 return { [FORM_ERROR]: error.message }
             }
         },
-        [onComplete, saveDeployment, addStackToDeployment, deployDeployment]
+        [navigate, saveDeployment, addStackToDeployment, deployDeployment]
     )
 
     return createDeployment
