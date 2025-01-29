@@ -45,6 +45,10 @@ test.describe('new instance', () => {
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
+
+        // Click "Back to list"
+        await page.locator('[data-test="dhis2-uicore-button"]').first().click()
+
         await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 15000 })
 
         const newInstanceRow = page.getByRole('row', { name: randomName })
