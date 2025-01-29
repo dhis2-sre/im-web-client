@@ -3,7 +3,7 @@ import { login, logout, uploadTestDatabase, deleteTestDatabase } from './utils/i
 
 test.describe('new instance', () => {
     let dbFileName
-    const dbName = `e2e-test-${Date.now()}`
+    const dbName = `e2e-test-${Date.now()}.sql.gz`
 
     test.beforeEach(async ({ page }) => {
         await login(page)
