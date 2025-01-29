@@ -1,16 +1,15 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, DataTableToolbar as TableToolbar } from '@dhis2/ui'
-import { useRef, useState, FC } from 'react'
+import { FC } from 'react'
+import Moment from 'react-moment'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database, GroupsWithDatabases } from '../../types/index.ts'
-import { DatabaseRow } from './database-row.tsx'
+import { DatabaseRowAction } from './database-row-action.tsx'
 import styles from './databases-list.module.css'
 import { UploadButton } from './upload-button.tsx'
 
 export const DatabasesList: FC = () => {
     const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
-    const [openPopoverId, setOpenPopoverId] = useState<number | null>(null)
-    const rowRefs = useRef<(HTMLTableCellElement | null)[]>([])
 
     return (
         <div className={styles.wrapper}>
@@ -41,23 +40,21 @@ export const DatabasesList: FC = () => {
                                     </DataTableCell>
                                 </DataTableRow>
                             )}
-                            {group.databases?.map((database: Database, index) => {
-                                const rowRef = (el: HTMLTableCellElement | null) => {
-                                    rowRefs.current[index] = el
-                                }
-
+                            {group.databases?.map((database: Database) => {
                                 return (
-                                    <DatabaseRow
-                                        key={database.id}
-                                        database={database}
-                                        groupName={group.name}
-                                        refetch={refetch}
-                                        openPopoverId={openPopoverId}
-                                        setOpenPopoverId={setOpenPopoverId}
-                                        rowRef={rowRef}
-                                        rowRefs={rowRefs}
-                                        index={index}
-                                    />
+                                    <DataTableRow key={database.id}>
+                                        <DataTableCell>{database.name}</DataTableCell>
+                                        <DataTableCell>{database.slug}</DataTableCell>
+                                        <DataTableCell>
+                                            <Moment date={database.createdAt} fromNow />
+                                        </DataTableCell>
+                                        <DataTableCell>
+                                            <Moment date={database.updatedAt} fromNow />
+                                        </DataTableCell>
+                                        <DataTableCell className={styles.rowPopoverTrigger}>
+                                            <DatabaseRowAction database={database} groupName={database.groupName} refetch={refetch} />
+                                        </DataTableCell>
+                                    </DataTableRow>
                                 )
                             })}
                         </TableBody>

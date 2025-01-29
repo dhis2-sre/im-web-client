@@ -1,6 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import i18n from '@dhis2/d2-i18n'
-import { Center, CircularLoader, IconDelete16, MenuItem } from '@dhis2/ui'
+import { IconDelete16, MenuItem } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import type { FC } from 'react'
 import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
@@ -11,11 +11,11 @@ type DeleteButtonProps = {
     id: number
     databaseName: string
     groupName: string
-    setOpen?: (id: number | null) => void
+    togglePopover: () => void
     onComplete: () => void
 }
 
-export const DeleteButton: FC<DeleteButtonProps> = ({ id, databaseName, groupName, onComplete, setOpen }) => {
+export const DeleteButton: FC<DeleteButtonProps> = ({ id, databaseName, groupName, onComplete, togglePopover }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -35,10 +35,8 @@ export const DeleteButton: FC<DeleteButtonProps> = ({ id, databaseName, groupNam
 
     const onCancel = useCallback(() => {
         setShowConfirmationModal(false)
-        if (setOpen) {
-            setOpen(null)
-        }
-    }, [setOpen])
+        togglePopover()
+    }, [togglePopover])
 
     const onConfirm = useCallback(async () => {
         try {
@@ -46,24 +44,16 @@ export const DeleteButton: FC<DeleteButtonProps> = ({ id, databaseName, groupNam
             await deleteDatabase()
             showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
             onComplete()
-            if (setOpen) {
-                setOpen(null)
-            }
+            togglePopover()
         } catch (error) {
             console.error('Error deleting database:', error)
             showAlert({ message: `There was an error when deleting ${groupName}/${databaseName}`, isCritical: true })
-            if (setOpen) {
-                setOpen(null)
-            }
+            togglePopover()
         }
-    }, [deleteDatabase, showAlert, groupName, databaseName, onComplete, setOpen])
+    }, [deleteDatabase, togglePopover, showAlert, groupName, databaseName, onComplete])
 
     if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
+        return <p style={{ marginLeft: '10px', color: 'gray' }}>Loading ...</p>
     }
 
     return (

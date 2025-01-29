@@ -1,15 +1,15 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import i18n from '@dhis2/d2-i18n'
-import { Center, CircularLoader, IconDownload16, MenuItem } from '@dhis2/ui'
+import { IconDownload16, MenuItem } from '@dhis2/ui'
 import { useCallback } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { baseURL } from '../../hooks/use-auth-axios.ts'
 import { ExternalDownload } from '../../types/index.ts'
 
-type DownloadButtonProps = { id: number; setOpen: (id: number | null) => void }
+type DownloadButtonProps = { id: number; onComplete: () => void }
 
-export const DownloadButton: FC<DownloadButtonProps> = ({ id, setOpen }) => {
+export const DownloadButton: FC<DownloadButtonProps> = ({ id, onComplete }) => {
     const { show: showError } = useAlert('Could not retrieve database UID', { critical: true })
     const [{ loading }, fetchDownloadLink] = useAuthAxios<ExternalDownload>(
         {
@@ -30,20 +30,16 @@ export const DownloadButton: FC<DownloadButtonProps> = ({ id, setOpen }) => {
             link.target = '_blank'
             link.click()
             link.remove()
-            setOpen(null)
+            onComplete()
         } catch (error) {
             console.error(error)
             showError()
-            setOpen(null)
+            onComplete()
         }
-    }, [fetchDownloadLink, showError, setOpen])
+    }, [fetchDownloadLink, onComplete, showError])
 
     if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
+        return <p style={{ marginLeft: '10px', color: 'gray' }}>Loading ...</p>
     }
 
     return <MenuItem dense label={i18n.t('Download')} icon={<IconDownload16 />} onClick={onClick} />
