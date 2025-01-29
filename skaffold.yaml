@@ -5,7 +5,7 @@ build:
         - image: dhis2/im-web-client
           docker:
               buildArgs:
-                  VITE_API_URL: '{{ .API_URL }}'
+                  VITE_API_URL: "{{ .API_URL }}"
     tagPolicy:
         inputDigest: {}
 deploy:
@@ -19,7 +19,7 @@ deploy:
               setValueTemplates:
                   ingress:
                       enabled: true
-                      hostname: '{{ .UI_HOSTNAME }}'
+                      hostname: "{{ .UI_HOSTNAME }}"
                       certIssuer: cert-issuer-prod
               valuesFiles:
                   - helm/data/values/{{ .CLASSIFICATION }}/values.yaml
