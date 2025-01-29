@@ -71,7 +71,7 @@ export const DeleteButton: FC<DeleteButtonProps> = ({ id, databaseName, groupNam
             <MenuItem destructive dense label={i18n.t('Delete')} icon={<IconDelete16 />} onClick={onClick} disabled={loading} />
             {showConfirmationModal && (
                 <ConfirmationModal destructive onConfirm={onConfirm} onCancel={onCancel}>
-                    {i18n.t('Are you sure you wish to delete "{groupName}/{databaseName}"?', {
+                    {i18n.t(`Are you sure you wish to delete "${groupName}/${databaseName}"?`, {
                         groupName,
                         databaseName,
                     })}
