@@ -40,3 +40,46 @@
     gap: 12px;
     align-items: center;
 }
+
+.field {
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+    margin-top: 10px;
+}
+
+.select,
+.inputField {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    transition: black 0.3s ease;
+}
+
+.select:focus,
+.inputField:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+.select:disabled,
+.inputField:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.select option {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.select[disabled] {
+    color: #aaa;
+}
