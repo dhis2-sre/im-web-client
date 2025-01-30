@@ -41,7 +41,7 @@ export const DatabaseRowAction: FC<DatabaseRowProps> = ({ database, groupName, r
                 <Button small secondary onClick={togglePopover} icon={<IconMore24 color={colors.grey600} />} />
             </span>
             {open && (
-                <Popover reference={anchor} className={styles.actionMorePopover} arrow={false} placement="bottom-end" observeReferenceResize onClickOutside={() => togglePopover}>
+                <Popover reference={anchor} className={styles.actionMorePopover} arrow={false} placement="bottom-end" observeReferenceResize onClickOutside={() => setOpen(false)}>
                     <FlyoutMenu>
                         <DownloadButton id={database.id} onComplete={togglePopover} />
                         <DeleteButton id={database.id} togglePopover={togglePopover} databaseName={database.name} groupName={groupName} onComplete={refetch} />
