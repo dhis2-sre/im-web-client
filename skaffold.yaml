@@ -21,14 +21,6 @@ deploy:
                       enabled: true
                       hostname: '{{ .UI_HOSTNAME }}'
                       certIssuer: cert-issuer-prod
-              setValues:
-                  tolerations:
-                      - key: im-dedicated
-                        operator: Equal
-                        value: true
-                        effect: NoSchedule
-                  nodeSelector:
-                      - im-dedicated: true
               valuesFiles:
                   - helm/data/values/{{ .CLASSIFICATION }}/values.yaml
 
