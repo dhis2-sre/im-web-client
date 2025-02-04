@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import {
+    CUSTOM_DHIS2_CONFIG,
     DATABASE_ID,
     ENABLE_QUERY_LOGGING,
     FLYWAY_MIGRATE_OUT_OF_ORDER,
@@ -20,6 +21,7 @@ import { ImageRepositorySelect } from './image-repository-select.tsx'
 import { ImageTagSelect } from './image-tag-select.tsx'
 import { IntergrationParameterSelect } from './intergration-parameter-select.tsx'
 import { TextParameterInput } from './text-parameter-input.tsx'
+import { TextareaParameter } from './textarea-parameter.tsx'
 
 export type ParameterFieldProps = {
     displayName: string
@@ -52,6 +54,8 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" />
         case PGADMIN_CONFIRM_PASSWORD:
             return <ConfirmPasswordInput stackId={stackId} />
+        case CUSTOM_DHIS2_CONFIG:
+            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} />
         default:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} />
     }
