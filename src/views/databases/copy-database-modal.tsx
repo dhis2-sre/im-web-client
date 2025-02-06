@@ -10,7 +10,7 @@ type CopyDatabaseModalProps = {
     onComplete: () => void
     databaseId: number
     currentName: string
-    setOpen: (id: number | null) => void
+    togglePopover: () => void
 }
 
 const GroupSelect: FC<{ groups: Group[]; selectedGroup: string; setSelectedGroup: (group: string) => void; loading: boolean }> = ({
@@ -64,7 +64,7 @@ const useGroups = () => {
     return { groups, selectedGroup, setSelectedGroup, groupsLoading }
 }
 
-export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, setOpen }) => {
+export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, togglePopover }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const { groups, selectedGroup, setSelectedGroup, groupsLoading } = useGroups()
     const { show: showAlert } = useAlert(
@@ -95,16 +95,16 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
                 isCritical: false,
             })
             onComplete()
-            setOpen(null)
+            togglePopover()
         } catch (error) {
             showAlert({
                 message: 'There was a problem copying the database',
                 isCritical: true,
             })
-            console.error(error)
-            setOpen(null)
+            onComplete()
+            togglePopover()
         }
-    }, [newName, currentName, selectedGroup, postCopyDatabase, showAlert, onComplete, setOpen])
+    }, [newName, togglePopover, currentName, selectedGroup, postCopyDatabase, showAlert, onComplete])
 
     return (
         <Modal onClose={onClose}>

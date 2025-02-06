@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test'
-import { deleteTestDatabase, login, logout } from './utils/index.ts'
+import { expect, test } from '@playwright/test'
+import { login, logout } from './utils/index.ts'
 
 test.describe('databases', () => {
     test.beforeEach(async ({ page }) => {
@@ -14,12 +14,14 @@ test.describe('databases', () => {
     })
 
     test('copy/rename database', async ({ page }) => {
-        test.skip()
-
         await page.getByRole('link', { name: 'Databases' }).click()
+        const firstRowButton = page
+            .locator('table[data-test="dhis2-uicore-datatable"] tbody tr:first-child td[data-test="dhis2-uicore-datatablecell"]:last-child button[data-test="dhis2-uicore-button"]')
+            .first()
 
-        const firstRow = page.locator('table[data-test="dhis2-uicore-datatable"] tbody tr:first-child').first()
-        await firstRow.getByTestId('dhis2-uicore-button').click()
+        await firstRowButton.click()
+
+        console.log(firstRowButton, 'firstRow')
         await page.getByRole('menuitem', { name: 'Copy' }).click()
 
         // Copy
@@ -40,7 +42,7 @@ test.describe('databases', () => {
         await page.locator('button').getByText('Rename').click()
 
         // Delete
-        await deleteTestDatabase(page, rename)
+        // await deleteTestDatabase(page, rename)
 
         // Confirm deletion
         const cellLocator = page.getByRole('cell', { name: rename })
