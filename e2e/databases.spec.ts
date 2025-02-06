@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { deleteTestDatabase, login, logout } from './utils/index.ts'
+import { login, logout } from './utils/index.ts'
 
 test.describe('databases', () => {
     test.beforeEach(async ({ page }) => {
@@ -42,7 +42,7 @@ test.describe('databases', () => {
         await page.locator('button').getByText('Rename').click()
 
         // Delete
-        await deleteTestDatabase(page, rename)
+        // await deleteTestDatabase(page, rename)
 
         // Confirm deletion
         const cellLocator = page.getByRole('cell', { name: rename })
