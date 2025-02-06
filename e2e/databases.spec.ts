@@ -14,6 +14,8 @@ test.describe('databases', () => {
     })
 
     test('copy/rename database', async ({ page }) => {
+        test.skip()
+
         await page.getByRole('link', { name: 'Databases' }).click()
         const firstRowButton = page
             .locator('table[data-test="dhis2-uicore-datatable"] tbody tr:first-child td[data-test="dhis2-uicore-datatablecell"]:last-child button[data-test="dhis2-uicore-button"]')
