@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { deleteTestDatabase, login, logout } from './utils/index.ts'
 
 test.describe('databases', () => {
@@ -14,8 +14,6 @@ test.describe('databases', () => {
     })
 
     test('copy/rename database', async ({ page }) => {
-        test.skip()
-
         await page.getByRole('link', { name: 'Databases' }).click()
         const firstRowButton = page
             .locator('table[data-test="dhis2-uicore-datatable"] tbody tr:first-child td[data-test="dhis2-uicore-datatablecell"]:last-child button[data-test="dhis2-uicore-button"]')
