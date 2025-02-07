@@ -17,6 +17,6 @@ export const deleteTestDatabase = async (page) => {
     await page.getByRole('button', { name: 'Confirm' }).click()
 
     const alertBar = page.locator('div[data-test="dhis2-uicore-alertbar"]')
-    
+
     await expect(alertBar.first()).toBeVisible()
 }
