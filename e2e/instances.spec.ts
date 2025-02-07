@@ -12,7 +12,7 @@ test.describe('new instance', () => {
     })
 
     test.afterEach(async ({ page }) => {
-        await deleteTestDatabase(page, dbName)
+        await deleteTestDatabase(page)
         await logout(page)
     })
 
