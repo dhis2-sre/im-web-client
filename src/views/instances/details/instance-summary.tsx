@@ -1,4 +1,4 @@
-import { Button, IconClock16, IconClockHistory16, IconDimensionData16, IconLock16, IconLockOpen16, IconWorld16 } from '@dhis2/ui'
+import { IconClock16, IconClockHistory16, IconDimensionData16, IconWorld16 } from '@dhis2/ui'
 import { FC } from 'react'
 import Moment from 'react-moment'
 import { DeploymentInstance } from '../../../types/index.ts'
@@ -6,20 +6,12 @@ import styles from './instance-summary.module.css'
 
 type InstanceSummaryProps = {
     instance: DeploymentInstance
-    toggleEncryption: () => void
-    isDecrypted: boolean
 }
 
-export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance, toggleEncryption, isDecrypted }) => {
+export const InstanceSummary: FC<InstanceSummaryProps> = ({ instance }) => {
     return (
         <div className={styles.wrapper}>
-            <h2 className={styles.title}>
-                {instance.name}&nbsp;&nbsp;
-                <Button onClick={toggleEncryption} disabled={isDecrypted} title={(isDecrypted ? 'Encrypt' : 'Decrypt') + ' parameters'}>
-                    {!isDecrypted && <IconLock16 />}
-                    {isDecrypted && <IconLockOpen16 />}
-                </Button>
-            </h2>
+            <h2 className={styles.title}>{instance.name}</h2>
             <div className={styles.row}>
                 <div className={styles.singleDetails}>
                     <IconDimensionData16 />
