@@ -7,26 +7,29 @@ import { GroupsWithDatabases } from '../../types/index.ts'
 type RenameDatabaseModalProps = {
     onClose: () => void
     onComplete: () => void
+    togglePopover: () => void
     databaseId: number
     currentName: string
-    setOpen: (id: number | null) => void
 }
 
-export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, setOpen }) => {
+export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, togglePopover }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
-    const [{ loading }, putDatabase] = useAuthAxios<GroupsWithDatabases>({
-        url: `/databases/${databaseId}`,
-        method: 'PUT',
-    })
+    const [{ loading }, renameDatabase] = useAuthAxios<GroupsWithDatabases>(
+        {
+            url: `/databases/${databaseId}`,
+            method: 'PUT',
+        },
+        { manual: true }
+    )
 
     const onRename = async () => {
         try {
-            await putDatabase({
+            await renameDatabase({
                 data: { name: newName },
             })
             showAlert({
@@ -34,14 +37,14 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
                 isCritical: false,
             })
             onComplete()
-            setOpen(null)
+            togglePopover()
         } catch (error) {
             showAlert({
                 message: error.response?.data?.message || 'There was a problem renaming the database',
                 isCritical: true,
             })
-            console.error(error)
-            setOpen(null)
+            onComplete()
+            togglePopover()
         }
     }
 
