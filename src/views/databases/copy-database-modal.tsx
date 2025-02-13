@@ -10,15 +10,15 @@ type CopyDatabaseModalProps = {
     onComplete: () => void
     databaseId: number
     currentName: string
-    setOpen: (id: number | null) => void
+    togglePopover: () => void
 }
 
-const GroupSelect: FC<{ groups: Group[]; selectedGroup: string; setSelectedGroup: (group: string) => void; loading: boolean }> = ({
-    groups,
-    selectedGroup,
-    setSelectedGroup,
-    loading,
-}) => {
+const GroupSelect: FC<{
+    groups: Group[]
+    selectedGroup: string
+    setSelectedGroup: (group: string) => void
+    loading: boolean
+}> = ({ groups, selectedGroup, setSelectedGroup, loading }) => {
     const renderOptions = () => {
         if (loading) {
             return <option disabled>Loading...</option>
@@ -64,7 +64,7 @@ const useGroups = () => {
     return { groups, selectedGroup, setSelectedGroup, groupsLoading }
 }
 
-export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, setOpen }) => {
+export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, togglePopover }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const { groups, selectedGroup, setSelectedGroup, groupsLoading } = useGroups()
     const { show: showAlert } = useAlert(
@@ -72,10 +72,13 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
-    const [{ loading }, postCopyDatabase] = useAuthAxios({
-        url: `/databases/${databaseId}/copy`,
-        method: 'POST',
-    })
+    const [{ loading }, copyDatabase] = useAuthAxios(
+        {
+            url: `/databases/${databaseId}/copy`,
+            method: 'POST',
+        },
+        { manual: true }
+    )
 
     const onCopyDatabase = useCallback(async () => {
         if (newName === currentName) {
@@ -87,7 +90,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
         }
 
         try {
-            await postCopyDatabase({
+            await copyDatabase({
                 data: { group: selectedGroup, name: newName },
             })
             showAlert({
@@ -95,16 +98,16 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
                 isCritical: false,
             })
             onComplete()
-            setOpen(null)
+            togglePopover()
         } catch (error) {
             showAlert({
                 message: 'There was a problem copying the database',
                 isCritical: true,
             })
-            console.error(error)
-            setOpen(null)
+            onComplete()
+            togglePopover()
         }
-    }, [newName, currentName, selectedGroup, postCopyDatabase, showAlert, onComplete, setOpen])
+    }, [newName, togglePopover, currentName, selectedGroup, copyDatabase, showAlert, onComplete])
 
     return (
         <Modal onClose={onClose}>
