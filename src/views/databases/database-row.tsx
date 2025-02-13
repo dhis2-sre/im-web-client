@@ -47,7 +47,7 @@ export const DatabaseRow: FC<DatabaseRowProps> = ({ database, groupName, refetch
     return (
         <DataTableRow key={database.id}>
             <DataTableCell>{database.name}</DataTableCell>
-            <DataTableCell>{database.slug}</DataTableCell>
+            <DataTableCell title={`id: ${database.id}`}>{database.slug}</DataTableCell>
             <DataTableCell>
                 <Moment date={database.createdAt} fromNow />
             </DataTableCell>
