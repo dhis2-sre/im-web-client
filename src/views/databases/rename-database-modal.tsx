@@ -19,14 +19,17 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
-    const [{ loading }, putDatabase] = useAuthAxios<GroupsWithDatabases>({
-        url: `/databases/${databaseId}`,
-        method: 'PUT',
-    })
+    const [{ loading }, renameDatabase] = useAuthAxios<GroupsWithDatabases>(
+        {
+            url: `/databases/${databaseId}`,
+            method: 'PUT',
+        },
+        { manual: true }
+    )
 
     const onRename = async () => {
         try {
-            await putDatabase({
+            await renameDatabase({
                 data: { name: newName },
             })
             showAlert({

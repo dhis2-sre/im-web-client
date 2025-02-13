@@ -15,13 +15,10 @@ test.describe('databases', () => {
 
     test('copy/rename database', async ({ page }) => {
         await page.getByRole('link', { name: 'Databases' }).click()
-        const firstRowButton = page
-            .locator('table[data-test="dhis2-uicore-datatable"] tbody tr:first-child td[data-test="dhis2-uicore-datatablecell"]:last-child button[data-test="dhis2-uicore-button"]')
-            .first()
+        const firstRowButton = page.locator('tr button[data-test="dhis2-uicore-button"]').first()
 
         await firstRowButton.click()
 
-        console.log(firstRowButton, 'firstRow')
         await page.getByRole('menuitem', { name: 'Copy' }).click()
 
         // Copy
@@ -42,7 +39,7 @@ test.describe('databases', () => {
         await page.locator('button').getByText('Rename').click()
 
         // Delete
-        await deleteTestDatabase(page)
+        await deleteTestDatabase(page, rename)
 
         // Confirm deletion
         const cellLocator = page.getByRole('cell', { name: rename })
