@@ -61,7 +61,7 @@ export const InstancesList: FC = () => {
                                 <DataTableColumnHeader></DataTableColumnHeader>
                             </DataTableRow>
 
-                            {group.deployments?.map((deployment) => (
+                            {group?.deployments?.map((deployment) => (
                                 <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
                                     <DataTableCell>
                                         {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
