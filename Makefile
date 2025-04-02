@@ -18,7 +18,7 @@ clean:
 	$(clean-cmd)
 
 e2e-test:
-	docker compose run e2e-test
+	docker compose run --remove-orphans e2e-test
 
 e2e-test-ui:
 	npx playwright test --ui

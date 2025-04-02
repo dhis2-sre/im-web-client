@@ -1,30 +1,30 @@
 apiVersion: skaffold/v4beta6
 kind: Config
 build:
-    artifacts:
-        - image: dhis2/im-web-client
-          docker:
-              buildArgs:
-                  VITE_API_URL: '{{ .API_URL }}'
-    tagPolicy:
-        inputDigest: {}
+  artifacts:
+    - image: dhis2/im-web-client
+      docker:
+        buildArgs:
+          VITE_API_URL: "{{ .API_URL }}"
+  tagPolicy:
+    inputDigest: { }
 deploy:
-    statusCheckDeadlineSeconds: 180
-    helm:
-        releases:
-            - name: im-web-client-{{ .ENVIRONMENT }}
-              namespace: instance-manager-{{ .CLASSIFICATION }}
-              createNamespace: true
-              chartPath: helm/chart
-              setValueTemplates:
-                  ingress:
-                      enabled: true
-                      hostname: '{{ .UI_HOSTNAME }}'
-                      certIssuer: cert-issuer-prod
-              valuesFiles:
-                  - helm/data/values/{{ .CLASSIFICATION }}/values.yaml
+  statusCheckDeadlineSeconds: 180
+  helm:
+    releases:
+      - name: im-web-client-{{ .ENVIRONMENT }}
+        namespace: instance-manager-{{ .CLASSIFICATION }}
+        createNamespace: true
+        chartPath: helm/chart
+        setValueTemplates:
+          ingress:
+            enabled: true
+            hostname: "{{ .UI_HOSTNAME }}"
+            certIssuer: cert-issuer-prod
+        valuesFiles:
+          - helm/data/values/{{ .CLASSIFICATION }}/values.yaml
 
 # TODO should we use empty profiles to conform to the instance-manager reusable workflow or have a conditional in the workflow Deploy step (`if repo is im-manager ...`)?
 profiles:
-    - name: dev
-    - name: prod
+  - name: dev
+  - name: prod
