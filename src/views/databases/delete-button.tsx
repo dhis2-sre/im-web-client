@@ -1,19 +1,21 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, IconDelete16 } from '@dhis2/ui'
+import i18n from '@dhis2/d2-i18n'
+import { IconDelete16, MenuItem } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import type { FC } from 'react'
 import { ConfirmationModal } from '../../components/confirmation-modal.tsx'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/index.ts'
 
-type DeletButtonProps = {
+type DeleteButtonProps = {
     id: number
     databaseName: string
     groupName: string
+    togglePopover: () => void
     onComplete: () => void
 }
 
-export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName, onComplete }) => {
+export const DeleteButton: FC<DeleteButtonProps> = ({ id, databaseName, groupName, onComplete, togglePopover }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -29,11 +31,12 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
 
     const onClick = useCallback(() => {
         setShowConfirmationModal(true)
-    }, [setShowConfirmationModal])
+    }, [])
 
     const onCancel = useCallback(() => {
         setShowConfirmationModal(false)
-    }, [setShowConfirmationModal])
+        togglePopover()
+    }, [togglePopover])
 
     const onConfirm = useCallback(async () => {
         try {
@@ -41,20 +44,27 @@ export const DeleteButton: FC<DeletButtonProps> = ({ id, databaseName, groupName
             await deleteDatabase()
             showAlert({ message: `Successfully deleted ${groupName}/${databaseName}`, isCritical: false })
             onComplete()
+            togglePopover()
         } catch (error) {
-            console.error(error)
+            console.error('Error deleting database:', error)
             showAlert({ message: `There was an error when deleting ${groupName}/${databaseName}`, isCritical: true })
+            togglePopover()
         }
-    }, [deleteDatabase, setShowConfirmationModal, showAlert, groupName, databaseName, onComplete])
+    }, [deleteDatabase, togglePopover, showAlert, groupName, databaseName, onComplete])
+
+    if (loading) {
+        return <p style={{ marginLeft: '10px', color: 'gray' }}>Loading ...</p>
+    }
 
     return (
         <>
-            <Button small secondary loading={loading} icon={<IconDelete16 />} onClick={onClick}>
-                Delete
-            </Button>
+            <MenuItem destructive dense label={i18n.t('Delete')} icon={<IconDelete16 />} onClick={onClick} disabled={loading} />
             {showConfirmationModal && (
                 <ConfirmationModal destructive onConfirm={onConfirm} onCancel={onCancel}>
-                    Are you sure you wish to delete &quot;{groupName}/{databaseName}&quot;?
+                    {i18n.t(`Are you sure you wish to delete "${groupName}/${databaseName}"?`, {
+                        groupName,
+                        databaseName,
+                    })}
                 </ConfirmationModal>
             )}
         </>

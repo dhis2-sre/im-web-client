@@ -7,6 +7,9 @@
 .parameterCheckbox {
     padding-top: 18px;
 }
+.calenderContainer {
+    margin-top: 15px;
+}
 
 .customOption {
     cursor: pointer;

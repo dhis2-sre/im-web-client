@@ -1,7 +1,4 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLock16 } from '@dhis2/ui'
-import type { AxiosResponse } from 'axios'
-import { AxiosError } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
@@ -11,44 +8,12 @@ import styles from '../list/instances-list.module.css'
 import { InstanceSummary } from './instance-summary.tsx'
 
 export const InstanceDetails = () => {
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
     const navigate = useNavigate()
     const { id } = useParams()
     const [instance, setInstance] = useState<DeploymentInstance>()
-    const [isDecrypted, setIsDecrypted] = useState<boolean>(false)
     const [stackParameters, setStackParameters] = useState<Stack>(null)
-    const [{ data, loading: loadingDetails }, instanceDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
-    const [{ loading: loadingDecryptedDetails }, instanceDecryptedDetails] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/decrypted-details` }, { manual: true })
+    const [{ data, loading: loadingDetails }] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
     const [{ loading: loadingStack }, fetchStack] = useAuthAxios<Stack>({ method: 'GET' }, { manual: true })
-
-    const toggleEncryption = useCallback(async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let response: AxiosResponse<DeploymentInstance, any>
-        try {
-            if (isDecrypted) {
-                response = await instanceDetails()
-            } else {
-                response = await instanceDecryptedDetails()
-            }
-        } catch (err: unknown) {
-            if (err instanceof AxiosError) {
-                if (err.status === 401) {
-                    showAlert({ message: 'Access denied!', isCritical: true })
-                    return
-                }
-            } else {
-                console.error('Unexpected error:', err)
-            }
-        }
-
-        if (response.status === 200) {
-            setInstance(response.data)
-            setIsDecrypted(!isDecrypted)
-        }
-    }, [instanceDecryptedDetails, instanceDetails, isDecrypted, showAlert])
 
     const fetchStackCallback = useCallback(async () => {
         const response = await fetchStack({ url: `/stacks/${data.stackName}` })
@@ -67,7 +32,7 @@ export const InstanceDetails = () => {
         void fetchStackCallback()
     }, [data, fetchStackCallback])
 
-    if (loadingDetails || loadingDecryptedDetails || loadingStack || !instance || !stackParameters) {
+    if (loadingDetails || loadingStack || !instance || !stackParameters) {
         return (
             <Center className={styles.loaderWrap}>
                 <CircularLoader />
@@ -82,7 +47,7 @@ export const InstanceDetails = () => {
             </Heading>
             <div className={styles.cardWrap}>
                 <Card className={styles.card}>
-                    <InstanceSummary instance={instance} toggleEncryption={toggleEncryption} isDecrypted={isDecrypted} />
+                    <InstanceSummary instance={instance} />
                 </Card>
             </div>
             <br />
@@ -93,19 +58,16 @@ export const InstanceDetails = () => {
                         <DataTableColumnHeader>Value</DataTableColumnHeader>
                     </DataTableRow>
                 </DataTableHead>
-                <DataTableBody loading={loadingDetails || loadingDecryptedDetails}>
+                <DataTableBody loading={loadingDetails}>
                     {Object.keys(instance.parameters).map((name) => (
                         <DataTableRow key={name}>
                             <DataTableCell staticStyle>{name}</DataTableCell>
                             <DataTableCell staticStyle>
                                 {stackParameters[name].sensitive && (
                                     <span>
-                                        {isDecrypted && instance.parameters[name].value}
-                                        {!isDecrypted && (
-                                            <Button onClick={toggleEncryption} title={'Decrypt parameter'}>
-                                                <IconLock16 />
-                                            </Button>
-                                        )}
+                                        <Button disabled={true}>
+                                            <IconLock16 />
+                                        </Button>
                                     </span>
                                 )}
                                 {!stackParameters[name].sensitive && instance.parameters[name].value}
