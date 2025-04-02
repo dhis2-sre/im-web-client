@@ -71,7 +71,7 @@ const toIdBasedObjectWithHiddenOption = (arr, hidden) => {
             ...item,
             options: {
                 ...item.options,
-                hidden,
+                // hidden,
             },
         }
         return obj
