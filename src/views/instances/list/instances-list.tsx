@@ -3,7 +3,6 @@ import {
     ButtonStrip,
     Center,
     CircularLoader,
-    colors,
     DataTable,
     DataTableBody,
     DataTableCell,
@@ -11,7 +10,6 @@ import {
     DataTableRow,
     IconAdd24,
     NoticeBox,
-    IconWorld24,
     Checkbox,
 } from '@dhis2/ui'
 import type { FC } from 'react'

@@ -1,8 +1,9 @@
-FROM node:20-alpine AS builder
+FROM node:23-alpine AS builder
 ARG VITE_API_URL
+RUN corepack enable && corepack prepare yarn --activate
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY .yarnrc.yml package.json yarn.lock ./
+RUN yarn install --immutable
 COPY . .
 RUN yarn build
 

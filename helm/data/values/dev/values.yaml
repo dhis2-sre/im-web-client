@@ -1,2 +1,9 @@
 image:
-    pullPolicy: Always
+  pullPolicy: Always
+tolerations:
+  - key: im-dedicated
+    operator: Equal
+    value: "true"
+    effect: NoSchedule
+nodeSelector:
+  im-dedicated: "true"
