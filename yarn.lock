@@ -2879,7 +2879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/ui@npm:^9.11.6":
+"@dhis2/ui@npm:^9.15.0":
   version: 9.15.0
   resolution: "@dhis2/ui@npm:9.15.0"
   dependencies:
@@ -9709,7 +9709,7 @@ __metadata:
     "@dhis2/app-service-alerts": "npm:^3.12.0"
     "@dhis2/cli-style": "npm:^10.7.4"
     "@dhis2/d2-i18n": "npm:^1.1.3"
-    "@dhis2/ui": "npm:^9.11.6"
+    "@dhis2/ui": "npm:^9.15.0"
     "@fontsource/roboto": "npm:^5.1.0"
     "@ls-lint/ls-lint": "npm:^2.2.2"
     "@playwright/test": "npm:1.48.0"
