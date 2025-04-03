@@ -27,7 +27,14 @@ services:
         image: mcr.microsoft.com/playwright:v1.48.0-jammy
         stdin_open: true
         tty: true
-        command: sh -c "yarn install --frozen-lockfile && npx playwright test"
+        command: >
+            sh -c "
+              set -e
+              corepack enable
+              corepack prepare yarn@stable --activate
+              yarn install --immutable
+              yarn playwright test
+            "
         network_mode: host
         volumes:
             - ./:/e2e
