@@ -21,7 +21,7 @@ import { ConfirmPasswordInput } from './confirm-password.tsx'
 import { ImageRepositorySelect } from './image-repository-select.tsx'
 import { ImageTagSelect } from './image-tag-select.tsx'
 import { IntergrationParameterSelect } from './intergration-parameter-select.tsx'
-import { LocalParameterSelect } from './local-parameter-select.tsx'
+import { SameSiteCookiesSelect } from './same-site-cookies-select.tsx'
 import { TextParameterInput } from './text-parameter-input.tsx'
 import { TextareaParameter } from './textarea-parameter.tsx'
 
@@ -46,7 +46,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case STORAGE_TYPE:
             return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case SAME_SITE_COOKIES:
-            return <LocalParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
+            return <SameSiteCookiesSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
         case ENABLE_QUERY_LOGGING:
