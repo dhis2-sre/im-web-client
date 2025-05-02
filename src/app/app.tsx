@@ -5,12 +5,13 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
+import { ReactElement } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import {
-    ValidateSuccess,
     DatabasesList,
     DeploymentDetails,
+    GroupsList,
     InstancesList,
     NewDhis2Instance,
     RequestPasswordReset,
@@ -18,15 +19,24 @@ import {
     SignUp,
     StackDetails,
     StacksList,
-    GroupsList,
-    UsersList,
     UserDetails,
+    UsersList,
     Validate,
+    ValidateSuccess,
+    NotFound,
 } from '../views/index.ts'
+import { InstanceDetails } from '../views/instances/details/instance-details.tsx'
 import { InstancesTable } from '../views/public-instances/index.ts'
 
-const router = createBrowserRouter(
-    createRoutesFromElements(
+let routes: ReactElement
+if (location.hostname === 'play.dhis2.org') {
+    routes = (
+        <Route element={<PublicLayout />}>
+            <Route path="/" element={<InstancesTable />} />
+        </Route>
+    )
+} else {
+    routes = (
         <Route>
             <Route path="/public" element={<PublicLayout />}>
                 <Route path="instances" element={<InstancesTable />} />
@@ -45,14 +55,19 @@ const router = createBrowserRouter(
                     <Route path="/databases" element={<DatabasesList />} />
                     <Route path="/instances/new" element={<NewDhis2Instance />} />
                     <Route path="/instances/:id/details" element={<DeploymentDetails />} />
+                    <Route path="/instance/:id/details" element={<InstanceDetails />} />
                     <Route path="/groups" element={<GroupsList />} />
                     <Route path="/users" element={<UsersList />} />
                     <Route path="/users/:id" element={<UserDetails />} />
                 </Route>
             </Route>
+
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
-)
+}
+
+const router = createBrowserRouter(createRoutesFromElements(routes))
 
 export const App = () => (
     <AlertsProvider

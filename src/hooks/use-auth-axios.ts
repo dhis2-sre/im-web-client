@@ -53,6 +53,7 @@ const useAxiosWithJwt = makeUseAxios({
 
 interface UseAuthAxiosOptions extends Options {
     autoCatch?: boolean
+    withCredentials?: boolean
 }
 
 interface UseAuthAxios {

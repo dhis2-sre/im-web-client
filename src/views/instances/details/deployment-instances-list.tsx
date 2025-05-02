@@ -2,8 +2,10 @@ import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTab
 import type { RefetchFunction } from 'axios-hooks'
 import type { FC } from 'react'
 import Moment from 'react-moment'
+import { useNavigate } from 'react-router-dom'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance } from '../../../types/index.ts'
+import styles from '../list/instances-list.module.css'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
 import { ActionsDropdownMenu } from './actions-dropdown-menu.tsx'
 import { StatusLabel } from './status-label.tsx'
@@ -15,41 +17,49 @@ export const DeploymentInstancesList: FC<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     refetch: RefetchFunction<any, Deployment>
     loading: boolean
-}> = ({ deploymentId, instances, refetch, loading }) => (
-    <DataTable>
-        <DataTableHead>
-            <DataTableRow>
-                <DataTableColumnHeader>Status</DataTableColumnHeader>
-                <DataTableColumnHeader>Type</DataTableColumnHeader>
-                <DataTableColumnHeader>Created</DataTableColumnHeader>
-                <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                <DataTableColumnHeader></DataTableColumnHeader>
-                <DataTableColumnHeader></DataTableColumnHeader>
-            </DataTableRow>
-        </DataTableHead>
-        <DataTableBody loading={loading}>
-            {instances?.map((instance) => (
-                <DataTableRow key={instance.id}>
-                    <DataTableCell staticStyle>
-                        <StatusLabel instanceId={instance.id} />
-                    </DataTableCell>
-                    <DataTableCell staticStyle>{instance.stackName}</DataTableCell>
-                    <DataTableCell staticStyle>
-                        <Moment date={instance.createdAt} fromNow />
-                    </DataTableCell>
-                    <DataTableCell staticStyle>
-                        <Moment date={instance.updatedAt} fromNow />
-                    </DataTableCell>
-                    <DataTableCell staticStyle align="right">
-                        {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
-                            <ViewInstanceMenuItem groupName={instance.groupName} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
-                        )}
-                    </DataTableCell>
-                    <DataTableCell staticStyle align="right">
-                        <ActionsDropdownMenu deploymentId={deploymentId} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
-                    </DataTableCell>
+}> = ({ deploymentId, instances, refetch, loading }) => {
+    const navigate = useNavigate()
+    return (
+        <DataTable>
+            <DataTableHead>
+                <DataTableRow>
+                    <DataTableColumnHeader>Status</DataTableColumnHeader>
+                    <DataTableColumnHeader>Type</DataTableColumnHeader>
+                    <DataTableColumnHeader>Created</DataTableColumnHeader>
+                    <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                    <DataTableColumnHeader></DataTableColumnHeader>
+                    <DataTableColumnHeader></DataTableColumnHeader>
                 </DataTableRow>
-            ))}
-        </DataTableBody>
-    </DataTable>
-)
+            </DataTableHead>
+            <DataTableBody loading={loading}>
+                {instances?.map((instance) => {
+                    const onClick = () => navigate(`/instance/${instance.id}/details`)
+                    return (
+                        <tr className={styles.clickableRow} key={instance.id}>
+                            <DataTableCell staticStyle onClick={onClick}>
+                                <StatusLabel instanceId={instance.id} />
+                            </DataTableCell>
+                            <DataTableCell staticStyle onClick={onClick}>
+                                {instance.stackName}
+                            </DataTableCell>
+                            <DataTableCell staticStyle onClick={onClick}>
+                                <Moment date={instance.createdAt} fromNow />
+                            </DataTableCell>
+                            <DataTableCell staticStyle onClick={onClick}>
+                                <Moment date={instance.updatedAt} fromNow />
+                            </DataTableCell>
+                            <DataTableCell staticStyle align="right">
+                                {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
+                                    <ViewInstanceMenuItem groupName={instance.groupName} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
+                                )}
+                            </DataTableCell>
+                            <DataTableCell staticStyle align="right">
+                                <ActionsDropdownMenu deploymentId={deploymentId} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
+                            </DataTableCell>
+                        </tr>
+                    )
+                })}
+            </DataTableBody>
+        </DataTable>
+    )
+}

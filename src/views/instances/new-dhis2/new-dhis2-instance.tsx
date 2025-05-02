@@ -13,7 +13,7 @@ export const NewDhis2Instance: FC = () => {
     const navigateToInstanceList = useCallback(() => {
         navigate('/instances')
     }, [navigate])
-    const createDeployment = useDhis2DeploymentCreation({ onComplete: navigateToInstanceList })
+    const createDeployment = useDhis2DeploymentCreation()
 
     return (
         <>

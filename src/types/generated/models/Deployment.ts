@@ -1,11 +1,10 @@
-/* generated using openapi-typescript-codegen -- do no edit */
+/* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
 
 import type { DeploymentInstance } from './DeploymentInstance'
 import type { Group } from './Group'
 import type { User } from './User'
-
 export type Deployment = {
     createdAt?: string
     description?: string
@@ -14,7 +13,6 @@ export type Deployment = {
     id?: number
     instances?: Array<DeploymentInstance>
     name?: string
-    public?: boolean
     ttl?: number
     updatedAt?: string
     user?: User

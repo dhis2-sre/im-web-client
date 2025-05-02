@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test'
 import * as dotenv from 'dotenv'
 import * as dotenvExpand from 'dotenv-expand'
 
-function loadEnvVariables() {
+const loadEnvVariables = () => {
     // Assume it's a development environment unless one of these indicates otherwise
     const mode =
         process.env.ENVIRONMENT === 'prod' || process.env.ENVIRONMENT === 'production' || process.env.NODE_ENV === 'prod' || process.env.NODE_ENV === 'production'
@@ -23,6 +23,7 @@ loadEnvVariables()
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+    timeout: 10 * 1000, // 10 Minutes
     testDir: './e2e',
     /* Run tests in files in parallel */
     fullyParallel: true,
