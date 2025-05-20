@@ -5,8 +5,8 @@ import cx from 'classnames'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
+import { Group } from '../../types/generated/models/Group.ts'
 import styles from './groups-list.module.css'
-import { Group } from '../../types'
 
 type NewGroupModalProps = {
     onComplete: () => void

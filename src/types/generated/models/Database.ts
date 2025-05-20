@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-/* eslint-disable */
+
 import type { ExternalDownload } from './ExternalDownload'
 import type { Lock } from './Lock'
 export type Database = {
