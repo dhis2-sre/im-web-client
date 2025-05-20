@@ -1,7 +1,8 @@
 import { Button, FlyoutMenu, MenuItem, Popover } from '@dhis2/ui'
 import { colors } from '@dhis2/ui-constants'
-import { IconMore24, IconCopy16, IconEditItems24 } from '@dhis2/ui-icons'
-import { useCallback, FC, useState, useRef } from 'react'
+import { IconCopy16, IconEditItems24, IconMore24 } from '@dhis2/ui-icons'
+import { FC, useCallback, useRef, useState } from 'react'
+import { Database } from '../../types/generated/models/Database.ts'
 import { CopyDatabaseModal } from './copy-database-modal.tsx'
 import styles from './databases-list.module.css'
 import { DeleteButton } from './delete-button.tsx'
@@ -9,13 +10,7 @@ import { DownloadButton } from './download-button.tsx'
 import { RenameDatabaseModal } from './rename-database-modal.tsx'
 
 type DatabaseRowProps = {
-    database: {
-        id?: number
-        name: string
-        slug: string
-        createdAt: string
-        updatedAt: string
-    }
+    database: Database
     groupName: string
     refetch: () => void
 }

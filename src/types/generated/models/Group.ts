@@ -15,6 +15,7 @@ export type Group = {
     description?: string
     hostname?: string
     name?: string
+    namespace?: string
     updatedAt?: string
     users?: Array<User>
 }
