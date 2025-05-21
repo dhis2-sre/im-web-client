@@ -26,3 +26,7 @@ skaffold dev
 - Validate create group form
     - Can submit without hostname... No effect, no error
 - Loading shows within form
+
+# Design
+
+* https://www.figma.com/proto/DOrik1KNpszSVrGFmChez3/Instance-manager?node-id=48-3665&starting-point-node-id=1%3A2
