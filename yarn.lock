@@ -1784,73 +1784,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2-ui/alert@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/alert@npm:9.15.0"
+"@dhis2-ui/alert@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/alert@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/portal": "npm:9.15.0"
+    "@dhis2-ui/portal": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/938be5277a4ffa33386232e685129b4ffc3bb90c6e4325b796e1de32d6c2feedca1f0af424872ade8471eb9e009c278cc5ecb5b1b5666b5fa361703a718a1990
+  checksum: 10c0/29cb7aa88d51fd350eef75edddf3ec88b0ec41d0f3220ac42616153785b86b3e7685992e302ca69af740d4edc7c93194c9d7d8a4862499c366e316ab80aa73e4
   languageName: node
   linkType: hard
 
-"@dhis2-ui/box@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/box@npm:9.15.0"
+"@dhis2-ui/box@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/box@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/b306c5dd2d4ca2c6fda0ba44dbc6ed5715038888c03364a19502da7e9509bb09fd79faacbfc3d5d6bd1ab5d4f032f8b4b13f83d0ec9d3059c0a54c4e06bb7e09
+  checksum: 10c0/fe4003ef4146f48acaa9fe2a7c19f4f5e546efcd59836af91250317ea02cb39ff45eeca8a334715886e6cbe610dc1620295bb6906e2995ab77029d56509f023f
   languageName: node
   linkType: hard
 
-"@dhis2-ui/button@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/button@npm:9.15.0"
+"@dhis2-ui/button@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/button@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/d9802fe08c5372988d5e2e022923ea73faa03e54291949a9321ce0ce1ae0dbe283b0e9acb0ab9fa0d72d833f2b55f11cbb7d02b462c953122a427e0c7fdefa76
+  checksum: 10c0/32466f405f23748536569949b3ea0e748dc19f4d21e0da749de2805da5441335f3f7c11330b8ec6f9d4e0b59abca2aae9f6d473f2d929a2d18aa98eafc8e4d5c
   languageName: node
   linkType: hard
 
-"@dhis2-ui/calendar@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/calendar@npm:9.15.0"
+"@dhis2-ui/calendar@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/calendar@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2/multi-calendar-dates": "npm:^1.2.3"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2/multi-calendar-dates": "npm:2.1.0"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -1858,155 +1858,155 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/2b972834f84c248976aac3c75aa518c57c5aca662bbc8b91a9f45c12ec574e5e90d9ab9cfe659e47749cdce25eb09f3c0be3883f51028c08c590445dbe61e7e8
+  checksum: 10c0/8015c096570898f55e5323a9bd37a2c02c16ad20f5a7b771aec5d7e37ef7372a3ba15837ccb4153499dbed8a081677224b3022c68a39681cee9517b4ed597b02
   languageName: node
   linkType: hard
 
-"@dhis2-ui/card@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/card@npm:9.15.0"
+"@dhis2-ui/card@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/card@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/ada34bbe03aac8a4153df34c8e31703c827e729f976ba2f9f9c3b489661f9ecb62d02a69cb3adec2b628dfea0bb46ba3390a06fb79a429ef0bc823c2fa09b602
+  checksum: 10c0/89720fd839fc6803ab95cd439e198307a7666768be59c6db9dd75a7618398ce3d09835ada9949999ab8952966ce249bb0bf619125043de1b8e2a768f372c6876
   languageName: node
   linkType: hard
 
-"@dhis2-ui/center@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/center@npm:9.15.0"
+"@dhis2-ui/center@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/center@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/5bc7a2c2146a789b0981125abe0d1b8845b0033ae3e616dcf9678a1ac7570fcd61e0bd5c4e8bcf3943d94b0d6a51a2109ef18c203ab21e038724206324f1ea29
+  checksum: 10c0/6ffe907e0465efe924b65db13d11b3fac0ba2c486856c7534b3c36911c07712034bef50a2f05f622f41d94f74e2d491de72f4e4d087e3e253c810576b05bc4d4
   languageName: node
   linkType: hard
 
-"@dhis2-ui/checkbox@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/checkbox@npm:9.15.0"
+"@dhis2-ui/checkbox@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/checkbox@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/required": "npm:9.15.0"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/required": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/29cdfee298dde2d863e05ec4819fa9ac7079e820dd6abe2de9f6ffbc90a4b76f1b27cc04e338f2cb3b9dc6207695704e58e125974e2551343dd8441abcf12157
+  checksum: 10c0/872e4c5789b1187135914aaa62e63da52d882d176bed3522bd51bcc20cee5905517e9c69d3b52705ec2464cb898efb05325d261abfc207da0877d62f5e044381
   languageName: node
   linkType: hard
 
-"@dhis2-ui/chip@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/chip@npm:9.15.0"
+"@dhis2-ui/chip@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/chip@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/512c7c791d6f48af22f353d3175c2cbdcdbc11366127045aff3b61227679c8407e7a34e348ca41b4028f8b4a15c05d271fc52bc48f9d744578860aaedbf724ed
+  checksum: 10c0/a6ec8289cc95b2936f8d8f5b74045720f57cd4f3f353a4975e08eeb8acb052cdb1b76bb8fbe70da0c2d216a10d93bf4137d966d996a80c3b794b4bd011b4c27e
   languageName: node
   linkType: hard
 
-"@dhis2-ui/cover@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/cover@npm:9.15.0"
+"@dhis2-ui/cover@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/cover@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/eeb247d3b581f50fbea814d003ab855cbefc06b3904d8dff4d747e64022ee2a5b5833fc58722c2b8d245cde0d6ecd17aa65f8f5b6c9675955bfdb6563edef77f
+  checksum: 10c0/1b570e0b4d67ad1d0d634a807e06f0b6725f8ac1095619dba6ff6df48bffd279f3adf1d02fbecd2f32f73ea98dd556c3d004e2eb0b96d9fdebf24ef5a0c9f94b
   languageName: node
   linkType: hard
 
-"@dhis2-ui/css@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/css@npm:9.15.0"
+"@dhis2-ui/css@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/css@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/8fcc0c12ef1ffd1fcbbc916cfb12d600344cb44b84598b024f2704873d7296178c29b50f856b2e4e9ee3786cf07bb094ff90034c6ea0ae07059c6a23172d7e7c
+  checksum: 10c0/6b112840d60dc41e03f412de63ce0ef7593f8014e5a14de8615b7883eb93d65393165d0e12aab74e999e684e5bc1a7e89471b92016d44ed8f606592aa5a027d2
   languageName: node
   linkType: hard
 
-"@dhis2-ui/divider@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/divider@npm:9.15.0"
+"@dhis2-ui/divider@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/divider@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/22fe88ad69f4cabee2e48c14cf4bbcf8d90044855f155de2c4c55a006bdf5b2d7241bf64a4e8cef10fcd1b82355f24e98ab2075e433adc4a6c6df40bd67c82b1
+  checksum: 10c0/7837dc05a1098d9deb7f3f24d87ef349c4848266b578a4ef4d9609990582a9a043212438533732329ba2399700544621072b8602bc2530a7fbec4b66491398f6
   languageName: node
   linkType: hard
 
-"@dhis2-ui/field@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/field@npm:9.15.0"
+"@dhis2-ui/field@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/field@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/help": "npm:9.15.0"
-    "@dhis2-ui/label": "npm:9.15.0"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/help": "npm:10.7.1"
+    "@dhis2-ui/label": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/da574937a63a633708a8306f84f29957baeb6dcb92d61fd1cab2cdc93944649c69e991fea60f4421cf26b978a3eb4285e41986b4f5be7d63888ab9ff39bc145f
+  checksum: 10c0/f090c64d0266f3ce92c87f66c6a872cbdcb2dd86fe72f91bd6dabebce78e255d8a5a0ac2de74c314fe4d27df75c4c0c1ce062eeda89359e29b613331fe4b0e91
   languageName: node
   linkType: hard
 
-"@dhis2-ui/file-input@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/file-input@npm:9.15.0"
+"@dhis2-ui/file-input@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/file-input@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/label": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/status-icon": "npm:9.15.0"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/label": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/status-icon": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2014,29 +2014,29 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/99ac2d2c65216a0ceb209691e305338c6fae2f8900de92963aa780943dd6c54d7b5a59fb8c9cddc23ff8fa9d56c749d69c0cf615a4004d7eab3a65752ccc0f8d
+  checksum: 10c0/a1d62c36d4c28156bfe826c7ba0ab19fb3f175871a4ce93822a398e16797d13b9cd72adbef23719bf91653103209086eede4efdf07191508b2639ef184831e07
   languageName: node
   linkType: hard
 
-"@dhis2-ui/header-bar@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/header-bar@npm:9.15.0"
+"@dhis2-ui/header-bar@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/header-bar@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/center": "npm:9.15.0"
-    "@dhis2-ui/divider": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/logo": "npm:9.15.0"
-    "@dhis2-ui/menu": "npm:9.15.0"
-    "@dhis2-ui/modal": "npm:9.15.0"
-    "@dhis2-ui/user-avatar": "npm:9.15.0"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/center": "npm:10.7.1"
+    "@dhis2-ui/divider": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/logo": "npm:10.7.1"
+    "@dhis2-ui/menu": "npm:10.7.1"
+    "@dhis2-ui/modal": "npm:10.7.1"
+    "@dhis2-ui/user-avatar": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     moment: "npm:^2.29.1"
     prop-types: "npm:^15.7.2"
@@ -2046,234 +2046,234 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/c93973e9de82991a660cccf3e71a79e66a8a1255872f87773e55d5c6c2a344a969bc73b46812697b1cd4c54f55dfe9d59e2488e11e525ec76500a5eef32f57c5
+  checksum: 10c0/b9a5e0f04f9f9b5e7395cf781e89095b66c65644717c1a8b1f1c16b84aed53c5ac85b600286755c16ca5a282f6e9990cd8c367b1a5adb0c7175d95c4f769c2b3
   languageName: node
   linkType: hard
 
-"@dhis2-ui/help@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/help@npm:9.15.0"
+"@dhis2-ui/help@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/help@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/76b2395da969116129b539fe6d0415de33664aeffd4e23013075407a91e4627070f207ac693f0463eb279017b6a9fc1658908f3b906b274785c1cb646905ce00
+  checksum: 10c0/7abeb4abd58fd073fea0403f8e909201b3b5214fb6027c61e9a648b66d3ead1d9dadcc037b89d02305f0848d2772c363689465751257595791846296bfdf3e75
   languageName: node
   linkType: hard
 
-"@dhis2-ui/input@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/input@npm:9.15.0"
+"@dhis2-ui/input@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/input@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/status-icon": "npm:9.15.0"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/status-icon": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/aa36d12fd72d252f14e736f537f2f05ec81ee41ee8d54caba79247a41d7735bf88973b723c5ab8b003a578d6927dff2b0f2307fa7647a2bd3ce791f769e93f73
+  checksum: 10c0/ce78c09e0334c6e62fa15bf7b738b3e93fb204789c33d92313bfd470320c282ca76fc9bc244ee6821dcec5776abede3fde92292112fc4736e6946b31bc0dd21e
   languageName: node
   linkType: hard
 
-"@dhis2-ui/intersection-detector@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/intersection-detector@npm:9.15.0"
+"@dhis2-ui/intersection-detector@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/intersection-detector@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/208a586eae651d112b2133e9f71be00e43fdc85176ecf264b3ffc5bcafcf8d8f4ae6ec58ded998fd42280fe580021587d560f25ed3804dcd9b88450bb03021c4
+  checksum: 10c0/181cf894e1011b7cbbfb260ff7af4c7378a2b187c6be27fcb71a10e5c57d1e57eb9d31a5264585479c39e0b5df0385ac9af8e7e81562f2122d8fc73c05a9fba1
   languageName: node
   linkType: hard
 
-"@dhis2-ui/label@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/label@npm:9.15.0"
+"@dhis2-ui/label@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/label@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/required": "npm:9.15.0"
+    "@dhis2-ui/required": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/28f7e8fc3dfb9721b5a646b688aaa4794a4b2dc1465834d5576866fef70e7e07172a98c95b7291ae253d0513b74b4a34dd3a7a41f876699364daece324dd83f2
+  checksum: 10c0/dfd64ca66c653cecaf66b422d1e50d39686d7856116c094ec70a2547013e24ce6be1c74c85e48ab283e4f7af1d94f9b91b41a49c433631e99106dc826e96eee9
   languageName: node
   linkType: hard
 
-"@dhis2-ui/layer@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/layer@npm:9.15.0"
+"@dhis2-ui/layer@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/layer@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/portal": "npm:9.15.0"
+    "@dhis2-ui/portal": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/25442d9e266b09b051484a1b7563d46cbd860323f0701c546b6f9ffabece2b5c779b8b462daa82c1db2165937b2bbe1642bd82e0eaf2cc8a4eccb63975444c6a
+  checksum: 10c0/5ed45060cb6089b918433ed75fbb9e99f7cab2c7c586d0606c488161bed991645c5a9ddef83eb5247601d595434001aa743523ac8e1ddaaeaff46f8d99d6bca2
   languageName: node
   linkType: hard
 
-"@dhis2-ui/legend@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/legend@npm:9.15.0"
+"@dhis2-ui/legend@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/legend@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/required": "npm:9.15.0"
+    "@dhis2-ui/required": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/092d8a73c65db1107f291127f8f315ea63a728f58187c37d6488a39677ec27ab8192b7d5d6475223974cd5775dfcbc9962adfdcd5452de529b649278f586765b
+  checksum: 10c0/4485908d6ba1fbba6e813bf35cab7648db6435767a1f779015e8716b36e9a465e11f99e83a58214a5978b8872de540ab7df714d3fa436b6b989c192ee7c55981
   languageName: node
   linkType: hard
 
-"@dhis2-ui/loader@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/loader@npm:9.15.0"
+"@dhis2-ui/loader@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/loader@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/57ce7df39af020e9b36542f436ce8c616c33c47ca46ce86c37e0ab4e17b69830a133e06f2c493a831286de688d32f39beaa76a6d7cc2cbcc4ba0d4a1519ef838
+  checksum: 10c0/0a4576675ac8203f48361528dcb88b1cf66fd17ad2582bd83214741dfd64968188670c5505baaed2b8a9ef6d040118c2564923207c5562e1cd7768e4514110ee
   languageName: node
   linkType: hard
 
-"@dhis2-ui/logo@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/logo@npm:9.15.0"
+"@dhis2-ui/logo@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/logo@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/8eec7fa2fbc6c2a07b5cc39ec747e211a8717ebd8914b4f703d1692cca87a0e0621ab5c5b3690a3d117794ccc4629e8ba0df9109c91f3a22a1cfd0b117371bb2
+  checksum: 10c0/50e05fcaf0cc2bec09ff55eb3ed59f5fa7ccc8b5efba8a326ca6c04f324499d18f271e3efdb03913338bd8aa83ab680f5817b81a1f25c6403317766af16422b2
   languageName: node
   linkType: hard
 
-"@dhis2-ui/menu@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/menu@npm:9.15.0"
+"@dhis2-ui/menu@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/menu@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/divider": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2-ui/portal": "npm:9.15.0"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/divider": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2-ui/portal": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/347f61deafc5e0874a48a46a1e4174a6e3f0575e6648273785b8064387b004149a7be04d8599a7a9486d5a8e5f72c9f8a0c5391f5da09f21742a25d95a0d5975
+  checksum: 10c0/1b57e56931eadb5f9a41b415fbda0070d209a624c98e074de0b94f621e02fc72d35999b209b0d56226b05633b566c237d862d29d34ac5cb3bfaed51a71f8cb86
   languageName: node
   linkType: hard
 
-"@dhis2-ui/modal@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/modal@npm:9.15.0"
+"@dhis2-ui/modal@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/modal@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/center": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/portal": "npm:9.15.0"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/center": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/portal": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/b29c674c72e25af56deec3a26e392f076b249e63f8e2226dea47d4a83f09c87d8d1b8b65a7d2ae294d3ee833960195b2b3d07854e0f77e49360b73db5273c5ac
+  checksum: 10c0/bf2e8ad25bc1ab3a6d1cc702a21fa15583863878fb4273fc03d71e7b5efe4bfc44cde1e6783168a7ade436f880a8746fe638e124bdeae869dd806f524e861525
   languageName: node
   linkType: hard
 
-"@dhis2-ui/node@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/node@npm:9.15.0"
+"@dhis2-ui/node@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/node@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/loader": "npm:9.15.0"
+    "@dhis2-ui/loader": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/097a677fab005d4c3716b9e5ed01ae4f613df2bd307bd53cc4f23690006a362f54136944732ee2f27739c27ad4e5d580db1d8a03558a6be4267269a8a0caaafd
+  checksum: 10c0/07436afc02d36025827fa60e3e6348f0bde9d1f348f64e24f208b8ba3a6a68b2ab48f1eced4abc8902e1c954f29fc5b6a0aa3aa952f369883f38c2840d2ecf0a
   languageName: node
   linkType: hard
 
-"@dhis2-ui/notice-box@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/notice-box@npm:9.15.0"
+"@dhis2-ui/notice-box@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/notice-box@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/d4ab9d6ee195ab8c1fed9fdacf927c2ec66c4aa38b643deee055e47029058d005f78953908cb7a6cb2fd12b2fb911b88aaaa3376772e9d4184c6fb11f0f75f55
+  checksum: 10c0/34a8b1decadb72c703dfc1e47be4a68d00b6cd83bcd52b354678e6818cdc5183831d20181628c716132b8238f8f9ebbc1cdbf3199357ba29cb3fe3285d3cd396
   languageName: node
   linkType: hard
 
-"@dhis2-ui/organisation-unit-tree@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/organisation-unit-tree@npm:9.15.0"
+"@dhis2-ui/organisation-unit-tree@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/organisation-unit-tree@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/checkbox": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/node": "npm:9.15.0"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/checkbox": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/node": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2282,19 +2282,19 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/1afe5b6f576663dba916603e626ca14e8cd402a9b1734270b395045df8228f4fe2f46997c193623ff345bca84ec99f5f1cd83f0bdeb774790abec3ccf51ba31a
+  checksum: 10c0/0d03e67c583a172c8254712cf59dffbe9e692f29217d59cf413f28dc69b7888a4783c06b2aee1cad6730e6fa8846f75172c5c0d7f29d90d857249669ed963b9c
   languageName: node
   linkType: hard
 
-"@dhis2-ui/pagination@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/pagination@npm:9.15.0"
+"@dhis2-ui/pagination@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/pagination@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/select": "npm:9.15.0"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/select": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2302,34 +2302,34 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/94e636ab470bd0ab97fd83af43bb1a3f77648562c0628208a80aaa7fccd57871fa3f6811f0e81036c075a7738ebc2171e3eb4dfdba3bea2247599213f4576a05
+  checksum: 10c0/a2ada9281d6f5891d72c2ef14e7316deb76eb5c83758ab2df5e510b0e1456a7c88e3a55533963542cdcec31ae8d8c514b210f3b9b073ac700d1c829e5304b736
   languageName: node
   linkType: hard
 
-"@dhis2-ui/popover@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/popover@npm:9.15.0"
+"@dhis2-ui/popover@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/popover@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/10b1d411d91181c42699177c2b28f4f8c15e1516c72eeb58919a1b7bb4b602c5307ddc60857e1f5691238558c921c019ea3ea5a2228aff48404a81f8c2ae3b81
+  checksum: 10c0/d0a49f9f4a10c6ab1b961d7bb32b025c086af98a9be6014f494ec109ee879ee0f5e19b82b5859920eb5fae6e1928ad29d81973463b578164cb6abf1ca998d4b8
   languageName: node
   linkType: hard
 
-"@dhis2-ui/popper@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/popper@npm:9.15.0"
+"@dhis2-ui/popper@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/popper@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     "@popperjs/core": "npm:^2.10.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
@@ -2339,13 +2339,13 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/9984cc873b318639f0fb5f3c6fb71d661ba48e64674e6d75a00d16f9a8e7116df697caa3d3442f0c9d93a7cb1be0a334ba7192e7c99eacae746fc1d681abe499
+  checksum: 10c0/6548cdd494ab1c39c358bcbff1be4bfab6261ea2c712d60066a342cd9fc456993d6a1569892b5ec7fa85e3f192263cc600ff67c4668c617ee4aa862310016ac5
   languageName: node
   linkType: hard
 
-"@dhis2-ui/portal@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/portal@npm:9.15.0"
+"@dhis2-ui/portal@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/portal@npm:10.7.1"
   dependencies:
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
@@ -2353,77 +2353,77 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/aeee46e16c64670eb778c8d9029fccdbb47efae47af251a7d5aafc1b4af3118e374f0a0933454cb4c48730ea9780cbbff69d92360a05ed3852f197ca3cb6444c
+  checksum: 10c0/9c179957baa3696034fea3e33054d3f1f46ee781b88562c7f6ee826f295f441a1a29d07d5bd9686bdc927f34fffce52126795f20a04c473a3270f961629c346f
   languageName: node
   linkType: hard
 
-"@dhis2-ui/radio@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/radio@npm:9.15.0"
+"@dhis2-ui/radio@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/radio@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/6f4c02fa30ffad4af68007ca14928171ef428a963f1e624228bbdc54360aeb9d715239fac1a5afddc30ecff29d2176b961f62cd99cce33174539402afa1e42dd
+  checksum: 10c0/9702684c55beb0846febb526a939b0437caae9c5cb7d8abe88e653fc262a2880548fd6307416ad629c9ec325fda675abdf6d2ee03a0e00aa2b3e0e8360a8be3e
   languageName: node
   linkType: hard
 
-"@dhis2-ui/required@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/required@npm:9.15.0"
+"@dhis2-ui/required@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/required@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/fe36de8c8d265664cf8050841e332945ddf414c7bedb0599d9e2a2dd384f2400d1b0e75040ec748e2ab7c51a7ed83c69a0748b66290aa313dbff70fd3b84811a
+  checksum: 10c0/d25f104ebabdc1f214ad2367e1cf941bab619480f3714081c7e7e8242eeb51f8b2a2453e983afb5b41b745a5d72edc658849b52f2e3b57e1b4e830d32a8d8118
   languageName: node
   linkType: hard
 
-"@dhis2-ui/segmented-control@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/segmented-control@npm:9.15.0"
+"@dhis2-ui/segmented-control@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/segmented-control@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/7d5dd36558fbcfc9831536d20058674520d47a5b1bc525930c0afd4d2b947d97dbc825ac8ee3c1318fdefd467142bed634f8eac6a49cc6bd0e717bc212ace26e
+  checksum: 10c0/4969f434e566ea4ea7150ad77a5fe3336fecd80d151fa1d7853fb6961c75d0500d8d7b4e8c7979eddfa8e3d6a8e82a23f0f88e4e27556936c78c5bce1c955924
   languageName: node
   linkType: hard
 
-"@dhis2-ui/select@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/select@npm:9.15.0"
+"@dhis2-ui/select@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/select@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/checkbox": "npm:9.15.0"
-    "@dhis2-ui/chip": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2-ui/status-icon": "npm:9.15.0"
-    "@dhis2-ui/tooltip": "npm:9.15.0"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/checkbox": "npm:10.7.1"
+    "@dhis2-ui/chip": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2-ui/status-icon": "npm:10.7.1"
+    "@dhis2-ui/tooltip": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2431,20 +2431,20 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/9944269a2c6a87d75666870336e2965b69884af4d48104b1b880d038d3255f6553c12ed59a45e50be6dcb4a7d63eb68db95704cab63b4dc52f19286425000875
+  checksum: 10c0/b4614a3ab95683cd2da6e74d1c411db2f4d67a16535aca73ad6ed6cdadeadbcfd4c9a036243c93faa6954a6250179bcd97d28b5ef00b7376684cca0cf04d1be4
   languageName: node
   linkType: hard
 
-"@dhis2-ui/selector-bar@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/selector-bar@npm:9.15.0"
+"@dhis2-ui/selector-bar@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/selector-bar@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2452,31 +2452,31 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/b27534471dfd21b085637bea2b47cb1607336e8f836c58fcc3f9875bb4b66eff1084da39dbcfae8cbd3e1e37765f73fa739d975439043641c333b2c1fea64d35
+  checksum: 10c0/59b43f41b0810cacf1a57aed038755cfc61a958ccca10cbcab16e084e60a1897156b516780372deab1b00ee03ce1d731f0ce88959e55b33dc836fe9c05c9cef2
   languageName: node
   linkType: hard
 
-"@dhis2-ui/sharing-dialog@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/sharing-dialog@npm:9.15.0"
+"@dhis2-ui/sharing-dialog@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/sharing-dialog@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/divider": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/menu": "npm:9.15.0"
-    "@dhis2-ui/modal": "npm:9.15.0"
-    "@dhis2-ui/notice-box": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2-ui/select": "npm:9.15.0"
-    "@dhis2-ui/tab": "npm:9.15.0"
-    "@dhis2-ui/tooltip": "npm:9.15.0"
-    "@dhis2-ui/user-avatar": "npm:9.15.0"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/divider": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/menu": "npm:10.7.1"
+    "@dhis2-ui/modal": "npm:10.7.1"
+    "@dhis2-ui/notice-box": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2-ui/select": "npm:10.7.1"
+    "@dhis2-ui/tab": "npm:10.7.1"
+    "@dhis2-ui/tooltip": "npm:10.7.1"
+    "@dhis2-ui/user-avatar": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     "@react-hook/size": "npm:^2.1.2"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
@@ -2486,71 +2486,71 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/b1b2c8d116b5faf0b7509de8a203c63645ce968f68323c63e44df9bb3b8811e668ca6e83b1d5a56862ad3d067de49dfba6ba50a9e867eb62ccf20ee311c6ee49
+  checksum: 10c0/82317e7ba42f1f6e82204ce26037381960a6a58a4fc95a902cbfc705e3c314c31606d8bbed7c99907ce6807be0929ad4588b55dd6a2d4d0e255313c59f152771
   languageName: node
   linkType: hard
 
-"@dhis2-ui/status-icon@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/status-icon@npm:9.15.0"
+"@dhis2-ui/status-icon@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/status-icon@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/loader": "npm:9.15.0"
+    "@dhis2-ui/loader": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/5b61dd679efbcfd2a2acbec50937d8b2f91a1becab31cc81a430b6350a10e687b7199def2d0d412a28163144f2d6ba430ffe9b1a338df3feb9e1c8ae1f421bec
+  checksum: 10c0/e45d279aaebf305a6d3b62d81faa60e7b03968d88af9e3cdef29a246f00baeff712b8ae656955666fae886336eae8bfe6d701a147d76d6f564671e21c0f49fd2
   languageName: node
   linkType: hard
 
-"@dhis2-ui/switch@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/switch@npm:9.15.0"
+"@dhis2-ui/switch@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/switch@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/required": "npm:9.15.0"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/required": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/76d33f91b0763f7e41291da84e0e08162136741893900bed0ad846b3e7db7475470724fcf1b0a71e833039ec57d999d1650162f753dfc158a2907e771508ee44
+  checksum: 10c0/1fa3d1650a7a1c2ac79ed8f657bef783aa9daa282f439141547aa44715453c51b2bdf14a2c1f679e3ec18079be52eaff93c9b63827c14bba6d7c028847977395
   languageName: node
   linkType: hard
 
-"@dhis2-ui/tab@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/tab@npm:9.15.0"
+"@dhis2-ui/tab@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/tab@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/tooltip": "npm:9.15.0"
+    "@dhis2-ui/tooltip": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/5435c7c341868ae0594364425b79705fa00082928466e63716275b37e3f7a0ef0d3af70b8f67a284cea7068079ef1f2fc6d6e4bf0189ad4be63ef34589ac26b2
+  checksum: 10c0/2eefec436b9b5c0dbdc798112086fa0ad012964c147e6a120eb279e0d490376967482c73390c7693484eedd1b4d2567c2c717b337fe0b02087cdc9070d5d9bba
   languageName: node
   linkType: hard
 
-"@dhis2-ui/table@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/table@npm:9.15.0"
+"@dhis2-ui/table@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/table@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2558,92 +2558,92 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/fe8927201fc84365adf5a78cebb608c857ca4e9fba700c09cc07383b769e2d4cc3315ce3627e49bad5f2414fe14b49a7d6cfbd7fc23d06dac417a2b408291e1d
+  checksum: 10c0/b1f18f2d773030c5a50890a474cc66cbb6427161537e4df00e9042050ca1899a38cc50e2a5b5740bdf5e870be02623666b4b46c52297039461a5887eacd08132
   languageName: node
   linkType: hard
 
-"@dhis2-ui/tag@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/tag@npm:9.15.0"
+"@dhis2-ui/tag@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/tag@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/226dec6badfd62378fbc8f221acf61e0f95612f97af7889cf7ea841cbc871ff858285614b8b5c473b0b497adda5b039b3898a55aa97273474abb347ee7803214
+  checksum: 10c0/938216c1cae55121f1c5424464a51de0ff4ead0bc83255518964daa372177e8034f51075dd21ff35a8612007292f23e3fd7a04dc30e42ca44e75406a2ac7ab7c
   languageName: node
   linkType: hard
 
-"@dhis2-ui/text-area@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/text-area@npm:9.15.0"
+"@dhis2-ui/text-area@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/text-area@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/status-icon": "npm:9.15.0"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/status-icon": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/d8413033509244c4fa75489825ca504d633f6562116c474ed7ee682fd9bed1daff943b5b971bc9cb5521212f9054cdd49d097ae38a8c4793ab934e115a971c48
+  checksum: 10c0/a58d24e6f6376beef752def885150f1011b1796819bd395ebf96a0234388b2e8bdbc87a51b267585d97d945ee8ad5df97486a97e64f5e1785e3a9b1d55105770
   languageName: node
   linkType: hard
 
-"@dhis2-ui/tooltip@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/tooltip@npm:9.15.0"
+"@dhis2-ui/tooltip@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/tooltip@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2-ui/portal": "npm:9.15.0"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2-ui/portal": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/9eeb11840c6a7790642299c8f6e0837af309f3213ac304ae3b6d4eb222c7583818bbef80050acafeccc1f5cd1d6819664bb714cd44b10b52ddf233e4f821acbf
+  checksum: 10c0/38738c6d9ac8e8da475d54d7cbcef421eacf9dc615830fe82946650bf7522bf048135fa3cf24668746e95659bf100a2655349a1793c89a65d069c435570f1b9a
   languageName: node
   linkType: hard
 
-"@dhis2-ui/transfer@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/transfer@npm:9.15.0"
+"@dhis2-ui/transfer@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/transfer@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/intersection-detector": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/intersection-detector": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/48025ef2a0a0543428c8f6edc7b09364a4140b9c92efd303709012aee62bc767ca7d171a1a831186f6dd264d6963edd076ac10026b4e1b31a903b6aae34c49f1
+  checksum: 10c0/37807bc1853f23b4dad236eb99746d573b56cbcdb83f693d43d1a0a5bb08c22330c7242307c415c165820d61b06571e05379877579ee5fdb295b716c7e4fa7d1
   languageName: node
   linkType: hard
 
-"@dhis2-ui/user-avatar@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2-ui/user-avatar@npm:9.15.0"
+"@dhis2-ui/user-avatar@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2-ui/user-avatar@npm:10.7.1"
   dependencies:
     "@dhis2/prop-types": "npm:^3.1.2"
-    "@dhis2/ui-constants": "npm:9.15.0"
+    "@dhis2/ui-constants": "npm:10.7.1"
     classnames: "npm:^2.3.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
@@ -2651,7 +2651,7 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/6ba050d4a35cefba57e2e9ab72b48dabd757b1051483528cf20e586a4b1a6e4f880afba089d9034890e8db8060c0b369cf1c943a6dee5ef7dfeeefc367d1f74f
+  checksum: 10c0/7ac84115a7f6da57ff705fcf170ec4cc907edd8743e8ca4bc56d81c02f059a1a1e94d096eea4c21403c65ba7a9c07d6ddad6774e98b062501c97fc9fd2612a90
   languageName: node
   linkType: hard
 
@@ -2812,9 +2812,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/multi-calendar-dates@npm:^1.2.3":
-  version: 1.3.2
-  resolution: "@dhis2/multi-calendar-dates@npm:1.3.2"
+"@dhis2/multi-calendar-dates@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@dhis2/multi-calendar-dates@npm:2.1.0"
   dependencies:
     "@dhis2/d2-i18n": "npm:^1.1.3"
     "@js-temporal/polyfill": "npm:0.4.3"
@@ -2822,7 +2822,7 @@ __metadata:
   peerDependencies:
     react: ^16.8
     react-dom: ^16.8
-  checksum: 10c0/a60c508c5aeddf541df6260e773cc9327b81c85ddb294e2072152de531fa513edb5fb2cfdee54ffff314249f484e6f12319ac24d101977629672f300d9d64835
+  checksum: 10c0/ee32a21d2024aefd5fd7dac090d41f76cd4545e9da82a73ef0f88ce831b6c61763a0bf7d29f43118e84273fce2885ddb5c426ee9f0d045cf3219fd125714df51
   languageName: node
   linkType: hard
 
@@ -2835,28 +2835,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/ui-constants@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2/ui-constants@npm:9.15.0"
+"@dhis2/ui-constants@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2/ui-constants@npm:10.7.1"
   dependencies:
     prop-types: "npm:^15.7.2"
-  checksum: 10c0/bd1e05cd3a7f925c011296ecb1e3f6aa6c6a41e715652186a2d16f7a4fc97e282b97fda39221483e3a9733bc518c44b4497ba451ebeacf94a836a4e2b7c60175
+  checksum: 10c0/11ac978601e2b0a6cbfe455e37fc279756db32c2eaebb4413529194bbf81538105f2701c9637233c08a475ecf41320c90abc4d9b3dfbbfd4c5bdfd99885f7065
   languageName: node
   linkType: hard
 
-"@dhis2/ui-forms@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2/ui-forms@npm:9.15.0"
+"@dhis2/ui-forms@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2/ui-forms@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/checkbox": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/file-input": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/radio": "npm:9.15.0"
-    "@dhis2-ui/select": "npm:9.15.0"
-    "@dhis2-ui/switch": "npm:9.15.0"
-    "@dhis2-ui/text-area": "npm:9.15.0"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/checkbox": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/file-input": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/radio": "npm:10.7.1"
+    "@dhis2-ui/select": "npm:10.7.1"
+    "@dhis2-ui/switch": "npm:10.7.1"
+    "@dhis2-ui/text-area": "npm:10.7.1"
     "@dhis2/prop-types": "npm:^3.1.2"
     classnames: "npm:^2.3.1"
     final-form: "npm:^4.20.2"
@@ -2865,72 +2865,72 @@ __metadata:
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
-  checksum: 10c0/af7e39cf12faff73a749df73dbeb1086d54704492971bca6d01f483e23685e90cfd45c0cd76dab27ec5e74c5d5518d4a3af88c0a7e0584241132c3818e54024d
+  checksum: 10c0/3087c8e8744b383fac21c616a050de9547395fc0f9cbdc96fb1d9bc5e6a60222af618100f2faa72336a837c83673268a925dd76ea004190e1213e02bc5d718bf
   languageName: node
   linkType: hard
 
-"@dhis2/ui-icons@npm:9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2/ui-icons@npm:9.15.0"
+"@dhis2/ui-icons@npm:10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2/ui-icons@npm:10.7.1"
   peerDependencies:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
-  checksum: 10c0/86d32d8676c887c7e196d2e4914a5cf98b92239a5f1f33c89e3908c21152ccf0a0873a1ffea102d720e577b1896d6cea233026d153b172512927b3f04aaa5a36
+  checksum: 10c0/3d7bff8a415abb7c99bf7a5f90bceea053889cff03ada2890fc3013f04b587b05877f8d48b1531f4ee7765238bfb18552e6cb9df020ad239d2cdedddc6a7e6a1
   languageName: node
   linkType: hard
 
-"@dhis2/ui@npm:^9.15.0":
-  version: 9.15.0
-  resolution: "@dhis2/ui@npm:9.15.0"
+"@dhis2/ui@npm:^10.7.1":
+  version: 10.7.1
+  resolution: "@dhis2/ui@npm:10.7.1"
   dependencies:
-    "@dhis2-ui/alert": "npm:9.15.0"
-    "@dhis2-ui/box": "npm:9.15.0"
-    "@dhis2-ui/button": "npm:9.15.0"
-    "@dhis2-ui/calendar": "npm:9.15.0"
-    "@dhis2-ui/card": "npm:9.15.0"
-    "@dhis2-ui/center": "npm:9.15.0"
-    "@dhis2-ui/checkbox": "npm:9.15.0"
-    "@dhis2-ui/chip": "npm:9.15.0"
-    "@dhis2-ui/cover": "npm:9.15.0"
-    "@dhis2-ui/css": "npm:9.15.0"
-    "@dhis2-ui/divider": "npm:9.15.0"
-    "@dhis2-ui/field": "npm:9.15.0"
-    "@dhis2-ui/file-input": "npm:9.15.0"
-    "@dhis2-ui/header-bar": "npm:9.15.0"
-    "@dhis2-ui/help": "npm:9.15.0"
-    "@dhis2-ui/input": "npm:9.15.0"
-    "@dhis2-ui/intersection-detector": "npm:9.15.0"
-    "@dhis2-ui/label": "npm:9.15.0"
-    "@dhis2-ui/layer": "npm:9.15.0"
-    "@dhis2-ui/legend": "npm:9.15.0"
-    "@dhis2-ui/loader": "npm:9.15.0"
-    "@dhis2-ui/logo": "npm:9.15.0"
-    "@dhis2-ui/menu": "npm:9.15.0"
-    "@dhis2-ui/modal": "npm:9.15.0"
-    "@dhis2-ui/node": "npm:9.15.0"
-    "@dhis2-ui/notice-box": "npm:9.15.0"
-    "@dhis2-ui/organisation-unit-tree": "npm:9.15.0"
-    "@dhis2-ui/pagination": "npm:9.15.0"
-    "@dhis2-ui/popover": "npm:9.15.0"
-    "@dhis2-ui/popper": "npm:9.15.0"
-    "@dhis2-ui/portal": "npm:9.15.0"
-    "@dhis2-ui/radio": "npm:9.15.0"
-    "@dhis2-ui/required": "npm:9.15.0"
-    "@dhis2-ui/segmented-control": "npm:9.15.0"
-    "@dhis2-ui/select": "npm:9.15.0"
-    "@dhis2-ui/selector-bar": "npm:9.15.0"
-    "@dhis2-ui/sharing-dialog": "npm:9.15.0"
-    "@dhis2-ui/switch": "npm:9.15.0"
-    "@dhis2-ui/tab": "npm:9.15.0"
-    "@dhis2-ui/table": "npm:9.15.0"
-    "@dhis2-ui/tag": "npm:9.15.0"
-    "@dhis2-ui/text-area": "npm:9.15.0"
-    "@dhis2-ui/tooltip": "npm:9.15.0"
-    "@dhis2-ui/transfer": "npm:9.15.0"
-    "@dhis2-ui/user-avatar": "npm:9.15.0"
-    "@dhis2/ui-constants": "npm:9.15.0"
-    "@dhis2/ui-forms": "npm:9.15.0"
-    "@dhis2/ui-icons": "npm:9.15.0"
+    "@dhis2-ui/alert": "npm:10.7.1"
+    "@dhis2-ui/box": "npm:10.7.1"
+    "@dhis2-ui/button": "npm:10.7.1"
+    "@dhis2-ui/calendar": "npm:10.7.1"
+    "@dhis2-ui/card": "npm:10.7.1"
+    "@dhis2-ui/center": "npm:10.7.1"
+    "@dhis2-ui/checkbox": "npm:10.7.1"
+    "@dhis2-ui/chip": "npm:10.7.1"
+    "@dhis2-ui/cover": "npm:10.7.1"
+    "@dhis2-ui/css": "npm:10.7.1"
+    "@dhis2-ui/divider": "npm:10.7.1"
+    "@dhis2-ui/field": "npm:10.7.1"
+    "@dhis2-ui/file-input": "npm:10.7.1"
+    "@dhis2-ui/header-bar": "npm:10.7.1"
+    "@dhis2-ui/help": "npm:10.7.1"
+    "@dhis2-ui/input": "npm:10.7.1"
+    "@dhis2-ui/intersection-detector": "npm:10.7.1"
+    "@dhis2-ui/label": "npm:10.7.1"
+    "@dhis2-ui/layer": "npm:10.7.1"
+    "@dhis2-ui/legend": "npm:10.7.1"
+    "@dhis2-ui/loader": "npm:10.7.1"
+    "@dhis2-ui/logo": "npm:10.7.1"
+    "@dhis2-ui/menu": "npm:10.7.1"
+    "@dhis2-ui/modal": "npm:10.7.1"
+    "@dhis2-ui/node": "npm:10.7.1"
+    "@dhis2-ui/notice-box": "npm:10.7.1"
+    "@dhis2-ui/organisation-unit-tree": "npm:10.7.1"
+    "@dhis2-ui/pagination": "npm:10.7.1"
+    "@dhis2-ui/popover": "npm:10.7.1"
+    "@dhis2-ui/popper": "npm:10.7.1"
+    "@dhis2-ui/portal": "npm:10.7.1"
+    "@dhis2-ui/radio": "npm:10.7.1"
+    "@dhis2-ui/required": "npm:10.7.1"
+    "@dhis2-ui/segmented-control": "npm:10.7.1"
+    "@dhis2-ui/select": "npm:10.7.1"
+    "@dhis2-ui/selector-bar": "npm:10.7.1"
+    "@dhis2-ui/sharing-dialog": "npm:10.7.1"
+    "@dhis2-ui/switch": "npm:10.7.1"
+    "@dhis2-ui/tab": "npm:10.7.1"
+    "@dhis2-ui/table": "npm:10.7.1"
+    "@dhis2-ui/tag": "npm:10.7.1"
+    "@dhis2-ui/text-area": "npm:10.7.1"
+    "@dhis2-ui/tooltip": "npm:10.7.1"
+    "@dhis2-ui/transfer": "npm:10.7.1"
+    "@dhis2-ui/user-avatar": "npm:10.7.1"
+    "@dhis2/ui-constants": "npm:10.7.1"
+    "@dhis2/ui-forms": "npm:10.7.1"
+    "@dhis2/ui-icons": "npm:10.7.1"
     prop-types: "npm:^15.7.2"
   peerDependencies:
     "@dhis2/app-runtime": ^3
@@ -2938,7 +2938,7 @@ __metadata:
     react: ^16.13 || ^18
     react-dom: ^16.13 || ^18
     styled-jsx: ^4
-  checksum: 10c0/15650bc4219aa3f519b7eea5a560cc574a935562f5a5fb7f2cb66f24cf06de197dfe015802d31890989d4e0820b90a9424e48da299fc13bd73253c0b76f51fe4
+  checksum: 10c0/fdbb6a373a4082a12acfc6afd8ac64b3bd06d5c81d3705b980d7e3a070c62f8ced414c8e23deae06f1f009ff9437de9c26f216432843378b94d6f547362c2a0c
   languageName: node
   linkType: hard
 
@@ -9709,7 +9709,7 @@ __metadata:
     "@dhis2/app-service-alerts": "npm:^3.12.0"
     "@dhis2/cli-style": "npm:^10.7.4"
     "@dhis2/d2-i18n": "npm:^1.1.3"
-    "@dhis2/ui": "npm:^9.15.0"
+    "@dhis2/ui": "npm:^10.7.1"
     "@fontsource/roboto": "npm:^5.1.0"
     "@ls-lint/ls-lint": "npm:^2.2.2"
     "@playwright/test": "npm:1.48.0"
