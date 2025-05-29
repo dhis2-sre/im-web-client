@@ -41,7 +41,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
     const [{ loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupsWithDatabases>(
         {
             url: `/databases`,
-            method: 'post',
+            method: 'put',
             onUploadProgress,
         },
         { manual: true }
@@ -58,11 +58,24 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         }
 
         try {
-            const formData = new FormData()
-            formData.append('group', group)
-            formData.append('database', databaseFile)
-            formData.append('name', name + extension)
-            await postDatabase({ data: formData })
+            let contentType: string
+            if (extension === '.sql.gz') {
+                contentType = 'application/gzip'
+            } else if (extension === '.pgc') {
+                contentType = 'application/pgc'
+            } else {
+                contentType = 'application/octet-stream'
+            }
+
+            await postDatabase({
+                headers: {
+                    'X-Upload-Group': group,
+                    'X-Upload-Name': name + extension,
+                    'Content-Type': contentType,
+                },
+                data: databaseFile,
+            })
+
             showAlert({
                 message: 'Database added successfully',
                 isCritical: false,
