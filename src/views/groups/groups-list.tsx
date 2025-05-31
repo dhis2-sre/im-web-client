@@ -18,6 +18,7 @@ export const GroupsList: FC = () => {
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
+                        <DataTableColumnHeader>Namespace</DataTableColumnHeader>
                         <DataTableColumnHeader>Hostname</DataTableColumnHeader>
                         <DataTableColumnHeader>Description</DataTableColumnHeader>
                         <DataTableColumnHeader>Deployable</DataTableColumnHeader>
@@ -30,6 +31,7 @@ export const GroupsList: FC = () => {
                     {data?.map((group) => (
                         <DataTableRow key={group.name}>
                             <DataTableCell>{group.name}</DataTableCell>
+                            <DataTableCell>{group.namespace}</DataTableCell>
                             <DataTableCell>{group.hostname}</DataTableCell>
                             <DataTableCell>{group?.description}</DataTableCell>
                             <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
