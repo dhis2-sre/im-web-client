@@ -7,4 +7,5 @@ export type CreateGroupRequest = {
     description?: string
     hostname?: string
     name?: string
+    namespace?: string
 }

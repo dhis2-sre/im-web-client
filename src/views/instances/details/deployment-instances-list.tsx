@@ -4,7 +4,7 @@ import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
-import { Deployment, DeploymentInstance } from '../../../types/index.ts'
+import { Deployment } from '../../../types/index.ts'
 import styles from '../list/instances-list.module.css'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
 import { ActionsDropdownMenu } from './actions-dropdown-menu.tsx'
@@ -12,12 +12,11 @@ import { StatusLabel } from './status-label.tsx'
 import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 
 export const DeploymentInstancesList: FC<{
-    deploymentId: number
-    instances: DeploymentInstance[]
+    deployment: Deployment
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     refetch: RefetchFunction<any, Deployment>
     loading: boolean
-}> = ({ deploymentId, instances, refetch, loading }) => {
+}> = ({ deployment, refetch, loading }) => {
     const navigate = useNavigate()
     return (
         <DataTable>
@@ -32,7 +31,7 @@ export const DeploymentInstancesList: FC<{
                 </DataTableRow>
             </DataTableHead>
             <DataTableBody loading={loading}>
-                {instances?.map((instance) => {
+                {deployment.instances?.map((instance) => {
                     const onClick = () => navigate(`/instance/${instance.id}/details`)
                     return (
                         <tr className={styles.clickableRow} key={instance.id}>
@@ -50,11 +49,11 @@ export const DeploymentInstancesList: FC<{
                             </DataTableCell>
                             <DataTableCell staticStyle align="right">
                                 {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
-                                    <ViewInstanceMenuItem groupName={instance.groupName} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
+                                    <ViewInstanceMenuItem group={deployment.group} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
                                 )}
                             </DataTableCell>
                             <DataTableCell staticStyle align="right">
-                                <ActionsDropdownMenu deploymentId={deploymentId} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
+                                <ActionsDropdownMenu deploymentId={deployment.id} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
                             </DataTableCell>
                         </tr>
                     )
