@@ -29,4 +29,4 @@ skaffold dev
 
 # Design
 
-* https://www.figma.com/proto/DOrik1KNpszSVrGFmChez3/Instance-manager?node-id=48-3665&starting-point-node-id=1%3A2
+- https://www.figma.com/proto/DOrik1KNpszSVrGFmChez3/Instance-manager?node-id=48-3665&starting-point-node-id=1%3A2
