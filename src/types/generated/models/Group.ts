@@ -9,6 +9,7 @@ import type { User } from './User'
  */
 export type Group = {
     adminUsers?: Array<User>
+    autoscaled?: boolean
     clusterConfiguration?: ClusterConfiguration
     createdAt?: string
     deployable?: boolean
