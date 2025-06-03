@@ -6,47 +6,53 @@ import { Group } from '../../../../types/index.ts'
 import styles from './fields.module.css'
 import { GroupSelectHelpText } from './group-select-help-text.tsx'
 
-export const GroupSelect = () => {
+export const GroupSelect = ({ groups: propGroups }: { groups?: Group[] }) => {
     const form = useForm()
-    const [currentGroup, setCurrentGroup] = useState()
-
-    const [{ data: groups, loading, error }] = useAuthAxios<Group[]>({
+    const [{ data: fetchedGroups, loading, error }] = useAuthAxios<Group[]>({
         method: 'GET',
         url: '/groups',
         params: {
             deployable: true,
         },
-    })
+    }, { manual: !!propGroups })
+
+    const groups = propGroups ?? fetchedGroups
 
     const options = useMemo(() => (groups ?? []).map(({ name }) => ({ label: name, value: name })), [groups])
 
-    useEffect(() => {
-        return form.subscribe(
-            ({ values }) => {
-                setCurrentGroup(values.groupName)
-            },
-            { values: true }
-        )
-    }, [form])
+    const [currentGroup, setCurrentGroup] = useState()
 
     useEffect(() => {
-        const { value } = form.getFieldState('groupName')
-        if (groups && groups.length > 0 && !value) {
-            form.initialize((values) => ({ ...values, groupName: groups[0].name }))
+        if (!propGroups) {
+            const { value } = form.getFieldState('groupName')
+            if (groups && groups.length > 0 && !value) {
+                form.initialize((values) => ({ ...values, groupName: groups[0].name }))
+            }
         }
-    }, [groups, form])
+    }, [groups, form, propGroups])
+
+    useEffect(() => {
+        if (!propGroups) {
+            return form.subscribe(
+                ({ values }) => {
+                    setCurrentGroup(values.groupName)
+                },
+                { values: true }
+            )
+        }
+    }, [form, propGroups])
 
     return (
         <Field
             filterable={options.length > 7}
             className={styles.field}
-            required={loading}
-            error={error}
+            required={!propGroups && loading}
+            error={!propGroups && error}
             name="groupName"
             label="Group"
             component={SingleSelectFieldFF}
             options={options}
-            helpText={<GroupSelectHelpText groupName={currentGroup} />}
+            helpText={!propGroups ? <GroupSelectHelpText groupName={currentGroup} /> : undefined}
             validate={hasValue}
         />
     )
