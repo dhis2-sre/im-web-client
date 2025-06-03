@@ -37,19 +37,17 @@ export const GroupSelect = () => {
     }, [groups, form])
 
     return (
-        <>
-            <Field
-                filterable={options.length > 7}
-                className={styles.field}
-                required={loading}
-                error={error}
-                name="groupName"
-                label="Group"
-                component={SingleSelectFieldFF}
-                options={options}
-                helpText={<GroupSelectHelpText groupName={currentGroup} />}
-                validate={hasValue}
-            />
-        </>
+        <Field
+            filterable={options.length > 7}
+            className={styles.field}
+            required={loading}
+            error={error}
+            name="groupName"
+            label="Group"
+            component={SingleSelectFieldFF}
+            options={options}
+            helpText={<GroupSelectHelpText groupName={currentGroup} />}
+            validate={hasValue}
+        />
     )
 }
