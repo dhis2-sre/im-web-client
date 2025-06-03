@@ -26,7 +26,7 @@ export const GroupSelectHelpText = ({ groupName }: GroupSelectHelpTextProps) => 
     if (loading) {
         return (
             <Center>
-                <CircularLoader />
+                <CircularLoader small />
             </Center>
         )
     }
