@@ -137,7 +137,7 @@ The following actions are available:
 
 - Open: go to the login page of the instance.
 - Logs: view the current tomcat logs.
-- Restart: Restart the DHIS2 core - leaving the filestore intact
+- Restart: Restart the DHIS2 core - leaving the filestore intact (TBC)
 - Reset: Redeploy the docker container (pull new docker image if necessary) and clear the filestore.
 - Delete: Remove the DHIS2 core docker container 
 
@@ -145,7 +145,7 @@ The following actions are available:
 
 The following actions are available:
 
-- Logs: view the current tomcat logs.
+- Logs: view the current postgres logs.
 - Save database as: Allows the state of the current running database to be saved to a file in the [Database Manager](#databases). 
 - Restart: TBC
 - Reset: Redeploy and re-seed the database from file.
