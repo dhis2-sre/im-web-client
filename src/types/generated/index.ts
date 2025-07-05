@@ -1,6 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
+/* eslint-disable */
 
 export type { Category } from './models/Category'
 export type { ClusterConfiguration } from './models/ClusterConfiguration'
@@ -37,6 +38,7 @@ export type { signUpRequest } from './models/signUpRequest'
 export type { Stack } from './models/Stack'
 export type { StackParameter } from './models/StackParameter'
 export type { UpdateDatabaseRequest } from './models/UpdateDatabaseRequest'
+export type { UpdateDeploymentRequest } from './models/UpdateDeploymentRequest'
 export type { updateUserRequest } from './models/updateUserRequest'
 export type { User } from './models/User'
 export type { validateEmailRequest } from './models/validateEmailRequest'
