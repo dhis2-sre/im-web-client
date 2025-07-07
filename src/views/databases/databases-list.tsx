@@ -6,6 +6,7 @@ import { useAuthAxios } from '../../hooks/index.ts'
 import { Database, GroupsWithDatabases } from '../../types/index.ts'
 import { DatabaseRowAction } from './database-row-action.tsx'
 import styles from './databases-list.module.css'
+import { Locked } from './locked.tsx'
 import { UploadButton } from './upload-button.tsx'
 
 export const DatabasesList: FC = () => {
@@ -29,6 +30,7 @@ export const DatabasesList: FC = () => {
                                 <DataTableColumnHeader>Slug</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                                <DataTableColumnHeader>Locked?</DataTableColumnHeader>
                                 <DataTableColumnHeader></DataTableColumnHeader>
                             </DataTableRow>
                         </TableHead>
@@ -50,6 +52,9 @@ export const DatabasesList: FC = () => {
                                         </DataTableCell>
                                         <DataTableCell>
                                             <Moment date={database.updatedAt} fromNow />
+                                        </DataTableCell>
+                                        <DataTableCell>
+                                            <Locked lock={database.lock} />
                                         </DataTableCell>
                                         <DataTableCell className={styles.rowPopoverTrigger}>
                                             <DatabaseRowAction database={database} groupName={database.groupName} refetch={refetch} />

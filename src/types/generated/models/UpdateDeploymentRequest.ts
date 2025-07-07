@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type LockDatabaseRequest = {
-    instanceId?: number
+export type UpdateDeploymentRequest = {
+    description?: string
+    ttl?: number
 }
