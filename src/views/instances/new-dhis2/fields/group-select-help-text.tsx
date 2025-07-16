@@ -11,6 +11,9 @@ export const GroupSelectHelpText = ({ groupName }: GroupSelectHelpTextProps) => 
     const [resources, setResources] = useState<ClusterResources>({})
     const [{ loading, error }, fetchClusterResources] = useAuthAxios<ClusterResources>({ method: 'GET' }, { manual: true, autoCatch: true })
     const loadResources = useCallback(async () => {
+        if (!groupName) {
+            return
+        }
         const { data } = await fetchClusterResources(`/groups/${groupName}/resources`)
         setResources(data)
     }, [fetchClusterResources, groupName])
