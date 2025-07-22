@@ -8,12 +8,14 @@ import '@fontsource/roboto/700.css'
 import { ReactElement } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
+import { ClustersList } from '../views/clusters/clusters-list.tsx'
 import {
     DatabasesList,
     DeploymentDetails,
     GroupsList,
     InstancesList,
     NewDhis2Instance,
+    NotFound,
     RequestPasswordReset,
     ResetPassword,
     SignUp,
@@ -23,7 +25,6 @@ import {
     UsersList,
     Validate,
     ValidateSuccess,
-    NotFound,
 } from '../views/index.ts'
 import { InstanceDetails } from '../views/instances/details/instance-details.tsx'
 import { InstancesTable } from '../views/public-instances/index.ts'
@@ -53,6 +54,7 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/stacks/:name" element={<StackDetails />} />
                     <Route path="/instances" element={<InstancesList />} />
                     <Route path="/databases" element={<DatabasesList />} />
+                    <Route path="/clusters" element={<ClustersList />} />
                     <Route path="/instances/new" element={<NewDhis2Instance />} />
                     <Route path="/instances/:id/details" element={<DeploymentDetails />} />
                     <Route path="/instance/:id/details" element={<InstanceDetails />} />

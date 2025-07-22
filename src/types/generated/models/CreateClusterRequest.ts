@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 
-import type { Category } from './Category'
-export type GroupWithPublicInstances = {
-    categories?: Array<Category>
+import type { FileHeader } from './FileHeader'
+export type CreateClusterRequest = {
+    KubernetesConfiguration?: FileHeader
     description?: string
     name?: string
 }
