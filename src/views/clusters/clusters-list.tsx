@@ -15,39 +15,34 @@ export const ClustersList: FC = () => {
             <Heading title="Clusters">
                 <NewClusterButton onComplete={refetch} />
             </Heading>
-
-            {data?.map((group) => (
-                <div key={group.name}>
-                    <DataTable>
-                        <TableHead>
-                            <DataTableRow>
-                                <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                <DataTableColumnHeader>Description</DataTableColumnHeader>
-                                <DataTableColumnHeader>Group(s)</DataTableColumnHeader>
-                                <DataTableColumnHeader>Created</DataTableColumnHeader>
-                                <DataTableColumnHeader>Updated</DataTableColumnHeader>
+            <DataTable>
+                <TableHead>
+                    <DataTableRow>
+                        <DataTableColumnHeader>Name</DataTableColumnHeader>
+                        <DataTableColumnHeader>Description</DataTableColumnHeader>
+                        <DataTableColumnHeader>Group(s)</DataTableColumnHeader>
+                        <DataTableColumnHeader>Created</DataTableColumnHeader>
+                        <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                    </DataTableRow>
+                </TableHead>
+                <TableBody>
+                    {data?.map((cluster: Cluster) => {
+                        return (
+                            <DataTableRow key={cluster.id}>
+                                <DataTableCell>{cluster.name}</DataTableCell>
+                                <DataTableCell>{cluster.description}</DataTableCell>
+                                <DataTableCell>{cluster.groups?.map((group) => group.name).join(', ')}</DataTableCell>
+                                <DataTableCell>
+                                    <Moment date={cluster.createdAt} fromNow />
+                                </DataTableCell>
+                                <DataTableCell>
+                                    <Moment date={cluster.updatedAt} fromNow />
+                                </DataTableCell>
                             </DataTableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data?.map((cluster: Cluster) => {
-                                return (
-                                    <DataTableRow key={cluster.id}>
-                                        <DataTableCell>{cluster.name}</DataTableCell>
-                                        <DataTableCell>{cluster.description}</DataTableCell>
-                                        <DataTableCell>{cluster.groups?.map((group) => group.name).join(', ')}</DataTableCell>
-                                        <DataTableCell>
-                                            <Moment date={cluster.createdAt} fromNow />
-                                        </DataTableCell>
-                                        <DataTableCell>
-                                            <Moment date={cluster.updatedAt} fromNow />
-                                        </DataTableCell>
-                                    </DataTableRow>
-                                )
-                            })}
-                        </TableBody>
-                    </DataTable>
-                </div>
-            ))}
+                        )
+                    })}
+                </TableBody>
+            </DataTable>
         </div>
     )
 }
