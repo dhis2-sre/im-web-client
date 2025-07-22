@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { Cluster } from './Cluster'
 import type { User } from './User'
 /**
@@ -9,7 +9,6 @@ import type { User } from './User'
  */
 export type Group = {
     adminUsers?: Array<User>
-    autoscaled?: boolean
     cluster?: Cluster
     clusterId?: number
     createdAt?: string

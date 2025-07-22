@@ -1,9 +1,13 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { Group } from './Group'
+/**
+ * Cluster domain object defining a cluster
+ */
 export type Cluster = {
+    autoscaled: boolean
     createdAt: string
     description: string
     groups?: Array<Group>
