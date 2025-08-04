@@ -45,6 +45,7 @@ export const Layout: FC = () => {
                         <>
                             <NavLink to="/users">Users</NavLink>
                             <NavLink to="/groups">Groups</NavLink>
+                            <NavLink to="/clusters">Clusters</NavLink>
                         </>
                     )}
                 </nav>

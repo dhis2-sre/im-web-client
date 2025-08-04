@@ -2,15 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 
-import type { ClusterConfiguration } from './ClusterConfiguration'
+import type { Cluster } from './Cluster'
 import type { User } from './User'
 /**
  * Group domain object defining a group
  */
 export type Group = {
     adminUsers?: Array<User>
-    autoscaled?: boolean
-    clusterConfiguration?: ClusterConfiguration
+    cluster?: Cluster
+    clusterId?: number
     createdAt?: string
     deployable?: boolean
     description?: string
