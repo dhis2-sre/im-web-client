@@ -1,0 +1,37 @@
+name: "This workflow creates bill of material and uploads it to Dependency-Track each night"
+
+on:
+    schedule:
+        - cron: "0 0 * * *"
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref }}
+    cancel-in-progress: true
+
+jobs:
+    create-bom:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Install Dependencies
+              run: corepack enable && corepack prepare yarn --activate && yarn install --frozen-lockfile
+
+            - name: Generate BOMs
+              run: |
+                  npm install -g @cyclonedx/cdxgen
+                  cdxgen -o sbom.json
+            - name: Upload SBOM to DependencyTrack
+              env:
+                  DEPENDENCY_TRACK_API: "https://dt.security.dhis2.org/api/v1/bom"
+              run: |
+                  curl -X POST "$DEPENDENCY_TRACK_API" \
+                      --fail-with-body \
+                      -H "Content-Type: multipart/form-data" \
+                      -H "X-Api-Key: ${{ secrets.DEPENDENCYTRACK_APIKEY }}" \
+                      -F "project=284e15a5-397b-403e-b02c-a484c346634f" \
+                      -F "bom=@sbom.json"
