@@ -1,7 +1,8 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
+import type { Database } from './Database'
 import type { Group } from './Group'
 /**
  * User domain object defining a user
@@ -9,6 +10,7 @@ import type { Group } from './Group'
 export type User = {
     adminGroups?: Array<Group>
     createdAt?: string
+    databases?: Array<Database>
     email?: string
     groups?: Array<Group>
     id?: number
