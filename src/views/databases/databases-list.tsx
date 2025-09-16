@@ -1,20 +1,30 @@
-import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, DataTableToolbar as TableToolbar } from '@dhis2/ui'
+import {
+    Checkbox,
+    DataTable,
+    DataTableBody as TableBody,
+    DataTableCell,
+    DataTableColumnHeader,
+    DataTableHead as TableHead,
+    DataTableRow,
+    DataTableToolbar as TableToolbar,
+} from '@dhis2/ui'
 import { FC } from 'react'
 import Moment from 'react-moment'
 import { Heading } from '../../components/index.ts'
-import { useAuthAxios } from '../../hooks/index.ts'
-import { Database, GroupsWithDatabases } from '../../types/index.ts'
+import { Database } from '../../types/index.ts'
 import { DatabaseRowAction } from './database-row-action.tsx'
 import styles from './databases-list.module.css'
+import useFilterDatabases from './filter-datebase.tsx'
 import { UploadButton } from './upload-button.tsx'
 
 export const DatabasesList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<GroupsWithDatabases[]>('databases', { useCache: false })
+    const { data, refetch, showOnlyMyDatabases, setShowOnlyMyDatabases } = useFilterDatabases()
 
     return (
         <div className={styles.wrapper}>
             <Heading title="Databases">
                 <UploadButton onComplete={refetch} />
+                <Checkbox checked={showOnlyMyDatabases} label="Show only my databases" onChange={() => setShowOnlyMyDatabases(!showOnlyMyDatabases)} />
             </Heading>
 
             {data?.map((group) => (

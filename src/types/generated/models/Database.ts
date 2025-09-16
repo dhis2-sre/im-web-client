@@ -4,6 +4,7 @@
 
 import type { ExternalDownload } from './ExternalDownload'
 import type { Lock } from './Lock'
+import { User } from './User.ts'
 export type Database = {
     createdAt: string
     externalDownloads?: Array<ExternalDownload>
@@ -14,4 +15,5 @@ export type Database = {
     slug: string
     updatedAt: string
     url?: string
+    user: User
 }
