@@ -5,7 +5,9 @@
 import type { Deployment } from './Deployment'
 import type { DeploymentInstanceParameters } from './DeploymentInstanceParameters'
 import type { Group } from './Group'
+import type { Lock } from './Lock'
 export type DeploymentInstance = {
+    Lock?: Lock
     createdAt?: string
     deployLog?: string
     deployment?: Deployment

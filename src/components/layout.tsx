@@ -40,11 +40,12 @@ export const Layout: FC = () => {
                         </Tooltip>
                     </NavLink>
                     <NavLink to="/databases">Databases</NavLink>
-                    <NavLink to="/stacks">Stacks</NavLink>
                     {isAdministrator && (
                         <>
+                            <NavLink to="/stacks">Stacks</NavLink>
                             <NavLink to="/users">Users</NavLink>
                             <NavLink to="/groups">Groups</NavLink>
+                            <NavLink to="/clusters">Clusters</NavLink>
                         </>
                     )}
                 </nav>

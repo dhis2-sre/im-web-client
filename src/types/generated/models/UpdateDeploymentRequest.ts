@@ -2,10 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 
-export type CreateGroupRequest = {
-    deployable?: boolean
+export type UpdateDeploymentRequest = {
     description?: string
-    hostname?: string
-    name?: string
-    namespace?: string
+    ttl?: number
 }

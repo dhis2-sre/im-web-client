@@ -3,8 +3,8 @@
 /* tslint:disable */
 
 import type { FileHeader } from './FileHeader'
-export type uploadDatabaseRequest = {
-    Database?: FileHeader
-    Group?: string
-    Name?: string
+export type UpdateClusterRequest = {
+    KubernetesConfiguration?: FileHeader
+    description?: string
+    name?: string
 }

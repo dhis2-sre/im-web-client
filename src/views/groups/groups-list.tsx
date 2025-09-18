@@ -18,8 +18,10 @@ export const GroupsList: FC = () => {
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
+                        <DataTableColumnHeader>Namespace</DataTableColumnHeader>
                         <DataTableColumnHeader>Hostname</DataTableColumnHeader>
                         <DataTableColumnHeader>Description</DataTableColumnHeader>
+                        <DataTableColumnHeader>Cluster</DataTableColumnHeader>
                         <DataTableColumnHeader>Deployable</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
@@ -30,8 +32,10 @@ export const GroupsList: FC = () => {
                     {data?.map((group) => (
                         <DataTableRow key={group.name}>
                             <DataTableCell>{group.name}</DataTableCell>
+                            <DataTableCell>{group.namespace}</DataTableCell>
                             <DataTableCell>{group.hostname}</DataTableCell>
-                            <DataTableCell>{group?.description}</DataTableCell>
+                            <DataTableCell>{group.description}</DataTableCell>
+                            <DataTableCell>{group.cluster.name}</DataTableCell>
                             <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
                             <DataTableCell>
                                 <Moment date={group.createdAt} fromNow />

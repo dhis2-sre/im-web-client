@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 
-export type CreateGroupRequest = {
-    deployable?: boolean
+import type { FileHeader } from './FileHeader'
+export type CreateClusterRequest = {
+    KubernetesConfiguration?: FileHeader
     description?: string
-    hostname?: string
     name?: string
-    namespace?: string
 }
