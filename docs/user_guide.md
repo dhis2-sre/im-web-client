@@ -23,8 +23,8 @@ Welcome to the Instance Manager! This guide will help you get started and make t
 - **Sign Up:**
 
     Visit `sign-up` on the login page to create a new account.  
-    Enter your email, password, and confirm your password (minimum 24 characters!).  
-    Submit the form to register. You will then receive a verification email allowing you to verify and sign in.
+     Enter your email, password, and confirm your password (minimum 24 characters!).  
+     Submit the form to register. You will then receive a verification email allowing you to verify and sign in.
 
     ![](resources/images/im_signup.png)
 

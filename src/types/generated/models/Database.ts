@@ -1,10 +1,10 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { ExternalDownload } from './ExternalDownload'
 import type { Lock } from './Lock'
-import { User } from './User.ts'
+import type { User } from './User'
 export type Database = {
     createdAt?: string
     externalDownloads?: Array<ExternalDownload>
@@ -18,5 +18,6 @@ export type Database = {
     type?: string
     updatedAt?: string
     url?: string
-    user: User
+    user?: User
+    userId?: number
 }
