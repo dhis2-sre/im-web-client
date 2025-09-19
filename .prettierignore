@@ -1,2 +1,3 @@
 helm
 skaffold.yaml
+src/types/generated

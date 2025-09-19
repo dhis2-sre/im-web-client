@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Request = {
-    key?: string
-    payload?: any
-}
+    key?: string;
+    payload?: any;
+};
+

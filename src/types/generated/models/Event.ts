@@ -3,8 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Event = {
-    Data?: any
-    Event?: string
-    Id?: string
-    Retry?: number
-}
+    Data?: any;
+    Event?: string;
+    Id?: string;
+    Retry?: number;
+};
+

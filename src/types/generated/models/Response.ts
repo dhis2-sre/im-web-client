@@ -5,4 +5,6 @@
 /**
  * Response depends on the input and can be either a list or a map
  */
-export type Response = {}
+export type Response = {
+};
+
