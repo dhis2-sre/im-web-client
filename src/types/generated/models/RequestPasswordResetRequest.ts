@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type RequestPasswordResetRequest = {
-    email?: string
-}
+    email?: string;
+};
+

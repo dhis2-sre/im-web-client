@@ -2,9 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-import type { Category } from './Category'
+import type { Category } from './Category';
 export type GroupWithPublicInstances = {
-    categories?: Array<Category>
-    description?: string
-    name?: string
-}
+    categories?: Array<Category>;
+    description?: string;
+    name?: string;
+};
+

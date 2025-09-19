@@ -3,6 +3,7 @@
 /* tslint:disable */
  
 export type CopyDatabaseRequest = {
-    group?: string
-    name?: string
-}
+    group?: string;
+    name?: string;
+};
+

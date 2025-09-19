@@ -14,7 +14,7 @@
         "lint": "yarn eslint && yarn prettier --check",
         "format": "yarn eslint --fix && yarn prettier --write",
         "e2e": "yarn playwright test --ui",
-        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false",
+        "generate-types": "rm -rf ./src/types/generated && yarn openapi --input https://dev.api.im.dhis2.org/swagger.yaml --output ./src/types/generated --client axios --useOptions --useUnionTypes --exportCore false --exportServices false --exportModels true --exportSchemas false && yarn prettier --write --loglevel silent",
         "lint-commit-msg": "npx --no-install commitlint --edit",
         "postinstall": "husky install",
         "pre-commit": "yarn format && yarn lint",

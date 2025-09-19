@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type DeploymentInstanceParameter = {
-    value?: string
-}
+    value?: string;
+};
+

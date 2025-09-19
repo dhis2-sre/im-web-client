@@ -3,9 +3,10 @@
 /* tslint:disable */
  
 export type CreateGroupRequest = {
-    deployable?: boolean
-    description?: string
-    hostname?: string
-    name?: string
-    namespace?: string
-}
+    deployable?: boolean;
+    description?: string;
+    hostname?: string;
+    name?: string;
+    namespace?: string;
+};
+

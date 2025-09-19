@@ -3,6 +3,7 @@
 /* tslint:disable */
  
 export type ResetPasswordRequest = {
-    password?: string
-    token?: string
-}
+    password?: string;
+    token?: string;
+};
+

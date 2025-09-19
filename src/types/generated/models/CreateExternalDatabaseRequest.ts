@@ -6,5 +6,6 @@ export type CreateExternalDatabaseRequest = {
     /**
      * Expiration time in seconds
      */
-    expiration?: number
-}
+    expiration?: number;
+};
+

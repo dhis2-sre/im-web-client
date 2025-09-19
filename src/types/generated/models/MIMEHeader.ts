@@ -6,4 +6,4 @@
  * A MIMEHeader represents a MIME-style header mapping
  * keys to sets of values.
  */
-export type MIMEHeader = Record<string, Array<string>>
+export type MIMEHeader = Record<string, Array<string>>;

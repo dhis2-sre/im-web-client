@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-import type { PublicInstance } from './PublicInstance'
+import type { PublicInstance } from './PublicInstance';
 export type Category = {
-    instances?: Array<PublicInstance>
-    label?: string
-}
+    instances?: Array<PublicInstance>;
+    label?: string;
+};
+

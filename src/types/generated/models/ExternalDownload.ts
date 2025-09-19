@@ -3,7 +3,8 @@
 /* tslint:disable */
  
 export type ExternalDownload = {
-    databaseId?: number
-    expiration?: number
-    uuid?: string
-}
+    databaseId?: number;
+    expiration?: number;
+    uuid?: string;
+};
+

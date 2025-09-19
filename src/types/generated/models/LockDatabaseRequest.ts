@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type LockDatabaseRequest = {
-    instanceId?: number
-}
+    instanceId?: number;
+};
+

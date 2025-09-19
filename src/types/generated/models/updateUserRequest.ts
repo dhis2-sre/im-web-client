@@ -3,6 +3,7 @@
 /* tslint:disable */
  
 export type updateUserRequest = {
-    email?: string
-    password?: string
-}
+    email?: string;
+    password?: string;
+};
+

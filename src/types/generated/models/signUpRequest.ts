@@ -3,6 +3,7 @@
 /* tslint:disable */
  
 export type signUpRequest = {
-    email?: string
-    password?: string
-}
+    email?: string;
+    password?: string;
+};
+

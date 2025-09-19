@@ -3,7 +3,8 @@
 /* tslint:disable */
  
 export type PublicInstance = {
-    description?: string
-    hostname?: string
-    name?: string
-}
+    description?: string;
+    hostname?: string;
+    name?: string;
+};
+

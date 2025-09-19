@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-import type { Database } from './Database'
+import type { Database } from './Database';
 export type GroupsWithDatabases = {
-    databases?: Array<Database>
-    name?: string
-}
+    databases?: Array<Database>;
+    name?: string;
+};
+

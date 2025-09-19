@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-import type { DeploymentInstanceParameter } from './DeploymentInstanceParameter'
-export type DeploymentInstanceParameters = Record<string, DeploymentInstanceParameter>
+import type { DeploymentInstanceParameter } from './DeploymentInstanceParameter';
+export type DeploymentInstanceParameters = Record<string, DeploymentInstanceParameter>;

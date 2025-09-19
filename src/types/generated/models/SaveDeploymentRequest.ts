@@ -3,8 +3,9 @@
 /* tslint:disable */
  
 export type SaveDeploymentRequest = {
-    description?: string
-    group?: string
-    name?: string
-    ttl?: number
-}
+    description?: string;
+    group?: string;
+    name?: string;
+    ttl?: number;
+};
+

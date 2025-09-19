@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type RefreshTokenRequest = {
-    refreshToken?: string
-}
+    refreshToken?: string;
+};
+

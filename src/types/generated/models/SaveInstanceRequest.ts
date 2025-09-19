@@ -2,9 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-import type { parameters } from './parameters'
+import type { parameters } from './parameters';
 export type SaveInstanceRequest = {
-    parameters?: parameters
-    public?: boolean
-    stackName?: string
-}
+    parameters?: parameters;
+    public?: boolean;
+    stackName?: string;
+};
+

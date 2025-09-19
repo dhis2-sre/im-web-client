@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type parameter = {
-    value?: string
-}
+    value?: string;
+};
+

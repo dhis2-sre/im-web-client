@@ -2,4 +2,4 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-export type InstanceStatus = string
+export type InstanceStatus = string;

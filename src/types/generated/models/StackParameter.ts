@@ -3,10 +3,11 @@
 /* tslint:disable */
  
 export type StackParameter = {
-    consumed?: boolean
-    defaultValue?: string
-    displayName?: string
-    parameterName?: string
-    priority?: number
-    sensitive?: boolean
-}
+    consumed?: boolean;
+    defaultValue?: string;
+    displayName?: string;
+    parameterName?: string;
+    priority?: number;
+    sensitive?: boolean;
+};
+

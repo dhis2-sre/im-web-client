@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type UpdateDatabaseRequest = {
-    name?: string
-}
+    name?: string;
+};
+

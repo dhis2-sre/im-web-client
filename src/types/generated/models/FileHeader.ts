@@ -2,9 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
  
-import type { MIMEHeader } from './MIMEHeader'
+import type { MIMEHeader } from './MIMEHeader';
 export type FileHeader = {
-    Filename?: string
-    Header?: MIMEHeader
-    Size?: number
-}
+    Filename?: string;
+    Header?: MIMEHeader;
+    Size?: number;
+};
+

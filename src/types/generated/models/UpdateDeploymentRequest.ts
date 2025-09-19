@@ -3,6 +3,7 @@
 /* tslint:disable */
  
 export type UpdateDeploymentRequest = {
-    description?: string
-    ttl?: number
-}
+    description?: string;
+    ttl?: number;
+};
+

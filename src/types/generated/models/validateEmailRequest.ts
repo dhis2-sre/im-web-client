@@ -3,5 +3,6 @@
 /* tslint:disable */
  
 export type validateEmailRequest = {
-    token?: string
-}
+    token?: string;
+};
+

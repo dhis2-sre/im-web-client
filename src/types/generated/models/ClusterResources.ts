@@ -3,8 +3,9 @@
 /* tslint:disable */
  
 export type ClusterResources = {
-    Autoscaled?: boolean
-    CPU?: string
-    Memory?: string
-    Nodes?: number
-}
+    Autoscaled?: boolean;
+    CPU?: string;
+    Memory?: string;
+    Nodes?: number;
+};
+
