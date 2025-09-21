@@ -1,5 +1,18 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, ButtonStrip, FileInput, InputField, LinearLoader, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import {
+    Button,
+    ButtonStrip,
+    FileInput,
+    InputField,
+    LinearLoader,
+    Modal,
+    ModalActions,
+    ModalContent,
+    ModalTitle,
+    SingleSelectField,
+    SingleSelectOption,
+    TextAreaField,
+} from '@dhis2/ui'
 import type { BaseButtonProps } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -22,6 +35,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
     const [group, setGroup] = useState('')
     const [databaseFile, setDatabaseFile] = useState<File>(new Blob() as File)
     const [name, setName] = useState<string>('')
+    const [description, setDescription] = useState<string>('')
     const [format, setFormat] = useState<string>(defaultFormat)
     const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
 
@@ -71,6 +85,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                 headers: {
                     'X-Upload-Group': group,
                     'X-Upload-Name': name + extension,
+                    'X-Upload-Description': description,
                     'Content-Type': contentType,
                 },
                 data: databaseFile,
@@ -88,7 +103,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
             })
             console.error(error)
         }
-    }, [databaseFile, group, name, extension, onComplete, postDatabase, showAlert])
+    }, [databaseFile, showAlert, extension, postDatabase, group, name, description, onComplete])
 
     const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -151,6 +166,15 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                     />
                     <span>{extension}</span>
                 </div>
+                <TextAreaField
+                    className={styles.field}
+                    dataTest="upload-database-description"
+                    label="Description"
+                    value={description}
+                    onChange={({ value }) => setDescription(value)}
+                    required
+                    disabled={loading}
+                />
                 <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
                     {Array.from(formats.keys()).map((key) => (
                         <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
