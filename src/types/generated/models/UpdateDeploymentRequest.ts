@@ -1,8 +1,9 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-/* eslint-disable */
+ 
 export type UpdateDeploymentRequest = {
-    description?: string
-    ttl?: number
-}
+    description?: string;
+    ttl?: number;
+};
+

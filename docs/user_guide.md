@@ -14,23 +14,23 @@ Welcome to the Instance Manager! This guide will help you get started and make t
 
 ## Signing Up and Logging In
 
--   **Login:**
+- **Login:**
 
     Use your credentials to log in via the main page at im.dhis2.org
 
     ![](resources/images/login.png)
 
--   **Sign Up:**
+- **Sign Up:**
 
     Visit `sign-up` on the login page to create a new account.  
-    Enter your email, password, and confirm your password (minimum 24 characters!).  
-    Submit the form to register. You will then receive a verification email allowing you to verify and sign in.
+     Enter your email, password, and confirm your password (minimum 24 characters!).  
+     Submit the form to register. You will then receive a verification email allowing you to verify and sign in.
 
     ![](resources/images/im_signup.png)
 
     Once you have access you will need to be added to a group to be able to deploy instances and manage databases. Send a request to devops@dhis2.org to be added to a group, explaining why you need access.
 
--   **Forgotten password?:**
+- **Forgotten password?:**
 
     Follow the `Forgot password?` link to request a reset.
 
@@ -38,28 +38,28 @@ Welcome to the Instance Manager! This guide will help you get started and make t
 
 ### Viewing Instances
 
--   Access the list of all instances from the "Instances" section.
--   Filter to show only your instances.
--   See details like status, name, creation date, owner, and expiration.
--   You can also click `Open` to go to the login page of a given instance, or `Delete` instances from here.
+- Access the list of all instances from the "Instances" section.
+- Filter to show only your instances.
+- See details like status, name, creation date, owner, and expiration.
+- You can also click `Open` to go to the login page of a given instance, or `Delete` instances from here.
 
 ![](resources/images/instances.png)
 
 ### Creating a New Instance
 
--   Click the "New instance" button.
--   Fill in the sections (see below), then hit the `Create instance` button.
+- Click the "New instance" button.
+- Fill in the sections (see below), then hit the `Create instance` button.
 
 ![](resources/images/create_instance.png)
 
 #### Basic information
 
--   Fill in the Basic information section:
-    -   **Name** of instance: must start with a letter and contain only letters, numbers or hyphens (`-`).
-    -   **Description** of the instance (optional).
-    -   **Make public**: currently only used to indicate "play" instances that are listed on the public landing page; but will be extended in the future to other groups that want to share public demos.
-    -   **Lifetime** - choose pre-selected durations or `Custom` end date. The instance and all of it's components (see below) will be deleted when the Lifetime expires.
-    -   **Group**: select the target group for this instance (when you belong to more than one).
+- Fill in the Basic information section:
+    - **Name** of instance: must start with a letter and contain only letters, numbers or hyphens (`-`).
+    - **Description** of the instance (optional).
+    - **Make public**: currently only used to indicate "play" instances that are listed on the public landing page; but will be extended in the future to other groups that want to share public demos.
+    - **Lifetime** - choose pre-selected durations or `Custom` end date. The instance and all of it's components (see below) will be deleted when the Lifetime expires.
+    - **Group**: select the target group for this instance (when you belong to more than one).
 
 #### Mandatory components
 
@@ -80,8 +80,8 @@ This section can be expanded if you wish to tailor the environment that where th
 
 The key parameters you _might_ want to change (particularly for large, complex databases, or many users) are:
 
--   Resources Requests CPU
--   Resources Requests Memory
+- Resources Requests CPU
+- Resources Requests Memory
 
 ![](resources/images/core_advanced.png)
 
@@ -95,9 +95,9 @@ This section can be expanded if you wish to tailor the environment that where th
 
 The key parameters you _might_ want to change (particularly for large, complex databases, or many users) are:
 
--   Database size: typically this needs to be about twice the size that the full database, with analytics, takes up on disc. _The additional space is required during analytics generation_.
--   Resources Requests CPU
--   Resources Requests Memory
+- Database size: typically this needs to be about twice the size that the full database, with analytics, takes up on disc. _The additional space is required during analytics generation_.
+- Resources Requests CPU
+- Resources Requests Memory
 
 ![](resources/images/postgres_advanced.png)
 
@@ -109,8 +109,8 @@ Provide and email and password combination that will be used to log in to the PG
 
 ### Instance Details
 
--   From the main list of instances, click on an instance to view its details.
--   This shows the components of the instance, and allows you to perform actions on those compnents.
+- From the main list of instances, click on an instance to view its details.
+- This shows the components of the instance, and allows you to perform actions on those compnents.
 
 ![](resources/images/instance_details.png)
 
@@ -118,29 +118,29 @@ Provide and email and password combination that will be used to log in to the PG
 
 The following actions are available:
 
--   Open: go to the login page of the instance.
--   Logs: view the current tomcat logs.
--   Restart: Restart the DHIS2 core - leaving the filestore intact
--   Reset: Redeploy the docker container (pull new docker image if necessary) and clear the filestore.
--   Delete: Remove the DHIS2 core docker container
+- Open: go to the login page of the instance.
+- Logs: view the current tomcat logs.
+- Restart: Restart the DHIS2 core - leaving the filestore intact
+- Reset: Redeploy the docker container (pull new docker image if necessary) and clear the filestore.
+- Delete: Remove the DHIS2 core docker container
 
 ##### Type dhis2-db
 
 The following actions are available:
 
--   Logs: view the current tomcat logs.
--   Save database as: Allows the state of the current running database to be saved to a file in the [Database Manager](#databases).
--   Restart: TBC
--   Reset: Redeploy and re-seed the database from file.
--   Delete: Remove the database container.
+- Logs: view the current tomcat logs.
+- Save database as: Allows the state of the current running database to be saved to a file in the [Database Manager](#databases).
+- Restart: TBC
+- Reset: Redeploy and re-seed the database from file.
+- Delete: Remove the database container.
 
 ## Database { #databases }
 
 Within this interface it is possible to:
 
--   Browse databases organized by group and folder.
--   Actions include upload, download, copy, rename, and delete databases.
--   The databases you have access to here are available when creating new instances.
+- Browse databases organized by group and folder.
+- Actions include upload, download, copy, rename, and delete databases.
+- The databases you have access to here are available when creating new instances.
 
 > **Tip**
 >
@@ -150,5 +150,5 @@ Within this interface it is possible to:
 
 ## Troubleshooting & Support
 
--   If you encounter errors, check for error messages displayed in the app.
--   For further help, contact the support team via the `#instance-manager-users` slack channel.
+- If you encounter errors, check for error messages displayed in the app.
+- For further help, contact the support team via the `#instance-manager-users` slack channel.
