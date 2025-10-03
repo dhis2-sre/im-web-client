@@ -37,6 +37,7 @@ export const DatabasesList: FC = () => {
                         <TableHead>
                             <DataTableRow>
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
+                                <DataTableColumnHeader>Description</DataTableColumnHeader>
                                 <DataTableColumnHeader>Slug</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
@@ -55,7 +56,8 @@ export const DatabasesList: FC = () => {
                             {group.databases?.map((database: Database) => {
                                 return (
                                     <DataTableRow key={database.id}>
-                                        <DataTableCell>{database.name}</DataTableCell>
+                                        <DataTableCell title={database.id.toString()}>{database.name}</DataTableCell>
+                                        <DataTableCell>{database.description}</DataTableCell>
                                         <DataTableCell>{database.slug}</DataTableCell>
                                         <DataTableCell>
                                             <Moment date={database.createdAt} fromNow />
