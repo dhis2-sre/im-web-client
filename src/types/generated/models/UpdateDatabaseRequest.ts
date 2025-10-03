@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UpdateDatabaseRequest = {
-    description?: string
     name?: string
 }

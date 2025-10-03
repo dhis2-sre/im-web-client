@@ -7,7 +7,6 @@ import type { Lock } from './Lock'
 import type { User } from './User'
 export type Database = {
     createdAt?: string
-    description?: string
     externalDownloads?: Array<ExternalDownload>
     filestore?: Database
     filestoreId?: number
