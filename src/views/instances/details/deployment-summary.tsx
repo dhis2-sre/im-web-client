@@ -19,7 +19,7 @@ export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }
                 <div className={styles.singleDetails}>
                     <IconWarning16 />
                     <p>
-                        Stopping in <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
+                        Stopping <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
                     </p>
                 </div>
                 <div className={styles.singleDetails}>
