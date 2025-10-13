@@ -6,7 +6,7 @@ import { useDhis2StackParameters } from '../../../hooks/index.ts'
 import { ParameterField } from './fields/parameter-field.tsx'
 import styles from './styles.module.css'
 
-export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin'
+export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin' | 'minio'
 export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_EMAIL' | 'PGADMIN_PASSWORD' | 'PGADMIN_CONFIRM_PASSWORD'
 export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryField>>
 
