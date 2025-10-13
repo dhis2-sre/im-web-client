@@ -22,5 +22,6 @@ export const CUSTOM_DHIS2_CONFIG = 'CUSTOM_DHIS2_CONFIG'
 export const STACK_PRIMARY_PARAMETERS = new Map([
     ['dhis2-core', new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY'])],
     ['dhis2-db', new Set(['DATABASE_ID'])],
+    ['minio', new Set(['DATABASE_ID'])],
     ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD', 'PGADMIN_CONFIRM_PASSWORD'])],
 ]) as Dhis2StackPrimaryParameters
