@@ -1,7 +1,7 @@
 import { Button, IconLaunch16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback } from 'react'
-import { Deployment } from '../../../types'
+import { Deployment } from '../../../types/generated/index.ts'
 
 type OpenButtonProps = {
     deployment: Deployment
