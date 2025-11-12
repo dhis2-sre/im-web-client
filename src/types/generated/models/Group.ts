@@ -15,6 +15,7 @@ export type Group = {
     deployable?: boolean;
     description?: string;
     hostname?: string;
+    id?: number;
     name?: string;
     namespace?: string;
     updatedAt?: string;
