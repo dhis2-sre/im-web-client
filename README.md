@@ -1,4 +1,3 @@
-<!-- dummy change -->
 # Instance Manager Web Client
 
 ## Run the app locally
