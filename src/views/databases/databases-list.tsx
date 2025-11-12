@@ -8,6 +8,7 @@ import {
     DataTableRow,
     DataTableToolbar as TableToolbar,
 } from '@dhis2/ui'
+import prettyBytes from 'pretty-bytes'
 import { FC } from 'react'
 import Moment from 'react-moment'
 import { Heading } from '../../components/index.ts'
@@ -39,6 +40,8 @@ export const DatabasesList: FC = () => {
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
                                 <DataTableColumnHeader>Description</DataTableColumnHeader>
                                 <DataTableColumnHeader>Slug</DataTableColumnHeader>
+                                <DataTableColumnHeader>Size</DataTableColumnHeader>
+                                <DataTableColumnHeader>URL</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                 <DataTableColumnHeader>Locked?</DataTableColumnHeader>
@@ -59,6 +62,8 @@ export const DatabasesList: FC = () => {
                                         <DataTableCell title={database.id.toString()}>{database.name}</DataTableCell>
                                         <DataTableCell>{database.description}</DataTableCell>
                                         <DataTableCell>{database.slug}</DataTableCell>
+                                        <DataTableCell>{prettyBytes(database.size)}</DataTableCell>
+                                        <DataTableCell>{database.url}</DataTableCell>
                                         <DataTableCell>
                                             <Moment date={database.createdAt} fromNow />
                                         </DataTableCell>
