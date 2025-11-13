@@ -57,12 +57,13 @@ export const DatabasesList: FC = () => {
                                 </DataTableRow>
                             )}
                             {group.databases?.map((database: Database) => {
+                                const databaseSize = database.size ? prettyBytes(database.size) : '-'
                                 return (
                                     <DataTableRow key={database.id}>
                                         <DataTableCell title={database.id.toString()}>{database.name}</DataTableCell>
                                         <DataTableCell>{database.description}</DataTableCell>
                                         <DataTableCell>{database.slug}</DataTableCell>
-                                        <DataTableCell>{prettyBytes(database.size)}</DataTableCell>
+                                        <DataTableCell>{databaseSize}</DataTableCell>
                                         <DataTableCell>{database.url}</DataTableCell>
                                         <DataTableCell>
                                             <Moment date={database.createdAt} fromNow />
