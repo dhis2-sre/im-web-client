@@ -1,4 +1,4 @@
-import { Center, CircularLoader, CheckboxFieldFF, NoticeBox } from '@dhis2/ui'
+import { Center, CheckboxFieldFF, CircularLoader, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useEffect, useMemo } from 'react'
 import { Field, useField, useForm } from 'react-final-form'
@@ -12,7 +12,7 @@ export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryFi
 
 export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
     const form = useForm()
-    const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useDhis2StackParameters(stackId)
+    const { loading, error, primaryParameters, secondaryParameters, initialParameterValues, sensitiveParameters } = useDhis2StackParameters(stackId)
     const includeStackFieldName = `include_${stackId}`
     const {
         input: { value: includeStackFieldValue },
@@ -57,7 +57,13 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
                     </legend>
                     {shouldShowParameterFields &&
                         primaryParameters.map(({ displayName, parameterName }) => (
-                            <ParameterField stackId={stackId} key={parameterName} parameterName={parameterName} displayName={displayName} />
+                            <ParameterField
+                                stackId={stackId}
+                                key={parameterName}
+                                parameterName={parameterName}
+                                displayName={displayName}
+                                sensitive={sensitiveParameters[parameterName]}
+                            />
                         ))}
                 </fieldset>
             )}
@@ -70,7 +76,13 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
                             !loading &&
                             secondaryParameters &&
                             secondaryParameters.map(({ displayName, parameterName }) => (
-                                <ParameterField stackId={stackId} key={parameterName} parameterName={parameterName} displayName={displayName} />
+                                <ParameterField
+                                    stackId={stackId}
+                                    key={parameterName}
+                                    parameterName={parameterName}
+                                    displayName={displayName}
+                                    sensitive={sensitiveParameters[parameterName]}
+                                />
                             ))}
                     </fieldset>
                 </details>

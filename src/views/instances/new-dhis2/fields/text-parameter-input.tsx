@@ -6,9 +6,20 @@ import { ParameterFieldProps } from './parameter-field.tsx'
 
 export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)
 
-export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text' }) => {
+export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text', sensitive }) => {
     const validate = type === 'email' ? validateEmail : isRequired(parameterName) ? hasValue : undefined
-    return <Field required={isRequired(parameterName)} name={`${stackId}.${parameterName}`} label={displayName} component={InputFieldFF} validate={validate} type={type} />
+    const placeholder = sensitive ? 'Leave blank to keep current value' : undefined
+    return (
+        <Field
+            required={isRequired(parameterName)}
+            name={`${stackId}.${parameterName}`}
+            label={displayName}
+            component={InputFieldFF}
+            validate={validate}
+            type={type}
+            placeholder={placeholder}
+        />
+    )
 }
 
 const validateEmail = (value: string) => {
