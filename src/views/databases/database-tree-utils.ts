@@ -77,5 +77,15 @@ export const buildFlattenedList = (node: TreeNode, expanded: Record<string, bool
         })
     }
 
+    items.sort((a, b) => {
+        if (a.type === 'folder' && b.type !== 'folder') {
+            return -1
+        }
+        if (a.type !== 'folder' && b.type === 'folder') {
+            return 1
+        }
+        return 0
+    })
+
     return items
 }
