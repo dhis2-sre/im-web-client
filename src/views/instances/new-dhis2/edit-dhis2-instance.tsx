@@ -8,7 +8,6 @@ import { useDeploymentDetails, useDhis2DeploymentUpdate } from '../../../hooks/i
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form.tsx'
 import styles from './styles.module.css'
 
-// Helper function to check if a value appears to be masked
 const isMaskedValue = (value: string): boolean => {
     return value === '***' || value === '••••' || /^\*+$/.test(value) || /^•+$/.test(value)
 }

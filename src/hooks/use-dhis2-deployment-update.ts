@@ -20,14 +20,12 @@ export const useDhis2DeploymentUpdate = (deploymentId: number, deployment?: Depl
     const updateDeployment = useCallback(
         async (values: AnyObject) => {
             try {
-                // Update deployment
                 const payload: UpdateDeploymentRequest = {
                     description: values.description,
                     ttl: values.ttl,
                 }
                 await executePut({ data: payload })
 
-                // Update instances
                 if (deployment?.instances) {
                     for (const instance of deployment.instances) {
                         const stackParams = values[instance.stackName]
