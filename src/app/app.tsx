@@ -12,6 +12,7 @@ import { ClustersList } from '../views/clusters/clusters-list.tsx'
 import {
     DatabasesList,
     DeploymentDetails,
+    EditDhis2Instance,
     GroupsList,
     InstancesList,
     NewDhis2Instance,
@@ -56,6 +57,7 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/databases" element={<DatabasesList />} />
                     <Route path="/clusters" element={<ClustersList />} />
                     <Route path="/instances/new" element={<NewDhis2Instance />} />
+                    <Route path="/instances/:id/edit" element={<EditDhis2Instance />} />
                     <Route path="/instances/:id/details" element={<DeploymentDetails />} />
                     <Route path="/instance/:id/details" element={<InstanceDetails />} />
                     <Route path="/groups" element={<GroupsList />} />

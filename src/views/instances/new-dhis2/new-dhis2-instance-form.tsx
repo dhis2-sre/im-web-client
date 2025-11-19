@@ -13,9 +13,10 @@ import styles from './styles.module.css'
 type NewDhis2InstanceFormProps = {
     handleCancel: () => void
     handleSubmit: (event?: Partial<Pick<React.SyntheticEvent, 'preventDefault' | 'stopPropagation'>>) => Promise<AnyObject | undefined> | undefined
+    mode?: 'create' | 'update'
 }
 
-export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2InstanceFormProps) => {
+export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'create' }: NewDhis2InstanceFormProps) => {
     const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid } = useFormState({
         subscription: {
             submitError: true,
@@ -30,16 +31,24 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
         <form onSubmit={handleSubmit}>
             <fieldset className={cx(styles.fieldset, styles.main)}>
                 <legend className={styles.legend}>Basic information</legend>
-                <NameInput />
+                {mode === 'create' && (
+                    <>
+                        <NameInput />
+                        <PublicCheckbox />
+                        <GroupSelect />
+                    </>
+                )}
                 <DescriptionTextarea />
-                <PublicCheckbox />
                 <TtlSelect />
-                <GroupSelect />
             </fieldset>
-            <hr className={styles.hr} />
-            <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
-            <ParameterFieldset stackId="dhis2-db" displayName="Database" />
-            <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
+            {mode === 'create' && (
+                <>
+                    <hr className={styles.hr} />
+                    <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
+                    <ParameterFieldset stackId="dhis2-db" displayName="Database" />
+                    <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
+                </>
+            )}
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">
                     {submitError}
@@ -47,7 +56,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
             )}
             <ButtonStrip>
                 <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
-                    Create instance
+                    {mode === 'create' ? 'Create instance' : 'Update instance'}
                 </Button>
                 <Button disabled={submitting} onClick={handleCancel}>
                     Cancel
