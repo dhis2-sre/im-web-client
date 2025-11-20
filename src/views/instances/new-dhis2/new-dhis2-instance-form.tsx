@@ -17,6 +17,8 @@ const STACK_DISPLAY_NAMES: Record<string, string> = {
     pgadmin: 'PG Admin',
 }
 
+const STACK_ORDER = ['dhis2-core', 'dhis2-db', 'pgadmin'] as const
+
 const getStackDisplayName = (stackName: string): string => STACK_DISPLAY_NAMES[stackName] || stackName
 
 type NewDhis2InstanceFormProps = {
@@ -62,9 +64,11 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
             {mode === 'update' && deployment?.instances && (
                 <>
                     <hr className={styles.hr} />
-                    {deployment.instances.map((instance) => (
-                        <ParameterFieldset key={instance.stackName} stackId={instance.stackName as Dhis2StackName} displayName={getStackDisplayName(instance.stackName)} />
-                    ))}
+                    {deployment.instances
+                        .sort((a, b) => STACK_ORDER.indexOf(a.stackName as Dhis2StackName) - STACK_ORDER.indexOf(b.stackName as Dhis2StackName))
+                        .map((instance) => (
+                            <ParameterFieldset key={instance.stackName} stackId={instance.stackName as Dhis2StackName} displayName={getStackDisplayName(instance.stackName)} />
+                        ))}
                 </>
             )}
             {submitError && (
