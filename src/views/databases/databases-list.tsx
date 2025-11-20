@@ -10,12 +10,12 @@ import {
     IconFolder16,
 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Moment from 'react-moment'
 import { useSearchParams } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { DatabaseRowAction } from './database-row-action.tsx'
-import { buildTree, buildFlattenedList, getNodeByPath, Item } from './database-tree-utils.ts'
+import { buildFlattenedList, buildTree, getNodeByPath, Item } from './database-tree-utils.ts'
 import styles from './databases-list.module.css'
 import useFilterDatabases from './filter-datebase.tsx'
 import { Locked } from './locked.tsx'
@@ -126,7 +126,10 @@ export const DatabasesList = () => {
                     <div key={group.name}>
                         <TableToolbar className={styles.tabletoolbar}>
                             <h2>
-                                <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigateToFolder(group.name, '')}>
+                                <span
+                                    style={currentPath ? { cursor: 'pointer', textDecoration: 'underline' } : {}}
+                                    onClick={currentPath ? () => navigateToFolder(group.name, '') : undefined}
+                                >
                                     {group.name}
                                 </span>
                                 {currentPath ? ' > ' : ''}
