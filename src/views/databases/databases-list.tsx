@@ -56,7 +56,7 @@ export const DatabasesList = () => {
             return (
                 <DataTableRow key={database.id}>
                     <DataTableCell title={database.id.toString()}>
-                        <span style={{ paddingLeft: `${item.level * 20}px` }}>{database.name}</span>
+                        <span style={{ paddingLeft: `${item.level * 20}px` }}>{item.name}</span>
                     </DataTableCell>
                     <DataTableCell>{database.description}</DataTableCell>
                     <DataTableCell>{database.slug}</DataTableCell>
@@ -99,7 +99,7 @@ export const DatabasesList = () => {
                                 onClick={currentPath ? () => setCurrentPaths((prev) => ({ ...prev, [group.name]: '' })) : undefined}
                             >
                                 {group.name}
-                                {currentPath ? ` / ${currentPath}` : ''}
+                                {currentPath ? ` - ${currentPath}/` : ''}
                             </h2>
                         </TableToolbar>
                         <DataTable>
