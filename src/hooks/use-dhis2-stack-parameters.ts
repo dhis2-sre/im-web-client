@@ -54,10 +54,12 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
 
     const initialParameterValues: InitialValues = useMemo(
         () =>
-            (extendedParameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
-                valuesAccumulator[parameter.parameterName] = parameter.defaultValue
-                return valuesAccumulator
-            }, {}),
+            (extendedParameters ?? [])
+                .filter((parameter) => !parameter.consumed)
+                .reduce<InitialValues>((valuesAccumulator, parameter) => {
+                    valuesAccumulator[parameter.parameterName] = parameter.defaultValue
+                    return valuesAccumulator
+                }, {}),
         [extendedParameters]
     )
 
@@ -70,6 +72,8 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
         [extendedParameters]
     )
 
+    const consumedParameterNames: string[] = useMemo(() => extendedParameters.filter((p) => p.consumed).map((p) => p.parameterName), [extendedParameters])
+
     return {
         loading,
         error,
@@ -77,5 +81,6 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
         secondaryParameters,
         initialParameterValues,
         sensitiveParameters,
+        consumedParameterNames,
     }
 }

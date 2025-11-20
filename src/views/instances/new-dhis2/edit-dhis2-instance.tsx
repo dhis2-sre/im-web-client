@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
-import { useDeploymentDetails, useDhis2DeploymentUpdate } from '../../../hooks/index.ts'
+import { useDeploymentDetails, useDhis2DeploymentUpdate, useDhis2StackParameters } from '../../../hooks/index.ts'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form.tsx'
 import styles from './styles.module.css'
 
@@ -18,6 +18,14 @@ export const EditDhis2Instance: FC = () => {
     const deploymentId = parseInt(id!, 10)
     const [{ data: deployment, loading, error }] = useDeploymentDetails()
     const updateDeployment = useDhis2DeploymentUpdate(deploymentId, deployment)
+    const { consumedParameterNames: coreConsumed } = useDhis2StackParameters('dhis2-core')
+    const { consumedParameterNames: dbConsumed } = useDhis2StackParameters('dhis2-db')
+    const { consumedParameterNames: pgConsumed } = useDhis2StackParameters('pgadmin')
+    const consumedMap: Record<string, string[]> = {
+        'dhis2-core': coreConsumed,
+        'dhis2-db': dbConsumed,
+        pgadmin: pgConsumed,
+    }
 
     const navigateToInstanceDetails = useCallback(() => {
         navigate(`/instances/${deploymentId}/details`)
@@ -38,15 +46,18 @@ export const EditDhis2Instance: FC = () => {
         ...deployment.instances?.reduce(
             (acc, instance) => {
                 if (instance.parameters) {
-                    acc[instance.stackName] = Object.entries(instance.parameters).reduce(
-                        (params, [key, param]) => {
-                            // Treat masked sensitive values as empty
-                            const value = param.value || ''
-                            params[key] = isMaskedValue(value) ? '' : value
-                            return params
-                        },
-                        {} as Record<string, string>
-                    )
+                    const consumed = consumedMap[instance.stackName] || []
+                    acc[instance.stackName] = Object.entries(instance.parameters)
+                        .filter(([key]) => !consumed.includes(key))
+                        .reduce(
+                            (params, [key, param]) => {
+                                // Treat masked sensitive values as empty
+                                const value = param.value || ''
+                                params[key] = isMaskedValue(value) ? '' : value
+                                return params
+                            },
+                            {} as Record<string, string>
+                        )
                 }
                 return acc
             },
