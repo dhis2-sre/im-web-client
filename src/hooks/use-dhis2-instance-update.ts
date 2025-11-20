@@ -11,8 +11,11 @@ export const useDhis2InstanceUpdate = (deploymentId: number) => {
     )
 
     const updateInstance = useCallback(
-        async (stackName: string, parameters: Record<string, string>, publicValue?: boolean) => {
+        async ({ instanceId, stackName, parameters, publicValue }: { instanceId?: number; stackName: string; parameters: Record<string, string>; publicValue?: boolean }) => {
             try {
+                if (!instanceId) {
+                    throw new Error(`Missing instance id for stack "${stackName}"`)
+                }
                 const payload: SaveInstanceRequest = {
                     stackName,
                     parameters: Object.entries(parameters).reduce(
@@ -26,7 +29,7 @@ export const useDhis2InstanceUpdate = (deploymentId: number) => {
                     ),
                     ...(stackName === 'dhis2-core' && { public: publicValue }),
                 }
-                await executePut({ url: `/deployments/${deploymentId}/instance/${stackName}`, data: payload })
+                await executePut({ url: `/deployments/${deploymentId}/instance/${instanceId}`, data: payload })
             } catch (error) {
                 console.error(error)
                 throw new Error(`Could not update "${stackName}" instance`)

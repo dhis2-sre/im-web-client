@@ -54,9 +54,11 @@ export const EditDhis2Instance: FC = () => {
         ),
     }
 
+    const headingTitle = deployment.name ? `Edit ${deployment.name}` : 'Edit instance'
+
     return (
         <>
-            <Heading title="Edit DHIS2 Core Instance" />
+            <Heading title={headingTitle} />
             <Card className={styles.container}>
                 <Form onSubmit={updateDeployment} initialValues={initialValues} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => <NewDhis2InstanceForm handleCancel={navigateToInstanceDetails} handleSubmit={handleSubmit} mode="update" deployment={deployment} />}

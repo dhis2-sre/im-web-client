@@ -30,7 +30,12 @@ export const useDhis2DeploymentUpdate = (deploymentId: number, deployment?: Depl
                     for (const instance of deployment.instances) {
                         const stackParams = values[instance.stackName]
                         if (stackParams) {
-                            await updateInstance(instance.stackName, stackParams, instance.stackName === 'dhis2-core' ? values.public : undefined)
+                            await updateInstance({
+                                instanceId: instance.id,
+                                stackName: instance.stackName,
+                                parameters: stackParams,
+                                publicValue: instance.stackName === 'dhis2-core' ? values.public : undefined,
+                            })
                         }
                     }
                 }

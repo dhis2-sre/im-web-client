@@ -56,9 +56,9 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
             {mode === 'create' && (
                 <>
                     <hr className={styles.hr} />
-                    <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
-                    <ParameterFieldset stackId="dhis2-db" displayName="Database" />
-                    <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
+                    <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" formMode={mode} />
+                    <ParameterFieldset stackId="dhis2-db" displayName="Database" formMode={mode} />
+                    <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional formMode={mode} />
                 </>
             )}
             {mode === 'update' && deployment?.instances && (
@@ -67,7 +67,12 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
                     {deployment.instances
                         .sort((a, b) => STACK_ORDER.indexOf(a.stackName as Dhis2StackName) - STACK_ORDER.indexOf(b.stackName as Dhis2StackName))
                         .map((instance) => (
-                            <ParameterFieldset key={instance.stackName} stackId={instance.stackName as Dhis2StackName} displayName={getStackDisplayName(instance.stackName)} />
+                            <ParameterFieldset
+                                key={instance.stackName}
+                                stackId={instance.stackName as Dhis2StackName}
+                                displayName={getStackDisplayName(instance.stackName)}
+                                formMode={mode}
+                            />
                         ))}
                 </>
             )}
