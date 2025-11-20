@@ -10,8 +10,9 @@ import {
     IconFolder16,
 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Moment from 'react-moment'
+import { useSearchParams } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { DatabaseRowAction } from './database-row-action.tsx'
 import { buildTree, buildFlattenedList, getNodeByPath, Item } from './database-tree-utils.ts'
@@ -22,10 +23,40 @@ import { UploadButton } from './upload-button.tsx'
 
 export const DatabasesList = () => {
     const { data, refetch, showOnlyMyDatabases, setShowOnlyMyDatabases } = useFilterDatabases()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [currentPaths, setCurrentPaths] = useState<Record<string, string>>({})
 
+    useEffect(() => {
+        const pathsStr = searchParams.get('currentPaths')
+        if (pathsStr) {
+            try {
+                setCurrentPaths(JSON.parse(pathsStr))
+            } catch (e) {
+                console.error('Error parsing currentPaths from search params:', e)
+            }
+        }
+    }, [searchParams])
+
     const navigateToFolder = (groupName: string, path: string) => {
-        setCurrentPaths((prev) => ({ ...prev, [groupName]: path }))
+        const newPaths = { ...currentPaths, [groupName]: path }
+        setCurrentPaths(newPaths)
+        setSearchParams({ currentPaths: JSON.stringify(newPaths) })
+    }
+
+    const renderBreadcrumb = (path: string, groupName: string) => {
+        const segments = path.split('/').filter(Boolean)
+        return segments.map((segment, index) => {
+            const partialPath = segments.slice(0, index + 1).join('/')
+            const isLast = index === segments.length - 1
+            return (
+                <span key={index}>
+                    {index > 0 && ' / '}
+                    <span style={isLast ? {} : { cursor: 'pointer', textDecoration: 'underline' }} onClick={isLast ? undefined : () => navigateToFolder(groupName, partialPath)}>
+                        {segment}
+                    </span>
+                </span>
+            )
+        })
     }
 
     const renderRow = (item: Item, groupName: string) => {
@@ -94,12 +125,12 @@ export const DatabasesList = () => {
                 return (
                     <div key={group.name}>
                         <TableToolbar className={styles.tabletoolbar}>
-                            <h2
-                                style={currentPath ? { cursor: 'pointer', textDecoration: 'underline' } : {}}
-                                onClick={currentPath ? () => setCurrentPaths((prev) => ({ ...prev, [group.name]: '' })) : undefined}
-                            >
-                                {group.name}
-                                {currentPath ? ` - ${currentPath}/` : ''}
+                            <h2>
+                                <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigateToFolder(group.name, '')}>
+                                    {group.name}
+                                </span>
+                                {currentPath ? ' > ' : ''}
+                                {currentPath && renderBreadcrumb(currentPath, group.name)}
                             </h2>
                         </TableToolbar>
                         <DataTable>
