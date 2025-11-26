@@ -23,7 +23,7 @@ jobs:
         env:
             TARGET_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'https://api.im-dev.dhis2.org' }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - name: Run Playwright tests
               run: make e2e-test
               env:
