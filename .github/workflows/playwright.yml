@@ -21,7 +21,7 @@ jobs:
         timeout-minutes: 60
         runs-on: ubuntu-latest
         env:
-            TARGET_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'https://dev.api.im.dhis2.org' }}
+            TARGET_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'https://api.im-dev.dhis2.org' }}
         steps:
             - uses: actions/checkout@v4
             - name: Run Playwright tests
