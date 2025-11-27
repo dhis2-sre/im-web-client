@@ -34,6 +34,7 @@ export const StackDetails = () => {
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
                         <DataTableColumnHeader>Default value</DataTableColumnHeader>
+                        <DataTableColumnHeader>Sensitive</DataTableColumnHeader>
                         <DataTableColumnHeader>Consumed</DataTableColumnHeader>
                     </DataTableRow>
                 </DataTableHead>
@@ -45,6 +46,7 @@ export const StackDetails = () => {
                             <DataTableRow key={parameter.displayName}>
                                 <DataTableCell>{parameter.displayName}</DataTableCell>
                                 <DataTableCell>{parameter.defaultValue}</DataTableCell>
+                                <DataTableCell>{parameter.sensitive.toString()}</DataTableCell>
                                 <DataTableCell>{parameter.consumed.toString()}</DataTableCell>
                             </DataTableRow>
                         ))}
