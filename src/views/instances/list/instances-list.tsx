@@ -79,7 +79,7 @@ export const InstancesList: FC = () => {
                                     </DataTableCell>
                                     <DataTableCell>
                                         <ButtonStrip>
-                                            <OpenButton hostname={group.hostname} name={deployment.name} />
+                                            <OpenButton deployment={deployment} />
                                             <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
                                         </ButtonStrip>
                                     </DataTableCell>
