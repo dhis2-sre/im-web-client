@@ -1,4 +1,4 @@
-import { Center, CircularLoader, CheckboxFieldFF, NoticeBox } from '@dhis2/ui'
+import { Center, CheckboxFieldFF, CircularLoader, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useEffect, useMemo } from 'react'
 import { Field, useField, useForm } from 'react-final-form'
@@ -10,9 +10,14 @@ export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin'
 export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_EMAIL' | 'PGADMIN_PASSWORD' | 'PGADMIN_CONFIRM_PASSWORD'
 export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryField>>
 
-export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
+export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean; formMode?: 'create' | 'update' }> = ({
+    stackId,
+    displayName,
+    optional,
+    formMode = 'create',
+}) => {
     const form = useForm()
-    const { loading, error, primaryParameters, secondaryParameters, initialParameterValues } = useDhis2StackParameters(stackId)
+    const { loading, error, primaryParameters, secondaryParameters, initialParameterValues, sensitiveParameters } = useDhis2StackParameters(stackId)
     const includeStackFieldName = `include_${stackId}`
     const {
         input: { value: includeStackFieldValue },
@@ -28,7 +33,13 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
 
     useEffect(() => {
         if (initialParameterValues && !areParameterValuesInitialized) {
-            form.initialize((values) => ({ ...values, [stackId]: initialParameterValues }))
+            form.initialize((values) => ({
+                ...values,
+                [stackId]: {
+                    ...initialParameterValues,
+                    ...(values[stackId] ?? {}),
+                },
+            }))
         }
     }, [form, stackId, initialParameterValues, areParameterValuesInitialized])
 
@@ -57,7 +68,14 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
                     </legend>
                     {shouldShowParameterFields &&
                         primaryParameters.map(({ displayName, parameterName }) => (
-                            <ParameterField stackId={stackId} key={parameterName} parameterName={parameterName} displayName={displayName} />
+                            <ParameterField
+                                stackId={stackId}
+                                key={parameterName}
+                                parameterName={parameterName}
+                                displayName={displayName}
+                                sensitive={sensitiveParameters[parameterName]}
+                                formMode={formMode}
+                            />
                         ))}
                 </fieldset>
             )}
@@ -70,7 +88,14 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
                             !loading &&
                             secondaryParameters &&
                             secondaryParameters.map(({ displayName, parameterName }) => (
-                                <ParameterField stackId={stackId} key={parameterName} parameterName={parameterName} displayName={displayName} />
+                                <ParameterField
+                                    stackId={stackId}
+                                    key={parameterName}
+                                    parameterName={parameterName}
+                                    displayName={displayName}
+                                    sensitive={sensitiveParameters[parameterName]}
+                                    formMode={formMode}
+                                />
                             ))}
                     </fieldset>
                 </details>

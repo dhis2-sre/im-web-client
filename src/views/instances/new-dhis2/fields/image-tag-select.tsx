@@ -1,13 +1,13 @@
 import { FC, useEffect, useMemo, useState, useCallback } from 'react'
 import { useField, useForm } from 'react-final-form'
 import classes from '../../../../components/searchable-single-select.module.css'
-import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
+import { SearchableSingleSelect } from '../../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_TAG } from '../constants.ts'
 import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
-const IMAGE_TAG_FIELD_NAME = `['dhis2-core'].${IMAGE_TAG}`
+const IMAGE_TAG_FIELD_NAME = `dhis2-core.${IMAGE_TAG}`
 
 interface ImageTagSelectProps {
     displayName: string
@@ -42,17 +42,17 @@ const useIntegrationsOptions = (repository) => {
     return images
 }
 
-const useResetImageTagFieldWhenSelectionNotAvailable = (loadedOptions, form) => {
+const useResetImageTagFieldWhenSelectionNotAvailable = (availableOptions: string[], form) => {
     useEffect(() => {
-        if (loadedOptions.length) {
+        if (availableOptions.length) {
             const currentSelectedValue = form.getState().values['dhis2-core']?.IMAGE_TAG
 
-            if (currentSelectedValue && !loadedOptions.some((option) => option.value === currentSelectedValue)) {
+            if (currentSelectedValue && !availableOptions.some((option) => option === currentSelectedValue)) {
                 form.change(IMAGE_TAG_FIELD_NAME, undefined)
                 form.blur(IMAGE_TAG_FIELD_NAME)
             }
         }
-    }, [loadedOptions, form])
+    }, [availableOptions, form])
 }
 
 const useRepositoryValue = () => {
@@ -103,21 +103,30 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
     const { value: imageValue, onChange: onImageChange } = useImageTagField()
     const repository = useRepositoryValue()
     const { imageLoading, checkImageExists } = useCheckImageExists(repository)
-    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<Option[]>([])
+    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<string[]>([])
     const loadedOptions = useIntegrationsOptions(repository)
 
-    useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form)
-
-    const [options, setOptions] = useState(loadedOptions)
-    const [filteredOptions, setFilteredOptions] = useState(options)
+    const [options, setOptions] = useState<string[]>(loadedOptions)
+    const [filteredOptions, setFilteredOptions] = useState<string[]>(options)
     const [filtered, setFiltered] = useState(false)
 
     useEffect(() => {
         if (loadedOptions) {
-            const unique = new Set([...additionallyLoadedOptions, ...loadedOptions])
+            const unique = new Set<string>([...additionallyLoadedOptions, ...loadedOptions])
             setOptions(Array.from(unique))
         }
     }, [additionallyLoadedOptions, loadedOptions])
+
+    useEffect(() => {
+        if (imageValue) {
+            setAdditionallyLoadedOptions((prev) => {
+                if (prev.includes(imageValue)) {
+                    return prev
+                }
+                return [...prev, imageValue]
+            })
+        }
+    }, [imageValue])
 
     const filterOptions = useCallback(
         async ({ value: tag }) => {
@@ -138,7 +147,9 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
             const tagExists = await checkImageExists({ repository, tag })
 
             if (tagExists) {
-                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) => [...prevAdditionallyLoadedOptions, tag])
+                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) =>
+                    prevAdditionallyLoadedOptions.includes(tag) ? prevAdditionallyLoadedOptions : [...prevAdditionallyLoadedOptions, tag]
+                )
                 const nextOptions = [...options, tag]
                 setOptions(nextOptions)
                 setFilteredOptions([tag])
@@ -153,6 +164,8 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
     )
 
     const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
+
+    useResetImageTagFieldWhenSelectionNotAvailable(options, form)
 
     return (
         <div>
