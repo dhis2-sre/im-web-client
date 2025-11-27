@@ -72,14 +72,7 @@ export const DatabasesList = () => {
                             <span style={{ marginLeft: '4px' }}>{item.name}</span>
                         </span>
                     </DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
-                    <DataTableCell></DataTableCell>
+                    <DataTableCell colSpan="8"></DataTableCell>
                 </DataTableRow>
             )
         } else {
