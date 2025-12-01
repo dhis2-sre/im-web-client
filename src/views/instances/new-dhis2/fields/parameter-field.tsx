@@ -30,12 +30,14 @@ export type ParameterFieldProps = {
     displayName: string
     parameterName: string
     stackId: Dhis2StackName
+    formMode?: 'create' | 'update'
     // Used by other components that use ParameterFieldProps
     // eslint-disable-next-line react/no-unused-prop-types
     type?: string
+    sensitive?: boolean
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {
+export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode }) => {
     switch (parameterName) {
         case IMAGE_TAG:
             return <ImageTagSelect displayName={displayName} />
@@ -55,14 +57,14 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case ALLOW_SUSPEND:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" sensitive={sensitive} formMode={formMode} />
         case PGADMIN_PASSWORD:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" sensitive={sensitive} formMode={formMode} />
         case PGADMIN_CONFIRM_PASSWORD:
             return <ConfirmPasswordInput stackId={stackId} />
         case CUSTOM_DHIS2_CONFIG:
-            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} />
+            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} />
         default:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} formMode={formMode} />
     }
 }
