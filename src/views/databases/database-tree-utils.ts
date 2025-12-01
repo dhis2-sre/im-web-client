@@ -57,7 +57,7 @@ export const getNodeByPath = (root: TreeNode, path: string): TreeNode => {
     return current
 }
 
-export const buildFlattenedList = (node: TreeNode, expanded: Record<string, boolean>, options: { level?: number; currentPath?: string } = {}): Item[] => {
+export const buildFlattenedList = (node: TreeNode, options: { level?: number; currentPath?: string } = {}): Item[] => {
     const { level = 0, currentPath = '' } = options
     const items: Item[] = []
 
@@ -71,9 +71,6 @@ export const buildFlattenedList = (node: TreeNode, expanded: Record<string, bool
                 level,
                 database: child.database,
             })
-            if (child.isFolder && expanded[path]) {
-                items.push(...buildFlattenedList(child, expanded, { level: level + 1, currentPath: path }))
-            }
         })
     }
 

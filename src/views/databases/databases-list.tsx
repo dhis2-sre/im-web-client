@@ -114,7 +114,7 @@ export const DatabasesList = () => {
                 const tree = buildTree(group.databases || [])
                 const currentPath = currentPaths[group.name] || ''
                 const currentNode = getNodeByPath(tree, currentPath)
-                const items = buildFlattenedList(currentNode, {}, { level: 0, currentPath })
+                const items = buildFlattenedList(currentNode, { level: 0, currentPath })
                 return (
                     <div key={group.name}>
                         <TableToolbar className={styles.tabletoolbar}>
