@@ -15,6 +15,7 @@ export type Database = {
     id?: number;
     lock?: Lock;
     name?: string;
+    size?: number;
     slug?: string;
     type?: string;
     updatedAt?: string;

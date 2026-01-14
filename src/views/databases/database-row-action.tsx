@@ -48,6 +48,7 @@ export const DatabaseRowAction: FC<DatabaseRowProps> = ({ database, groupName, r
                                 onComplete={refetch}
                                 databaseId={database.id}
                                 currentName={database.name}
+                                currentDescription={database.description}
                             />
                         )}
                         <MenuItem dense label="Copy" icon={<IconCopy16 />} onClick={openCopyModal} />

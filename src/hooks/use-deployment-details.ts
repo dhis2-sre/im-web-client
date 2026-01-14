@@ -1,6 +1,6 @@
 import type { RefetchFunction } from 'axios-hooks'
-import { useRef, useEffect } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { Deployment } from '../types/index.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 
@@ -18,24 +18,14 @@ export const useDeploymentDetails = (): [
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     RefetchFunction<any, Deployment>,
 ] => {
-    const { state: dataFromRouter } = useLocation()
     const { id } = useParams()
-    const getDeploymentCalledRef = useRef(false)
     const [{ data, error, loading }, refetch] = useAuthAxios<Deployment>(`/deployments/${id}`, { manual: true, autoCatch: true, autoCancel: false })
 
     useEffect(() => {
-        if (!dataFromRouter && !getDeploymentCalledRef.current) {
-            getDeploymentCalledRef.current = true
-            refetch()
+        if (id) {
+            void refetch()
         }
-    }, [dataFromRouter, refetch])
+    }, [id, refetch])
 
-    return [
-        {
-            data: data ?? dataFromRouter ?? undefined,
-            loading: dataFromRouter ? false : loading,
-            error: dataFromRouter ? undefined : error,
-        },
-        refetch,
-    ]
+    return [{ data, loading, error }, refetch]
 }
