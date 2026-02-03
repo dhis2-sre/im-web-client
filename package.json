@@ -1,5 +1,5 @@
 {
-    "name": "my-vue-app",
+    "name": "instance-manager",
     "packageManager": "yarn@4.9.0",
     "private": true,
     "version": "0.0.0",
