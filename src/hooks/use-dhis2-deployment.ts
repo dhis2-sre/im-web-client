@@ -78,8 +78,6 @@ export const useDhis2DeploymentCreation = () => {
                 const deploymentId = await saveDeployment(values)
                 await addStackToDeployment(deploymentId, STACK_NAMES.DB, values)
                 if (values[STACK_NAMES.CORE].STORAGE_TYPE === 'minio') {
-                    console.log(values[STACK_NAMES.MINIO])
-                    values[STACK_NAMES.MINIO].DATABASE_ID = values[STACK_NAMES.DB].DATABASE_ID
                     await addStackToDeployment(deploymentId, STACK_NAMES.MINIO, values)
                 }
                 await addStackToDeployment(deploymentId, STACK_NAMES.CORE, values)
