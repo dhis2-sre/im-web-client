@@ -7,6 +7,7 @@ import { GroupSelect } from './fields/group-select.tsx'
 import { NameInput } from './fields/name-input.tsx'
 import { PublicCheckbox } from './fields/public-checkbox.tsx'
 import { TtlSelect } from './fields/ttl-select.tsx'
+import { CompanionFieldset } from './companion-fieldset.tsx'
 import { ParameterFieldset } from './parameter-fieldset.tsx'
 import styles from './styles.module.css'
 
@@ -38,7 +39,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
             </fieldset>
             <hr className={styles.hr} />
             <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
-            <ParameterFieldset stackId="minio" displayName="MinIO" optional />
+            <CompanionFieldset stackId="minio" displayName="MinIO" sourceField="STORAGE_TYPE" sourceValue="minio" />
             <ParameterFieldset stackId="dhis2-db" displayName="Database" />
             <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
             {submitError && (
