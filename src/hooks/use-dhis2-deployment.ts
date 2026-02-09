@@ -77,6 +77,9 @@ export const useDhis2DeploymentCreation = () => {
             try {
                 const deploymentId = await saveDeployment(values)
                 await addStackToDeployment(deploymentId, STACK_NAMES.DB, values)
+                if (values[STACK_NAMES.CORE].STORAGE_TYPE === 'minio') {
+                    await addStackToDeployment(deploymentId, STACK_NAMES.MINIO, values)
+                }
                 await addStackToDeployment(deploymentId, STACK_NAMES.CORE, values)
 
                 if (values[`include_${STACK_NAMES.PG_ADMIN}`]) {
