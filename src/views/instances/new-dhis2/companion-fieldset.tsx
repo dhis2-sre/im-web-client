@@ -5,14 +5,15 @@ import { ParameterFieldset, type Dhis2StackName } from './parameter-fieldset.tsx
 type CompanionFieldsetProps = {
     stackId: Dhis2StackName
     displayName: string
+    sourceStack: Dhis2StackName
     sourceField: string
     sourceValue: string
 }
 
-export const CompanionFieldset: FC<CompanionFieldsetProps> = ({ stackId, displayName, sourceField, sourceValue }) => {
+export const CompanionFieldset: FC<CompanionFieldsetProps> = ({ stackId, displayName, sourceStack, sourceField, sourceValue }) => {
     const {
         input: { value },
-    } = useField(`dhis2-core.${sourceField}`, {
+    } = useField(`${sourceStack}.${sourceField}`, {
         subscription: { value: true },
     })
 
