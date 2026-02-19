@@ -1,4 +1,4 @@
-import { Button, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
+import { Button, Center, CircularLoader, Card, NoticeBox, ButtonStrip } from '@dhis2/ui'
 import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
@@ -15,7 +15,12 @@ export const DeploymentDetails: FC = () => {
     return (
         <div className={styles.wrapper}>
             <Heading title={title}>
-                <Button onClick={() => navigate('/instances')}>Back to list</Button>
+                <ButtonStrip>
+                    <Button onClick={() => navigate('/instances')}>Back to list</Button>
+                    <Button primary onClick={() => navigate(`/instances/${deployment?.id}/update`)}>
+                        Update
+                    </Button>
+                </ButtonStrip>
             </Heading>
 
             {error && !deployment && (

@@ -28,6 +28,7 @@ import {
 } from '../views/index.ts'
 import { InstanceDetails } from '../views/instances/details/instance-details.tsx'
 import { InstancesTable } from '../views/public-instances/index.ts'
+import { UpdateDhis2Instance } from '../views/instances/update-dhis2/update-dhis2-instance'
 
 let routes: ReactElement
 if (location.hostname === 'play.dhis2.org') {
@@ -61,6 +62,7 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/groups" element={<GroupsList />} />
                     <Route path="/users" element={<UsersList />} />
                     <Route path="/users/:id" element={<UserDetails />} />
+                    <Route path="/instances/:id/update" element={<UpdateDhis2Instance />} />
                 </Route>
             </Route>
 
