@@ -32,7 +32,7 @@ jobs:
                   REACT_APP_API_URL: ${{ env.TARGET_URL }}
                   USER_EMAIL: ${{ secrets.IM_E2E_TEST_USER_EMAIL }}
                   USER_PASSWORD: ${{ secrets.IM_E2E_TEST_USER_PASSWORD }}
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v6
               if: always()
               with:
                   name: playwright-report
