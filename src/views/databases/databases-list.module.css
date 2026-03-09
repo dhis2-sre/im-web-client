@@ -20,3 +20,7 @@
 .actionMorePopover {
     box-shadow: none !important;
 }
+
+.clickableRow {
+    cursor: pointer;
+}

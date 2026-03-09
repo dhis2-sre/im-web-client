@@ -13,8 +13,7 @@ import {
 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
-import Moment from 'react-moment'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { DatabaseRowAction } from './database-row-action.tsx'
 import { buildFlattenedList, buildTree, getNodeByPath, Item } from './database-tree-utils.ts'
@@ -27,6 +26,7 @@ export const DatabasesList = () => {
     const { data, refetch, showOnlyMyDatabases, setShowOnlyMyDatabases } = useFilterDatabases()
     const [searchParams, setSearchParams] = useSearchParams()
     const [currentPaths, setCurrentPaths] = useState<Record<string, string>>({})
+    const navigate = useNavigate()
 
     useEffect(() => {
         const pathsStr = searchParams.get('currentPaths')
@@ -74,40 +74,43 @@ export const DatabasesList = () => {
                             <span style={{ marginLeft: '4px' }}>{item.name}</span>
                         </span>
                     </DataTableCell>
-                    <DataTableCell colSpan="9"></DataTableCell>
+                    <DataTableCell colSpan="8"></DataTableCell>
                 </DataTableRow>
             )
         } else {
             const database = item.database!
+            const onClick = () => navigate(`/databases/${database.id}`)
             return (
-                <DataTableRow key={database.id}>
-                    <DataTableCell title={database.id.toString()}>
+                <tr className={styles.clickableRow} key={database.id}>
+                    <DataTableCell staticStyle onClick={onClick}>
                         <span style={{ paddingLeft: `${item.level * 20}px` }}>{item.name}</span>
                     </DataTableCell>
-                    <DataTableCell>{database.description}</DataTableCell>
-                    <DataTableCell>{database.slug}</DataTableCell>
-                    <DataTableCell>{prettyBytes(database.size)}</DataTableCell>
-                    <DataTableCell>{database.url}</DataTableCell>
-                    <DataTableCell>
-                        <Moment date={database.createdAt} fromNow />
+                    <DataTableCell staticStyle onClick={onClick}>
+                        {database.description}
                     </DataTableCell>
-                    <DataTableCell>
-                        <Moment date={database.updatedAt} fromNow />
+                    <DataTableCell staticStyle onClick={onClick}>
+                        {database.slug}
                     </DataTableCell>
-                    <DataTableCell>
+                    <DataTableCell staticStyle onClick={onClick}>
+                        {prettyBytes(database.size)}
+                    </DataTableCell>
+                    <DataTableCell staticStyle onClick={onClick}>
+                        {database.url}
+                    </DataTableCell>
+                    <DataTableCell staticStyle onClick={onClick}>
                         <Locked lock={database.lock} />
                     </DataTableCell>
-                    <DataTableCell>
+                    <DataTableCell staticStyle onClick={onClick}>
                         {database.filestoreId !== 0 && (
                             <Tooltip content={'ID: ' + database.filestoreId}>
                                 <IconFileDocument24 />
                             </Tooltip>
                         )}
                     </DataTableCell>
-                    <DataTableCell className={styles.rowPopoverTrigger}>
+                    <DataTableCell staticStyle align="right">
                         <DatabaseRowAction database={database} groupName={database.groupName} refetch={refetch} />
                     </DataTableCell>
-                </DataTableRow>
+                </tr>
             )
         }
     }
@@ -146,8 +149,6 @@ export const DatabasesList = () => {
                                     <DataTableColumnHeader>Slug</DataTableColumnHeader>
                                     <DataTableColumnHeader>Size</DataTableColumnHeader>
                                     <DataTableColumnHeader>URL</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Created</DataTableColumnHeader>
-                                    <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                     <DataTableColumnHeader>Locked?</DataTableColumnHeader>
                                     <DataTableColumnHeader>FS</DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
@@ -156,7 +157,7 @@ export const DatabasesList = () => {
                             <TableBody>
                                 {items.length === 0 && (
                                     <DataTableRow>
-                                        <DataTableCell colSpan="10">
+                                        <DataTableCell colSpan="8">
                                             <h3>No databases</h3>
                                         </DataTableCell>
                                     </DataTableRow>
