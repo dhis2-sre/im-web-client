@@ -1,4 +1,4 @@
-import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
+import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tooltip } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
 import Moment from 'react-moment'
@@ -33,18 +33,33 @@ export const DatabaseDetails = () => {
         { name: 'Description', value: db.description },
         { name: 'Slug', value: db.slug },
         { name: 'Type', value: db.type },
-        { name: 'Size', value: db.size ? prettyBytes(db.size) : undefined },
-        { name: 'URL', value: db.url },
+        { name: 'Size', value: db.size ? <Tooltip content={`${db.size} bytes`}>{prettyBytes(db.size)}</Tooltip> : '-' },
         { name: 'Group', value: db.groupName },
-        { name: 'Created', value: db.createdAt ? <Moment date={db.createdAt} fromNow /> : undefined },
-        { name: 'Updated', value: db.updatedAt ? <Moment date={db.updatedAt} fromNow /> : undefined },
+        {
+            name: 'Created',
+            value: db.createdAt ? (
+                <Tooltip content={<Moment date={db.createdAt} format="YYYY-MM-DD HH:mm:ss" />}>
+                    <Moment date={db.createdAt} fromNow />
+                </Tooltip>
+            ) : undefined,
+        },
+        {
+            name: 'Updated',
+            value: db.updatedAt ? (
+                <Tooltip content={<Moment date={db.updatedAt} format="YYYY-MM-DD HH:mm:ss" />}>
+                    <Moment date={db.updatedAt} fromNow />
+                </Tooltip>
+            ) : undefined,
+        },
         {
             name: 'Filestore ID',
             value: db.filestoreId ? (
                 <span onClick={() => navigate(`/databases/${db.filestoreId}`)} style={{ cursor: 'pointer', color: 'var(--colors-blue600)', textDecoration: 'underline' }}>
                     {db.filestore?.name || db.filestoreId}
                 </span>
-            ) : undefined,
+            ) : (
+                '-'
+            ),
         },
         { name: 'User', value: db.user?.email },
     ].filter((d) => d.value !== undefined && d.value !== null)

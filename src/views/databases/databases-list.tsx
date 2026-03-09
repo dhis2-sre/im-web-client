@@ -9,7 +9,6 @@ import {
     DataTableToolbar as TableToolbar,
     IconFileDocument24,
     IconFolder16,
-    Tooltip,
 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
@@ -101,11 +100,7 @@ export const DatabasesList = () => {
                         <Locked lock={database.lock} />
                     </DataTableCell>
                     <DataTableCell staticStyle onClick={onClick}>
-                        {database.filestoreId !== 0 && (
-                            <Tooltip content={'ID: ' + database.filestoreId}>
-                                <IconFileDocument24 />
-                            </Tooltip>
-                        )}
+                        {database.filestoreId !== 0 && <IconFileDocument24 />}
                     </DataTableCell>
                     <DataTableCell staticStyle align="right">
                         <DatabaseRowAction database={database} groupName={database.groupName} refetch={refetch} />
