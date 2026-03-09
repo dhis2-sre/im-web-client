@@ -7,7 +7,9 @@ import {
     DataTableHead as TableHead,
     DataTableRow,
     DataTableToolbar as TableToolbar,
+    IconFileDocument24,
     IconFolder16,
+    Tooltip,
 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
@@ -72,7 +74,7 @@ export const DatabasesList = () => {
                             <span style={{ marginLeft: '4px' }}>{item.name}</span>
                         </span>
                     </DataTableCell>
-                    <DataTableCell colSpan="8"></DataTableCell>
+                    <DataTableCell colSpan="9"></DataTableCell>
                 </DataTableRow>
             )
         } else {
@@ -94,6 +96,13 @@ export const DatabasesList = () => {
                     </DataTableCell>
                     <DataTableCell>
                         <Locked lock={database.lock} />
+                    </DataTableCell>
+                    <DataTableCell>
+                        {database.filestoreId !== 0 && (
+                            <Tooltip content={'ID: ' + database.filestoreId}>
+                                <IconFileDocument24 />
+                            </Tooltip>
+                        )}
                     </DataTableCell>
                     <DataTableCell className={styles.rowPopoverTrigger}>
                         <DatabaseRowAction database={database} groupName={database.groupName} refetch={refetch} />
@@ -140,13 +149,14 @@ export const DatabasesList = () => {
                                     <DataTableColumnHeader>Created</DataTableColumnHeader>
                                     <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                     <DataTableColumnHeader>Locked?</DataTableColumnHeader>
+                                    <DataTableColumnHeader>FS</DataTableColumnHeader>
                                     <DataTableColumnHeader></DataTableColumnHeader>
                                 </DataTableRow>
                             </TableHead>
                             <TableBody>
                                 {items.length === 0 && (
                                     <DataTableRow>
-                                        <DataTableCell colSpan="9">
+                                        <DataTableCell colSpan="10">
                                             <h3>No databases</h3>
                                         </DataTableCell>
                                     </DataTableRow>
