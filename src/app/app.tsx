@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout } from '../components/index.ts'
 import { ClustersList } from '../views/clusters/clusters-list.tsx'
+import { DatabaseDetails } from '../views/databases/database-details.tsx'
 import {
     DatabasesList,
     DeploymentDetails,
@@ -54,6 +55,7 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/stacks/:name" element={<StackDetails />} />
                     <Route path="/instances" element={<InstancesList />} />
                     <Route path="/databases" element={<DatabasesList />} />
+                    <Route path="/databases/:id" element={<DatabaseDetails />} />
                     <Route path="/clusters" element={<ClustersList />} />
                     <Route path="/instances/new" element={<NewDhis2Instance />} />
                     <Route path="/instances/:id/details" element={<DeploymentDetails />} />
