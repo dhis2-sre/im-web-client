@@ -75,9 +75,6 @@ export const NewClusterModal: FC<NewClusterModalProps> = ({ onComplete, onCancel
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
                 <InputField className={styles.field} label="Description" value={description} onChange={({ value }) => setDescription(value)} required disabled={loading} />
                 <FileInput buttonLabel="Select Kubernetes configuration" onChange={onFileSelect} disabled={loading} />
-                <div className={styles.hint}>
-                    The configuration file must be <b>encrypted</b>.
-                </div>
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
