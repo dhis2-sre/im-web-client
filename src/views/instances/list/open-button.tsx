@@ -10,15 +10,14 @@ type OpenButtonProps = {
 export const OpenButton: FC<OpenButtonProps> = ({ deployment }) => {
     const group = deployment.group
     const hostname = group.hostname
-    const groupId = group.id
     const name = deployment.name
 
     const onClick = useCallback(
         (_, event) => {
             event.stopPropagation()
-            window.open(`https://${hostname}/${name}-${groupId}`)
+            window.open(`https://${hostname}/${name}`)
         },
-        [hostname, name, groupId]
+        [hostname, name]
     )
 
     return (
