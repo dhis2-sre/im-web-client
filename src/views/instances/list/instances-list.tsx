@@ -52,8 +52,8 @@ export const InstancesList: FC = () => {
                                 </DataTableCell>
                             </DataTableRow>
                             <DataTableRow>
-                                <DataTableColumnHeader>Status</DataTableColumnHeader>
                                 <DataTableColumnHeader>Name</DataTableColumnHeader>
+                                <DataTableColumnHeader>Status</DataTableColumnHeader>
                                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                 <DataTableColumnHeader>Owner</DataTableColumnHeader>
@@ -63,10 +63,10 @@ export const InstancesList: FC = () => {
 
                             {group.deployments?.map((deployment) => (
                                 <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
+                                    <DataTableCell>{deployment.name}</DataTableCell>
                                     <DataTableCell>
                                         {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
                                     </DataTableCell>
-                                    <DataTableCell>{deployment.name}</DataTableCell>
                                     <DataTableCell>
                                         <Moment date={deployment.createdAt} fromNow />
                                     </DataTableCell>
