@@ -13,11 +13,12 @@ type ViewInstanceMenuItemProps = {
 }
 
 export const ViewInstanceMenuItem: FC<ViewInstanceMenuItemProps> = ({ group, name, stackName, parameters }) => {
-    const path = stackName === STACK_NAMES.PG_ADMIN ? `${name}-pgadmin` : name
-    const url = `https://${group.hostname}/${path}`
+    const basePath = name
+    const instancePath = stackName === STACK_NAMES.PG_ADMIN ? `${basePath}-pgadmin` : basePath
+    const url = `https://${group.hostname}/${instancePath}`
 
     const glowrootEnabled = stackName === STACK_NAMES.CORE && parameters[DEPLOY_GLOWROOT]?.value === 'true'
-    const glowrootUrl = `https://${group.hostname}/${name}-glowroot`
+    const glowrootUrl = `https://${group.hostname}/${basePath}-glowroot`
 
     return (
         <>

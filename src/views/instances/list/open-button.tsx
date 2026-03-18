@@ -1,13 +1,17 @@
 import { Button, IconLaunch16 } from '@dhis2/ui'
-import { useCallback } from 'react'
 import type { FC } from 'react'
+import { useCallback } from 'react'
+import { Deployment } from '../../../types/generated/index.ts'
 
 type OpenButtonProps = {
-    hostname: string
-    name: string
+    deployment: Deployment
 }
 
-export const OpenButton: FC<OpenButtonProps> = ({ hostname, name }) => {
+export const OpenButton: FC<OpenButtonProps> = ({ deployment }) => {
+    const group = deployment.group
+    const hostname = group.hostname
+    const name = deployment.name
+
     const onClick = useCallback(
         (_, event) => {
             event.stopPropagation()
