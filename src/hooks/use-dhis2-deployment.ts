@@ -80,6 +80,9 @@ export const useDhis2DeploymentCreation = () => {
                 if (values[STACK_NAMES.CORE].STORAGE_TYPE === 'minio') {
                     await addStackToDeployment(deploymentId, STACK_NAMES.MINIO, values)
                 }
+                if (values[STACK_NAMES.CORE].ENABLE_DORIS === 'true') {
+                    await addStackToDeployment(deploymentId, STACK_NAMES.DORIS, values)
+                }
                 await addStackToDeployment(deploymentId, STACK_NAMES.CORE, values)
 
                 if (values[`include_${STACK_NAMES.PG_ADMIN}`]) {
