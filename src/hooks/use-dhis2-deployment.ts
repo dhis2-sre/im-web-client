@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router'
 import { STACK_NAMES } from '../constants.ts'
 import { SaveDeploymentRequest, SaveInstanceRequest } from '../types/index.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
+import { useAlert } from '@dhis2/app-service-alerts'
 
 const convertParameterFieldsToPayload = (values: AnyObject) =>
     Object.entries(values).reduce((parameterPayload, [parameterName, value]) => {
@@ -108,4 +109,43 @@ export const useDhis2DeploymentCreation = () => {
     )
 
     return createDeployment
+}
+
+export const useDhis2DeploymentUpdate = () => {
+    const navigate = useNavigate()
+    const { show: showAlert } = useAlert(
+        ({ message }) => message,
+        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
+    )
+    const [, executePut] = useAuthAxios(
+        {
+            method: 'PUT',
+        },
+        { manual: true }
+    )
+
+    const updateDeployment = useCallback(
+        async (deploymentId: string, values: any) => {
+            try {
+                const payload = {
+                    description: values.description,
+                    ttl: values.ttl,
+                    group: values.groupName,
+                    public: values.public,
+                }
+                await executePut({ url: `/deployments/${deploymentId}`, data: payload })
+                navigate(`/instances/${deploymentId}/details`)
+                showAlert({ message: 'Deployment updated successfully' })
+                return true
+            } catch (error) {
+                console.error(error)
+                const message = error instanceof Error ? error.message : 'Unknown error'
+                showAlert({ message: `Failed to update deployment: ${message}`, isCritical: true })
+                return { [FORM_ERROR]: message }
+            }
+        },
+        [navigate, executePut, showAlert]
+    )
+
+    return updateDeployment
 }
