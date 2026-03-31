@@ -13,6 +13,7 @@ export const SAME_SITE_COOKIES = 'SAME_SITE_COOKIES'
 export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const ALLOW_SUSPEND = 'ALLOW_SUSPEND'
 export const DEPLOY_GLOWROOT = 'DEPLOY_GLOWROOT'
+export const DEPLOY_CHAP = 'DEPLOY_CHAP'
 export const JAVA_OPTS = 'JAVA_OPTS'
 export const PGADMIN_USERNAME = 'PGADMIN_USERNAME'
 export const PGADMIN_PASSWORD = 'PGADMIN_PASSWORD'
@@ -25,4 +26,8 @@ export const STACK_PRIMARY_PARAMETERS = new Map([
     ['dhis2-db', new Set(['DATABASE_ID'])],
     ['minio', new Set(['DATABASE_ID'])],
     ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD', 'PGADMIN_CONFIRM_PASSWORD'])],
+    ['chap-core', new Set(['IMAGE_TAG', 'GOOGLE_SERVICE_ACCOUNT_EMAIL', 'GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY'])],
+    ['chap-db', new Set(['DATABASE_SIZE'])],
+    ['chap-valkey', new Set(['REDIS_STORAGE_SIZE'])],
+    ['chap-worker', new Set(['IMAGE_TAG'])],
 ]) as Dhis2StackPrimaryParameters

@@ -6,8 +6,18 @@ import { useDhis2StackParameters } from '../../../hooks/index.ts'
 import { ParameterField } from './fields/parameter-field.tsx'
 import styles from './styles.module.css'
 
-export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin' | 'minio'
-export type Dhis2PrimaryField = 'IMAGE_TAG' | 'IMAGE_REPOSITORY' | 'DATABASE_ID' | 'PGADMIN_EMAIL' | 'PGADMIN_PASSWORD' | 'PGADMIN_CONFIRM_PASSWORD'
+export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin' | 'minio' | 'chap-core' | 'chap-db' | 'chap-valkey' | 'chap-worker'
+export type Dhis2PrimaryField =
+    | 'IMAGE_TAG'
+    | 'IMAGE_REPOSITORY'
+    | 'DATABASE_ID'
+    | 'PGADMIN_EMAIL'
+    | 'PGADMIN_PASSWORD'
+    | 'PGADMIN_CONFIRM_PASSWORD'
+    | 'GOOGLE_SERVICE_ACCOUNT_EMAIL'
+    | 'GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY'
+    | 'DATABASE_SIZE'
+    | 'REDIS_STORAGE_SIZE'
 export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryField>>
 
 export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean }> = ({ stackId, displayName, optional }) => {
