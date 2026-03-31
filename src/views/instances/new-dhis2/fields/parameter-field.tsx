@@ -40,7 +40,13 @@ export type ParameterFieldProps = {
 export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {
     switch (parameterName) {
         case IMAGE_TAG:
-            return <ImageTagSelect displayName={displayName} />
+            if (stackId === 'chap-core') {
+                return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-core" registry="ghcr" />
+            }
+            if (stackId === 'chap-worker') {
+                return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-worker" registry="ghcr" />
+            }
+            return <ImageTagSelect displayName={displayName} stackId={stackId} />
         case IMAGE_REPOSITORY:
             return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
