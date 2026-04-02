@@ -69,14 +69,22 @@ const useRepositoryValue = () => {
     return repository
 }
 
-const useCheckImageExists = (repository) => {
+const useCheckImageExists = (repository, organization?: string, registry?: string) => {
     const payload = { url: `/integrations/image-exists/${repository}/{tag}`, method: 'GET' }
     const options = { manual: true, autoCatch: false }
     const [{ loading: imageLoading }, _checkImageExists] = useAuthAxios(payload, options)
 
     const checkImageExists = useCallback(
         async ({ tag, repository }) => {
-            const url = `/integrations/image-exists/${repository}/${tag}`
+            const params = new URLSearchParams()
+            if (organization) {
+                params.set('organization', organization)
+            }
+            if (registry) {
+                params.set('registry', registry)
+            }
+            const query = params.size > 0 ? `?${params.toString()}` : ''
+            const url = `/integrations/image-exists/${repository}/${tag}${query}`
 
             try {
                 const response = await _checkImageExists({ url })
@@ -98,7 +106,7 @@ const useCheckImageExists = (repository) => {
                 return false
             }
         },
-        [_checkImageExists]
+        [_checkImageExists, organization, registry]
     )
 
     return { imageLoading, checkImageExists }
@@ -110,7 +118,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     const dynamicRepository = useRepositoryValue()
     const repository = fixedRepository ?? dynamicRepository
     const resolvedOrganization = organization ?? 'dhis2'
-    const { imageLoading, checkImageExists } = useCheckImageExists(repository)
+    const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
     const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<Option[]>([])
     const loadedOptions = useIntegrationsOptions(resolvedOrganization, repository, registry)
 

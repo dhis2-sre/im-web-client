@@ -4,7 +4,7 @@ import { Field, useForm } from 'react-final-form'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { Group } from '../../../../types/index.ts'
 import styles from './fields.module.css'
-import { GroupSelectHelpText } from './group-select-help-text.tsx'
+import { useGroupSelectHelpText } from './group-select-help-text.tsx'
 
 export const GroupSelect = () => {
     const form = useForm()
@@ -19,6 +19,7 @@ export const GroupSelect = () => {
     })
 
     const options = useMemo(() => (groups ?? []).map(({ name }) => ({ label: name, value: name })), [groups])
+    const helpText = useGroupSelectHelpText(currentGroup)
 
     useEffect(() => {
         return form.subscribe(
@@ -46,7 +47,7 @@ export const GroupSelect = () => {
             label="Group"
             component={SingleSelectFieldFF}
             options={options}
-            helpText={<GroupSelectHelpText groupName={currentGroup} />}
+            helpText={helpText}
             validate={hasValue}
         />
     )

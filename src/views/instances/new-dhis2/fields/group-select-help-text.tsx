@@ -2,11 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { ClusterResources } from '../../../../types/index.ts'
 
-type GroupSelectHelpTextProps = {
-    groupName: string
-}
-
-export const GroupSelectHelpText = ({ groupName }: GroupSelectHelpTextProps) => {
+export const useGroupSelectHelpText = (groupName: string): string => {
     const [resources, setResources] = useState<ClusterResources>({})
     const [{ loading, error }, fetchClusterResources] = useAuthAxios<ClusterResources>({ method: 'GET' }, { manual: true, autoCatch: true })
     const loadResources = useCallback(async () => {
