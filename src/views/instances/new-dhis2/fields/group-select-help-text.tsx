@@ -1,4 +1,3 @@
-import { Center, CircularLoader } from '@dhis2/ui'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { ClusterResources } from '../../../../types/index.ts'
@@ -27,11 +26,7 @@ export const GroupSelectHelpText = ({ groupName }: GroupSelectHelpTextProps) => 
     }
 
     if (loading) {
-        return (
-            <Center>
-                <CircularLoader small />
-            </Center>
-        )
+        return 'Loading...'
     }
 
     return `CPU ${resources.CPU}, Memory ${resources.Memory}${resources.Autoscaled ? ', autoscaled' : ''}`
