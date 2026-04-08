@@ -22,7 +22,7 @@ test.describe('databases', () => {
         await page.getByRole('menuitem', { name: 'Copy' }).click()
 
         // Copy
-        const inputName = page.locator('div[data-test="dhis2-uicore-input"] input')
+        const inputName = page.getByTestId('dhis2-uicore-modalcontent').locator('div[data-test="dhis2-uicore-input"] input')
         const name = await inputName.inputValue()
         const newName = `copy-${name}`
         await inputName.fill(newName)

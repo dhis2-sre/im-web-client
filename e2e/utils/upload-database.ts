@@ -26,7 +26,7 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     await expect(page.getByText(`Uploading database file: ${fileName}`)).toBeVisible()
 
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText('Database added successfully')).toBeVisible()
-    await expect(page.getByRole('cell', { name: fileName })).toBeVisible()
+    await expect(page.getByRole('cell', { name: fileName, exact: true })).toBeVisible()
 
     return { fileName }
 }
