@@ -11,4 +11,4 @@ export const STACK_NAMES: Record<string, Dhis2StackName> = {
     CHAP_CORE: 'chap-core',
 }
 
-export const VIEWABLE_INSTANCE_TYPES = ['pgadmin', 'dhis2-core', 'chap-core']
+export const VIEWABLE_INSTANCE_TYPES = ['pgadmin', 'dhis2-core']
