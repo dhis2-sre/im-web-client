@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { deleteTestDatabase, login, logout } from './utils/index.ts'
+import { deleteTestDatabase, login, logout, uploadTestDatabase, targetGroup } from './utils/index.ts'
 
 test.describe('databases', () => {
     test.beforeEach(async ({ page }) => {
@@ -14,42 +14,40 @@ test.describe('databases', () => {
     })
 
     test('copy/rename database', async ({ page }) => {
-        await page.getByRole('link', { name: 'Databases' }).click()
-        const firstRowButton = page.locator('tr button[data-test="dhis2-uicore-button"]').first()
+        const dbName = `e2e-copy-test-${Date.now()}`
+        const { fileName } = await uploadTestDatabase(page, dbName)
 
-        await firstRowButton.click()
+        // Open the action menu for the uploaded database and copy it
+        const row = page.getByRole('row', { name: fileName })
+        await row.getByTestId('dhis2-uicore-button').click()
+        await page.getByRole('menuitem', { name: 'Copy' }).dispatchEvent('click')
 
-        await page.getByRole('menuitem', { name: 'Copy' }).click()
-
-        // Copy
+        // Fill in the new name
         const inputName = page.getByTestId('dhis2-uicore-modalcontent').locator('div[data-test="dhis2-uicore-input"] input')
-        const name = await inputName.inputValue()
-        const newName = `copy-${name}`
-        await inputName.fill(newName)
-        await page.selectOption('#group-select', 'whoami')
-        await page.locator('button').getByText('Copy').click()
+        const newName = `copy-${fileName}`
+        await inputName.fill(newName, { force: true })
 
-        // TODO: Disabled for now, it works when manually done from the UI, but not from the test.
-        //        // Rename
-        //        const copiedDatabase = page.getByRole('row', { name: newName })
-        //        await copiedDatabase.getByTestId('dhis2-uicore-button').click()
-        //        await page.getByRole('menuitem', { name: 'Rename' }).click()
-        //        const inputRename = page.locator('div[data-test="dhis2-uicore-input"] input')
-        //        const rename = `rename-${newName}`
-        //        await inputRename.fill(rename)
-        //        await page.locator('button').getByText('Rename').click()
-        //
-        //        // Delete
-        //        await deleteTestDatabase(page, rename)
-        //
-        //        // Confirm deletion
-        //        const cellLocator = page.getByRole('cell', { name: rename })
+        // Wait for groups to load, then select the target group
+        await expect(page.locator('#group-select')).toBeEnabled()
+        await page.selectOption('#group-select', targetGroup)
 
-        // Delete
+        // Click the Copy button in the modal actions
+        const copyButton = page.getByTestId('dhis2-uicore-modalactions').getByRole('button', { name: 'Copy' })
+        await expect(copyButton).toBeEnabled()
+        await copyButton.dispatchEvent('click')
+
+        // Wait for the copy to succeed, then dismiss the modal
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(/copied successfully/)).toBeVisible({ timeout: 10000 })
+        await page.keyboard.press('Escape')
+
+        // Delete the copy
         await deleteTestDatabase(page, newName)
 
-        // Confirm deletion
-        const cellLocator = page.getByRole('cell', { name: newName })
-        await expect(cellLocator).toHaveCount(0)
+        // Confirm deletion of the copy
+        const copyCellLocator = page.getByRole('cell', { name: newName })
+        await expect(copyCellLocator).toHaveCount(0)
+
+        // Delete the original uploaded database
+        await deleteTestDatabase(page, fileName)
     })
 })

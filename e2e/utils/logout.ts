@@ -6,7 +6,14 @@ export const logout = async (page: Page) => {
 
     // Navigate to a known state to avoid blocked UI
     await page.goto('/')
-    await page.getByRole('button', { name: 'Logout' }).click()
 
-    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible()
+    // If we're already logged out (e.g. due to a failed test), skip
+    const logoutButton = page.getByRole('button', { name: 'Logout' })
+    const loginButton = page.getByRole('button', { name: 'Login' })
+    const visibleButton = await Promise.race([logoutButton.waitFor({ timeout: 5000 }).then(() => 'logout'), loginButton.waitFor({ timeout: 5000 }).then(() => 'login')])
+
+    if (visibleButton === 'logout') {
+        await logoutButton.click()
+        await expect(loginButton).toBeVisible()
+    }
 }
