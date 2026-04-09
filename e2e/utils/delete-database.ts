@@ -1,10 +1,12 @@
 import { expect, Page } from '@playwright/test'
 
 export const deleteTestDatabase = async (page: Page, name: string) => {
-    await page.locator('body').click()
+    // Dismiss any open modals and navigate to a known state
+    await page.keyboard.press('Escape')
+    await page.goto('/')
 
     await page.getByRole('link', { name: 'Databases' }).click()
-    //    await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
 
     await expect(page.getByRole('cell', { name: name, exact: true })).toBeVisible()
     const row = page.getByRole('row', { name: name })
