@@ -17,7 +17,7 @@
 .title {
     padding: 0 0 var(--spacers-dp12) var(--spacers-dp12);
     font-size: large;
-    text-transform: capitalize;
+
     border-bottom: 0.5px solid var(--colors-grey400);
     width: 100%;
 }
