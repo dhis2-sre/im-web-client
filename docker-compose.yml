@@ -1,6 +1,7 @@
 services:
     prod:
         image: dhis2/im-web-client:${IMAGE_TAG:-latest}
+        build: .
         environment:
             API_URL: ${API_URL}
         ports:
