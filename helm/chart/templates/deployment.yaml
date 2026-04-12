@@ -53,9 +53,13 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: tmp
+            - mountPath: /run/env
+              name: env
       volumes:
         - emptyDir: {}
           name: tmp
+        - emptyDir: {}
+          name: env
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
