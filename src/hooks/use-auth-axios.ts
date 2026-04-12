@@ -16,7 +16,7 @@ if (!baseURL) {
     throw new Error('API_URL is not configured. Set either window._env_.API_URL or VITE_API_URL.')
 }
 
-/* Better make sure this is a unque string because the event
+/* Better make sure this is a unique string because the event
  * is going to be sent via the global window object */
 export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
