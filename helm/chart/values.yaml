@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+apiUrl: ""
+
 image:
     repository: dhis2/im-web-client
     pullPolicy: IfNotPresent
