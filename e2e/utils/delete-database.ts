@@ -8,11 +8,15 @@ export const deleteTestDatabase = async (page: Page, name: string) => {
 
     await expect(page.getByRole('cell', { name: name, exact: true })).toBeVisible()
     const row = page.getByRole('row', { name: name })
-    await row.getByTestId('dhis2-uicore-button').click()
+    await row.getByRole('button', { name: `Actions for ${name}` }).click()
     await page.getByRole('menuitem', { name: 'Delete' }).dispatchEvent('click')
 
-    await expect(page.getByText('Are you sure you wish to delete')).toBeVisible()
-    await page.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
+    // Scope to the confirmation dialog. @dhis2/ui's Modal sets aria-modal="true"
+    // but not role="dialog" (see upstream issue), so we scope via the aria-modal
+    // attribute rather than getByRole('dialog').
+    const confirmDialog = page.locator('[aria-modal="true"]')
+    await expect(confirmDialog.getByText('Are you sure you want to delete')).toBeVisible()
+    await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
 
     const expectMessage = page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`Successfully deleted [^/]+/${name}`))
     await expect(expectMessage).toBeVisible()

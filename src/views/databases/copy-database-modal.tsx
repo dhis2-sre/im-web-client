@@ -113,7 +113,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
         <Modal onClose={onClose}>
             <ModalTitle>Copy Database</ModalTitle>
             <ModalContent>
-                <InputField label="New Name" value={newName} onChange={({ value }) => setNewName(value)} required disabled={loading} />
+                <InputField name="newName" label="New Name" value={newName} onChange={({ value }) => setNewName(value)} required disabled={loading} />
                 <GroupSelect groups={groups} selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} loading={groupsLoading} />
             </ModalContent>
             <ModalActions>

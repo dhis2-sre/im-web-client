@@ -25,12 +25,19 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     await page.getByRole('button', { name: 'Select database' }).click()
     const fileChooser = await fileChooserPromise
     await fileChooser.setFiles(dbFixturePath)
-    await page.getByTestId('upload-database-name').getByRole('textbox').fill(dbName)
+
+    // Scope further interactions to the upload dialog.
+    // @dhis2/ui's Modal sets aria-modal="true" but not role="dialog" (see upstream issue),
+    // so we scope via the aria-modal attribute rather than getByRole('dialog').
+    const uploadDialog = page.locator('[aria-modal="true"]')
+
+    await uploadDialog.getByLabel('Name').fill(dbName)
 
     await expect(page.getByText(`Selected database file: ${fileName}`)).toBeVisible()
 
-    await expect(page.getByTestId('dhis2-uicore-modalactions').getByRole('button', { name: 'Upload' })).toBeEnabled()
-    await page.getByTestId('dhis2-uicore-modalactions').getByRole('button', { name: 'Upload' }).click()
+    const uploadButton = uploadDialog.getByRole('button', { name: 'Upload' })
+    await expect(uploadButton).toBeEnabled()
+    await uploadButton.click()
 
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText('Database added successfully')).toBeVisible({ timeout: 30000 })
     await expect(page.getByRole('cell', { name: fileName, exact: true })).toBeVisible()

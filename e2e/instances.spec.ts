@@ -76,9 +76,16 @@ test.describe('new instance', () => {
 
         const newInstanceRow = page.getByRole('row', { name: randomName })
         await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
-        await expect(page.getByText('Are you sure you want to delete')).toBeVisible()
-        await page.getByRole('button', { name: 'Confirm' }).click({ force: true })
 
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 30000 })
+        // Scope to the confirmation dialog. @dhis2/ui's Modal sets aria-modal="true"
+        // but not role="dialog" (see upstream issue), so we scope via the aria-modal
+        // attribute rather than getByRole('dialog').
+        const confirmDialog = page.locator('[aria-modal="true"]')
+        await expect(confirmDialog.getByText(`Are you sure you want to delete instance "${randomName}"`)).toBeVisible()
+        await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
+
+        // Instance teardown is backend-heavy and can exceed the default timeout, especially
+        // when the instance is still provisioning at delete time (see TODO at the top of this test).
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 90000 })
     })
 })

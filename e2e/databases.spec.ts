@@ -19,20 +19,25 @@ test.describe('databases', () => {
 
         // Open the action menu for the uploaded database and copy it
         const row = page.getByRole('row', { name: fileName })
-        await row.getByTestId('dhis2-uicore-button').click()
+        await row.getByRole('button', { name: `Actions for ${fileName}` }).click()
         await page.getByRole('menuitem', { name: 'Copy' }).dispatchEvent('click')
 
+        // Scope all further interactions to the copy dialog.
+        // @dhis2/ui's Modal sets aria-modal="true" but not role="dialog" (see upstream issue),
+        // so we scope via the aria-modal attribute rather than getByRole('dialog').
+        const copyDialog = page.locator('[aria-modal="true"]')
+
         // Fill in the new name
-        const inputName = page.getByTestId('dhis2-uicore-modalcontent').locator('div[data-test="dhis2-uicore-input"] input')
         const newName = `copy-${fileName}`
-        await inputName.fill(newName, { force: true })
+        await copyDialog.getByLabel('New Name').fill(newName, { force: true })
 
         // Wait for groups to load, then select the target group
-        await expect(page.locator('#group-select')).toBeEnabled()
-        await page.selectOption('#group-select', targetGroup)
+        const groupSelect = copyDialog.getByLabel(/select group/i)
+        await expect(groupSelect).toBeEnabled()
+        await groupSelect.selectOption(targetGroup)
 
         // Click the Copy button in the modal actions
-        const copyButton = page.getByTestId('dhis2-uicore-modalactions').getByRole('button', { name: 'Copy' })
+        const copyButton = copyDialog.getByRole('button', { name: 'Copy' })
         await expect(copyButton).toBeEnabled()
         await copyButton.dispatchEvent('click')
 
