@@ -147,7 +147,7 @@ export const InstancesList: FC = () => {
                                     className={styles.clickableRow}
                                     key={deployment.id}
                                     onClick={(e) => {
-                                        if ((e.target as HTMLElement).closest('[data-test="dhis2-uicore-modal"]')) {
+                                        if (!e.currentTarget.contains(e.target as Node)) {
                                             return
                                         }
                                         navigate(`/instances/${deployment.id}/details`, { state: deployment })
