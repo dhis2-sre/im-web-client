@@ -62,7 +62,16 @@ export const InstancesList: FC = () => {
                             </DataTableRow>
 
                             {group.deployments?.map((deployment) => (
-                                <tr className={styles.clickableRow} key={deployment.id} onClick={() => navigate(`/instances/${deployment.id}/details`, { state: deployment })}>
+                                <tr
+                                    className={styles.clickableRow}
+                                    key={deployment.id}
+                                    onClick={(e) => {
+                                        if ((e.target as HTMLElement).closest('[data-test="dhis2-uicore-modal"]')) {
+                                            return
+                                        }
+                                        navigate(`/instances/${deployment.id}/details`, { state: deployment })
+                                    }}
+                                >
                                     <DataTableCell>{deployment.name}</DataTableCell>
                                     <DataTableCell>
                                         {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
