@@ -158,6 +158,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                     <InputField
                         className={styles.field}
                         dataTest="upload-database-name"
+                        name="databaseName"
                         label="Name"
                         value={name}
                         onChange={({ value }) => setName(value)}
