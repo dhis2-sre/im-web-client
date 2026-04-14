@@ -33,7 +33,7 @@ export const DatabaseRowAction: FC<DatabaseRowProps> = ({ database, groupName, r
     return (
         <>
             <span ref={anchor}>
-                <Button small secondary onClick={togglePopover} icon={<IconMore24 color={colors.grey600} />} />
+                <Button small secondary onClick={togglePopover} icon={<IconMore24 color={colors.grey600} />} aria-label={`Actions for ${database.name}`} />
             </span>
             {open && (
                 <Popover reference={anchor} className={styles.actionMorePopover} arrow={false} placement="bottom-end" observeReferenceResize onClickOutside={() => setOpen(false)}>
