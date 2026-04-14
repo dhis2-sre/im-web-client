@@ -16,7 +16,7 @@ export const DownloadButton: FC<DownloadButtonProps> = ({ id, onComplete }) => {
             url: `/databases/${id}/external`,
             method: 'post',
             data: {
-                expiration: 5,
+                expiration: 60,
             },
         },
         { manual: true }
