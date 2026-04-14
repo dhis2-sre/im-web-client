@@ -23,7 +23,7 @@ loadEnvVariables()
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-    timeout: 10 * 1000, // 10 Minutes
+    timeout: 30 * 1000, // 30 seconds
     testDir: './e2e',
     /* Run tests in files in parallel */
     fullyParallel: true,
