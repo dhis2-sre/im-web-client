@@ -26,17 +26,34 @@ const useFilterDatabases = () => {
     }, [])
 
     const { currentUser } = useContext(AuthContext)
+    const [searchTerm, setSearchTerm] = useState('')
 
     const filteredData = useMemo(() => {
-        let filteredGroups = data?.map((group) => ({
-            ...group,
-            databases: group.databases.filter((db) => db.user.id === currentUser.id),
-        }))
-        if (filteredGroups) {
-            filteredGroups = filteredGroups.filter((group) => group.databases.length > 0)
+        let groups = data
+
+        if (showOnlyMyDatabases) {
+            groups = groups
+                ?.map((group) => ({
+                    ...group,
+                    databases: group.databases.filter((db) => db.user.id === currentUser.id),
+                }))
+                ?.filter((group) => group.databases.length > 0)
         }
-        return showOnlyMyDatabases ? filteredGroups : data
-    }, [data, currentUser, showOnlyMyDatabases])
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase()
+            groups = groups
+                ?.map((group) => ({
+                    ...group,
+                    databases: group.databases.filter(
+                        (db) => db.name?.toLowerCase().includes(term) || db.description?.toLowerCase().includes(term) || db.slug?.toLowerCase().includes(term)
+                    ),
+                }))
+                ?.filter((group) => group.databases.length > 0)
+        }
+
+        return groups
+    }, [data, currentUser, showOnlyMyDatabases, searchTerm])
 
     return {
         data: filteredData,
@@ -45,6 +62,8 @@ const useFilterDatabases = () => {
         refetch,
         showOnlyMyDatabases,
         setShowOnlyMyDatabases,
+        searchTerm,
+        setSearchTerm,
     }
 }
 
