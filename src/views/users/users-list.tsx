@@ -30,7 +30,7 @@ export const UsersList: FC = () => {
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
                         <DataTableColumnHeader>Groups</DataTableColumnHeader>
-                        <DataTableColumnHeader>Administrator Groups</DataTableColumnHeader>
+                        <DataTableColumnHeader>Groups Admin</DataTableColumnHeader>
                     </DataTableRow>
                 </TableHead>
 
