@@ -3,9 +3,6 @@ kind: Config
 build:
   artifacts:
     - image: dhis2/im-web-client
-      docker:
-        buildArgs:
-          VITE_API_URL: "{{ .API_URL }}"
   tagPolicy:
     inputDigest: { }
 deploy:
@@ -17,6 +14,7 @@ deploy:
         createNamespace: true
         chartPath: helm/chart
         setValueTemplates:
+          apiUrl: "{{ .API_URL }}"
           ingress:
             enabled: true
             hostname: "{{ .UI_HOSTNAME }}"
