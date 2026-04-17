@@ -72,6 +72,8 @@ module.exports = {
         'import/extensions': ['error', 'ignorePackages', { '': 'never' }],
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
+        'react-hooks/set-state-in-effect': 'off',
+        'react-hooks/immutability': 'off',
         'react/sort-prop-types': [
             'error',
             {

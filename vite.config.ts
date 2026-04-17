@@ -1,4 +1,5 @@
 import path from 'path'
+// eslint-disable-next-line import/no-unresolved
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
@@ -18,7 +19,7 @@ export default defineConfig({
             {
                 // Allow moment.js to be used as an ESM module
                 find: /^moment$/,
-                replacement: path.resolve(__dirname, './node_modules/moment/moment.js'),
+                replacement: path.resolve(import.meta.dirname, './node_modules/moment/moment.js'),
             },
         ],
     },
