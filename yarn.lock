@@ -3032,9 +3032,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/cli-style@npm:^10.7.4":
-  version: 10.7.6
-  resolution: "@dhis2/cli-style@npm:10.7.6"
+"@dhis2/cli-style@npm:^10.7.10":
+  version: 10.7.10
+  resolution: "@dhis2/cli-style@npm:10.7.10"
   dependencies:
     "@commitlint/cli": "npm:^12.1.4"
     "@commitlint/config-conventional": "npm:^13.1.0"
@@ -3064,7 +3064,7 @@ __metadata:
     yargs: "npm:^16.2.0"
   bin:
     d2-style: bin/d2-style
-  checksum: 10c0/2f332da8ed1176d9d7ec1fcf19fd4aea878c0ab2a6333a53721aa94f02273c361df4d4b66f8f6e448722eaea96c8ff1e37abdad57729263f34f602fbcf75694a
+  checksum: 10c0/b294ada976510ea8f012700746777a9ff55976bc93085c9770d8d3b3a7f4912ff33fa6933c65923e2f2fa780bf444c6482362fcba7c936601cb9cd29654cdaca
   languageName: node
   linkType: hard
 
@@ -8278,7 +8278,7 @@ __metadata:
     "@commitlint/cli": "npm:^19.5.0"
     "@dhis2/app-runtime": "npm:^3.17.0"
     "@dhis2/app-service-alerts": "npm:^3.12.0"
-    "@dhis2/cli-style": "npm:^10.7.4"
+    "@dhis2/cli-style": "npm:^10.7.10"
     "@dhis2/d2-i18n": "npm:^1.1.3"
     "@dhis2/ui": "npm:^10.7.2"
     "@fontsource/roboto": "npm:^5.1.0"
