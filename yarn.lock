@@ -3369,10 +3369,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/roboto@npm:^5.1.0":
-  version: 5.2.5
-  resolution: "@fontsource/roboto@npm:5.2.5"
-  checksum: 10c0/b254985468a3ba78323d66b0725af1b2dc60dbacc82a907c0f67ccc659cc30c52b66bbadd3f2afdea53971ddae60c96e582efbcaee2db52886201c3f56b830a8
+"@fontsource/roboto@npm:^5.2.10":
+  version: 5.2.10
+  resolution: "@fontsource/roboto@npm:5.2.10"
+  checksum: 10c0/abadfcaefbe2196bbd36d9258b336063f721894a3624a9639da00792583c565bfd0748ef978f91a38c3c0de8d247615c9be92a763184c085c630fa43f04b1cd9
   languageName: node
   linkType: hard
 
@@ -8174,7 +8174,7 @@ __metadata:
     "@dhis2/cli-style": "npm:^10.7.4"
     "@dhis2/d2-i18n": "npm:^1.1.3"
     "@dhis2/ui": "npm:^10.7.2"
-    "@fontsource/roboto": "npm:^5.1.0"
+    "@fontsource/roboto": "npm:^5.2.10"
     "@ls-lint/ls-lint": "npm:^2.2.2"
     "@playwright/test": "npm:1.52.0"
     "@testing-library/dom": "npm:^10.0.0"
