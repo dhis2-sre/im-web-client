@@ -2858,31 +2858,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/app-runtime@npm:^3.12.0":
-  version: 3.14.0
-  resolution: "@dhis2/app-runtime@npm:3.14.0"
+"@dhis2/app-runtime@npm:^3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-runtime@npm:3.17.0"
   dependencies:
-    "@dhis2/app-service-alerts": "npm:3.14.0"
-    "@dhis2/app-service-config": "npm:3.14.0"
-    "@dhis2/app-service-data": "npm:3.14.0"
-    "@dhis2/app-service-offline": "npm:3.14.0"
-    "@dhis2/app-service-plugin": "npm:3.14.0"
+    "@dhis2/app-service-alerts": "npm:3.17.0"
+    "@dhis2/app-service-config": "npm:3.17.0"
+    "@dhis2/app-service-data": "npm:3.17.0"
+    "@dhis2/app-service-offline": "npm:3.17.0"
+    "@dhis2/app-service-plugin": "npm:3.17.0"
+    "@dhis2/app-service-user": "npm:3.17.0"
+    prop-types: "npm:^15.7.2"
   peerDependencies:
-    prop-types: ^15.7.2
     react: ^16.8.6 || ^18
     react-dom: ^16.8.6 || ^18
-  checksum: 10c0/91700da1ce9cd0b307d8ec5d6f113cabe7d6f43d07763977c6bf6e83f8f740fd5ad2ee919bc92cfc731e20d1d121c9914ec6a4895a54fa44e94d27d70040cf2e
+  checksum: 10c0/e09a5beb5dcfe2f087315eb751e69f7f4ce5d1383996d8e045405e4068d46d03b4e6d67f18cdfa8184626e9d8721922e161242954a2d25b7852a0ad1551ae575
   languageName: node
   linkType: hard
 
-"@dhis2/app-service-alerts@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@dhis2/app-service-alerts@npm:3.14.0"
+"@dhis2/app-service-alerts@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-service-alerts@npm:3.17.0"
+  dependencies:
+    prop-types: "npm:^15.7.2"
   peerDependencies:
-    prop-types: ^15.7.2
     react: ^16.8.6 || ^18
     react-dom: ^16.8.6 || ^18
-  checksum: 10c0/0895d06ce318c69b6dae41119ae4a68fbc6210e38827eaf56c5b858c4c2089fced848cd2b5debfb6ecc3f5e98507c37314552ff11831051b8199b02261bd0577
+  checksum: 10c0/2cb38441208b1c633681a7cf730c5f2f580de6db035cbd0911d556fdec8821b8f3166434233c88d7b71e5115822a60ee378686167ba7bd812c5e6c1934a46201
   languageName: node
   linkType: hard
 
@@ -2897,57 +2899,71 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/app-service-config@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@dhis2/app-service-config@npm:3.14.0"
+"@dhis2/app-service-config@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-service-config@npm:3.17.0"
+  dependencies:
+    prop-types: "npm:^15.7.2"
   peerDependencies:
-    prop-types: ^15.7.2
     react: ^16.8.6 || ^18
     react-dom: ^16.8.6 || ^18
-  checksum: 10c0/5e245ea4e1bc0d509728d6be16219572f8fb735b9a775101ba1212e98974e651093f2ab31e2a1dc845b8ceeac4e3502f86595f1004c7ce15af75dfe3f5312a38
+  checksum: 10c0/252feeedcc81395b00c8fade6c1884f5017e64077a8d39dac378a5e4e1c9e771f324c858f2245df01e26f6d39b22a1b6af4df1e6dbda541d3065cf2efef37b42
   languageName: node
   linkType: hard
 
-"@dhis2/app-service-data@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@dhis2/app-service-data@npm:3.14.0"
+"@dhis2/app-service-data@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-service-data@npm:3.17.0"
   dependencies:
     "@tanstack/react-query": "npm:^4.36.1"
+    prop-types: "npm:^15.7.2"
   peerDependencies:
-    "@dhis2/app-service-config": 3.14.0
-    prop-types: ^15.7.2
-    react: ^16.8 || ^18
-    react-dom: ^16.8 || ^18
-  checksum: 10c0/57274f6fe60c0e64fbbd3c58f86e316e3130d5f10e9eb45a854387ead199a429037288383eb2fae403cd3d8202a67b90ed87f6be725d84c228889cfe457eb5dd
+    "@dhis2/app-service-config": 3.17.0
+    "@dhis2/data-engine": 3.17.0
+    react: ^16.8.6 || ^18
+    react-dom: ^16.8.6 || ^18
+  checksum: 10c0/915c84682a3b01d398d5f0b7700f4886f15e269f84cec45b90b51d6680307ebd31e29c9f3c310c2143646904770f8106a6cfa26c2cd105d82b336c72d5e037bb
   languageName: node
   linkType: hard
 
-"@dhis2/app-service-offline@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@dhis2/app-service-offline@npm:3.14.0"
+"@dhis2/app-service-offline@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-service-offline@npm:3.17.0"
   dependencies:
     lodash: "npm:^4.17.21"
+    prop-types: "npm:^15.7.2"
   peerDependencies:
-    "@dhis2/app-service-config": 3.14.0
-    prop-types: ^15.7.2
+    "@dhis2/app-service-config": 3.17.0
     react: ^16.8.6 || ^18
     react-dom: ^16.8.6 || ^18
-  checksum: 10c0/2b4a54da3ebd47f1368c0685d79212aea1cee608df41b4e9889aa1328748a03ad948202e3ea125d0f5a6ab6bb15bbe3988a0014081db334e2dd98ec91603c2bc
+  checksum: 10c0/39742d2022bb37b7e390572bcb434d1366f354a2e12e0f4cc1a3c4898199964abfd1834d1e1e76d0dc1501742f4709fd08f4b173910d6031c1a43c23c8cdbfbc
   languageName: node
   linkType: hard
 
-"@dhis2/app-service-plugin@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@dhis2/app-service-plugin@npm:3.14.0"
+"@dhis2/app-service-plugin@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-service-plugin@npm:3.17.0"
   dependencies:
     post-robot: "npm:^10.0.46"
+    prop-types: "npm:^15.7.2"
   peerDependencies:
-    "@dhis2/app-service-alerts": 3.14.0
-    "@dhis2/app-service-data": 3.14.0
-    prop-types: ^15.7.2
+    "@dhis2/app-service-alerts": 3.17.0
+    "@dhis2/app-service-data": 3.17.0
     react: ^16.8.6 || ^18
     react-dom: ^16.8.6 || ^18
-  checksum: 10c0/1b85701e28ad73739750ba1fe405fd94fc579f4bd64002bb8a3436e1a426a7db284a03d9cbfbe7fe33412f69faa420db82e2dabbb3e786f817114ed1a1413cd0
+  checksum: 10c0/e367b4d6d63708813b862ec066cb9ce78ceb461da3d956d2131cab66aae14ad79b13956ee24e316aa5e37a5d7dca13d15ab84e3d6bdcb43ed54322e528a5e4d9
+  languageName: node
+  linkType: hard
+
+"@dhis2/app-service-user@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@dhis2/app-service-user@npm:3.17.0"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: ^16.8.6 || ^18
+    react-dom: ^16.8.6 || ^18
+  checksum: 10c0/0898b5f190a6096f218474475adc2a2f9f15e83a9adad921ba175535bbeee63a5414fe5fd22f0382ab8028dc8ab8276e449ec5c8996f5ff6db44bf5ca7e8c0e5
   languageName: node
   linkType: hard
 
@@ -8169,7 +8185,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.25.8"
     "@babel/preset-react": "npm:^7.25.7"
     "@commitlint/cli": "npm:^19.5.0"
-    "@dhis2/app-runtime": "npm:^3.12.0"
+    "@dhis2/app-runtime": "npm:^3.17.0"
     "@dhis2/app-service-alerts": "npm:^3.12.0"
     "@dhis2/cli-style": "npm:^10.7.4"
     "@dhis2/d2-i18n": "npm:^1.1.3"
