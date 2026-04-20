@@ -16,6 +16,7 @@ import {
     SAME_SITE_COOKIES,
     ALLOW_SUSPEND,
     DEPLOY_GLOWROOT,
+    ENABLE_DORIS,
 } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -55,6 +56,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case INSTALL_REDIS:
         case ALLOW_SUSPEND:
         case DEPLOY_GLOWROOT:
+        case ENABLE_DORIS:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" />

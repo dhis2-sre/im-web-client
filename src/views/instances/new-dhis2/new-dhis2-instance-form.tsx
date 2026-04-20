@@ -40,6 +40,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
             <hr className={styles.hr} />
             <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
             <CompanionFieldset stackId="minio" displayName="MinIO" sourceStack="dhis2-core" sourceField="STORAGE_TYPE" sourceValue="minio" />
+            <CompanionFieldset stackId="doris" displayName="Doris" sourceStack="dhis2-core" sourceField="ENABLE_DORIS" sourceValue="true" />
             <ParameterFieldset stackId="dhis2-db" displayName="Database" />
             <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
             {submitError && (

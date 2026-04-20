@@ -13,6 +13,7 @@ export const SAME_SITE_COOKIES = 'SAME_SITE_COOKIES'
 export const INSTALL_REDIS = 'INSTALL_REDIS'
 export const ALLOW_SUSPEND = 'ALLOW_SUSPEND'
 export const DEPLOY_GLOWROOT = 'DEPLOY_GLOWROOT'
+export const ENABLE_DORIS = 'ENABLE_DORIS'
 export const JAVA_OPTS = 'JAVA_OPTS'
 export const PGADMIN_USERNAME = 'PGADMIN_USERNAME'
 export const PGADMIN_PASSWORD = 'PGADMIN_PASSWORD'
@@ -24,5 +25,6 @@ export const STACK_PRIMARY_PARAMETERS = new Map([
     ['dhis2-core', new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY'])],
     ['dhis2-db', new Set(['DATABASE_ID'])],
     ['minio', new Set(['DATABASE_ID'])],
+    ['doris', new Set()],
     ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD', 'PGADMIN_CONFIRM_PASSWORD'])],
 ]) as Dhis2StackPrimaryParameters

@@ -5,6 +5,7 @@ export const STACK_NAMES: Record<string, Dhis2StackName> = {
     CORE: 'dhis2-core',
     PG_ADMIN: 'pgadmin',
     MINIO: 'minio',
+    DORIS: 'doris',
 }
 
 export const VIEWABLE_INSTANCE_TYPES = ['pgadmin', 'dhis2-core']
