@@ -5,7 +5,7 @@ import { targetGroup } from './env.ts'
 const defaultDbName = 'empty-db'
 const dbExtension = '.sql.gz'
 
-const dbFixturePath = path.join(__dirname, `../fixtures/${defaultDbName}${dbExtension}`)
+const dbFixturePath = path.join(import.meta.dirname, `../fixtures/${defaultDbName}${dbExtension}`)
 
 export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     const fileName = `${dbName}${dbExtension}`

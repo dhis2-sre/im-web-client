@@ -14,7 +14,7 @@ const loadEnvVariables = () => {
     const validEnvFileNamesForCurrentEnv = ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]
 
     for (const fileName of validEnvFileNamesForCurrentEnv) {
-        dotenvExpand.expand(dotenv.config({ path: path.resolve(__dirname, fileName) }))
+        dotenvExpand.expand(dotenv.config({ path: path.resolve(import.meta.dirname, fileName) }))
     }
 }
 loadEnvVariables()

@@ -23,7 +23,7 @@ jobs:
         env:
             TARGET_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'https://api.im-dev.dhis2.org' }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - name: Run Playwright tests
               run: make e2e-test
               env:
@@ -32,7 +32,7 @@ jobs:
                   REACT_APP_API_URL: ${{ env.TARGET_URL }}
                   USER_EMAIL: ${{ secrets.IM_E2E_TEST_USER_EMAIL }}
                   USER_PASSWORD: ${{ secrets.IM_E2E_TEST_USER_PASSWORD }}
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: playwright-report
