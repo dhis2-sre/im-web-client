@@ -1,13 +1,8 @@
-import { Center, CircularLoader } from '@dhis2/ui'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { ClusterResources } from '../../../../types/index.ts'
 
-type GroupSelectHelpTextProps = {
-    groupName: string
-}
-
-export const GroupSelectHelpText = ({ groupName }: GroupSelectHelpTextProps) => {
+export const useGroupSelectHelpText = (groupName: string): string => {
     const [resources, setResources] = useState<ClusterResources>({})
     const [{ loading, error }, fetchClusterResources] = useAuthAxios<ClusterResources>({ method: 'GET' }, { manual: true, autoCatch: true })
     const loadResources = useCallback(async () => {
@@ -27,11 +22,7 @@ export const GroupSelectHelpText = ({ groupName }: GroupSelectHelpTextProps) => 
     }
 
     if (loading) {
-        return (
-            <Center>
-                <CircularLoader small />
-            </Center>
-        )
+        return 'Loading...'
     }
 
     return `CPU ${resources.CPU}, Memory ${resources.Memory}${resources.Autoscaled ? ', autoscaled' : ''}`

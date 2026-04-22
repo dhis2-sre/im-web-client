@@ -16,6 +16,8 @@ import {
     SAME_SITE_COOKIES,
     ALLOW_SUSPEND,
     DEPLOY_GLOWROOT,
+    DEPLOY_CHAP,
+    DHIS2_ENABLED,
 } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -39,7 +41,13 @@ export type ParameterFieldProps = {
 export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {
     switch (parameterName) {
         case IMAGE_TAG:
-            return <ImageTagSelect displayName={displayName} />
+            if (stackId === 'chap-core') {
+                return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-core" registry="ghcr" />
+            }
+            if (stackId === 'chap-worker') {
+                return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-worker" registry="ghcr" />
+            }
+            return <ImageTagSelect displayName={displayName} stackId={stackId} />
         case IMAGE_REPOSITORY:
             return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
@@ -55,6 +63,8 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case INSTALL_REDIS:
         case ALLOW_SUSPEND:
         case DEPLOY_GLOWROOT:
+        case DEPLOY_CHAP:
+        case DHIS2_ENABLED:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" />
