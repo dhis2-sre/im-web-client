@@ -1,10 +1,11 @@
-import { Center, CircularLoader, NoticeBox, DataTable, TableHead, DataTableRow, DataTableColumnHeader, TableBody, DataTableCell, IconCheckmark16 } from '@dhis2/ui'
-import Moment from 'react-moment'
+import { Center, CircularLoader, NoticeBox, DataTable, TableHead, DataTableRow, DataTableColumnHeader, TableBody, DataTableCell } from '@dhis2/ui'
 import { useParams } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { User } from '../../types/index.ts'
+import { AddToGroupAdminButton } from './add-to-group-admin-button.tsx'
 import { AddToGroupButton } from './add-to-group-button.tsx'
+import { RemoveFromGroupAdminButton } from './remove-from-group-admin-button.tsx'
 import { RemoveFromGroupButton } from './remove-from-group-button.tsx'
 
 export const UserDetails = () => {
@@ -31,16 +32,14 @@ export const UserDetails = () => {
         <div key={user.id}>
             <Heading title={user.email}>
                 <AddToGroupButton onComplete={refetch} user={user} />
+                <AddToGroupAdminButton onComplete={refetch} user={user} />
             </Heading>
             <DataTable>
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
-                        <DataTableColumnHeader>Hostname</DataTableColumnHeader>
-                        <DataTableColumnHeader>Deployable</DataTableColumnHeader>
-                        <DataTableColumnHeader>Created</DataTableColumnHeader>
-                        <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                        <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                        <DataTableColumnHeader>Member</DataTableColumnHeader>
+                        <DataTableColumnHeader>Admin</DataTableColumnHeader>
                     </DataTableRow>
                 </TableHead>
 
@@ -48,16 +47,11 @@ export const UserDetails = () => {
                     {user.groups?.map((group) => (
                         <DataTableRow key={group.name}>
                             <DataTableCell>{group.name}</DataTableCell>
-                            <DataTableCell>{group.hostname}</DataTableCell>
-                            <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
-                            <DataTableCell>
-                                <Moment date={group.createdAt} fromNow />
-                            </DataTableCell>
-                            <DataTableCell>
-                                <Moment date={group.updatedAt} fromNow />
-                            </DataTableCell>
                             <DataTableCell>
                                 <RemoveFromGroupButton group={group.name} userId={user.id} onComplete={refetch} />
+                            </DataTableCell>
+                            <DataTableCell>
+                                {user.adminGroups?.some((g) => g.name === group.name) && <RemoveFromGroupAdminButton group={group.name} userId={user.id} onComplete={refetch} />}
                             </DataTableCell>
                         </DataTableRow>
                     ))}
