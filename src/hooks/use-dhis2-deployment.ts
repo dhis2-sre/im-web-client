@@ -1,7 +1,7 @@
 import { FORM_ERROR } from 'final-form'
 import { useCallback } from 'react'
 import type { AnyObject } from 'react-final-form'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { STACK_NAMES } from '../constants.ts'
 import { SaveDeploymentRequest, SaveInstanceRequest } from '../types/index.ts'
 import { useAuthAxios } from './use-auth-axios.ts'

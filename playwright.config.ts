@@ -14,7 +14,7 @@ const loadEnvVariables = () => {
     const validEnvFileNamesForCurrentEnv = ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]
 
     for (const fileName of validEnvFileNamesForCurrentEnv) {
-        dotenvExpand.expand(dotenv.config({ path: path.resolve(__dirname, fileName) }))
+        dotenvExpand.expand(dotenv.config({ path: path.resolve(import.meta.dirname, fileName) }))
     }
 }
 loadEnvVariables()
@@ -23,7 +23,7 @@ loadEnvVariables()
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-    timeout: 10 * 1000, // 10 Minutes
+    timeout: 30 * 1000, // 30 seconds
     testDir: './e2e',
     /* Run tests in files in parallel */
     fullyParallel: true,

@@ -1,6 +1,6 @@
 import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLock16 } from '@dhis2/ui'
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { DeploymentInstance, Stack, StackParameter } from '../../../types/index.ts'
@@ -70,7 +70,10 @@ export const InstanceDetails = () => {
                                         </Button>
                                     </span>
                                 )}
-                                {!stackParameters[name].sensitive && instance.parameters[name].value}
+                                {!stackParameters[name].sensitive && name === 'DATABASE_ID' && (
+                                    <Link to={`/databases/${instance.parameters[name].value}`}>{instance.parameters[name].value}</Link>
+                                )}
+                                {!stackParameters[name].sensitive && name !== 'DATABASE_ID' && instance.parameters[name].value}
                             </DataTableCell>
                         </DataTableRow>
                     ))}
