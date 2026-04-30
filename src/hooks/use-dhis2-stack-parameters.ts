@@ -10,6 +10,7 @@ type SecondaryAndPrimaryParameters = {
     secondaryParameters: StackParameter[]
 }
 type InitialValues = { [key: string]: string }
+type SensitiveParameters = { [parameterName: string]: boolean }
 
 const isPrimary = (stackName: Dhis2StackName, parameterName): boolean => STACK_PRIMARY_PARAMETERS.get(stackName).has(parameterName)
 
@@ -53,10 +54,26 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
 
     const initialParameterValues: InitialValues = useMemo(
         () =>
-            (extendedParameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
-                valuesAccumulator[parameter.parameterName] = parameter.defaultValue
-                return valuesAccumulator
+            (extendedParameters ?? [])
+                .filter((parameter) => !parameter.consumed)
+                .reduce<InitialValues>((valuesAccumulator, parameter) => {
+                    valuesAccumulator[parameter.parameterName] = parameter.defaultValue
+                    return valuesAccumulator
+                }, {}),
+        [extendedParameters]
+    )
+
+    const sensitiveParameters: SensitiveParameters = useMemo(
+        () =>
+            (extendedParameters ?? []).reduce<SensitiveParameters>((sensitiveAccumulator, parameter) => {
+                sensitiveAccumulator[parameter.parameterName] = parameter.sensitive ?? false
+                return sensitiveAccumulator
             }, {}),
+        [extendedParameters]
+    )
+
+    const consumedParameterNames: string[] = useMemo(
+        () => (extendedParameters ?? []).filter((parameter) => parameter.consumed).map((parameter) => parameter.parameterName),
         [extendedParameters]
     )
 
@@ -66,5 +83,7 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
         primaryParameters,
         secondaryParameters,
         initialParameterValues,
+        sensitiveParameters,
+        consumedParameterNames,
     }
 }
