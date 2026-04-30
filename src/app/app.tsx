@@ -13,6 +13,7 @@ import { DatabaseDetails } from '../views/databases/database-details.tsx'
 import {
     DatabasesList,
     DeploymentDetails,
+    EditDhis2Instance,
     GroupsList,
     InstancesList,
     NewDhis2Instance,
@@ -58,6 +59,7 @@ if (location.hostname === 'play.dhis2.org') {
                     <Route path="/databases/:id" element={<DatabaseDetails />} />
                     <Route path="/clusters" element={<ClustersList />} />
                     <Route path="/instances/new" element={<NewDhis2Instance />} />
+                    <Route path="/instances/:id/edit" element={<EditDhis2Instance />} />
                     <Route path="/instances/:id/details" element={<DeploymentDetails />} />
                     <Route path="/instance/:id/details" element={<InstanceDetails />} />
                     <Route path="/groups" element={<GroupsList />} />

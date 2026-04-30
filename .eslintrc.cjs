@@ -10,7 +10,7 @@ module.exports = {
         'plugin:prettier/recommended',
     ],
 
-    ignorePatterns: ['!.*', 'dist'],
+    ignorePatterns: ['!.*', 'dist', 'src/types/generated'],
 
     env: {
         browser: true,
