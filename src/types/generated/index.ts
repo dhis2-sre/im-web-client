@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
- 
+
 
 export type { Category } from './models/Category';
 export type { Cluster } from './models/Cluster';
@@ -43,6 +43,7 @@ export type { StackParameter } from './models/StackParameter';
 export type { UpdateClusterRequest } from './models/UpdateClusterRequest';
 export type { UpdateDatabaseRequest } from './models/UpdateDatabaseRequest';
 export type { UpdateDeploymentRequest } from './models/UpdateDeploymentRequest';
+export type { UpdateInstanceRequest } from './models/UpdateInstanceRequest';
 export type { updateUserRequest } from './models/updateUserRequest';
 export type { User } from './models/User';
 export type { validateEmailRequest } from './models/validateEmailRequest';
