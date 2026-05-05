@@ -42,6 +42,10 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit }: NewDhis2Ins
             <CompanionFieldset stackId="minio" displayName="MinIO" sourceStack="dhis2-core" sourceField="STORAGE_TYPE" sourceValue="minio" />
             <ParameterFieldset stackId="dhis2-db" displayName="Database" />
             <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
+            <CompanionFieldset stackId="chap-core" displayName="CHAP" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
+            <CompanionFieldset stackId="chap-worker" displayName="CHAP Worker" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
+            <CompanionFieldset stackId="chap-db" displayName="CHAP Database" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
+            <CompanionFieldset stackId="chap-valkey" displayName="CHAP Valkey" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">
                     {submitError}

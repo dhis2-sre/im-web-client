@@ -4,22 +4,26 @@ import classes from '../../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_TAG } from '../constants.ts'
+import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
-const IMAGE_TAG_FIELD_NAME = `['dhis2-core'].${IMAGE_TAG}`
-
 interface ImageTagSelectProps {
     displayName: string
+    stackId?: Dhis2StackName
+    organization?: string
+    repository?: string
+    registry?: string
 }
 
-const useImageTagField = () => {
-    const { input } = useField<string>(IMAGE_TAG_FIELD_NAME)
+const useImageTagField = (stackId: Dhis2StackName) => {
+    const fieldName = `['${stackId}'].${IMAGE_TAG}`
+    const { input } = useField<string>(fieldName)
     const { value, onChange } = input
     return { value, onChange }
 }
 
-const useIntegrationsOptions = (repository) => {
+const useIntegrationsOptions = (organization: string, repository: string, registry?: string) => {
     const payload = { url: '/integrations', method: 'POST', data: {} }
     const options = { manual: true, autoCatch: true }
     const [{ data }, refetch] = useAuthAxios(payload, options)
@@ -30,29 +34,31 @@ const useIntegrationsOptions = (repository) => {
                 data: {
                     key: IMAGE_TAG,
                     payload: {
-                        organization: 'dhis2',
+                        organization,
                         repository,
+                        ...(registry ? { registry } : {}),
                     },
                 },
             })
         }
-    }, [repository, refetch])
+    }, [organization, repository, registry, refetch])
 
     const images = useMemo(() => data || [], [data])
     return images
 }
 
-const useResetImageTagFieldWhenSelectionNotAvailable = (loadedOptions, form) => {
+const useResetImageTagFieldWhenSelectionNotAvailable = (loadedOptions, form, stackId: Dhis2StackName) => {
+    const fieldName = `['${stackId}'].${IMAGE_TAG}`
     useEffect(() => {
         if (loadedOptions.length) {
-            const currentSelectedValue = form.getState().values['dhis2-core']?.IMAGE_TAG
+            const currentSelectedValue = form.getState().values[stackId]?.IMAGE_TAG
 
             if (currentSelectedValue && !loadedOptions.some((option) => option.value === currentSelectedValue)) {
-                form.change(IMAGE_TAG_FIELD_NAME, undefined)
-                form.blur(IMAGE_TAG_FIELD_NAME)
+                form.change(fieldName, undefined)
+                form.blur(fieldName)
             }
         }
-    }, [loadedOptions, form])
+    }, [loadedOptions, form, fieldName, stackId])
 }
 
 const useRepositoryValue = () => {
@@ -63,14 +69,22 @@ const useRepositoryValue = () => {
     return repository
 }
 
-const useCheckImageExists = (repository) => {
+const useCheckImageExists = (repository, organization?: string, registry?: string) => {
     const payload = { url: `/integrations/image-exists/${repository}/{tag}`, method: 'GET' }
     const options = { manual: true, autoCatch: false }
     const [{ loading: imageLoading }, _checkImageExists] = useAuthAxios(payload, options)
 
     const checkImageExists = useCallback(
         async ({ tag, repository }) => {
-            const url = `/integrations/image-exists/${repository}/${tag}`
+            const params = new URLSearchParams()
+            if (organization) {
+                params.set('organization', organization)
+            }
+            if (registry) {
+                params.set('registry', registry)
+            }
+            const query = params.size > 0 ? `?${params.toString()}` : ''
+            const url = `/integrations/image-exists/${repository}/${tag}${query}`
 
             try {
                 const response = await _checkImageExists({ url })
@@ -92,21 +106,23 @@ const useCheckImageExists = (repository) => {
                 return false
             }
         },
-        [_checkImageExists]
+        [_checkImageExists, organization, registry]
     )
 
     return { imageLoading, checkImageExists }
 }
 
-export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName }) => {
+export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId = 'dhis2-core', organization, repository: fixedRepository, registry }) => {
     const form = useForm()
-    const { value: imageValue, onChange: onImageChange } = useImageTagField()
-    const repository = useRepositoryValue()
-    const { imageLoading, checkImageExists } = useCheckImageExists(repository)
+    const { value: imageValue, onChange: onImageChange } = useImageTagField(stackId)
+    const dynamicRepository = useRepositoryValue()
+    const repository = fixedRepository ?? dynamicRepository
+    const resolvedOrganization = organization ?? 'dhis2'
+    const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
     const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<Option[]>([])
-    const loadedOptions = useIntegrationsOptions(repository)
+    const loadedOptions = useIntegrationsOptions(resolvedOrganization, repository, registry)
 
-    useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form)
+    useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form, stackId)
 
     const [options, setOptions] = useState(loadedOptions)
     const [filteredOptions, setFilteredOptions] = useState(options)
