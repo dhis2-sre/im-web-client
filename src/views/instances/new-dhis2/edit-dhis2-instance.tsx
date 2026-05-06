@@ -3,7 +3,7 @@ import { FC, useCallback, useMemo } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
-import { useDeploymentDetails, useDhis2DeploymentUpdate, useDhis2StackParameters } from '../../../hooks/index.ts'
+import { useDeploymentDetails, useDhis2DeploymentUpdate } from '../../../hooks/index.ts'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form.tsx'
 import styles from './styles.module.css'
 
@@ -16,22 +16,6 @@ export const EditDhis2Instance: FC = () => {
     const [{ data: deployment, loading, error }] = useDeploymentDetails()
     const submit = useDhis2DeploymentUpdate(deploymentId, deployment)
 
-    const { consumedParameterNames: coreConsumed, loading: coreLoading } = useDhis2StackParameters('dhis2-core')
-    const { consumedParameterNames: dbConsumed, loading: dbLoading } = useDhis2StackParameters('dhis2-db')
-    const { consumedParameterNames: minioConsumed, loading: minioLoading } = useDhis2StackParameters('minio')
-    const { consumedParameterNames: pgadminConsumed, loading: pgadminLoading } = useDhis2StackParameters('pgadmin')
-    const stacksLoading = coreLoading || dbLoading || minioLoading || pgadminLoading
-
-    const consumedByStack = useMemo<Record<string, string[]>>(
-        () => ({
-            'dhis2-core': coreConsumed,
-            'dhis2-db': dbConsumed,
-            minio: minioConsumed,
-            pgadmin: pgadminConsumed,
-        }),
-        [coreConsumed, dbConsumed, minioConsumed, pgadminConsumed]
-    )
-
     const initialValues = useMemo(() => {
         if (!deployment) {
             return undefined
@@ -42,14 +26,11 @@ export const EditDhis2Instance: FC = () => {
             if (!instance.stackName || !instance.parameters) {
                 continue
             }
-            const consumed = consumedByStack[instance.stackName] ?? []
             perStack[instance.stackName] = Object.fromEntries(
-                Object.entries(instance.parameters)
-                    .filter(([name]) => !consumed.includes(name))
-                    .map(([name, parameter]) => {
-                        const value = parameter.value ?? ''
-                        return [name, isMaskedValue(value) ? '' : value]
-                    })
+                Object.entries(instance.parameters).map(([name, parameter]) => {
+                    const value = parameter.value ?? ''
+                    return [name, isMaskedValue(value) ? '' : value]
+                })
             )
         }
         return {
@@ -58,13 +39,13 @@ export const EditDhis2Instance: FC = () => {
             public: coreInstance?.public ?? false,
             ...perStack,
         }
-    }, [deployment, consumedByStack])
+    }, [deployment])
 
     const navigateToDetails = useCallback(() => {
         navigate(`/instances/${deploymentId}/details`)
     }, [navigate, deploymentId])
 
-    if (loading || stacksLoading) {
+    if (loading) {
         return (
             <Center>
                 <CircularLoader />
@@ -84,7 +65,7 @@ export const EditDhis2Instance: FC = () => {
         <>
             <Heading title={`Edit ${deployment.name ?? 'instance'}`} />
             <Card className={styles.container}>
-                <Form onSubmit={(values) => submit(values, initialValues ?? {})} initialValues={initialValues} keepDirtyOnReinitialize>
+                <Form onSubmit={(values, form) => submit(values, form.getState().dirtyFields)} initialValues={initialValues} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => <NewDhis2InstanceForm handleSubmit={handleSubmit} handleCancel={navigateToDetails} mode="update" deployment={deployment} />}
                 </Form>
             </Card>
