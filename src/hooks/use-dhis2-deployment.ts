@@ -92,6 +92,13 @@ export const useDhis2DeploymentCreation = () => {
                     await addStackToDeployment(deploymentId, STACK_NAMES.PG_ADMIN, newObjectWithoutConfirmPassword)
                 }
 
+                if (values[STACK_NAMES.CORE]?.DEPLOY_CHAP === 'true') {
+                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_DB, values)
+                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_VALKEY, values)
+                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_CORE, values)
+                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_WORKER, values)
+                }
+
                 await deployDeployment(deploymentId)
                 navigate(`/instances/${deploymentId}/details`)
                 return true
