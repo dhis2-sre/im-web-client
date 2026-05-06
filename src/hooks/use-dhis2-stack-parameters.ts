@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { STACK_NAMES } from '../constants.ts'
-import { Stack, StackParameter } from '../types/index.ts'
+import { StackParameter } from '../types/index.ts'
 import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants.ts'
 import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset.tsx'
-import { useAuthAxios } from './use-auth-axios.ts'
+import { useStack } from './use-stacks.ts'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]
@@ -15,7 +15,7 @@ type SensitiveParameters = { [parameterName: string]: boolean }
 const isPrimary = (stackName: Dhis2StackName, parameterName): boolean => STACK_PRIMARY_PARAMETERS.get(stackName).has(parameterName)
 
 export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
-    const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
+    const { stack, loading, error } = useStack(stackName)
 
     const extendedParameters = useMemo(() => {
         if (stackName === STACK_NAMES.PG_ADMIN && stack?.parameters) {
