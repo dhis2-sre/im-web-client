@@ -22,7 +22,7 @@ module.exports = {
     parser: '@typescript-eslint/parser',
 
     settings: {
-        react: {
+        'react': {
             version: 'detect',
         },
         'import/resolver': {
@@ -62,13 +62,13 @@ module.exports = {
             'error',
             {
                 'newlines-between': 'never',
-                alphabetize: {
+                'alphabetize': {
                     order: 'asc',
                     caseInsensitive: true,
                 },
             },
         ],
-        curly: ['error'],
+        'curly': ['error'],
         'import/extensions': ['error', 'ignorePackages', { '': 'never' }],
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',

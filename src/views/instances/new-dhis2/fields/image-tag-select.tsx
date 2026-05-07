@@ -17,7 +17,7 @@ interface ImageTagSelectProps {
 }
 
 const useImageTagField = (stackId: Dhis2StackName) => {
-    const fieldName = `['${stackId}'].${IMAGE_TAG}`
+    const fieldName = `${stackId}.${IMAGE_TAG}`
     const { input } = useField<string>(fieldName)
     const { value, onChange } = input
     return { value, onChange }
@@ -48,7 +48,7 @@ const useIntegrationsOptions = (organization: string, repository: string, regist
 }
 
 const useResetImageTagFieldWhenSelectionNotAvailable = (availableOptions: string[], form, stackId: Dhis2StackName) => {
-    const fieldName = `['${stackId}'].${IMAGE_TAG}`
+    const fieldName = `${stackId}.${IMAGE_TAG}`
     useEffect(() => {
         if (availableOptions.length) {
             const currentSelectedValue = form.getState().values[stackId]?.IMAGE_TAG

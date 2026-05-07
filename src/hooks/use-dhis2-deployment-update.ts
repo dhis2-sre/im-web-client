@@ -8,18 +8,6 @@ import { useDhis2InstanceUpdate } from './use-dhis2-instance-update.ts'
 
 const CORE_STACK = 'dhis2-core'
 
-const parseStackFieldName = (fieldName: string): { stack: string; parameterName: string } | null => {
-    const bracket = fieldName.match(/^\['([^']+)'\]\.(.+)$/)
-    if (bracket) {
-        return { stack: bracket[1], parameterName: bracket[2] }
-    }
-    const dot = fieldName.match(/^([^.[]+)\.(.+)$/)
-    if (dot) {
-        return { stack: dot[1], parameterName: dot[2] }
-    }
-    return null
-}
-
 export const useDhis2DeploymentUpdate = (deploymentId: number, deployment?: Deployment) => {
     const navigate = useNavigate()
     const [, executePut] = useAuthAxios({ method: 'PUT' }, { manual: true })
@@ -44,15 +32,17 @@ export const useDhis2DeploymentUpdate = (deploymentId: number, deployment?: Depl
 
             const dirtyParametersByStack: Record<string, Record<string, string>> = {}
             for (const name of dirtyNames) {
-                const parsed = parseStackFieldName(name)
-                if (!parsed) {
+                const dotIndex = name.indexOf('.')
+                if (dotIndex === -1) {
                     continue
                 }
-                const stackValues = values[parsed.stack] as Record<string, string> | undefined
-                if (!dirtyParametersByStack[parsed.stack]) {
-                    dirtyParametersByStack[parsed.stack] = {}
+                const stack = name.slice(0, dotIndex)
+                const parameterName = name.slice(dotIndex + 1)
+                const stackValues = values[stack] as Record<string, string> | undefined
+                if (!dirtyParametersByStack[stack]) {
+                    dirtyParametersByStack[stack] = {}
                 }
-                dirtyParametersByStack[parsed.stack][parsed.parameterName] = stackValues?.[parsed.parameterName] ?? ''
+                dirtyParametersByStack[stack][parameterName] = stackValues?.[parameterName] ?? ''
             }
 
             const publicChanged = dirtyNames.includes('public')

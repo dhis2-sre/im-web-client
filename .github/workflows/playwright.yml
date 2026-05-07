@@ -23,9 +23,7 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            # Mirrors the API_URL resolution in dhis2-sre/gha-workflows
-            # im-build-test-deploy.yaml so e2e tests target the same backend
-            # the deploy step does: matching feature env when present, dev otherwise.
+            # Mirrors API_URL resolution in im-build-test-deploy.yaml: prefer matching feature env, fall back to dev.
             - name: Resolve API URL
               run: |
                   if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then

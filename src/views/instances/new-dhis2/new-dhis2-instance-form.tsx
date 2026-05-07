@@ -12,18 +12,22 @@ import { TtlSelect } from './fields/ttl-select.tsx'
 import { Dhis2StackName, ParameterFieldset } from './parameter-fieldset.tsx'
 import styles from './styles.module.css'
 
+const CHAP_STACKS = [
+    { stackId: 'chap-core', displayName: 'CHAP' },
+    { stackId: 'chap-worker', displayName: 'CHAP Worker' },
+    { stackId: 'chap-db', displayName: 'CHAP Database' },
+    { stackId: 'chap-valkey', displayName: 'CHAP Valkey' },
+] as const satisfies ReadonlyArray<{ stackId: Dhis2StackName; displayName: string }>
+
 const STACK_DISPLAY_NAMES: Record<string, string> = {
     'dhis2-core': 'DHIS2 Core',
     'dhis2-db': 'Database',
-    minio: 'MinIO',
-    pgadmin: 'PG Admin',
-    'chap-core': 'CHAP',
-    'chap-worker': 'CHAP Worker',
-    'chap-db': 'CHAP Database',
-    'chap-valkey': 'CHAP Valkey',
+    'minio': 'MinIO',
+    'pgadmin': 'PG Admin',
+    ...Object.fromEntries(CHAP_STACKS.map(({ stackId, displayName }) => [stackId, displayName])),
 }
 
-const STACK_ORDER: Dhis2StackName[] = ['dhis2-core', 'dhis2-db', 'minio', 'pgadmin', 'chap-core', 'chap-worker', 'chap-db', 'chap-valkey']
+const STACK_ORDER: Dhis2StackName[] = ['dhis2-core', 'dhis2-db', 'minio', 'pgadmin', ...CHAP_STACKS.map(({ stackId }) => stackId)]
 
 const getStackDisplayName = (stackName: string): string => STACK_DISPLAY_NAMES[stackName] ?? stackName
 
@@ -67,10 +71,9 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
                     <CompanionFieldset stackId="minio" displayName="MinIO" sourceStack="dhis2-core" sourceField="STORAGE_TYPE" sourceValue="minio" />
                     <ParameterFieldset stackId="dhis2-db" displayName="Database" />
                     <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
-                    <CompanionFieldset stackId="chap-core" displayName="CHAP" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
-                    <CompanionFieldset stackId="chap-worker" displayName="CHAP Worker" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
-                    <CompanionFieldset stackId="chap-db" displayName="CHAP Database" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
-                    <CompanionFieldset stackId="chap-valkey" displayName="CHAP Valkey" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
+                    {CHAP_STACKS.map(({ stackId, displayName }) => (
+                        <CompanionFieldset key={stackId} stackId={stackId} displayName={displayName} sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
+                    ))}
                 </>
             )}
             {isUpdate &&
