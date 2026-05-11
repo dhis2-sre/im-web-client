@@ -12,22 +12,21 @@ import { TtlSelect } from './fields/ttl-select.tsx'
 import { Dhis2StackName, ParameterFieldset } from './parameter-fieldset.tsx'
 import styles from './styles.module.css'
 
-const CHAP_STACKS = [
+const STACK_DEFS = [
+    { stackId: 'dhis2-core', displayName: 'DHIS2 Core' },
+    { stackId: 'dhis2-db', displayName: 'Database' },
+    { stackId: 'minio', displayName: 'MinIO' },
+    { stackId: 'pgadmin', displayName: 'PG Admin' },
     { stackId: 'chap-core', displayName: 'CHAP' },
     { stackId: 'chap-worker', displayName: 'CHAP Worker' },
     { stackId: 'chap-db', displayName: 'CHAP Database' },
     { stackId: 'chap-valkey', displayName: 'CHAP Valkey' },
 ] as const satisfies ReadonlyArray<{ stackId: Dhis2StackName; displayName: string }>
 
-const STACK_DISPLAY_NAMES: Record<string, string> = {
-    'dhis2-core': 'DHIS2 Core',
-    'dhis2-db': 'Database',
-    'minio': 'MinIO',
-    'pgadmin': 'PG Admin',
-    ...Object.fromEntries(CHAP_STACKS.map(({ stackId, displayName }) => [stackId, displayName])),
-}
-
-const STACK_ORDER: Dhis2StackName[] = ['dhis2-core', 'dhis2-db', 'minio', 'pgadmin', ...CHAP_STACKS.map(({ stackId }) => stackId)]
+const CHAP_STACKS = STACK_DEFS.filter(({ stackId }) => stackId.startsWith('chap-'))
+const STACK_ORDER: readonly Dhis2StackName[] = STACK_DEFS.map(({ stackId }) => stackId)
+const KNOWN_STACKS = new Set<string>(STACK_ORDER)
+const STACK_DISPLAY_NAMES: Record<string, string> = Object.fromEntries(STACK_DEFS.map(({ stackId, displayName }) => [stackId, displayName]))
 
 const getStackDisplayName = (stackName: string): string => STACK_DISPLAY_NAMES[stackName] ?? stackName
 
@@ -51,7 +50,9 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
     const shouldDisableSubmit = pristine || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
     const isUpdate = mode === 'update'
     const orderedInstances = isUpdate
-        ? [...(deployment?.instances ?? [])].sort((a, b) => STACK_ORDER.indexOf(a.stackName as Dhis2StackName) - STACK_ORDER.indexOf(b.stackName as Dhis2StackName))
+        ? [...(deployment?.instances ?? [])]
+              .filter((instance) => instance.stackName && KNOWN_STACKS.has(instance.stackName))
+              .sort((a, b) => STACK_ORDER.indexOf(a.stackName as Dhis2StackName) - STACK_ORDER.indexOf(b.stackName as Dhis2StackName))
         : []
 
     return (

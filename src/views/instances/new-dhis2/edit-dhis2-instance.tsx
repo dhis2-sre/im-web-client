@@ -7,7 +7,7 @@ import { useDeploymentDetails, useDhis2DeploymentUpdate } from '../../../hooks/i
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form.tsx'
 import styles from './styles.module.css'
 
-const isMaskedValue = (value: string) => value === '***' || /^\*+$/.test(value) || /^•+$/.test(value)
+const isMaskedValue = (value: string) => /^[*•]+$/.test(value)
 
 export const EditDhis2Instance: FC = () => {
     const navigate = useNavigate()

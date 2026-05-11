@@ -43,6 +43,7 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
 
     useEffect(() => {
         if (initialParameterValues && !areParameterValuesInitialized) {
+            // Existing form values win over stack defaults so edit mode keeps the deployment's current values.
             form.initialize((values) => ({
                 ...values,
                 [stackId]: { ...initialParameterValues, ...(values[stackId] ?? {}) },

@@ -72,11 +72,6 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
         [extendedParameters]
     )
 
-    const consumedParameterNames: string[] = useMemo(
-        () => (extendedParameters ?? []).filter((parameter) => parameter.consumed).map((parameter) => parameter.parameterName),
-        [extendedParameters]
-    )
-
     return {
         loading,
         error,
@@ -84,6 +79,5 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
         secondaryParameters,
         initialParameterValues,
         sensitiveParameters,
-        consumedParameterNames,
     }
 }

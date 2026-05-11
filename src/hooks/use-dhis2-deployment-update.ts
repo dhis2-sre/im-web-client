@@ -39,10 +39,14 @@ export const useDhis2DeploymentUpdate = (deploymentId: number, deployment?: Depl
                 const stack = name.slice(0, dotIndex)
                 const parameterName = name.slice(dotIndex + 1)
                 const stackValues = values[stack] as Record<string, string> | undefined
+                const value = stackValues?.[parameterName] ?? ''
+                if (value === '') {
+                    continue
+                }
                 if (!dirtyParametersByStack[stack]) {
                     dirtyParametersByStack[stack] = {}
                 }
-                dirtyParametersByStack[stack][parameterName] = stackValues?.[parameterName] ?? ''
+                dirtyParametersByStack[stack][parameterName] = value
             }
 
             const publicChanged = dirtyNames.includes('public')
