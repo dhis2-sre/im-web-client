@@ -1,10 +1,24 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
 import type { BaseButtonProps } from '@dhis2/ui'
+import {
+    Button,
+    ButtonStrip,
+    Center,
+    CheckboxField,
+    CircularLoader,
+    InputField,
+    Modal,
+    ModalActions,
+    ModalContent,
+    ModalTitle,
+    SingleSelectField,
+    SingleSelectOption,
+} from '@dhis2/ui'
 import cx from 'classnames'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
+import { Cluster } from '../../types/generated/models/Cluster.ts'
 import { Group } from '../../types/generated/models/Group.ts'
 import styles from './groups-list.module.css'
 
@@ -19,24 +33,27 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
     const [hostname, setHostname] = useState('')
     const [description, setDescription] = useState('')
     const [deployable, setDeployable] = useState(true)
+    const [clusterId, setClusterId] = useState<string | undefined>(undefined)
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
         ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
     )
 
+    const [{ data: clusters }] = useAuthAxios<Cluster[]>({ method: 'GET', url: '/clusters' })
+
     const [{ loading }, createGroup] = useAuthAxios<Group>({ url: '/groups', method: 'POST' }, { manual: true })
 
     const onCreate = useCallback(async () => {
         try {
-            const data = { name, namespace, hostname, description, deployable } as Group
+            const data = { name, namespace, hostname, description, deployable, ...(clusterId ? { clusterId: Number(clusterId) } : {}) }
             await createGroup({ data })
             onComplete()
         } catch (error) {
             showAlert({ message: `There was an error when creating the group`, isCritical: true })
             console.error(error)
         }
-    }, [name, namespace, hostname, description, deployable, createGroup, onComplete, showAlert])
+    }, [name, namespace, hostname, description, deployable, clusterId, createGroup, onComplete, showAlert])
 
     return (
         <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
@@ -47,6 +64,11 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
                 <InputField className={styles.field} label="Hostname" value={hostname} onChange={({ value }) => setHostname(value)} required />
                 <InputField className={styles.field} label="Description" value={description} onChange={({ value }) => setDescription(value)} required />
                 <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Deployable" checked={deployable} onChange={({ checked }) => setDeployable(checked)} />
+                <SingleSelectField className={styles.field} label="Cluster" selected={clusterId} onChange={({ selected }) => setClusterId(selected)} clearable>
+                    {(clusters ?? []).map((cluster) => (
+                        <SingleSelectOption key={cluster.id} label={cluster.name} value={String(cluster.id)} />
+                    ))}
+                </SingleSelectField>
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
