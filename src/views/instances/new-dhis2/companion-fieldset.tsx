@@ -1,5 +1,6 @@
-import type { FC } from 'react'
-import { useField } from 'react-final-form'
+import { getIn } from 'final-form'
+import { useEffect, useState, type FC } from 'react'
+import { useForm } from 'react-final-form'
 import { ParameterFieldset, type Dhis2StackName } from './parameter-fieldset.tsx'
 
 type CompanionFieldsetProps = {
@@ -11,11 +12,18 @@ type CompanionFieldsetProps = {
 }
 
 export const CompanionFieldset: FC<CompanionFieldsetProps> = ({ stackId, displayName, sourceStack, sourceField, sourceValue }) => {
-    const {
-        input: { value },
-    } = useField(`${sourceStack}.${sourceField}`, {
-        subscription: { value: true },
-    })
+    const form = useForm()
+    const fieldPath = `${sourceStack}.${sourceField}`
+    const [value, setValue] = useState(() => getIn(form.getState().values, fieldPath))
+
+    useEffect(() => {
+        return form.subscribe(
+            ({ values }) => {
+                setValue(getIn(values, fieldPath))
+            },
+            { values: true }
+        )
+    }, [form, fieldPath])
 
     if (value !== sourceValue) {
         return null
