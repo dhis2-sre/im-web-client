@@ -25,6 +25,19 @@ const createAxiosInstance = () => axios.create({ baseURL, withCredentials: true 
 // Create an axios instance and we set the baseURL
 const axiosInstance = createAxiosInstance()
 
+let refreshInFlight: Promise<unknown> | null = null
+
+const refreshTokens = () => {
+    if (!refreshInFlight) {
+        refreshInFlight = createAxiosInstance()
+            .post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })
+            .finally(() => {
+                refreshInFlight = null
+            })
+    }
+    return refreshInFlight
+}
+
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
@@ -33,7 +46,7 @@ axiosInstance.interceptors.response.use(
         }
 
         try {
-            await createAxiosInstance().post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })
+            await refreshTokens()
 
             return axios(error.config)
         } catch (refreshError) {
