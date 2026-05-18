@@ -5,6 +5,7 @@ import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-route
 import { useAuth } from '../hooks/index.ts'
 import styles from './layout.module.css'
 import { LogoutButton } from './logout-button.tsx'
+import { NotificationBell } from './notifications/notification-bell.tsx'
 
 export const Layout: FC = () => {
     const navigate = useNavigate()
@@ -49,7 +50,10 @@ export const Layout: FC = () => {
                         </>
                     )}
                 </nav>
-                <LogoutButton />
+                <div className={styles.navFooter}>
+                    <NotificationBell />
+                    <LogoutButton />
+                </div>
             </div>
             <div className={styles.mainArea}>
                 <Outlet />

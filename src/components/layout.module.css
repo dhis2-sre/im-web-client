@@ -12,6 +12,18 @@
 .nav {
     background-color: var(--colors-grey900);
     min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navFooter {
+    margin-top: auto;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
 }
 
 .header {

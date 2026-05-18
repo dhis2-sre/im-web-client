@@ -1,0 +1,50 @@
+.wrapper {
+    position: relative;
+}
+
+.button {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    color: var(--colors-grey400);
+    position: relative;
+}
+
+.button:hover {
+    background-color: var(--colors-grey800);
+    color: var(--colors-white);
+}
+
+.button.active {
+    background-color: var(--colors-grey800);
+    color: var(--colors-white);
+}
+
+.badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    background-color: var(--colors-red500);
+    color: white;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+}
