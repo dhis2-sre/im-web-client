@@ -20,16 +20,34 @@ jobs:
     e2e:
         timeout-minutes: 60
         runs-on: ubuntu-latest
-        env:
-            TARGET_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'https://api.im-dev.dhis2.org' }}
         steps:
             - uses: actions/checkout@v6
+
+            # Mirrors API_URL resolution in im-build-test-deploy.yaml: prefer matching feature env, fall back to dev.
+            - name: Resolve API URL
+              run: |
+                  if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+                      echo "API_URL=${{ inputs.api_url }}" >> $GITHUB_ENV
+                      exit 0
+                  fi
+                  API_URL="https://api.im-dev.dhis2.org"
+                  if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+                      SLUG=${GITHUB_HEAD_REF,,}
+                      SLUG=${SLUG//[^[:alnum:]]/-}
+                      SLUG=${SLUG::25}
+                      SLUG=${SLUG%-}
+                      CANDIDATE="https://${SLUG}.api.im-feat.dhis2.org"
+                      if [[ "$(curl -sSL -w %{http_code} -o /dev/null $CANDIDATE/health)" == "200" ]]; then
+                          API_URL="$CANDIDATE"
+                      fi
+                  fi
+                  echo "API_URL=$API_URL" >> $GITHUB_ENV
+
             - name: Run Playwright tests
               run: make e2e-test
               env:
                   CI: true
-                  API_URL: ${{ env.TARGET_URL }}
-                  REACT_APP_API_URL: ${{ env.TARGET_URL }}
+                  REACT_APP_API_URL: ${{ env.API_URL }}
                   USER_EMAIL: ${{ secrets.IM_E2E_TEST_USER_EMAIL }}
                   USER_PASSWORD: ${{ secrets.IM_E2E_TEST_USER_PASSWORD }}
             - uses: actions/upload-artifact@v7
