@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState, useCallback } from 'react'
 import { useField, useForm } from 'react-final-form'
 import classes from '../../../../components/searchable-single-select.module.css'
-import { SearchableSingleSelect, Option } from '../../../../components/searchable-single-select.tsx'
+import { SearchableSingleSelect } from '../../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_TAG } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
@@ -17,7 +17,7 @@ interface ImageTagSelectProps {
 }
 
 const useImageTagField = (stackId: Dhis2StackName) => {
-    const fieldName = `['${stackId}'].${IMAGE_TAG}`
+    const fieldName = `${stackId}.${IMAGE_TAG}`
     const { input } = useField<string>(fieldName)
     const { value, onChange } = input
     return { value, onChange }
@@ -47,18 +47,18 @@ const useIntegrationsOptions = (organization: string, repository: string, regist
     return images
 }
 
-const useResetImageTagFieldWhenSelectionNotAvailable = (loadedOptions, form, stackId: Dhis2StackName) => {
-    const fieldName = `['${stackId}'].${IMAGE_TAG}`
+const useResetImageTagFieldWhenSelectionNotAvailable = (availableOptions: string[], form, stackId: Dhis2StackName) => {
+    const fieldName = `${stackId}.${IMAGE_TAG}`
     useEffect(() => {
-        if (loadedOptions.length) {
+        if (availableOptions.length) {
             const currentSelectedValue = form.getState().values[stackId]?.IMAGE_TAG
 
-            if (currentSelectedValue && !loadedOptions.some((option) => option.value === currentSelectedValue)) {
+            if (currentSelectedValue && !availableOptions.includes(currentSelectedValue)) {
                 form.change(fieldName, undefined)
                 form.blur(fieldName)
             }
         }
-    }, [loadedOptions, form, fieldName, stackId])
+    }, [availableOptions, form, fieldName, stackId])
 }
 
 const useRepositoryValue = () => {
@@ -119,21 +119,27 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     const repository = fixedRepository ?? dynamicRepository
     const resolvedOrganization = organization ?? 'dhis2'
     const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
-    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<Option[]>([])
+    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<string[]>([])
     const loadedOptions = useIntegrationsOptions(resolvedOrganization, repository, registry)
 
-    useResetImageTagFieldWhenSelectionNotAvailable(loadedOptions, form, stackId)
-
-    const [options, setOptions] = useState(loadedOptions)
-    const [filteredOptions, setFilteredOptions] = useState(options)
+    const [options, setOptions] = useState<string[]>(loadedOptions)
+    const [filteredOptions, setFilteredOptions] = useState<string[]>(options)
     const [filtered, setFiltered] = useState(false)
 
     useEffect(() => {
         if (loadedOptions) {
-            const unique = new Set([...additionallyLoadedOptions, ...loadedOptions])
+            const unique = new Set<string>([...additionallyLoadedOptions, ...loadedOptions])
             setOptions(Array.from(unique))
         }
     }, [additionallyLoadedOptions, loadedOptions])
+
+    useEffect(() => {
+        if (imageValue) {
+            setAdditionallyLoadedOptions((prev) => (prev.includes(imageValue) ? prev : [...prev, imageValue]))
+        }
+    }, [imageValue])
+
+    useResetImageTagFieldWhenSelectionNotAvailable(options, form, stackId)
 
     const filterOptions = useCallback(
         async ({ value: tag }) => {
@@ -154,7 +160,9 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
             const tagExists = await checkImageExists({ repository, tag })
 
             if (tagExists) {
-                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) => [...prevAdditionallyLoadedOptions, tag])
+                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) =>
+                    prevAdditionallyLoadedOptions.includes(tag) ? prevAdditionallyLoadedOptions : [...prevAdditionallyLoadedOptions, tag]
+                )
                 const nextOptions = [...options, tag]
                 setOptions(nextOptions)
                 setFilteredOptions([tag])
