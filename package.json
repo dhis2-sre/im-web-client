@@ -89,7 +89,7 @@
         "openapi-typescript-codegen": "^0.30.0",
         "prettier": "^3.8.3",
         "ts-jest": "^29.2.5",
-        "vite": "7.3.3"
+        "vite": "8.0.13"
     },
     "resolutions": {
         "@dhis2/multi-calendar-dates": "2.1.2",
