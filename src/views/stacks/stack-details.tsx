@@ -1,13 +1,12 @@
 import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, DataTableToolbar, NoticeBox } from '@dhis2/ui'
 import { useParams } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
-import { useAuthAxios } from '../../hooks/index.ts'
-import { Stack } from '../../types/index.ts'
+import { useStack } from '../../hooks/index.ts'
 import styles from './stack-details.module.css'
 
 export const StackDetails = () => {
     const { name } = useParams()
-    const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`stacks/${name}`)
+    const { stack, loading, error } = useStack(name ?? '')
 
     if (loading) {
         return (
@@ -21,6 +20,14 @@ export const StackDetails = () => {
         return (
             <NoticeBox error title="Could not fetch stack details">
                 {error.message}
+            </NoticeBox>
+        )
+    }
+
+    if (!stack) {
+        return (
+            <NoticeBox error title="Stack not found">
+                {`No stack named "${name}" exists.`}
             </NoticeBox>
         )
     }
