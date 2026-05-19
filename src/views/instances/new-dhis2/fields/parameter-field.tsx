@@ -16,6 +16,8 @@ import {
     SAME_SITE_COOKIES,
     ALLOW_SUSPEND,
     DEPLOY_GLOWROOT,
+    DEPLOY_CHAP,
+    DHIS2_ENABLED,
 } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -34,12 +36,20 @@ export type ParameterFieldProps = {
     // Used by other components that use ParameterFieldProps
     // eslint-disable-next-line react/no-unused-prop-types
     type?: string
+    sensitive?: boolean
+    formMode?: 'create' | 'update'
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName }) => {
+export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode }) => {
     switch (parameterName) {
         case IMAGE_TAG:
-            return <ImageTagSelect displayName={displayName} />
+            if (stackId === 'chap-core') {
+                return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-core" registry="ghcr" />
+            }
+            if (stackId === 'chap-worker') {
+                return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-worker" registry="ghcr" />
+            }
+            return <ImageTagSelect displayName={displayName} stackId={stackId} />
         case IMAGE_REPOSITORY:
             return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
@@ -55,16 +65,18 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case INSTALL_REDIS:
         case ALLOW_SUSPEND:
         case DEPLOY_GLOWROOT:
+        case DEPLOY_CHAP:
+        case DHIS2_ENABLED:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" sensitive={sensitive} formMode={formMode} />
         case PGADMIN_PASSWORD:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" sensitive={sensitive} formMode={formMode} />
         case PGADMIN_CONFIRM_PASSWORD:
             return <ConfirmPasswordInput stackId={stackId} />
         case CUSTOM_DHIS2_CONFIG:
-            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} />
+            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} />
         default:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} formMode={formMode} />
     }
 }

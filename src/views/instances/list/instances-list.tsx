@@ -74,7 +74,9 @@ export const InstancesList: FC = () => {
                                 >
                                     <DataTableCell>{deployment.name}</DataTableCell>
                                     <DataTableCell>
-                                        {deployment.instances?.map(({ stackName, id }) => <InstanceTag key={stackName} instanceId={id} stackName={stackName} />)}
+                                        {deployment.instances?.map(({ stackName, id }) => (
+                                            <InstanceTag key={stackName} instanceId={id} stackName={stackName} />
+                                        ))}
                                     </DataTableCell>
                                     <DataTableCell>
                                         <Moment date={deployment.createdAt} fromNow />

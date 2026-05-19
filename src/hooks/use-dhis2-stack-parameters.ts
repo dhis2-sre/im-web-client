@@ -1,20 +1,21 @@
 import { useMemo } from 'react'
 import { STACK_NAMES } from '../constants.ts'
-import { Stack, StackParameter } from '../types/index.ts'
+import { StackParameter } from '../types/index.ts'
 import { STACK_PRIMARY_PARAMETERS } from '../views/instances/new-dhis2/constants.ts'
 import { Dhis2StackName } from '../views/instances/new-dhis2/parameter-fieldset.tsx'
-import { useAuthAxios } from './use-auth-axios.ts'
+import { useStack } from './use-stacks.ts'
 
 type SecondaryAndPrimaryParameters = {
     primaryParameters: StackParameter[]
     secondaryParameters: StackParameter[]
 }
 type InitialValues = { [key: string]: string }
+type SensitiveParameters = { [parameterName: string]: boolean }
 
 const isPrimary = (stackName: Dhis2StackName, parameterName): boolean => STACK_PRIMARY_PARAMETERS.get(stackName).has(parameterName)
 
 export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
-    const [{ data: stack, loading, error }] = useAuthAxios<Stack>(`/stacks/${stackName}`)
+    const { stack, loading, error } = useStack(stackName)
 
     const extendedParameters = useMemo(() => {
         if (stackName === STACK_NAMES.PG_ADMIN && stack?.parameters) {
@@ -53,9 +54,20 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
 
     const initialParameterValues: InitialValues = useMemo(
         () =>
-            (extendedParameters ?? []).reduce<InitialValues>((valuesAccumulator, parameter) => {
-                valuesAccumulator[parameter.parameterName] = parameter.defaultValue
-                return valuesAccumulator
+            (extendedParameters ?? [])
+                .filter((parameter) => !parameter.consumed)
+                .reduce<InitialValues>((valuesAccumulator, parameter) => {
+                    valuesAccumulator[parameter.parameterName] = parameter.defaultValue
+                    return valuesAccumulator
+                }, {}),
+        [extendedParameters]
+    )
+
+    const sensitiveParameters: SensitiveParameters = useMemo(
+        () =>
+            (extendedParameters ?? []).reduce<SensitiveParameters>((sensitiveAccumulator, parameter) => {
+                sensitiveAccumulator[parameter.parameterName] = parameter.sensitive ?? false
+                return sensitiveAccumulator
             }, {}),
         [extendedParameters]
     )
@@ -66,5 +78,6 @@ export const useDhis2StackParameters = (stackName: Dhis2StackName) => {
         primaryParameters,
         secondaryParameters,
         initialParameterValues,
+        sensitiveParameters,
     }
 }

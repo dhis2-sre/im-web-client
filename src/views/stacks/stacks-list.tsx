@@ -1,11 +1,10 @@
 import { Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, NoticeBox } from '@dhis2/ui'
 import { Link } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
-import { useAuthAxios } from '../../hooks/index.ts'
-import { Stack } from '../../types/index.ts'
+import { useStacks } from '../../hooks/index.ts'
 
 export const StacksList = () => {
-    const [{ data, loading, error }] = useAuthAxios<Stack[]>('/stacks')
+    const { stacks, loading, error } = useStacks()
 
     if (loading) {
         return (
@@ -33,7 +32,7 @@ export const StacksList = () => {
                     </DataTableRow>
                 </DataTableHead>
                 <DataTableBody>
-                    {data.map((stack) => (
+                    {stacks.map((stack) => (
                         <DataTableRow key={stack.name}>
                             <DataTableCell>
                                 <Link to={`/stacks/${stack.name}`}>{stack.name}</Link>

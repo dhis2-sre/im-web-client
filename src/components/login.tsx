@@ -3,6 +3,7 @@ import cx from 'classnames'
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
+import { baseURL } from '../hooks/use-auth-axios.ts'
 import styles from './login.module.css'
 
 export const Login = () => {
@@ -17,6 +18,9 @@ export const Login = () => {
         },
         [login, email, password, rememberMe]
     )
+    const onGoogleLogin = useCallback(() => {
+        window.location.href = `${baseURL}/auth/google`
+    }, [])
 
     return (
         <form className={styles.container} onSubmit={onSubmit}>
@@ -58,6 +62,10 @@ export const Login = () => {
                 {authenticationErrorMessage && <Help error>{authenticationErrorMessage}</Help>}
                 <Button primary type="submit" value="login" loading={isAuthenticating}>
                     Login
+                </Button>
+                <div className={styles.divider}>or</div>
+                <Button type="button" onClick={onGoogleLogin} disabled={isAuthenticating}>
+                    Sign in with Google
                 </Button>
                 <div className={styles.linkContainer}>
                     <Link to={'/sign-up'}>Sign up</Link>
