@@ -1,2 +1,2 @@
 #!/bin/sh
-exec < /dev/tty && yarn lint-commit-msg "$1"
+yarn lint-commit-msg "$1"

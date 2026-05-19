@@ -34,7 +34,7 @@ const Alerts: FC = () => {
                     {...props}
                     key={id}
                     onHidden={() => {
-                        onHidden && onHidden()
+                        onHidden?.()
                         removeAlertStackAlert(id)
                         if (alertManagerAlerts.some((a) => a.id === id)) {
                             remove()
