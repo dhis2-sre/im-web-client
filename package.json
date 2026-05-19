@@ -30,7 +30,7 @@
         "@fontsource/roboto": "^5.2.10",
         "axios": "^1.15.0",
         "axios-hooks": "^5.1.1",
-        "final-form": "^4.20.10",
+        "final-form": "^5.0.0",
         "moment": "^2.30.1",
         "pretty-bytes": "^7.1.0",
         "prop-types": "^15.8.1",
