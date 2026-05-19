@@ -1,8 +1,8 @@
 .panel {
-    position: fixed;
-    bottom: 48px;
-    left: 200px;
-    width: 320px;
+    position: absolute;
+    bottom: 0;
+    left: calc(100% + 8px);
+    width: 480px;
     max-height: 480px;
     background-color: var(--colors-white);
     border: 1px solid var(--colors-grey300);
