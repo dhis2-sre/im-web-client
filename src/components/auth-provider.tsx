@@ -35,6 +35,8 @@ export const AuthProvider: FC = () => {
     const [checkingUser, setCheckingUser] = useState(true)
     useEffect(
         () => {
+            // Always try /me on mount: cookies are the source of truth and may be set without
+            // localStorage (e.g. after a Google SSO redirect from the backend).
             const checkLoggedIn = async () => {
                 try {
                     const userResponse = await getUser()
@@ -49,11 +51,7 @@ export const AuthProvider: FC = () => {
                 }
             }
 
-            if (currentUser?.id) {
-                checkLoggedIn().finally(() => setCheckingUser(false))
-            } else {
-                setCheckingUser(false)
-            }
+            checkLoggedIn().finally(() => setCheckingUser(false))
         },
 
         // We only want to check when the user opens the app

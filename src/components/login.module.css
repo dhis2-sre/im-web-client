@@ -31,3 +31,20 @@
     display: flex;
     justify-content: space-between;
 }
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--colors-grey600);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--colors-grey400);
+}

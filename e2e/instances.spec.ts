@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, logout, uploadTestDatabase, deleteTestDatabase, targetGroup, dhis2CoreImageTag } from './utils/index.ts'
+import { login, logout, uploadTestDatabase, deleteTestDatabase, targetGroup, dhis2CoreImageTag, dhis2CoreUpdateImageTag } from './utils/index.ts'
 
 test.describe('new instance', () => {
     let dbFileName: string
@@ -86,6 +86,87 @@ test.describe('new instance', () => {
 
         // Instance teardown is backend-heavy and can exceed the default timeout, especially
         // when the instance is still provisioning at delete time (see TODO at the top of this test).
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 90000 })
+    })
+
+    test('update existing dhis2 instance', async ({ page }) => {
+        test.setTimeout(3 * 60 * 1000) // 3 minutes
+
+        const randomName = 'e2e-test-' + Math.random().toString().substring(8)
+        const updatedDescription = 'Updated by e2e test.'
+
+        // Create the instance to update.
+        await page.getByRole('link', { name: 'Instances' }).click()
+        await page.getByRole('button', { name: 'New instance' }).click()
+
+        await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
+        await page.getByRole('textbox', { name: 'Description' }).fill('Initial description.')
+
+        await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Group' }).getByTestId('dhis2-uicore-select-input').click()
+        await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: targetGroup }).dispatchEvent('click')
+        await page.keyboard.press('Escape')
+
+        await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Lifetime' }).getByTestId('dhis2-uicore-select-input').click()
+        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="3600"]').dispatchEvent('click')
+        await page.keyboard.press('Escape')
+
+        const imageTagSelect = page
+            .getByRole('group', { name: 'DHIS2 Core' })
+            .locator('div', { hasText: /^Image Tag/ })
+            .getByTestId('dhis2-uicore-select-input')
+        await imageTagSelect.click()
+        await page.getByPlaceholder('Filter options').fill(dhis2CoreImageTag)
+        await page.locator(`[data-test="dhis2-uicore-singleselectoption"][data-value="${dhis2CoreImageTag}"]`).dispatchEvent('click')
+        await page.keyboard.press('Escape')
+
+        await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Database' }).getByTestId('dhis2-uicore-select-input').click()
+        const numberOfDatabases = await page.getByTestId('dhis2-uicore-singleselectoption').count()
+        if (numberOfDatabases > 7) {
+            await page.locator('#filter').fill(dbFileName)
+        }
+        await page.getByText(dbFileName).dispatchEvent('click')
+        await page.keyboard.press('Escape')
+
+        await page.getByRole('button', { name: 'Create instance' }).click()
+        await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('button', { name: 'Back to list' }).click()
+        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 60000 })
+
+        // Open details, then the edit form.
+        await page.getByRole('row', { name: randomName }).click()
+        await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible()
+        await page.getByRole('button', { name: 'Edit', exact: true }).click()
+        await expect(page.getByRole('heading', { name: `Edit ${randomName}` })).toBeVisible()
+
+        // Update the description.
+        const descriptionInput = page.getByRole('textbox', { name: 'Description' })
+        await descriptionInput.fill(updatedDescription)
+
+        // Update the image tag. Exercises the dhis2-core instance PATCH and the
+        // consumed-parameters validation path that previously rejected updates.
+        if (dhis2CoreUpdateImageTag !== dhis2CoreImageTag) {
+            const editImageTagSelect = page
+                .getByRole('group', { name: 'DHIS2 Core' })
+                .locator('div', { hasText: /^Image Tag/ })
+                .getByTestId('dhis2-uicore-select-input')
+            await editImageTagSelect.click()
+            await page.getByPlaceholder('Filter options').fill(dhis2CoreUpdateImageTag)
+            await page.locator(`[data-test="dhis2-uicore-singleselectoption"][data-value="${dhis2CoreUpdateImageTag}"]`).dispatchEvent('click')
+            await page.keyboard.press('Escape')
+        }
+
+        await page.getByRole('button', { name: 'Update instance' }).click()
+
+        // Successful update redirects back to the details view.
+        await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible({ timeout: 30000 })
+        await expect(page.getByText(updatedDescription)).toBeVisible()
+
+        // Cleanup.
+        await page.getByRole('button', { name: 'Back to list' }).click()
+        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 30000 })
+        await page.getByRole('row', { name: randomName }).getByRole('button', { name: 'Delete' }).click()
+        const confirmDialog = page.locator('[aria-modal="true"]')
+        await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
         await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 90000 })
     })
 })

@@ -1,36 +1,27 @@
 import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLock16 } from '@dhis2/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
-import { useAuthAxios } from '../../../hooks/index.ts'
-import { DeploymentInstance, Stack, StackParameter } from '../../../types/index.ts'
+import { useAuthAxios, useStack } from '../../../hooks/index.ts'
+import { DeploymentInstance, StackParameter } from '../../../types/index.ts'
 import styles from '../list/instances-list.module.css'
 import { InstanceSummary } from './instance-summary.tsx'
 
 export const InstanceDetails = () => {
     const navigate = useNavigate()
     const { id } = useParams()
-    const [instance, setInstance] = useState<DeploymentInstance>()
-    const [stackParameters, setStackParameters] = useState<Stack>(null)
-    const [{ data, loading: loadingDetails }] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
-    const [{ loading: loadingStack }, fetchStack] = useAuthAxios<Stack>({ method: 'GET' }, { manual: true })
+    const [{ data: instance, loading: loadingDetails }] = useAuthAxios<DeploymentInstance>({ url: `/instances/${id}/details` })
+    const { stack, loading: loadingStack } = useStack(instance?.stackName ?? '')
 
-    const fetchStackCallback = useCallback(async () => {
-        const response = await fetchStack({ url: `/stacks/${data.stackName}` })
-        const stackParametersMap = response.data.parameters.reduce(
-            (map, parameter) => {
-                map[parameter.parameterName] = parameter
-                return map
-            },
-            {} as Record<number, StackParameter>
-        )
-        setStackParameters(stackParametersMap)
-    }, [data, fetchStack])
-
-    useEffect(() => {
-        setInstance(data)
-        void fetchStackCallback()
-    }, [data, fetchStackCallback])
+    const stackParameters = useMemo(() => {
+        if (!stack?.parameters) {
+            return null
+        }
+        return stack.parameters.reduce<Record<string, StackParameter>>((map, parameter) => {
+            map[parameter.parameterName] = parameter
+            return map
+        }, {})
+    }, [stack])
 
     if (loadingDetails || loadingStack || !instance || !stackParameters) {
         return (

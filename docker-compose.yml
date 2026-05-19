@@ -23,7 +23,7 @@ services:
             - "3000:3000"
 
     e2e-test:
-        image: mcr.microsoft.com/playwright:v1.52.0-noble
+        image: mcr.microsoft.com/playwright:v1.59.1-noble
         stdin_open: true
         tty: true
         command: >
