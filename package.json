@@ -28,7 +28,7 @@
         "@dhis2/data-engine": "^3.17.0",
         "@dhis2/ui": "^10.7.2",
         "@fontsource/roboto": "^5.2.10",
-        "axios": "^1.15.0",
+        "axios": "^1.16.1",
         "axios-hooks": "^5.1.1",
         "final-form": "^5.0.0",
         "moment": "^2.30.1",
