@@ -1,8 +1,16 @@
 import { useAlerts } from '@dhis2/app-service-alerts'
-import type { Alert, AlertOptions } from '@dhis2/app-service-alerts/build/types/types'
 import { AlertBar, AlertStack } from '@dhis2/ui'
 import { useState, useEffect } from 'react'
 import type { FC } from 'react'
+
+type AlertOptions = Record<string, unknown>
+
+type Alert = {
+    id?: number
+    remove?: () => void
+    message: string
+    options: AlertOptions
+}
 
 interface AlertStackOptions extends AlertOptions {
     onHidden?: () => void

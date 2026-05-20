@@ -26,7 +26,7 @@ export type AsyncActionProps = {
 }
 
 export const ActionsDropdownMenu = ({ deploymentId, instanceId, stackName, refetch }: ActionsDropdownMenuProps) => {
-    const anchor = useRef()
+    const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const onStart = useCallback(() => {

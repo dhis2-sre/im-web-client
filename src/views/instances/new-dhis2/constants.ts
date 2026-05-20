@@ -1,4 +1,4 @@
-import { Dhis2StackPrimaryParameters } from './parameter-fieldset.tsx'
+import { Dhis2PrimaryField, Dhis2StackName } from './parameter-fieldset.tsx'
 
 export const DHIS2_STACK_ID = 'dhis2'
 export const DATABASE_ID = 'DATABASE_ID'
@@ -22,7 +22,7 @@ export const PGADMIN_CONFIRM_PASSWORD = 'PGADMIN_CONFIRM_PASSWORD'
 export const OPTIONAL_FIELDS = new Set([JAVA_OPTS])
 export const CUSTOM_DHIS2_CONFIG = 'CUSTOM_DHIS2_CONFIG'
 
-export const STACK_PRIMARY_PARAMETERS = new Map([
+export const STACK_PRIMARY_PARAMETERS = new Map<Dhis2StackName, Set<Dhis2PrimaryField>>([
     ['dhis2-core', new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY'])],
     ['dhis2-db', new Set(['DATABASE_ID'])],
     ['minio', new Set(['DATABASE_ID'])],
@@ -31,4 +31,4 @@ export const STACK_PRIMARY_PARAMETERS = new Map([
     ['chap-db', new Set(['DATABASE_SIZE'])],
     ['chap-valkey', new Set(['REDIS_STORAGE_SIZE'])],
     ['chap-worker', new Set(['IMAGE_TAG'])],
-]) as Dhis2StackPrimaryParameters
+])
