@@ -13,9 +13,8 @@ import {
     Checkbox,
 } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { Heading, MomentExpiresFromNow } from '../../../components/index.ts'
+import { Heading, Moment, MomentExpiresFromNow } from '../../../components/index.ts'
 import { DeleteButton } from './delete-menu-button.tsx'
 import useDeployments from './filter-deployments.tsx'
 import InstanceTag from './instance-tag.tsx'

@@ -1,7 +1,6 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import { FC } from 'react'
-import Moment from 'react-moment'
-import { Heading } from '../../components/index.ts'
+import { Heading, Moment } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
 import styles from './clusters-list.module.css'

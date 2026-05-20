@@ -1,7 +1,6 @@
 import { IconClock16, IconUser16, IconUserGroup16, IconWarning16, IconClockHistory16, IconInfo16 } from '@dhis2/ui'
 import { FC } from 'react'
-import Moment from 'react-moment'
-import { MomentExpiresFromNow } from '../../../components/index.ts'
+import { Moment, MomentExpiresFromNow } from '../../../components/index.ts'
 import { Deployment } from '../../../types/index.ts'
 import styles from './deployment-summary.module.css'
 

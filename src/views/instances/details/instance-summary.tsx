@@ -1,6 +1,6 @@
 import { IconClock16, IconClockHistory16, IconDimensionData16, IconWorld16 } from '@dhis2/ui'
 import { FC } from 'react'
-import Moment from 'react-moment'
+import { Moment } from '../../../components/index.ts'
 import { DeploymentInstance } from '../../../types/index.ts'
 import styles from './instance-summary.module.css'
 
