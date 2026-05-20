@@ -32,6 +32,7 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     const uploadDialog = page.locator('[aria-modal="true"]')
 
     await uploadDialog.getByLabel('Name').fill(dbName)
+    await uploadDialog.getByTestId('upload-database-description').locator('textarea').fill(`e2e test upload ${dbName}`)
 
     await expect(page.getByText(`Selected database file: ${fileName}`)).toBeVisible()
 
