@@ -20,6 +20,7 @@ if (!baseURL) {
  * is going to be sent via the global window object */
 export const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT_INSTANCE_MANAGER'
 
+// eslint-disable-next-line import/no-named-as-default-member
 const createAxiosInstance = () => axios.create({ baseURL, withCredentials: true })
 
 // Create an axios instance and we set the baseURL

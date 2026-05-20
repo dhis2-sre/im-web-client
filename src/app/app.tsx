@@ -80,7 +80,7 @@ const router = createBrowserRouter(createRoutesFromElements(routes))
 export const App = () => (
     <AlertsProvider
         plugin={false}
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         parentAlertsAdd={undefined as Function}
         showAlertsInPlugin={false}
     >

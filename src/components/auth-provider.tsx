@@ -43,7 +43,7 @@ export const AuthProvider: FC = () => {
                     if (currentUser?.id !== userResponse.data.id) {
                         setCurrentUser(userResponse.data)
                     }
-                } catch (e) {
+                } catch {
                     if (currentUser?.id) {
                         setCurrentUser(null)
                         navigate('/')
