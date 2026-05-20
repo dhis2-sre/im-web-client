@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import Moment from 'react-moment'
+import { Moment } from '../moment.tsx'
 import type { DatabaseSaveData, Notification } from '../../hooks/use-notifications.ts'
 import styles from './notification-panel.module.css'
 

@@ -1,13 +1,16 @@
-import { ComponentType, FC } from 'react'
-import * as ReactMoment from 'react-moment'
-import type { MomentProps } from 'react-moment'
+import moment from 'moment'
+import { FC, useEffect, useState } from 'react'
 
-// react-moment is a CJS UMD bundle; under Vite 8's interop the default import can
-// arrive as the module namespace object instead of the class, so resolve it manually.
-const Moment = ((ReactMoment as { default?: unknown }).default ?? ReactMoment) as ComponentType<MomentProps>
+const REFRESH_INTERVAL_MS = 60_000
 
 export const MomentExpiresFromNow: FC<{ createdAt: string; ttl: number }> = ({ createdAt, ttl }) => {
-    const date = new Date(createdAt).getTime() + ttl * 1000
+    const expiresAt = new Date(createdAt).getTime() + ttl * 1000
+    const [, forceTick] = useState(0)
 
-    return <Moment date={date} fromNow />
+    useEffect(() => {
+        const id = setInterval(() => forceTick((n) => n + 1), REFRESH_INTERVAL_MS)
+        return () => clearInterval(id)
+    }, [])
+
+    return <time dateTime={new Date(expiresAt).toISOString()}>{moment(expiresAt).fromNow()}</time>
 }

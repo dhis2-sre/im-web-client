@@ -1,8 +1,7 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, Center, CircularLoader } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { Heading, Moment } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { User } from '../../types/index.ts'
 
