@@ -5,8 +5,6 @@ import * as ReactMomentModule from 'react-moment/dist/index.js'
 
 type ReactMomentNamespace = { default?: { default?: unknown } | unknown }
 const ns = ReactMomentModule as ReactMomentNamespace
-const unwrapped =
-    (ns.default && (ns.default as { default?: unknown }).default) ?? ns.default ?? ReactMomentModule
+const unwrapped = (ns.default && (ns.default as { default?: unknown }).default) ?? ns.default ?? ReactMomentModule
 
-// eslint-disable-next-line import/no-default-export
 export default unwrapped
