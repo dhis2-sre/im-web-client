@@ -1,22 +1,25 @@
-import { CheckboxFieldFF } from '@dhis2/ui'
+import { CheckboxField } from '@dhis2/ui'
 import { FC } from 'react'
-import { Field } from 'react-final-form'
+import { useField } from 'react-final-form'
 import styles from './fields.module.css'
 import { ParameterFieldProps } from './parameter-field.tsx'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const parseBool = (bool: any): string => (typeof bool === 'boolean' && bool ? 'true' : 'false')
-export const formatBool = (str: string): boolean => str === 'true'
-
-export const BooleanParameterCheckbox: FC<ParameterFieldProps> = ({ displayName, parameterName, stackId }) => (
-    <Field
-        type="checkbox"
-        format={formatBool}
-        parse={parseBool}
-        required
-        name={`${stackId}.${parameterName}`}
-        label={displayName}
-        component={CheckboxFieldFF}
-        className={styles.parameterCheckbox}
-    />
-)
+// Form state holds 'true'/'false' strings to match the API shape. We render the
+// checkbox via useField + CheckboxField directly because react-final-form 7's
+// `<Field type="checkbox">` computes `checked` as `!!parse(state.value)`, which
+// gives `!!'false' === true` for a string-valued state — leaving every checkbox
+// stuck in the checked position. See https://github.com/final-form/react-final-form/pull/1074
+export const BooleanParameterCheckbox: FC<ParameterFieldProps> = ({ displayName, parameterName, stackId }) => {
+    const name = `${stackId}.${parameterName}`
+    const { input } = useField(name, { subscription: { value: true } })
+    return (
+        <CheckboxField
+            name={name}
+            label={displayName}
+            required
+            checked={input.value === 'true'}
+            onChange={({ checked }) => input.onChange(checked ? 'true' : 'false')}
+            className={styles.parameterCheckbox}
+        />
+    )
+}
