@@ -41,7 +41,7 @@ export const RemoveFromGroupButton: FC<RemoveFromGroupButtonProps> = ({ group, u
         try {
             await removeUser()
             showAlert({ message: 'User removed from group successfully', isCritical: false })
-        } catch (error) {
+        } catch {
             showAlert({ message: 'Error while removing user from group', isCritical: true })
         }
         onComplete()
