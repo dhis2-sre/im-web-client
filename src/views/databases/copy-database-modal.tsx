@@ -99,7 +99,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
             })
             onComplete()
             togglePopover()
-        } catch (error) {
+        } catch {
             showAlert({
                 message: 'There was a problem copying the database',
                 isCritical: true,

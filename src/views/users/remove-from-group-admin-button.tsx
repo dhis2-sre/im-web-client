@@ -41,7 +41,7 @@ export const RemoveFromGroupAdminButton: FC<RemoveFromGroupAdminButtonProps> = (
         try {
             await removeGroupAdmin()
             showAlert({ message: 'Group admin role removed successfully', isCritical: false })
-        } catch (error) {
+        } catch {
             showAlert({ message: 'Error while removing group admin role', isCritical: true })
         }
         onComplete()
