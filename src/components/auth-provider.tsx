@@ -70,12 +70,12 @@ export const AuthProvider: FC = () => {
                 setCurrentUser(userResponse.data)
             } catch (error) {
                 console.error(error)
-                const errorMessage =
-                    error instanceof AxiosError
-                        ? error.response?.data || error.message
-                        : error instanceof Error
-                          ? error.message
-                          : 'Unknown error'
+                let errorMessage = 'Unknown error'
+                if (error instanceof AxiosError) {
+                    errorMessage = error.response?.data || error.message
+                } else if (error instanceof Error) {
+                    errorMessage = error.message
+                }
                 setAuthenticationErrorMessage(errorMessage)
                 setCurrentUser(null)
             } finally {
