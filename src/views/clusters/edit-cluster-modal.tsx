@@ -51,7 +51,7 @@ export const EditClusterModal: FC<EditClusterModalProps> = ({ cluster, onComplet
             <ModalContent className={styles.container}>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
                 <InputField className={styles.field} label="Description" value={description} onChange={({ value }) => setDescription(value)} required disabled={loading} />
-                <FileInput buttonLabel="Replace Kubernetes configuration (optional)" onChange={onFileSelect} disabled={loading} />
+                <FileInput buttonLabel="Replace Kubernetes configuration" onChange={onFileSelect} disabled={loading} />
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
