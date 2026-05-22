@@ -1,4 +1,15 @@
-import { Button, Center, CircularLoader, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, NoticeBox } from '@dhis2/ui'
+import {
+    Button,
+    Center,
+    CircularLoader,
+    DataTable,
+    DataTableBody as TableBody,
+    DataTableCell,
+    DataTableColumnHeader,
+    DataTableHead as TableHead,
+    DataTableRow,
+    NoticeBox,
+} from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
 import Moment from 'react-moment'

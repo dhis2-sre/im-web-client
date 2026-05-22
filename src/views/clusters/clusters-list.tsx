@@ -30,7 +30,9 @@ export const ClustersList: FC = () => {
                     {data?.map((cluster: Cluster) => {
                         return (
                             <DataTableRow key={cluster.id}>
-                                <DataTableCell><Link to={`/clusters/${cluster.id}`}>{cluster.name}</Link></DataTableCell>
+                                <DataTableCell>
+                                    <Link to={`/clusters/${cluster.id}`}>{cluster.name}</Link>
+                                </DataTableCell>
                                 <DataTableCell>{cluster.description}</DataTableCell>
                                 <DataTableCell>{cluster.groups?.map((group) => group.name).join(', ')}</DataTableCell>
                                 <DataTableCell>
