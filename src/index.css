@@ -15,3 +15,10 @@ a {
 a:hover {
     color: var(--colors-blue800);
 }
+
+/* @dhis2/ui CalendarInput's internal .calendar-wrapper element renders with
+   `background-color: none`, so underlying page content bleeds through.
+   Global override (not a CSS module) targeting the upstream class name. */
+.calendar-wrapper {
+    background-color: var(--colors-white);
+}
