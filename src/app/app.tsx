@@ -14,6 +14,7 @@ import {
     DatabasesList,
     DeploymentDetails,
     EditDhis2Instance,
+    GroupDetails,
     GroupsList,
     InstancesList,
     NewDhis2Instance,
@@ -64,6 +65,7 @@ if (location.hostname === 'play.dhis2.org') {
                         <Route path="/instances/:id/details" element={<DeploymentDetails />} />
                         <Route path="/instance/:id/details" element={<InstanceDetails />} />
                         <Route path="/groups" element={<GroupsList />} />
+                        <Route path="/groups/:name" element={<GroupDetails />} />
                         <Route path="/users" element={<UsersList />} />
                         <Route path="/users/:id" element={<UserDetails />} />
                     </Route>
