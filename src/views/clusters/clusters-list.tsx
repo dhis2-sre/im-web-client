@@ -1,6 +1,7 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import { FC } from 'react'
 import Moment from 'react-moment'
+import { Link } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
@@ -29,7 +30,9 @@ export const ClustersList: FC = () => {
                     {data?.map((cluster: Cluster) => {
                         return (
                             <DataTableRow key={cluster.id}>
-                                <DataTableCell>{cluster.name}</DataTableCell>
+                                <DataTableCell>
+                                    <Link to={`/clusters/${cluster.id}`}>{cluster.name}</Link>
+                                </DataTableCell>
                                 <DataTableCell>{cluster.description}</DataTableCell>
                                 <DataTableCell>{cluster.groups?.map((group) => group.name).join(', ')}</DataTableCell>
                                 <DataTableCell>

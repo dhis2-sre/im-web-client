@@ -5,6 +5,7 @@ import { useFormState } from 'react-final-form'
 import { Deployment } from '../../../types/index.ts'
 import { CompanionFieldset } from './companion-fieldset.tsx'
 import { DescriptionTextarea } from './fields/description-textarea.tsx'
+import { ExtendTtlSelect } from './fields/extend-ttl-select.tsx'
 import { GroupSelect } from './fields/group-select.tsx'
 import { NameInput } from './fields/name-input.tsx'
 import { PublicCheckbox } from './fields/public-checkbox.tsx'
@@ -62,7 +63,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
                 {!isUpdate && <NameInput />}
                 <DescriptionTextarea />
                 <PublicCheckbox />
-                <TtlSelect />
+                {isUpdate && deployment ? <ExtendTtlSelect deployment={deployment} /> : <TtlSelect />}
                 {!isUpdate && <GroupSelect />}
             </fieldset>
             <hr className={styles.hr} />
