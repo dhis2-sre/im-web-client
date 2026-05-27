@@ -7,7 +7,7 @@
 .parameterCheckbox {
     padding-top: 18px;
 }
-.calenderContainer {
+.calendarContainer {
     margin-top: 15px;
 }
 
@@ -35,4 +35,22 @@
 .customOption:active .secondaryText,
 .customOption.active .secondaryText {
     color: var(--colors-grey400);
+}
+
+.extendTtl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 480px;
+}
+
+.willExpire {
+    font-size: 12px;
+    color: var(--colors-grey700);
+}
+
+.dateError {
+    font-size: 12px;
+    color: var(--colors-red700);
+    margin-top: 4px;
 }

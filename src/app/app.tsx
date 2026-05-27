@@ -8,12 +8,14 @@ import '@fontsource/roboto/700.css'
 import { ReactElement } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { Alerts, AuthProvider, ErrorView, Layout, PublicLayout, StacksProvider } from '../components/index.ts'
+import { ClusterDetails } from '../views/clusters/cluster-details.tsx'
 import { ClustersList } from '../views/clusters/clusters-list.tsx'
 import { DatabaseDetails } from '../views/databases/database-details.tsx'
 import {
     DatabasesList,
     DeploymentDetails,
     EditDhis2Instance,
+    GroupDetails,
     GroupsList,
     InstancesList,
     NewDhis2Instance,
@@ -59,11 +61,13 @@ if (location.hostname === 'play.dhis2.org') {
                         <Route path="/databases" element={<DatabasesList />} />
                         <Route path="/databases/:id" element={<DatabaseDetails />} />
                         <Route path="/clusters" element={<ClustersList />} />
+                        <Route path="/clusters/:id" element={<ClusterDetails />} />
                         <Route path="/instances/new" element={<NewDhis2Instance />} />
                         <Route path="/instances/:id/edit" element={<EditDhis2Instance />} />
                         <Route path="/instances/:id/details" element={<DeploymentDetails />} />
                         <Route path="/instance/:id/details" element={<InstanceDetails />} />
                         <Route path="/groups" element={<GroupsList />} />
+                        <Route path="/groups/:name" element={<GroupDetails />} />
                         <Route path="/users" element={<UsersList />} />
                         <Route path="/users/:id" element={<UserDetails />} />
                     </Route>

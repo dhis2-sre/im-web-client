@@ -1,6 +1,7 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
+import { Link } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/index.ts'
@@ -31,7 +32,7 @@ export const GroupsList: FC = () => {
                 <TableBody>
                     {data?.map((group) => (
                         <DataTableRow key={group.name}>
-                            <DataTableCell>{group.name}</DataTableCell>
+                            <DataTableCell><Link to={`/groups/${group.name}`}>{group.name}</Link></DataTableCell>
                             <DataTableCell>{group.namespace}</DataTableCell>
                             <DataTableCell>{group.hostname}</DataTableCell>
                             <DataTableCell>{group.description}</DataTableCell>
