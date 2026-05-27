@@ -1,47 +1,32 @@
-import { SingleSelectField, SingleSelectOption, CalendarInput } from '@dhis2/ui'
-import React, { useState } from 'react'
+import { SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { useState } from 'react'
 import { useField } from 'react-final-form'
+import { CustomDateCalendar } from './custom-date-calendar.tsx'
 import styles from './fields.module.css'
-
-const defaultTTL = 60 * 60 * 24
-const options = [
-    { label: '1 hour', value: (60 * 60).toString() },
-    { label: '6 hours', value: (60 * 60 * 6).toString() },
-    { label: '12 hours', value: (60 * 60 * 12).toString() },
-    { label: '1 day', value: defaultTTL.toString() },
-    { label: '2 days', value: (60 * 60 * 24 * 2).toString() },
-    { label: '5 days', value: (60 * 60 * 24 * 5).toString() },
-    { label: '1 week', value: (60 * 60 * 24 * 7).toString() },
-    { label: '2 weeks', value: (60 * 60 * 24 * 7 * 2).toString() },
-    { label: '1 month', value: (60 * 60 * 24 * 7 * 4).toString() },
-    { label: 'Custom', value: '-1' },
-]
+import { CUSTOM_LABEL, CUSTOM_VALUE, TTL_PRESETS } from './ttl-presets.ts'
 
 export const TtlSelect = () => {
-    const { input: ttlInput } = useField('ttl', { subscription: { value: true } })
-    const [selectedValue, setSelectedValue] = useState(ttlInput.value.toString())
-    const [showCalendar, setShowCalendar] = useState(false)
+    const { input } = useField<number>('ttl', { subscription: { value: true } })
+    const [customMode, setCustomMode] = useState(false)
     const [calendarDate, setCalendarDate] = useState('')
 
-    const handleSelectChange = (value: string) => {
-        setSelectedValue(value)
-        if (value === '-1') {
-            setShowCalendar(true)
+    const value = Number(input.value) || 0
+    const matchedPreset = TTL_PRESETS.find((p) => p.seconds === value)
+    const selected = customMode ? CUSTOM_VALUE : matchedPreset ? String(matchedPreset.seconds) : ''
+
+    const handleSelectChange = (next: string) => {
+        if (next === CUSTOM_VALUE) {
+            setCustomMode(true)
         } else {
-            ttlInput.onChange(parseInt(value, 10))
-            setShowCalendar(false)
+            setCustomMode(false)
+            setCalendarDate('')
+            input.onChange(parseInt(next, 10))
         }
     }
 
-    const handleCustomDateChange = (date) => {
-        const currentDate = new Date()
-        const targetDate = new Date(date.calendarDateString + 'T00:00:00Z')
-        const differenceInMs = targetDate.getTime() - currentDate.getTime()
-
-        const differenceInSeconds = Math.floor(differenceInMs / 1000)
-        ttlInput.onChange(differenceInSeconds)
-        setSelectedValue('-1')
-        setCalendarDate(targetDate.toISOString().split('T')[0])
+    const handleDate = (s: string) => {
+        input.onChange(Math.floor((new Date(`${s}T00:00:00Z`).getTime() - Date.now()) / 1000))
+        setCalendarDate(s)
     }
 
     return (
@@ -49,19 +34,16 @@ export const TtlSelect = () => {
             <SingleSelectField
                 className={styles.field}
                 label="Lifetime"
-                selected={selectedValue}
-                onChange={({ selected }: { selected: string }) => handleSelectChange(selected)}
+                selected={selected}
+                onChange={({ selected: next }: { selected: string }) => handleSelectChange(next)}
                 helpText="How long this instance will run for until automatic shutdown."
             >
-                {options.map((option) => (
-                    <SingleSelectOption key={option.value} label={option.label} value={option.value} />
+                {TTL_PRESETS.map((p) => (
+                    <SingleSelectOption key={p.seconds} label={p.label} value={String(p.seconds)} />
                 ))}
+                <SingleSelectOption label={CUSTOM_LABEL} value={CUSTOM_VALUE} />
             </SingleSelectField>
-            {showCalendar && (
-                <div className={styles.calenderContainer}>
-                    <CalendarInput onDateSelect={handleCustomDateChange} calendar="iso8601" date={calendarDate} />
-                </div>
-            )}
+            {customMode && <CustomDateCalendar date={calendarDate} onDateSelect={handleDate} />}
         </div>
     )
 }
