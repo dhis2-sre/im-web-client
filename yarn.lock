@@ -2808,6 +2808,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dhis2/d2-i18n@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@dhis2/d2-i18n@npm:1.2.0"
+  dependencies:
+    "@types/i18next": "npm:^11.9.0"
+    i18next: "npm:^10.3"
+    moment: "npm:^2.24.0"
+  checksum: 10c0/7201e2290cfa713a18ecbeb6b81fa5aeffcdcdff8867e096f96d60bd5c56da3c6a7ffb972c4fec9997ed2f7ebe6d17bd4c34722e515eca6e3f7249c6ebba2c1e
+  languageName: node
+  linkType: hard
+
 "@dhis2/data-engine@npm:^3.17.0":
   version: 3.17.0
   resolution: "@dhis2/data-engine@npm:3.17.0"
@@ -6889,7 +6900,7 @@ __metadata:
     "@commitlint/config-conventional": "npm:^21.0.1"
     "@dhis2/app-runtime": "npm:^3.17.0"
     "@dhis2/app-service-alerts": "npm:^3.17.0"
-    "@dhis2/d2-i18n": "npm:^1.1.3"
+    "@dhis2/d2-i18n": "npm:^1.2.0"
     "@dhis2/data-engine": "npm:^3.17.0"
     "@dhis2/ui": "npm:^10.7.2"
     "@eslint/compat": "npm:^2.0.0"
