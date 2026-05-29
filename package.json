@@ -27,7 +27,7 @@
         "@dhis2/app-service-alerts": "^3.17.0",
         "@dhis2/d2-i18n": "^1.2.0",
         "@dhis2/data-engine": "^3.17.0",
-        "@dhis2/ui": "^10.7.2",
+        "@dhis2/ui": "^10.16.0",
         "@fontsource/roboto": "^5.2.10",
         "axios": "^1.16.1",
         "axios-hooks": "^5.1.1",
