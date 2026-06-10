@@ -16,10 +16,13 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
 
     await expect(page.getByRole('button', { name: 'Select database' })).toBeVisible()
 
-    // Select the target group
+    // Select the target group. Use a real click on the option so @dhis2/ui closes its own
+    // dropdown layer; the previous dispatchEvent + Escape left the layer's backdrop mounted,
+    // which intercepted the "Select database" click once the e2e user belonged to >1 group.
     await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Group' }).getByTestId('dhis2-uicore-select-input').click()
-    await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: targetGroup }).dispatchEvent('click')
-    await page.keyboard.press('Escape') // dismiss dropdown layer
+    const groupOption = page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: targetGroup })
+    await groupOption.click()
+    await expect(groupOption).toBeHidden() // dropdown layer must close before the next click
 
     const fileChooserPromise = page.waitForEvent('filechooser')
     await page.getByRole('button', { name: 'Select database' }).click()
