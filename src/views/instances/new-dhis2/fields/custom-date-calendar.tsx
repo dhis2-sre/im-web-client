@@ -12,12 +12,6 @@ type Props = {
 // so @dhis2/ui's <select value={currMonth.label}> falls back to its first option ("January") regardless of the actual visible month.
 export const CustomDateCalendar: FC<Props> = ({ date, minDate, onDateSelect }) => (
     <div className={styles.calendarContainer}>
-        <CalendarInput
-            calendar="gregory"
-            date={date}
-            // @ts-expect-error minDate is supported at runtime; @dhis2/ui type defs omit it
-            minDate={minDate}
-            onDateSelect={(d: { calendarDateString: string }) => onDateSelect(d.calendarDateString)}
-        />
+        <CalendarInput calendar="gregory" date={date} minDate={minDate} onDateSelect={(d: { calendarDateString: string }) => onDateSelect(d.calendarDateString)} />
     </div>
 )
