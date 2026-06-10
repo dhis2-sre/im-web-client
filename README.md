@@ -27,6 +27,18 @@ skaffold dev
     - Can submit without hostname... No effect, no error
 - Loading shows within form
 
+# Release
+
+Releasing is done by creating a new release tag (no `v` prefix).
+
+Example
+
+```shell
+git tag --sort=-creatordate | head --lines=1              # Get the latest tag
+git tag 0.35.0                                            # Use whichever tag you want to release
+git push origin 0.35.0
+```
+
 # Design
 
 - https://www.figma.com/proto/DOrik1KNpszSVrGFmChez3/Instance-manager?node-id=48-3665&starting-point-node-id=1%3A2
