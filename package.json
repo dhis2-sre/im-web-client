@@ -94,7 +94,7 @@
         "prettier": "^3.8.3",
         "ts-jest": "^29.4.11",
         "typescript-eslint": "^8.60.0",
-        "vite": "8.0.14"
+        "vite": "8.0.16"
     },
     "resolutions": {
         "@dhis2/multi-calendar-dates": "2.1.2",
