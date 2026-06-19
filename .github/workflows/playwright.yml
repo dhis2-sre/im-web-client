@@ -21,7 +21,7 @@ jobs:
         timeout-minutes: 60
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v7
 
             # Mirrors API_URL resolution in im-build-test-deploy.yaml: prefer matching feature env, fall back to dev.
             - name: Resolve API URL
