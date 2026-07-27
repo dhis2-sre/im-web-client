@@ -5,6 +5,7 @@ import { Heading } from '../../../components/index.ts'
 import { useAuthAxios, useStack } from '../../../hooks/index.ts'
 import { DeploymentInstance, StackParameter } from '../../../types/index.ts'
 import styles from '../list/instances-list.module.css'
+import { InstanceComponents } from './instance-components.tsx'
 import { InstanceSummary } from './instance-summary.tsx'
 
 export const InstanceDetails = () => {
@@ -41,6 +42,7 @@ export const InstanceDetails = () => {
                     <InstanceSummary instance={instance} />
                 </Card>
             </div>
+            <InstanceComponents instanceId={instance.id} />
             <br />
             <DataTable>
                 <DataTableHead>
