@@ -1,5 +1,5 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconSync16, Tag } from '@dhis2/ui'
+import { Button, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconSync16, Tag } from '@dhis2/ui'
 import { Fragment, useCallback, useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
@@ -58,10 +58,25 @@ export const InstanceComponents: FC<{ instanceId: number }> = ({ instanceId }) =
         }
     }, [restartTarget, restart, showAlert, refetch])
 
-    /* Instances deployed against a pre-3.0 backend (or stacks without components) have nothing to
-     * show here; hide the section instead of surfacing the error. */
-    if (error || (!loading && (!components || components.length === 0))) {
+    /* Instances deployed against a pre-3.0 backend have nothing to show here; hide the section
+     * instead of surfacing the error. */
+    if (error) {
         return null
+    }
+
+    /* The listing queries the cluster for every component's replicas, so it is slow by nature;
+     * show that something is happening rather than nothing. */
+    if (loading && !components) {
+        return (
+            <div className={styles.loading} data-test="instance-components-loading">
+                <CircularLoader small />
+                <span>Fetching components from the cluster...</span>
+            </div>
+        )
+    }
+
+    if (!loading && (!components || components.length === 0)) {
+        return <p className={styles.empty}>No components</p>
     }
 
     return (

@@ -8,3 +8,16 @@
 .header h3 {
     margin: 0;
 }
+
+.loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 0;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.empty {
+    padding: 8px 0;
+    color: rgba(0, 0, 0, 0.6);
+}
