@@ -1,5 +1,6 @@
 import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import type { RefetchFunction } from 'axios-hooks'
+import { useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +9,7 @@ import { Deployment } from '../../../types/index.ts'
 import styles from '../list/instances-list.module.css'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
 import { ActionsDropdownMenu } from './actions-dropdown-menu.tsx'
+import { InstanceComponents } from './instance-components.tsx'
 import { StatusLabel } from './status-label.tsx'
 import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 
@@ -18,6 +20,18 @@ export const DeploymentInstancesList: FC<{
     loading: boolean
 }> = ({ deployment, refetch, loading }) => {
     const navigate = useNavigate()
+    const [expandedInstances, setExpandedInstances] = useState<Set<number>>(new Set())
+    const toggleExpanded = (instanceId: number, expanded: boolean) => {
+        setExpandedInstances((current) => {
+            const next = new Set(current)
+            if (expanded) {
+                next.add(instanceId)
+            } else {
+                next.delete(instanceId)
+            }
+            return next
+        })
+    }
     return (
         <DataTable>
             <DataTableHead>
@@ -34,7 +48,17 @@ export const DeploymentInstancesList: FC<{
                 {deployment.instances?.map((instance) => {
                     const onClick = () => navigate(`/instance/${instance.id}/details`)
                     return (
-                        <tr className={styles.clickableRow} key={instance.id}>
+                        <DataTableRow
+                            className={styles.clickableRow}
+                            key={instance.id}
+                            expanded={expandedInstances.has(instance.id)}
+                            onExpandToggle={({ expanded }) => toggleExpanded(instance.id, expanded)}
+                            expandableContent={
+                                <div className={styles.expandedComponents}>
+                                    <InstanceComponents instanceId={instance.id} />
+                                </div>
+                            }
+                        >
                             <DataTableCell staticStyle onClick={onClick}>
                                 <StatusLabel instanceId={instance.id} />
                             </DataTableCell>
@@ -60,7 +84,7 @@ export const DeploymentInstancesList: FC<{
                             <DataTableCell staticStyle align="right">
                                 <ActionsDropdownMenu deploymentId={deployment.id} instanceId={instance.id} stackName={instance.stackName as Dhis2StackName} refetch={refetch} />
                             </DataTableCell>
-                        </tr>
+                        </DataTableRow>
                     )
                 })}
             </DataTableBody>
