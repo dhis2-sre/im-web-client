@@ -2,6 +2,7 @@ import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { DeploymentInstanceComponents, InstanceComponent } from '../../../types/index.ts'
+import styles from './deployment-component-tags.module.css'
 
 const getComponentTagProps = (component: InstanceComponent) => {
     if (component.replicas.length === 0) {
@@ -32,7 +33,7 @@ export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deployme
     }
 
     return (
-        <>
+        <span className={styles.tags}>
             {instances.flatMap((instance) =>
                 instance.components.map((component) => (
                     <Tag key={`${instance.instanceId}-${component.name}`} {...getComponentTagProps(component)}>
@@ -40,6 +41,6 @@ export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deployme
                     </Tag>
                 ))
             )}
-        </>
+        </span>
     )
 }
