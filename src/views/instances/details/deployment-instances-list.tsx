@@ -2,10 +2,8 @@ import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTab
 import type { RefetchFunction } from 'axios-hooks'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { useNavigate } from 'react-router-dom'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import { Deployment } from '../../../types/index.ts'
-import styles from '../list/instances-list.module.css'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
 import { ActionsDropdownMenu } from './actions-dropdown-menu.tsx'
 import { StatusLabel } from './status-label.tsx'
@@ -17,7 +15,6 @@ export const DeploymentInstancesList: FC<{
     refetch: RefetchFunction<any, Deployment>
     loading: boolean
 }> = ({ deployment, refetch, loading }) => {
-    const navigate = useNavigate()
     return (
         <DataTable>
             <DataTableHead>
@@ -32,19 +29,16 @@ export const DeploymentInstancesList: FC<{
             </DataTableHead>
             <DataTableBody loading={loading}>
                 {deployment.instances?.map((instance) => {
-                    const onClick = () => navigate(`/instance/${instance.id}/details`)
                     return (
-                        <tr className={styles.clickableRow} key={instance.id}>
-                            <DataTableCell staticStyle onClick={onClick}>
+                        <tr key={instance.id}>
+                            <DataTableCell staticStyle>
                                 <StatusLabel instanceId={instance.id} />
                             </DataTableCell>
-                            <DataTableCell staticStyle onClick={onClick}>
-                                {instance.stackName}
-                            </DataTableCell>
-                            <DataTableCell staticStyle onClick={onClick}>
+                            <DataTableCell staticStyle>{instance.stackName}</DataTableCell>
+                            <DataTableCell staticStyle>
                                 <Moment date={instance.createdAt} fromNow />
                             </DataTableCell>
-                            <DataTableCell staticStyle onClick={onClick}>
+                            <DataTableCell staticStyle>
                                 <Moment date={instance.updatedAt} fromNow />
                             </DataTableCell>
                             <DataTableCell staticStyle align="right">
