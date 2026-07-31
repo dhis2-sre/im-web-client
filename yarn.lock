@@ -7322,7 +7322,7 @@ __metadata:
     typescript-eslint: "npm:^8.60.0"
     use-debounce: "npm:^10.1.1"
     vite: "npm:8.0.16"
-    web-vitals: "npm:^4.2.3"
+    web-vitals: "npm:^6.0.1"
   languageName: unknown
   linkType: soft
 
@@ -10971,10 +10971,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-vitals@npm:^4.2.3":
-  version: 4.2.4
-  resolution: "web-vitals@npm:4.2.4"
-  checksum: 10c0/383c9281d5b556bcd190fde3c823aeb005bb8cf82e62c75b47beb411014a4ed13fa5c5e0489ed0f1b8d501cd66b0bebcb8624c1a75750bd5df13e2a3b1b2d194
+"web-vitals@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "web-vitals@npm:6.0.1"
+  checksum: 10c0/99661ff00749b55ab73e53629bb125c945d46835909b4bcdad5f01b1fa28a10aab301c6f86325a7f632894493c6c923b19c97c50e81cc8f243e8a0ca17eeafd6
   languageName: node
   linkType: hard
 
