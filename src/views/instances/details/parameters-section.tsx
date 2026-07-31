@@ -62,7 +62,9 @@ export const ParametersSection: FC<{ instance: DeploymentInstance }> = ({ instan
                             </DataTable>
                         }
                     >
-                        <DataTableCell staticStyle>Parameters:</DataTableCell>
+                        <DataTableCell staticStyle>
+                            <strong>Parameters</strong>
+                        </DataTableCell>
                     </DataTableRow>
                 </DataTableBody>
             </DataTable>
