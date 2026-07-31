@@ -30,7 +30,6 @@ import {
     Validate,
     ValidateSuccess,
 } from '../views/index.ts'
-import { InstanceDetails } from '../views/instances/details/instance-details.tsx'
 import { InstancesTable } from '../views/public-instances/index.ts'
 
 let routes: ReactElement
@@ -65,7 +64,6 @@ if (location.hostname === 'play.dhis2.org') {
                         <Route path="/instances/new" element={<NewDhis2Instance />} />
                         <Route path="/instances/:id/edit" element={<EditDhis2Instance />} />
                         <Route path="/instances/:id/details" element={<DeploymentDetails />} />
-                        <Route path="/instance/:id/details" element={<InstanceDetails />} />
                         <Route path="/groups" element={<GroupsList />} />
                         <Route path="/groups/:name" element={<GroupDetails />} />
                         <Route path="/users" element={<UsersList />} />

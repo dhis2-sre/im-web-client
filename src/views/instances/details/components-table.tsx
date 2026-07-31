@@ -34,23 +34,9 @@ export const ComponentsTable: FC<{
         <DataTableBody>
             {components.map((component) => (
                 <Fragment key={component.name}>
-                    <DataTableRow>
-                        <DataTableCell staticStyle>{component.name}</DataTableCell>
-                        <DataTableCell></DataTableCell>
-                        <DataTableCell>
-                            {component.supportedOperations.map((operation) => (
-                                <Tag key={operation}>{operation}</Tag>
-                            ))}
-                        </DataTableCell>
-                        <DataTableCell></DataTableCell>
-                        <DataTableCell></DataTableCell>
-                        <DataTableCell align="right">
-                            <ComponentOperationsMenu instanceId={instanceId} component={component} onChanged={onChanged} />
-                        </DataTableCell>
-                    </DataTableRow>
-                    {component.replicas.map((replica) => (
+                    {component.replicas.map((replica, index) => (
                         <DataTableRow key={replica.name}>
-                            <DataTableCell></DataTableCell>
+                            <DataTableCell staticStyle>{index === 0 ? component.name : ''}</DataTableCell>
                             <DataTableCell staticStyle>{replica.name}</DataTableCell>
                             <DataTableCell>
                                 <Tag {...getReplicaTagProps(replica)}>{replica.ready ? replica.phase : `${replica.phase} (not ready)`}</Tag>
@@ -59,17 +45,21 @@ export const ComponentsTable: FC<{
                             <DataTableCell>
                                 <Moment date={replica.createdAt} fromNow />
                             </DataTableCell>
-                            <DataTableCell></DataTableCell>
+                            <DataTableCell align="right">
+                                {index === 0 && <ComponentOperationsMenu instanceId={instanceId} component={component} onChanged={onChanged} />}
+                            </DataTableCell>
                         </DataTableRow>
                     ))}
                     {component.replicas.length === 0 && (
                         <DataTableRow>
-                            <DataTableCell></DataTableCell>
+                            <DataTableCell staticStyle>{component.name}</DataTableCell>
                             <DataTableCell>No replicas</DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
-                            <DataTableCell></DataTableCell>
+                            <DataTableCell align="right">
+                                <ComponentOperationsMenu instanceId={instanceId} component={component} onChanged={onChanged} />
+                            </DataTableCell>
                         </DataTableRow>
                     )}
                 </Fragment>

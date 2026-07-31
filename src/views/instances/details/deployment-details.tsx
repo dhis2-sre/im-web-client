@@ -7,6 +7,7 @@ import { DeploymentComponents } from './deployment-components.tsx'
 import styles from './deployment-details.module.css'
 import { DeploymentInstancesList } from './deployment-instances-list.tsx'
 import { DeploymentSummary } from './deployment-summary.tsx'
+import { ParametersSection } from './parameters-section.tsx'
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
@@ -44,6 +45,9 @@ export const DeploymentDetails: FC = () => {
                     )}
                     {deployment?.instances?.length > 0 && <DeploymentInstancesList deployment={deployment} refetch={refetch} loading={loading} />}
                     {deployment?.instances?.length > 0 && <DeploymentComponents deploymentId={deployment.id} />}
+                    {deployment?.instances?.map((instance) => (
+                        <ParametersSection key={instance.id} instance={instance} />
+                    ))}
                 </>
             )}
         </div>
