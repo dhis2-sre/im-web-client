@@ -17,8 +17,8 @@ import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { Heading, MomentExpiresFromNow } from '../../../components/index.ts'
 import { DeleteButton } from './delete-menu-button.tsx'
+import { DeploymentComponentTags } from './deployment-component-tags.tsx'
 import useDeployments from './filter-deployments.tsx'
-import InstanceTag from './instance-tag.tsx'
 import styles from './instances-list.module.css'
 import { OpenButton } from './open-button.tsx'
 export const InstancesList: FC = () => {
@@ -74,9 +74,7 @@ export const InstancesList: FC = () => {
                                 >
                                     <DataTableCell>{deployment.name}</DataTableCell>
                                     <DataTableCell>
-                                        {deployment.instances?.map(({ stackName, id }) => (
-                                            <InstanceTag key={stackName} instanceId={id} stackName={stackName} />
-                                        ))}
+                                        <DeploymentComponentTags deploymentId={deployment.id} />
                                     </DataTableCell>
                                     <DataTableCell>
                                         <Moment date={deployment.createdAt} fromNow />
