@@ -1,0 +1,59 @@
+# Local development on top of docker-compose.yml: the image built from source, published ports, and
+# the development and test services. .envrc puts this in COMPOSE_FILE; servers pass explicit -f
+# flags and never see it.
+services:
+  prod:
+    build: .
+    ports:
+      - "8080:8080"
+
+  dev:
+    build:
+      context: .
+      target: builder
+    environment:
+      API_URL: ${API_URL}
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: yarn start
+    ports:
+      - "3000:3000"
+
+  e2e-test:
+    image: mcr.microsoft.com/playwright:v1.60.0-noble
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "
+        set -e
+        corepack enable
+        corepack prepare yarn@stable --activate
+        yarn install --immutable
+        yarn playwright test
+      "
+    network_mode: host
+    volumes:
+      - ./:/e2e
+    working_dir: /e2e
+    environment:
+      CI: "true"
+      USER_EMAIL: ${USER_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
+      API_URL: ${API_URL}
+      VITE_API_URL: ${API_URL}
+
+  test:
+    build:
+      context: .
+      target: builder
+    environment:
+      API_URL: ${API_URL}
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: sh -c "yarn install --frozen-lockfile && yarn test -- --watchAll=false"
