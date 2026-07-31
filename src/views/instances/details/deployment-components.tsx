@@ -11,21 +11,6 @@ export const DeploymentComponents: FC<{ deploymentId: number }> = ({ deploymentI
         { useCache: false, autoCatch: true }
     )
 
-    if (error) {
-        return null
-    }
-
-    /* The listing queries the cluster for every component of every instance, so it is slow by
-     * nature; show that something is happening rather than nothing. */
-    if (loading && !instances) {
-        return (
-            <div className={styles.loading} data-test="deployment-components-loading">
-                <CircularLoader small />
-                <span>Fetching components from the cluster...</span>
-            </div>
-        )
-    }
-
     return (
         <>
             <div className={styles.header}>
@@ -34,6 +19,15 @@ export const DeploymentComponents: FC<{ deploymentId: number }> = ({ deploymentI
                     Refresh
                 </Button>
             </div>
+            {/* The listing queries the cluster for every component of every instance, so it is slow
+             * by nature; show that something is happening rather than nothing. */}
+            {loading && !instances && (
+                <div className={styles.loading} data-test="deployment-components-loading">
+                    <CircularLoader small />
+                    <span>Fetching components from the cluster...</span>
+                </div>
+            )}
+            {error && !loading && <p className={styles.empty}>Could not load components, is the backend up to date?</p>}
             {(instances ?? []).map((instance) => (
                 <div key={instance.instanceId} className={styles.instanceComponents}>
                     <h4 className={styles.instanceTitle}>
