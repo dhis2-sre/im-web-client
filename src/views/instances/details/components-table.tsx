@@ -4,7 +4,6 @@ import type { FC } from 'react'
 import Moment from 'react-moment'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { ComponentOperationsMenu } from './component-operations-menu.tsx'
-import { ReplicaRestartButton } from './replica-restart-button.tsx'
 
 const getReplicaTagProps = (replica: InstanceComponentReplica) => {
     if (replica.phase === 'Failed') {
@@ -24,12 +23,11 @@ export const ComponentsTable: FC<{
     <DataTable dataTest="instance-components">
         <DataTableHead>
             <DataTableRow>
-                <DataTableColumnHeader>Component</DataTableColumnHeader>
+                <DataTableColumnHeader>Name</DataTableColumnHeader>
                 <DataTableColumnHeader>Replica</DataTableColumnHeader>
                 <DataTableColumnHeader>Status</DataTableColumnHeader>
                 <DataTableColumnHeader>Restarts</DataTableColumnHeader>
                 <DataTableColumnHeader>Created</DataTableColumnHeader>
-                <DataTableColumnHeader></DataTableColumnHeader>
                 <DataTableColumnHeader></DataTableColumnHeader>
             </DataTableRow>
         </DataTableHead>
@@ -48,11 +46,6 @@ export const ComponentsTable: FC<{
                                 <Moment date={replica.createdAt} fromNow />
                             </DataTableCell>
                             <DataTableCell align="right">
-                                {component.supportedOperations.includes('restartReplica') && (
-                                    <ReplicaRestartButton instanceId={instanceId} componentName={component.name} replicaName={replica.name} onChanged={onChanged} />
-                                )}
-                            </DataTableCell>
-                            <DataTableCell align="right">
                                 {index === 0 && <ComponentOperationsMenu instanceId={instanceId} component={component} onChanged={onChanged} />}
                             </DataTableCell>
                         </DataTableRow>
@@ -61,7 +54,6 @@ export const ComponentsTable: FC<{
                         <DataTableRow>
                             <DataTableCell>{component.name}</DataTableCell>
                             <DataTableCell>No replicas</DataTableCell>
-                            <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
