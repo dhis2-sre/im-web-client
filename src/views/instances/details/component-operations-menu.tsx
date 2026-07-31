@@ -2,20 +2,13 @@ import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconMore24, Menu, MenuItem, Popover } from '@dhis2/ui'
 import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
-import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent } from '../../../types/index.ts'
 
-type RestartTarget = {
-    selector: string
-}
-
-const describeTarget = (target: RestartTarget) => `component "${target.selector}"`
-
 /* Operations the menu knows how to perform; every other advertised operation is shown disabled so
- * capabilities stay visible until they get an action here. restartReplica is excluded because it
- * is actioned per replica row, not from this menu. */
-const actionableOperations = ['restart', 'restartReplica']
+ * capabilities stay visible until they get an action here. restartReplica is deliberately not
+ * surfaced in the UI, the API keeps it for scripting. */
+const handledOperations = ['restart', 'restartReplica']
 
 export const ComponentOperationsMenu: FC<{
     instanceId: number
@@ -24,7 +17,6 @@ export const ComponentOperationsMenu: FC<{
 }> = ({ instanceId, component, onChanged }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
-    const [restartTarget, setRestartTarget] = useState<RestartTarget | null>(null)
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -39,34 +31,20 @@ export const ComponentOperationsMenu: FC<{
         { manual: true, autoCancel: false }
     )
 
-    const confirmTarget = (target: RestartTarget) => {
+    const onRestart = useCallback(async () => {
         setOpen(false)
-        setRestartTarget(target)
-    }
-
-    const onConfirmRestart = useCallback(async () => {
-        const target = restartTarget
-        setRestartTarget(null)
-        if (!target) {
-            return
-        }
         try {
-            await restart({ params: target })
-            showAlert({ message: `Successfully requested restart of ${describeTarget(target)}`, isCritical: false })
+            await restart({ params: { selector: component.name } })
+            showAlert({ message: `Successfully requested restart of component "${component.name}"`, isCritical: false })
             onChanged()
         } catch (restartError) {
-            showAlert({ message: `There was an error when restarting ${describeTarget(target)}`, isCritical: true })
+            showAlert({ message: `There was an error when restarting component "${component.name}"`, isCritical: true })
             console.error(restartError)
         }
-    }, [restartTarget, restart, showAlert, onChanged])
+    }, [restart, component.name, showAlert, onChanged])
 
     return (
         <>
-            {restartTarget && (
-                <ConfirmationModal onCancel={() => setRestartTarget(null)} onConfirm={onConfirmRestart}>
-                    Are you sure you want to restart {describeTarget(restartTarget)}?
-                </ConfirmationModal>
-            )}
             <span ref={anchor}>
                 <Button
                     small
@@ -80,9 +58,9 @@ export const ComponentOperationsMenu: FC<{
             {open && (
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
-                        {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={() => confirmTarget({ selector: component.name })} />}
+                        {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={onRestart} />}
                         {component.supportedOperations
-                            .filter((operation) => !actionableOperations.includes(operation))
+                            .filter((operation) => !handledOperations.includes(operation))
                             .map((operation) => (
                                 <MenuItem dense key={operation} label={operation} disabled />
                             ))}
