@@ -1,59 +1,11 @@
+# The deployment base: no published ports and nothing built from source, so a server can use it
+# verbatim. .envrc adds docker-compose.dev.yml through COMPOSE_FILE for local use.
+#
+# dhis2-infrastructure runs this as its own compose project per environment, alongside the im-manager
+# one, both joined to a shared ingress network.
 services:
-    prod:
-        image: dhis2/im-web-client:${IMAGE_TAG:-latest}
-        build: .
-        environment:
-            API_URL: ${API_URL}
-        ports:
-            - "8080:8080"
-
-    dev:
-        build:
-            context: .
-            target: builder
-        environment:
-            API_URL: ${API_URL}
-        stdin_open: true
-        tty: true
-        volumes:
-            - .:/src
-        working_dir: /src
-        command: yarn start
-        ports:
-            - "3000:3000"
-
-    e2e-test:
-        image: mcr.microsoft.com/playwright:v1.60.0-noble
-        stdin_open: true
-        tty: true
-        command: >
-            sh -c "
-              set -e
-              corepack enable
-              corepack prepare yarn@stable --activate
-              yarn install --immutable
-              yarn playwright test
-            "
-        network_mode: host
-        volumes:
-            - ./:/e2e
-        working_dir: /e2e
-        environment:
-            CI: "true"
-            USER_EMAIL: ${USER_EMAIL}
-            USER_PASSWORD: ${USER_PASSWORD}
-            API_URL: ${API_URL}
-            VITE_API_URL: ${API_URL}
-
-    test:
-        build:
-            context: .
-            target: builder
-        environment:
-            API_URL: ${API_URL}
-        stdin_open: true
-        tty: true
-        volumes:
-            - .:/src
-        working_dir: /src
-        command: sh -c "yarn install --frozen-lockfile && yarn test -- --watchAll=false"
+  prod:
+    image: dhis2/im-web-client:${IMAGE_TAG:-latest}
+    # Substituted into the built assets by the entrypoint, so one image serves every environment.
+    environment:
+      API_URL: ${API_URL}
