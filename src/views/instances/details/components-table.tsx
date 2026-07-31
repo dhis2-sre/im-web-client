@@ -36,8 +36,8 @@ export const ComponentsTable: FC<{
                 <Fragment key={component.name}>
                     {component.replicas.map((replica, index) => (
                         <DataTableRow key={replica.name}>
-                            <DataTableCell staticStyle>{index === 0 ? component.name : ''}</DataTableCell>
-                            <DataTableCell staticStyle>{replica.name}</DataTableCell>
+                            <DataTableCell>{index === 0 ? component.name : ''}</DataTableCell>
+                            <DataTableCell>{replica.name}</DataTableCell>
                             <DataTableCell>
                                 <Tag {...getReplicaTagProps(replica)}>{replica.ready ? replica.phase : `${replica.phase} (not ready)`}</Tag>
                             </DataTableCell>
@@ -52,7 +52,7 @@ export const ComponentsTable: FC<{
                     ))}
                     {component.replicas.length === 0 && (
                         <DataTableRow>
-                            <DataTableCell staticStyle>{component.name}</DataTableCell>
+                            <DataTableCell>{component.name}</DataTableCell>
                             <DataTableCell>No replicas</DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
