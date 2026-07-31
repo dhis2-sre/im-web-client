@@ -8,13 +8,13 @@ import { InstanceComponent } from '../../../types/index.ts'
 
 type RestartTarget = {
     selector: string
-    replica?: string
 }
 
-const describeTarget = (target: RestartTarget) => (target.replica ? `replica "${target.replica}" of component "${target.selector}"` : `component "${target.selector}"`)
+const describeTarget = (target: RestartTarget) => `component "${target.selector}"`
 
 /* Operations the menu knows how to perform; every other advertised operation is shown disabled so
- * capabilities stay visible until they get an action here. */
+ * capabilities stay visible until they get an action here. restartReplica is excluded because it
+ * is actioned per replica row, not from this menu. */
 const actionableOperations = ['restart', 'restartReplica']
 
 export const ComponentOperationsMenu: FC<{
@@ -81,15 +81,6 @@ export const ComponentOperationsMenu: FC<{
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={() => confirmTarget({ selector: component.name })} />}
-                        {component.supportedOperations.includes('restartReplica') &&
-                            component.replicas.map((replica) => (
-                                <MenuItem
-                                    dense
-                                    key={replica.name}
-                                    label={`Restart replica ${replica.name}`}
-                                    onClick={() => confirmTarget({ selector: component.name, replica: replica.name })}
-                                />
-                            ))}
                         {component.supportedOperations
                             .filter((operation) => !actionableOperations.includes(operation))
                             .map((operation) => (
