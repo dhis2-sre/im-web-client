@@ -21,3 +21,11 @@
     padding: 8px 0;
     color: rgba(0, 0, 0, 0.6);
 }
+
+.instanceComponents {
+    margin-bottom: 16px;
+}
+
+.instanceTitle {
+    margin: 8px 0;
+}

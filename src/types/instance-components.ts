@@ -14,3 +14,10 @@ export type InstanceComponent = {
     supportedOperations: string[]
     replicas: InstanceComponentReplica[]
 }
+
+export type DeploymentInstanceComponents = {
+    instanceId: number
+    instanceName: string
+    stackName: string
+    components: InstanceComponent[]
+}
