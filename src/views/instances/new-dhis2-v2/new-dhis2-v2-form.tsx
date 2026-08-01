@@ -11,6 +11,7 @@ import { GroupSelect } from '../new-dhis2/fields/group-select.tsx'
 import { NameInput } from '../new-dhis2/fields/name-input.tsx'
 import { PublicCheckbox } from '../new-dhis2/fields/public-checkbox.tsx'
 import { TtlSelect } from '../new-dhis2/fields/ttl-select.tsx'
+import { ParameterFieldset } from '../new-dhis2/parameter-fieldset.tsx'
 import styles from '../new-dhis2/styles.module.css'
 import { GroupFieldset } from './group-fieldset.tsx'
 
@@ -90,6 +91,7 @@ export const NewDhis2V2Form: FC<{
                         sensitiveParameters={sensitiveParameters}
                     />
                 ))}
+            {!error && !loading && <ParameterFieldset stackId="pgadmin" displayName="PgAdmin" optional />}
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">
                     {submitError}

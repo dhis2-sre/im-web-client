@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { SaveDeploymentRequest, SaveInstanceRequest } from '../types/index.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 
-/* Creates a deployment with a single instance of the given stack and deploys it. Only the listed
- * parameters are sent, so values entered in sections that a visibility condition later hid never
- * reach the backend. */
-export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[]) => {
+/* Creates a deployment with an instance of the given stack plus any opted-in companion stacks and
+ * deploys it. Only the listed parameters are sent for the main stack, so values entered in sections
+ * that a visibility condition later hid never reach the backend. A companion is included when the
+ * form's include_<stack> checkbox is set; confirm-password helper fields are never sent. */
+export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[], companionStacks: string[] = []) => {
     const navigate = useNavigate()
     const [, executePost] = useAuthAxios(
         {
@@ -40,6 +41,22 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
 
                 const instancePayload: SaveInstanceRequest = { stackName, parameters, public: values.public }
                 await executePost({ url: `/deployments/${deployment.id}/instance`, data: instancePayload })
+
+                for (const companion of companionStacks) {
+                    if (!values[`include_${companion}`]) {
+                        continue
+                    }
+                    const companionValues: AnyObject = values[companion] ?? {}
+                    const companionParameters = Object.entries(companionValues).reduce<Record<string, { value: string }>>((payload, [parameterName, value]) => {
+                        if (value && !parameterName.endsWith('CONFIRM_PASSWORD')) {
+                            payload[parameterName] = { value: String(value) }
+                        }
+                        return payload
+                    }, {})
+                    const companionPayload: SaveInstanceRequest = { stackName: companion, parameters: companionParameters }
+                    await executePost({ url: `/deployments/${deployment.id}/instance`, data: companionPayload })
+                }
+
                 await executePost({ url: `/deployments/${deployment.id}/deploy` })
                 navigate(`/instances/${deployment.id}/details`)
                 return undefined
@@ -48,6 +65,6 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 return { [FORM_ERROR]: error instanceof Error ? error.message : 'Could not create the deployment' }
             }
         },
-        [executePost, navigate, stackName, getIncludedParameters]
+        [executePost, navigate, stackName, getIncludedParameters, companionStacks]
     )
 }
