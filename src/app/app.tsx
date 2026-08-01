@@ -19,6 +19,7 @@ import {
     GroupsList,
     InstancesList,
     NewDhis2Instance,
+    NewDhis2V2Instance,
     NotFound,
     RequestPasswordReset,
     ResetPassword,
@@ -62,6 +63,7 @@ if (location.hostname === 'play.dhis2.org') {
                         <Route path="/clusters" element={<ClustersList />} />
                         <Route path="/clusters/:id" element={<ClusterDetails />} />
                         <Route path="/instances/new" element={<NewDhis2Instance />} />
+                        <Route path="/instances/new-v2" element={<NewDhis2V2Instance />} />
                         <Route path="/instances/:id/edit" element={<EditDhis2Instance />} />
                         <Route path="/instances/:id/details" element={<DeploymentDetails />} />
                         <Route path="/groups" element={<GroupsList />} />

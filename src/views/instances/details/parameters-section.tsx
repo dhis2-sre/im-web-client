@@ -42,7 +42,7 @@ export const ParametersSection: FC<{ instance: DeploymentInstance }> = ({ instan
                                 <DataTableBody>
                                     {Object.keys(instance.parameters).map((name) => (
                                         <DataTableRow key={name}>
-                                            <DataTableCell staticStyle>{name}</DataTableCell>
+                                            <DataTableCell staticStyle>{stackParameters[name]?.displayName || name}</DataTableCell>
                                             <DataTableCell staticStyle>
                                                 {stackParameters[name]?.sensitive && (
                                                     <span>
