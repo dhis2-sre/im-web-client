@@ -31,6 +31,9 @@ export const InstancesList: FC = () => {
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>
+                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new-v2')}>
+                    New instance (v2)
+                </Button>
                 <Checkbox checked={showOnlyMyInstances} label="Show only my instances" onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)} />
             </Heading>
 

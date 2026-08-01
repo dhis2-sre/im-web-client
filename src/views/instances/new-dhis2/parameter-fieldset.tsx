@@ -6,7 +6,7 @@ import { useDhis2StackParameters } from '../../../hooks/index.ts'
 import { ParameterField } from './fields/parameter-field.tsx'
 import styles from './styles.module.css'
 
-export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin' | 'minio' | 'chap-core' | 'chap-db' | 'chap-valkey' | 'chap-worker'
+export type Dhis2StackName = 'dhis2-core' | 'dhis2-db' | 'pgadmin' | 'minio' | 'chap-core' | 'chap-db' | 'chap-valkey' | 'chap-worker' | 'dhis2-v2'
 export type Dhis2PrimaryField =
     | 'IMAGE_TAG'
     | 'IMAGE_REPOSITORY'
