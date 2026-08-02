@@ -21,3 +21,11 @@ export type DeploymentInstanceComponents = {
     stackName: string
     components: InstanceComponent[]
 }
+
+export type ComponentStatusEventData = {
+    deploymentId: number
+    instanceId: number
+    component: string
+    replica: InstanceComponentReplica
+    deleted?: boolean
+}

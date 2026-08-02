@@ -1,7 +1,7 @@
 import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useAuthAxios } from '../../../hooks/index.ts'
-import { DeploymentInstanceComponents, InstanceComponent } from '../../../types/index.ts'
+import { useLiveComponents } from '../../../hooks/index.ts'
+import { InstanceComponent } from '../../../types/index.ts'
 import styles from './deployment-component-tags.module.css'
 
 const getComponentTagProps = (component: InstanceComponent) => {
@@ -20,10 +20,7 @@ const getComponentTagProps = (component: InstanceComponent) => {
 /* One tag per component currently associated with the deployment, across all its instances,
  * colored by the state of the component's replicas in the cluster. */
 export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deploymentId }) => {
-    const [{ data: instances, loading, error }] = useAuthAxios<DeploymentInstanceComponents[]>(
-        { url: `/deployments/${deploymentId}/components` },
-        { useCache: false, autoCatch: true }
-    )
+    const { instances, loading, error } = useLiveComponents(deploymentId)
 
     if (loading && !instances) {
         return <CircularLoader extrasmall />

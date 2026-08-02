@@ -1,20 +1,18 @@
 import { Button, CircularLoader } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useAuthAxios } from '../../../hooks/index.ts'
-import { DeploymentInstanceComponents } from '../../../types/index.ts'
+import { useLiveComponents } from '../../../hooks/index.ts'
 import { ComponentsTable } from './components-table.tsx'
 import styles from './instance-components.module.css'
 
 export const DeploymentComponents: FC<{ deploymentId: number }> = ({ deploymentId }) => {
-    const [{ data: instances, loading, error }, refetch] = useAuthAxios<DeploymentInstanceComponents[]>(
-        { url: `/deployments/${deploymentId}/components` },
-        { useCache: false, autoCatch: true }
-    )
+    const { instances, loading, error, refetch } = useLiveComponents(deploymentId)
 
     return (
         <>
             <div className={styles.header}>
                 <h3>Components</h3>
+                {/* Redundant once the backend pushes component-status events; kept until that is
+                 * deployed so the page never lacks both live updates and a manual refresh. */}
                 <Button small onClick={() => refetch()} loading={loading} dataTest="refresh-components-button">
                     Refresh
                 </Button>
