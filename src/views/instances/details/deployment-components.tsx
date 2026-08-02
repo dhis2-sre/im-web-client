@@ -30,7 +30,7 @@ export const DeploymentComponents: FC<{ deploymentId: number }> = ({ deploymentI
             {error && !loading && <p className={styles.empty}>Could not load components, is the backend up to date?</p>}
             {(instances ?? []).map((instance) => (
                 <div key={instance.instanceId} className={styles.instanceComponents}>
-                    <ComponentsTable instanceId={instance.instanceId} components={instance.components} onChanged={refetch} />
+                    <ComponentsTable instanceId={instance.instanceId} stackName={instance.stackName} components={instance.components} onChanged={refetch} />
                 </div>
             ))}
         </>
