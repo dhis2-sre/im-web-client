@@ -17,9 +17,10 @@ const getReplicaTagProps = (replica: InstanceComponentReplica) => {
 
 export const ComponentsTable: FC<{
     instanceId: number
+    stackName: string
     components: InstanceComponent[]
     onChanged: () => void
-}> = ({ instanceId, components, onChanged }) => (
+}> = ({ instanceId, stackName, components, onChanged }) => (
     <DataTable dataTest="instance-components">
         <DataTableHead>
             <DataTableRow>
@@ -46,7 +47,7 @@ export const ComponentsTable: FC<{
                                 <Moment date={replica.createdAt} fromNow />
                             </DataTableCell>
                             <DataTableCell align="right">
-                                {index === 0 && <ComponentOperationsMenu instanceId={instanceId} component={component} onChanged={onChanged} />}
+                                {index === 0 && <ComponentOperationsMenu instanceId={instanceId} stackName={stackName} component={component} onChanged={onChanged} />}
                             </DataTableCell>
                         </DataTableRow>
                     ))}
@@ -58,7 +59,7 @@ export const ComponentsTable: FC<{
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell align="right">
-                                <ComponentOperationsMenu instanceId={instanceId} component={component} onChanged={onChanged} />
+                                <ComponentOperationsMenu instanceId={instanceId} stackName={stackName} component={component} onChanged={onChanged} />
                             </DataTableCell>
                         </DataTableRow>
                     )}

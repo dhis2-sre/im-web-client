@@ -4,19 +4,22 @@ import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent } from '../../../types/index.ts'
+import { SaveAsModal } from './save-as-modal.tsx'
 
 /* Operations the menu knows how to perform; every other advertised operation is shown disabled so
  * capabilities stay visible until they get an action here. restartReplica is deliberately not
  * surfaced in the UI, the API keeps it for scripting. */
-const handledOperations = ['restart', 'restartReplica']
+const handledOperations = ['restart', 'restartReplica', 'databaseSave']
 
 export const ComponentOperationsMenu: FC<{
     instanceId: number
+    stackName: string
     component: InstanceComponent
     onChanged: () => void
-}> = ({ instanceId, component, onChanged }) => {
+}> = ({ instanceId, stackName, component, onChanged }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
+    const [showSaveAs, setShowSaveAs] = useState(false)
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -45,6 +48,7 @@ export const ComponentOperationsMenu: FC<{
 
     return (
         <>
+            {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
             <span ref={anchor}>
                 <Button
                     small
@@ -59,6 +63,16 @@ export const ComponentOperationsMenu: FC<{
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={onRestart} />}
+                        {component.supportedOperations.includes('databaseSave') && (
+                            <MenuItem
+                                dense
+                                label="Save database as"
+                                onClick={() => {
+                                    setOpen(false)
+                                    setShowSaveAs(true)
+                                }}
+                            />
+                        )}
                         {component.supportedOperations
                             .filter((operation) => !handledOperations.includes(operation))
                             .map((operation) => (
