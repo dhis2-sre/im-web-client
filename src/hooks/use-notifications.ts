@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ComponentStatusEventData } from '../types/index.ts'
 import { baseURL, useAuthAxios } from './use-auth-axios.ts'
 
 export type DatabaseSaveData = {
@@ -21,6 +22,13 @@ export type Notification = {
 
 export type NotificationKind = 'database-save' | 'filestore-backup'
 
+/* Transient component-status events never become notifications; seq makes every event a fresh
+ * object so effects fire even when consecutive payloads are identical. */
+export type ComponentStatusEvent = {
+    seq: number
+    data: ComponentStatusEventData
+}
+
 export type SseEvent = {
     kind: NotificationKind
     data: DatabaseSaveData
@@ -29,6 +37,8 @@ export type SseEvent = {
 export const useNotifications = () => {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [lastSseEvent, setLastSseEvent] = useState<SseEvent | null>(null)
+    const [lastComponentStatus, setLastComponentStatus] = useState<ComponentStatusEvent | null>(null)
+    const componentStatusSeq = useRef(0)
 
     const [, fetchNotifications] = useAuthAxios<Notification[]>('/notifications', { manual: true, autoCatch: true })
     const [, executeMarkRead] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true })
@@ -70,6 +80,15 @@ export const useNotifications = () => {
 
         es.addEventListener('database-save', makeHandler('database-save'))
         es.addEventListener('filestore-backup', makeHandler('filestore-backup'))
+        es.addEventListener('component-status', (e: MessageEvent) => {
+            try {
+                const data = JSON.parse(e.data) as ComponentStatusEventData
+                componentStatusSeq.current += 1
+                setLastComponentStatus({ seq: componentStatusSeq.current, data })
+            } catch (err) {
+                console.error('[notifications] failed to parse component-status event', { raw: e.data, err })
+            }
+        })
         return () => es.close()
     }, [])
 
@@ -88,5 +107,5 @@ export const useNotifications = () => {
 
     const unreadCount = notifications.filter((n) => !n.read).length
 
-    return { notifications, unreadCount, lastSseEvent, markRead, markAllRead }
+    return { notifications, unreadCount, lastSseEvent, lastComponentStatus, markRead, markAllRead }
 }
