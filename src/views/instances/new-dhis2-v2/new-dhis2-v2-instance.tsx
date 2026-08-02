@@ -10,6 +10,8 @@ import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-
 import styles from '../new-dhis2/styles.module.css'
 import { NewDhis2V2Form, STACK_ID } from './new-dhis2-v2-form.tsx'
 
+const COMPANION_STACKS = ['pgadmin']
+
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
     const navigateToInstanceList = useCallback(() => {
@@ -26,7 +28,7 @@ export const NewDhis2V2Instance: FC = () => {
         },
         [groups]
     )
-    const createDeployment = useStackDeploymentCreation(STACK_ID, getIncludedParameters)
+    const createDeployment = useStackDeploymentCreation(STACK_ID, getIncludedParameters, COMPANION_STACKS)
 
     return (
         <>
