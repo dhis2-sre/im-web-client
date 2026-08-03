@@ -2,7 +2,7 @@ import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTab
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
 import Moment from 'react-moment'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/generated/models/Database.ts'
@@ -52,13 +52,14 @@ export const DatabaseDetails = () => {
             ) : undefined,
         },
         {
-            name: 'Filestore ID',
+            name: 'Files',
             value: db.filestoreId ? (
-                <span onClick={() => navigate(`/databases/${db.filestoreId}`)} style={{ cursor: 'pointer', color: 'var(--colors-blue600)', textDecoration: 'underline' }}>
-                    {db.filestore?.name || db.filestoreId}
-                </span>
+                <Link to={`/databases/${db.filestoreId}`}>
+                    {db.filestore?.name ?? `Filestore ${db.filestoreId}`}
+                    {db.filestore?.size ? ` (${prettyBytes(db.filestore.size)})` : ''}
+                </Link>
             ) : (
-                '-'
+                'None saved with this database'
             ),
         },
         { name: 'User', value: db.user?.email },
