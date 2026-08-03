@@ -2809,7 +2809,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/app-service-alerts@npm:3.17.0, @dhis2/app-service-alerts@npm:^3.17.0":
+"@dhis2/app-service-alerts@npm:3.17.0":
   version: 3.17.0
   resolution: "@dhis2/app-service-alerts@npm:3.17.0"
   dependencies:
@@ -2818,6 +2818,18 @@ __metadata:
     react: ^16.8.6 || ^18
     react-dom: ^16.8.6 || ^18
   checksum: 10c0/2cb38441208b1c633681a7cf730c5f2f580de6db035cbd0911d556fdec8821b8f3166434233c88d7b71e5115822a60ee378686167ba7bd812c5e6c1934a46201
+  languageName: node
+  linkType: hard
+
+"@dhis2/app-service-alerts@npm:^3.17.3":
+  version: 3.17.3
+  resolution: "@dhis2/app-service-alerts@npm:3.17.3"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: ^16.8.6 || ^18
+    react-dom: ^16.8.6 || ^18
+  checksum: 10c0/a7ae94452acf0b07b24bc45f995b2885073e1ceb866bb0e1c0a791ee800f930cb4af003739038a8c43dbc6518b553253ae2b36634ee72ad38bfa1429d7d0b3f4
   languageName: node
   linkType: hard
 
@@ -6995,7 +7007,7 @@ __metadata:
     "@commitlint/cli": "npm:^21.0.1"
     "@commitlint/config-conventional": "npm:^21.0.1"
     "@dhis2/app-runtime": "npm:^3.17.0"
-    "@dhis2/app-service-alerts": "npm:^3.17.0"
+    "@dhis2/app-service-alerts": "npm:^3.17.3"
     "@dhis2/d2-i18n": "npm:^1.2.0"
     "@dhis2/data-engine": "npm:^3.17.0"
     "@dhis2/ui": "npm:^10.16.0"
