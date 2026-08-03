@@ -4,3 +4,9 @@
 .datatable {
     margin-bottom: var(--spacers-dp24);
 }
+
+.groupCondition {
+    margin-left: var(--spacers-dp8);
+    color: var(--colors-grey700);
+    font-weight: 400;
+}
