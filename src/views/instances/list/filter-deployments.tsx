@@ -28,19 +28,34 @@ const useDeployments = () => {
         [_setShowOnlyMyInstances]
     )
 
+    const [searchTerm, setSearchTerm] = useState('')
+
     const { currentUser } = useContext(AuthContext)
 
     const filteredData = useMemo(() => {
-        let filteredGroups = data?.map((group) => ({
-            ...group,
-            deployments: group.deployments.filter((deployment) => deployment.user.id === currentUser.id),
-        }))
-        if (filteredGroups) {
-            filteredGroups = filteredGroups.filter((group) => group.deployments.length > 0)
+        let groups = showOnlyMyInstances
+            ? data
+                  ?.map((group) => ({
+                      ...group,
+                      deployments: group.deployments.filter((deployment) => deployment.user.id === currentUser.id),
+                  }))
+                  ?.filter((group) => group.deployments.length > 0)
+            : data
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase()
+            groups = groups
+                ?.map((group) => ({
+                    ...group,
+                    deployments: group.deployments.filter(
+                        (d) => d.name?.toLowerCase().includes(term) || d.description?.toLowerCase().includes(term) || d.user?.email?.toLowerCase().includes(term)
+                    ),
+                }))
+                ?.filter((group) => group.deployments.length > 0)
         }
 
-        return showOnlyMyInstances ? filteredGroups : data
-    }, [data, currentUser, showOnlyMyInstances])
+        return groups
+    }, [data, currentUser, showOnlyMyInstances, searchTerm])
 
     return {
         data: filteredData,
@@ -49,6 +64,8 @@ const useDeployments = () => {
         refetch,
         showOnlyMyInstances,
         setShowOnlyMyInstances,
+        searchTerm,
+        setSearchTerm,
     }
 }
 
