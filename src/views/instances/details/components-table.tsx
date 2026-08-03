@@ -24,9 +24,9 @@ export const ComponentsTable: FC<{
     <DataTable dataTest="instance-components">
         <DataTableHead>
             <DataTableRow>
-                <DataTableColumnHeader>Name</DataTableColumnHeader>
-                <DataTableColumnHeader>Replica</DataTableColumnHeader>
                 <DataTableColumnHeader>Status</DataTableColumnHeader>
+                <DataTableColumnHeader>Component</DataTableColumnHeader>
+                <DataTableColumnHeader>Replica</DataTableColumnHeader>
                 <DataTableColumnHeader>Restarts</DataTableColumnHeader>
                 <DataTableColumnHeader>Created</DataTableColumnHeader>
                 <DataTableColumnHeader></DataTableColumnHeader>
@@ -37,11 +37,11 @@ export const ComponentsTable: FC<{
                 <Fragment key={component.name}>
                     {component.replicas.map((replica, index) => (
                         <DataTableRow key={replica.name}>
-                            <DataTableCell>{index === 0 ? component.name : ''}</DataTableCell>
-                            <DataTableCell>{replica.name}</DataTableCell>
                             <DataTableCell>
                                 <Tag {...getReplicaTagProps(replica)}>{replica.ready ? replica.phase : `${replica.phase} (not ready)`}</Tag>
                             </DataTableCell>
+                            <DataTableCell>{index === 0 ? component.name : ''}</DataTableCell>
+                            <DataTableCell>{replica.name}</DataTableCell>
                             <DataTableCell>{replica.restarts}</DataTableCell>
                             <DataTableCell>
                                 <Moment date={replica.createdAt} fromNow />
@@ -53,9 +53,9 @@ export const ComponentsTable: FC<{
                     ))}
                     {component.replicas.length === 0 && (
                         <DataTableRow>
+                            <DataTableCell></DataTableCell>
                             <DataTableCell>{component.name}</DataTableCell>
                             <DataTableCell>No replicas</DataTableCell>
-                            <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell></DataTableCell>
                             <DataTableCell align="right">
