@@ -60,7 +60,7 @@
     "devDependencies": {
         "@babel/core": "^8.0.1",
         "@babel/preset-env": "^8.0.2",
-        "@babel/preset-react": "^8.0.0",
+        "@babel/preset-react": "^8.0.1",
         "@eslint/compat": "^2.0.0",
         "@eslint/js": "^10.0.0",
         "@ls-lint/ls-lint": "^2.3.1",
