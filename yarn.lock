@@ -2923,10 +2923,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dhis2/data-engine@npm:^3.17.0":
-  version: 3.17.0
-  resolution: "@dhis2/data-engine@npm:3.17.0"
-  checksum: 10c0/e336b50b00a6f92ef8d443000724a591b9205ae9c3562f47471696ae04fee061b1736cbf1b31980324565130dac878c4836e7bd3315499ac21da6fb7b46d0a04
+"@dhis2/data-engine@npm:^3.17.3":
+  version: 3.17.3
+  resolution: "@dhis2/data-engine@npm:3.17.3"
+  checksum: 10c0/8384c2233542f7f45b64629f5e5afcbbd531e868d56a8cd8aff7e12d52995cf61baf02dd95ceba8e43c2c7ba652a0741c210393ea65e369ee0240003039d7922
   languageName: node
   linkType: hard
 
@@ -7058,7 +7058,7 @@ __metadata:
     "@dhis2/app-runtime": "npm:^3.17.0"
     "@dhis2/app-service-alerts": "npm:^3.17.3"
     "@dhis2/d2-i18n": "npm:^1.2.0"
-    "@dhis2/data-engine": "npm:^3.17.0"
+    "@dhis2/data-engine": "npm:^3.17.3"
     "@dhis2/ui": "npm:^10.17.0"
     "@eslint/compat": "npm:^2.0.0"
     "@eslint/js": "npm:^10.0.0"
