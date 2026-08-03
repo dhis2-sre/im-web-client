@@ -12,3 +12,10 @@ updates:
           interval: "daily"
       pull-request-branch-name:
           separator: "-"
+      groups:
+          react:
+              patterns:
+                  - "react"
+                  - "react-dom"
+                  - "@types/react"
+                  - "@types/react-dom"
