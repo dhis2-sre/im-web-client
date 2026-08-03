@@ -5,7 +5,7 @@ import type { FC } from 'react'
 import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { DeploymentInstance } from '../../../types/index.ts'
-import { AsyncActionProps } from './actions-dropdown-menu.tsx'
+import { AsyncActionProps } from './action-types.ts'
 
 export const RestartMenuItem: FC<AsyncActionProps> = ({ instanceId, onStart, onComplete, stackName }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)

@@ -1,7 +1,7 @@
 import { MenuItem, IconSave16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import { AsyncActionProps } from './actions-dropdown-menu.tsx'
+import { AsyncActionProps } from './action-types.ts'
 import { SaveAsModal } from './save-as-modal.tsx'
 
 export const SaveAsMenuItem: FC<AsyncActionProps> = ({ instanceId, stackName, onStart, onComplete }) => {
