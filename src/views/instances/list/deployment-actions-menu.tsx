@@ -4,20 +4,12 @@ import type { FC } from 'react'
 import { STACK_NAMES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance } from '../../../types/index.ts'
 import { OnActionCompletFn } from '../details/action-types.ts'
-import { LogMenuItem } from '../details/log-menu-item.tsx'
-import { ResetMenuItem } from '../details/reset-menu-item.tsx'
-import { RestartMenuItem } from '../details/restart-menu-item.tsx'
 import { SaveAsMenuItem } from '../details/save-as-menu-item.tsx'
 import { DEPLOY_GLOWROOT } from '../new-dhis2/constants.ts'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
-import { DeleteDeploymentMenuItem } from './delete-deployment-menu-item.tsx'
+import { DeploymentWideActionMenuItem } from './deployment-wide-action-menu-item.tsx'
 
-/* The instance users mean by "my instance": umbrella stacks are a single instance, while the
- * classic composition spreads over several, where dhis2-core is what logs, restart and reset
- * should target. */
-const PRIMARY_STACKS = ['dhis2-v2', 'dhis2', STACK_NAMES.CORE]
-
-/* Whichever instance owns the database that save-as dumps. */
+/* A dump needs one target, so unlike restart and reset this resolves the instance that owns the
+ * database: the umbrella instance, or the separate database instance in the classic composition. */
 const DATABASE_STACKS = [STACK_NAMES.DB, 'dhis2-v2', 'dhis2']
 
 const findByStack = (instances: DeploymentInstance[], stackNames: string[]) =>
@@ -29,10 +21,10 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => 
     const [loading, setLoading] = useState(false)
 
     const instances = deployment.instances ?? []
-    const primary = findByStack(instances, PRIMARY_STACKS) ?? instances[0]
     const database = findByStack(instances, DATABASE_STACKS)
     const pgAdmin = findByStack(instances, [STACK_NAMES.PG_ADMIN])
-    const glowrootEnabled = primary?.stackName === STACK_NAMES.CORE && primary?.parameters?.[DEPLOY_GLOWROOT]?.value === 'true'
+    const core = findByStack(instances, [STACK_NAMES.CORE])
+    const glowrootEnabled = core?.parameters?.[DEPLOY_GLOWROOT]?.value === 'true'
 
     const onStart = useCallback(() => {
         setOpen(false)
@@ -57,7 +49,7 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => 
         [deployment.group.hostname]
     )
 
-    if (!primary) {
+    if (instances.length === 0) {
         return null
     }
 
@@ -70,13 +62,11 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => 
             {open && (
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
-                        <LogMenuItem instanceId={primary.id} stackName={primary.stackName as Dhis2StackName} />
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
                         {glowrootEnabled && <MenuItem dense icon={<IconLaunch16 />} label="Open Glowroot" onClick={() => openPath(`${deployment.name}-glowroot`)} />}
                         {database && <SaveAsMenuItem instanceId={database.id} stackName={database.stackName} onStart={onStart} onComplete={onComplete} />}
-                        <RestartMenuItem instanceId={primary.id} stackName={primary.stackName} onStart={onStart} onComplete={onComplete} />
-                        <ResetMenuItem instanceId={primary.id} stackName={primary.stackName} onStart={onStart} onComplete={onComplete} />
-                        <DeleteDeploymentMenuItem deploymentId={deployment.id} displayName={deployment.name} onStart={onStart} onComplete={onComplete} />
+                        <DeploymentWideActionMenuItem action="restart" instances={instances} deploymentName={deployment.name} onStart={onStart} onComplete={onComplete} />
+                        <DeploymentWideActionMenuItem action="reset" instances={instances} deploymentName={deployment.name} onStart={onStart} onComplete={onComplete} />
                     </Menu>
                 </Popover>
             )}

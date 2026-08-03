@@ -1,11 +1,12 @@
 import { Button, CircularLoader } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useLiveComponents } from '../../../hooks/index.ts'
-import { ComponentsTable } from './components-table.tsx'
+import { Deployment } from '../../../types/index.ts'
+import { InstanceComponentsSection } from './instance-components-section.tsx'
 import styles from './instance-components.module.css'
 
-export const DeploymentComponents: FC<{ deploymentId: number }> = ({ deploymentId }) => {
-    const { instances, loading, error, refetch } = useLiveComponents(deploymentId)
+export const DeploymentComponents: FC<{ deployment: Deployment }> = ({ deployment }) => {
+    const { instances, loading, error, refetch } = useLiveComponents(deployment.id)
 
     return (
         <>
@@ -26,10 +27,13 @@ export const DeploymentComponents: FC<{ deploymentId: number }> = ({ deploymentI
                 </div>
             )}
             {error && !loading && <p className={styles.empty}>Could not load components, is the backend up to date?</p>}
-            {(instances ?? []).map((instance) => (
-                <div key={instance.instanceId} className={styles.instanceComponents}>
-                    <ComponentsTable instanceId={instance.instanceId} stackName={instance.stackName} components={instance.components} onChanged={refetch} />
-                </div>
+            {(instances ?? []).map((instanceComponents) => (
+                <InstanceComponentsSection
+                    key={instanceComponents.instanceId}
+                    instanceComponents={instanceComponents}
+                    instance={deployment.instances?.find((candidate) => candidate.id === instanceComponents.instanceId)}
+                    onChanged={refetch}
+                />
             ))}
         </>
     )

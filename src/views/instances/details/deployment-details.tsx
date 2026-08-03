@@ -41,7 +41,7 @@ export const DeploymentDetails: FC = () => {
                     {!deployment?.instances?.length && (
                         <NoticeBox title="No stacks connected to this instance">Currently you can only add components to an instance when creating one.</NoticeBox>
                     )}
-                    {deployment?.instances?.length > 0 && <DeploymentComponents deploymentId={deployment.id} />}
+                    {deployment?.instances?.length > 0 && <DeploymentComponents deployment={deployment} />}
                 </>
             )}
         </div>

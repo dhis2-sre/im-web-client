@@ -16,6 +16,7 @@ import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { Heading, MomentExpiresFromNow } from '../../../components/index.ts'
+import { DeleteButton } from './delete-menu-button.tsx'
 import { DeploymentActionsMenu } from './deployment-actions-menu.tsx'
 import { DeploymentComponentTags } from './deployment-component-tags.tsx'
 import useDeployments from './filter-deployments.tsx'
@@ -92,6 +93,7 @@ export const InstancesList: FC = () => {
                                     <DataTableCell>
                                         <ButtonStrip>
                                             <OpenButton deployment={deployment} />
+                                            <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
                                             <DeploymentActionsMenu deployment={deployment} refetch={refetch} />
                                         </ButtonStrip>
                                     </DataTableCell>

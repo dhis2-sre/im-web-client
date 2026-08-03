@@ -75,8 +75,7 @@ test.describe('new instance', () => {
         await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 60000 })
 
         const newInstanceRow = page.getByRole('row', { name: randomName })
-        await newInstanceRow.getByTestId('deployment-actions-menu-button').click()
-        await page.getByRole('menuitem', { name: 'Delete' }).dispatchEvent('click')
+        await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
 
         // Scope to the confirmation dialog. @dhis2/ui's Modal sets aria-modal="true"
         // but not role="dialog" (see upstream issue), so we scope via the aria-modal
@@ -165,8 +164,7 @@ test.describe('new instance', () => {
         // Cleanup.
         await page.getByRole('button', { name: 'Back to list' }).click()
         await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 30000 })
-        await page.getByRole('row', { name: randomName }).getByTestId('deployment-actions-menu-button').click()
-        await page.getByRole('menuitem', { name: 'Delete' }).dispatchEvent('click')
+        await page.getByRole('row', { name: randomName }).getByRole('button', { name: 'Delete' }).click()
         const confirmDialog = page.locator('[aria-modal="true"]')
         await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
         await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 90000 })
