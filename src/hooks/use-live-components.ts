@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ComponentStatusEventData, DeploymentInstanceComponents } from '../types/index.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 import { useNotificationsContext } from './use-notifications-context.ts'
@@ -36,12 +36,24 @@ export const useLiveComponents = (deploymentId: number) => {
         { url: `/deployments/${deploymentId}/components` },
         { useCache: false, autoCatch: true }
     )
-    const { lastComponentStatus } = useNotificationsContext()
+    const { lastComponentStatus, streamEpoch } = useNotificationsContext()
     const [instances, setInstances] = useState<DeploymentInstanceComponents[] | undefined>(undefined)
 
     useEffect(() => {
         setInstances(data)
     }, [data])
+
+    /* Transitions during a gap in the stream, including the gap before it first opens, are never
+     * pushed, so reload whenever it comes up rather than leave a view that quietly stopped moving. */
+    const connectedEpoch = useRef(streamEpoch)
+    useEffect(() => {
+        if (streamEpoch === connectedEpoch.current) {
+            return
+        }
+        connectedEpoch.current = streamEpoch
+        refetch()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [streamEpoch])
 
     useEffect(() => {
         if (!lastComponentStatus || lastComponentStatus.data.deploymentId !== deploymentId) {
