@@ -10,7 +10,7 @@ import { DeploymentSummary } from './deployment-summary.tsx'
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
-    const [{ data: deployment, error, loading }] = useDeploymentDetails()
+    const [{ data: deployment, error, loading }, refetch] = useDeploymentDetails()
     const title = 'Instance details'
 
     return (
@@ -42,7 +42,7 @@ export const DeploymentDetails: FC = () => {
                     {!deployment?.instances?.length && (
                         <NoticeBox title="No stacks connected to this instance">Currently you can only add components to an instance when creating one.</NoticeBox>
                     )}
-                    {deployment?.instances?.length > 0 && <DeploymentInstancesList deployment={deployment} loading={loading} />}
+                    {deployment?.instances?.length > 0 && <DeploymentInstancesList deployment={deployment} loading={loading} refetch={() => void refetch()} />}
                     {deployment?.instances?.length > 0 && <DeploymentComponents deployment={deployment} />}
                 </>
             )}
