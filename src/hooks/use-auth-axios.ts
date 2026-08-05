@@ -28,7 +28,7 @@ const axiosInstance = createAxiosInstance()
 
 let refreshInFlight: Promise<unknown> | null = null
 
-const refreshTokens = () => {
+export const refreshTokens = () => {
     if (!refreshInFlight) {
         refreshInFlight = createAxiosInstance()
             .post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })
@@ -42,7 +42,12 @@ const refreshTokens = () => {
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        if (error.response?.status !== 401) {
+        /* Only try to refresh an expired session. A 401 from the login itself means bad
+         * credentials, and a 401 from the refresh endpoint means the session is gone; refreshing
+         * in those cases masks the real error (e.g. "invalid email and password combination"
+         * became "refresh token not found"). */
+        const requestUrl = error.config?.url ?? ''
+        if (error.response?.status !== 401 || requestUrl.endsWith('/tokens') || requestUrl.endsWith('/refresh')) {
             return Promise.reject(error)
         }
 

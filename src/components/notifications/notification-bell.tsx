@@ -1,13 +1,13 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { IconSubscribe24 } from '@dhis2/ui'
 import { type FC, useCallback, useEffect, useState } from 'react'
-import { useNotifications } from '../../hooks/use-notifications.ts'
+import { useNotificationsContext } from '../../hooks/use-notifications-context.ts'
 import styles from './notification-bell.module.css'
 import { NotificationPanel } from './notification-panel.tsx'
 
 export const NotificationBell: FC = () => {
     const [open, setOpen] = useState(false)
-    const { notifications, unreadCount, lastSseEvent, markRead, markAllRead } = useNotifications()
+    const { notifications, unreadCount, lastSseEvent, markRead, markAllRead } = useNotificationsContext()
 
     const { show: showSuccess } = useAlert(({ message }: { message: string }) => message, { success: true })
     const { show: showError } = useAlert(({ message }: { message: string }) => message, { critical: true })
