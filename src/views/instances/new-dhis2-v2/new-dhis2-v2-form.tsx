@@ -13,6 +13,7 @@ import { PublicCheckbox } from '../new-dhis2/fields/public-checkbox.tsx'
 import { TtlSelect } from '../new-dhis2/fields/ttl-select.tsx'
 import { ParameterFieldset } from '../new-dhis2/parameter-fieldset.tsx'
 import styles from '../new-dhis2/styles.module.css'
+import { CompanionSection } from './companion-section.tsx'
 import { GroupFieldset } from './group-fieldset.tsx'
 
 export const STACK_ID = 'dhis2-v2'
@@ -21,7 +22,7 @@ export const NewDhis2V2Form: FC<{
     handleCancel: () => void
     handleSubmit: (event?: Partial<Pick<React.SyntheticEvent, 'preventDefault' | 'stopPropagation'>>) => Promise<AnyObject | undefined> | undefined
 }> = ({ handleCancel, handleSubmit }) => {
-    const { groups, initialParameterValues, sensitiveParameters, loading, error } = useGroupedStackParameters(STACK_ID)
+    const { groups, companions, initialParameterValues, sensitiveParameters, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
     const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid } = useFormState({
         subscription: {
@@ -91,6 +92,11 @@ export const NewDhis2V2Form: FC<{
                         sensitiveParameters={sensitiveParameters}
                     />
                 ))}
+            {/* A companion the stack gates on a condition renders its own sections when that
+                condition holds. PgAdmin is offered unconditionally and keeps its opt-in checkbox. */}
+            {!error &&
+                !loading &&
+                companions.filter((companion) => companion.when).map((companion) => <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} />)}
             {!error && !loading && <ParameterFieldset stackId="pgadmin" displayName="PgAdmin" optional />}
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">

@@ -48,5 +48,7 @@ export const useGroupedStackParameters = (stackName: string) => {
         [parameters]
     )
 
-    return { loading, error, groups, initialParameterValues, sensitiveParameters }
+    const companions = useMemo(() => stack?.companions ?? [], [stack])
+
+    return { loading, error, groups, companions, initialParameterValues, sensitiveParameters }
 }
