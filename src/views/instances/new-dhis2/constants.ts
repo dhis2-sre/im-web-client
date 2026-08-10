@@ -27,8 +27,5 @@ export const STACK_PRIMARY_PARAMETERS = new Map<Dhis2StackName, Set<Dhis2Primary
     ['dhis2-db', new Set(['DATABASE_ID'])],
     ['minio', new Set(['DATABASE_ID'])],
     ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD', 'PGADMIN_CONFIRM_PASSWORD'])],
-    ['chap-core', new Set(['IMAGE_TAG', 'GOOGLE_SERVICE_ACCOUNT_EMAIL', 'GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY'])],
-    ['chap-db', new Set(['DATABASE_SIZE'])],
-    ['chap-valkey', new Set(['REDIS_STORAGE_SIZE'])],
-    ['chap-worker', new Set(['IMAGE_TAG'])],
+    ['chap', new Set(['IMAGE_TAG', 'DATABASE_SIZE', 'REDIS_STORAGE_SIZE'])],
 ])

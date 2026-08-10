@@ -5,10 +5,7 @@ export const STACK_NAMES: Record<string, Dhis2StackName> = {
     CORE: 'dhis2-core',
     PG_ADMIN: 'pgadmin',
     MINIO: 'minio',
-    CHAP_DB: 'chap-db',
-    CHAP_VALKEY: 'chap-valkey',
-    CHAP_WORKER: 'chap-worker',
-    CHAP_CORE: 'chap-core',
+    CHAP: 'chap',
 }
 
 /* Stacks that serve something a user can open. The umbrella stacks answer on the deployment's own
