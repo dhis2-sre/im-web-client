@@ -2,6 +2,7 @@ import { ButtonStrip, DataTable, DataTableBody, DataTableCell, DataTableColumnHe
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
+import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import { Deployment } from '../../../types/index.ts'
 import { DeleteButton } from '../list/delete-menu-button.tsx'
@@ -12,7 +13,8 @@ import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 /* The stacks a deployment is made of. Status is not here: the components table below owns it, down to
  * the individual replica, so a single stack-wide status could only repeat it or disagree with it.
  * Open resolves the stack's own address, while delete and the actions menu act on the whole
- * deployment, the same three buttons as on the instances list. */
+ * deployment, the same three buttons as on the instances list. Expires repeats across the rows
+ * because the TTL belongs to the deployment, so every stack in it goes at the same moment. */
 export const DeploymentInstancesList: FC<{
     deployment: Deployment
     loading: boolean
@@ -27,6 +29,7 @@ export const DeploymentInstancesList: FC<{
                     <DataTableColumnHeader>Type</DataTableColumnHeader>
                     <DataTableColumnHeader>Created</DataTableColumnHeader>
                     <DataTableColumnHeader>Updated</DataTableColumnHeader>
+                    <DataTableColumnHeader>Expires</DataTableColumnHeader>
                     <DataTableColumnHeader></DataTableColumnHeader>
                 </DataTableRow>
             </DataTableHead>
@@ -40,6 +43,9 @@ export const DeploymentInstancesList: FC<{
                             </DataTableCell>
                             <DataTableCell staticStyle>
                                 <Moment date={instance.updatedAt} fromNow />
+                            </DataTableCell>
+                            <DataTableCell staticStyle>
+                                <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
                             </DataTableCell>
                             <DataTableCell staticStyle align="right">
                                 <ButtonStrip>
