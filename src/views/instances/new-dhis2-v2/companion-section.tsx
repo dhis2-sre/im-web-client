@@ -16,17 +16,20 @@ export const CompanionSection: FC<{ offeringStackId: string; companion: StackCom
     const form = useForm()
     const applies = useParameterCondition(offeringStackId, companion.when)
 
+    /* Seed the companion's defaults with change rather than initialize. Initializing would fold
+     * everything already typed into the form's initial values, leaving it pristine and the submit
+     * button disabled until the next edit. */
     useEffect(() => {
         if (!applies) {
             return
         }
-        const currentValues = form.getState().values
-        form.initialize({
-            ...currentValues,
-            [companion.name]: {
-                ...initialParameterValues,
-                ...(currentValues[companion.name] ?? {}),
-            },
+        const values = form.getState().values[companion.name] ?? {}
+        form.batch(() => {
+            for (const [parameterName, value] of Object.entries(initialParameterValues)) {
+                if (values[parameterName] === undefined) {
+                    form.change(`${companion.name}.${parameterName}`, value)
+                }
+            }
         })
     }, [applies, form, companion.name, initialParameterValues])
 
