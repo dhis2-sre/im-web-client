@@ -1,16 +1,19 @@
 import { Card } from '@dhis2/ui'
 import type { AnyObject } from 'final-form'
 import type { FC } from 'react'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
+import { StackCompanion } from '../../../types/index.ts'
 import styles from '../new-dhis2/styles.module.css'
 import { NewDhis2V2Form, STACK_ID } from './new-dhis2-v2-form.tsx'
 
-const COMPANION_STACKS = ['pgadmin']
+/* PgAdmin is not declared as a companion by the stack, so it stays listed here with its opt-in
+ * checkbox. Everything the stack declares comes from the API alongside its condition. */
+const UNCONDITIONAL_COMPANIONS: StackCompanion[] = [{ name: 'pgadmin' }]
 
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
@@ -18,7 +21,8 @@ export const NewDhis2V2Instance: FC = () => {
         navigate('/instances')
     }, [navigate])
 
-    const { groups } = useGroupedStackParameters(STACK_ID)
+    const { groups, companions } = useGroupedStackParameters(STACK_ID)
+    const allCompanions = useMemo(() => [...UNCONDITIONAL_COMPANIONS, ...companions], [companions])
     const getIncludedParameters = useCallback(
         (values: AnyObject) => {
             const stackValues: AnyObject = values[STACK_ID] ?? {}
@@ -28,7 +32,7 @@ export const NewDhis2V2Instance: FC = () => {
         },
         [groups]
     )
-    const createDeployment = useStackDeploymentCreation(STACK_ID, getIncludedParameters, COMPANION_STACKS)
+    const createDeployment = useStackDeploymentCreation(STACK_ID, getIncludedParameters, allCompanions)
 
     return (
         <>

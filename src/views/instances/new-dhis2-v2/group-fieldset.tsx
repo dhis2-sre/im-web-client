@@ -1,9 +1,7 @@
 import cx from 'classnames'
-import { getIn } from 'final-form'
-import { useEffect, useState } from 'react'
 import type { FC } from 'react'
-import { useForm } from 'react-final-form'
 import type { GroupedParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
+import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
 import { StackParameterGroup, StackParameterWithGroup } from '../../../types/index.ts'
 import { ParameterField } from '../new-dhis2/fields/parameter-field.tsx'
 import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
@@ -30,20 +28,9 @@ const ConditionalSection: FC<{
     when: NonNullable<StackParameterGroup['when']>
     children: React.ReactNode
 }> = ({ stackId, when, children }) => {
-    const form = useForm()
-    const conditionPath = `${stackId}.${when.parameter}`
-    const [conditionValue, setConditionValue] = useState(() => getIn(form.getState().values, conditionPath))
+    const matches = useParameterCondition(stackId, when)
 
-    useEffect(() => {
-        return form.subscribe(
-            ({ values }) => {
-                setConditionValue(getIn(values, conditionPath))
-            },
-            { values: true }
-        )
-    }, [form, conditionPath])
-
-    if (conditionValue !== when.equals) {
+    if (!matches) {
         return null
     }
     return <>{children}</>
