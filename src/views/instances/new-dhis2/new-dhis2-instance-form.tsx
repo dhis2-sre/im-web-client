@@ -18,13 +18,9 @@ const STACK_DEFS = [
     { stackId: 'dhis2-db', displayName: 'Database' },
     { stackId: 'minio', displayName: 'MinIO' },
     { stackId: 'pgadmin', displayName: 'PG Admin' },
-    { stackId: 'chap-core', displayName: 'CHAP' },
-    { stackId: 'chap-worker', displayName: 'CHAP Worker' },
-    { stackId: 'chap-db', displayName: 'CHAP Database' },
-    { stackId: 'chap-valkey', displayName: 'CHAP Valkey' },
+    { stackId: 'chap', displayName: 'CHAP' },
 ] as const satisfies ReadonlyArray<{ stackId: Dhis2StackName; displayName: string }>
 
-const CHAP_STACKS = STACK_DEFS.filter(({ stackId }) => stackId.startsWith('chap-'))
 const STACK_ORDER: readonly Dhis2StackName[] = STACK_DEFS.map(({ stackId }) => stackId)
 const KNOWN_STACKS = new Set<string>(STACK_ORDER)
 const STACK_DISPLAY_NAMES: Record<string, string> = Object.fromEntries(STACK_DEFS.map(({ stackId, displayName }) => [stackId, displayName]))
@@ -73,9 +69,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
                     <CompanionFieldset stackId="minio" displayName="MinIO" sourceStack="dhis2-core" sourceField="STORAGE_TYPE" sourceValue="minio" />
                     <ParameterFieldset stackId="dhis2-db" displayName="Database" />
                     <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
-                    {CHAP_STACKS.map(({ stackId, displayName }) => (
-                        <CompanionFieldset key={stackId} stackId={stackId} displayName={displayName} sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
-                    ))}
+                    <CompanionFieldset stackId="chap" displayName="CHAP" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
                 </>
             )}
             {isUpdate &&

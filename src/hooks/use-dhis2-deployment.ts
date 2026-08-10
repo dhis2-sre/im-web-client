@@ -93,10 +93,7 @@ export const useDhis2DeploymentCreation = () => {
                 }
 
                 if (values[STACK_NAMES.CORE]?.DEPLOY_CHAP === 'true') {
-                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_DB, values)
-                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_VALKEY, values)
-                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_CORE, values)
-                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP_WORKER, values)
+                    await addStackToDeployment(deploymentId, STACK_NAMES.CHAP, values)
                 }
 
                 await deployDeployment(deploymentId)
