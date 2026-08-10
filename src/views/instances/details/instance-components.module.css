@@ -1,12 +1,5 @@
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.heading {
     margin: 16px 0 8px;
-}
-
-.header h3 {
-    margin: 0;
 }
 
 .loading {

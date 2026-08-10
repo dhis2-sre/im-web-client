@@ -1,4 +1,4 @@
-import { Button, CircularLoader } from '@dhis2/ui'
+import { CircularLoader } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
@@ -10,14 +10,7 @@ export const DeploymentComponents: FC<{ deployment: Deployment }> = ({ deploymen
 
     return (
         <>
-            <div className={styles.header}>
-                <h3>Components</h3>
-                {/* Redundant once the backend pushes component-status events; kept until that is
-                 * deployed so the page never lacks both live updates and a manual refresh. */}
-                <Button small onClick={() => refetch()} loading={loading} dataTest="refresh-components-button">
-                    Refresh
-                </Button>
-            </div>
+            <h3 className={styles.heading}>Components</h3>
             {/* The listing queries the cluster for every component of every instance, so it is slow
              * by nature; show that something is happening rather than nothing. */}
             {loading && !instances && (
