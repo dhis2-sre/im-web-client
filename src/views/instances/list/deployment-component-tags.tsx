@@ -11,7 +11,10 @@ import styles from './deployment-component-tags.module.css'
  *
  * The label carries the stack because these tags flatten every instance of the deployment into one
  * row, where a bare component name is ambiguous: a dhis2-v2 instance alongside a chap one shows two
- * components called db. The details page needs no such prefix, having a section per instance. */
+ * components called db. DHIS 2 is the default a deployment is built around, so its components stay
+ * bare and only what is deployed alongside them is qualified. The details page needs no prefix at
+ * all, having a section per instance. */
+const componentLabel = (stackName: string, componentName: string) => (stackName.startsWith('dhis2') ? componentName : `${stackName}:${componentName}`)
 export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deploymentId }) => {
     const { instances, loading, error } = useLiveComponents(deploymentId)
 
@@ -29,12 +32,12 @@ export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deployme
                     component.replicas.length === 0
                         ? [
                               <Tag key={`${instance.instanceId}-${component.name}`} neutral>
-                                  {`${instance.stackName}:${component.name}`}
+                                  {componentLabel(instance.stackName, component.name)}
                               </Tag>,
                           ]
                         : component.replicas.map((replica) => (
                               <Tag key={`${instance.instanceId}-${component.name}-${replica.name}`} {...getReplicaTagProps(replica)}>
-                                  {`${instance.stackName}:${component.name}`}
+                                  {componentLabel(instance.stackName, component.name)}
                               </Tag>
                           ))
                 )

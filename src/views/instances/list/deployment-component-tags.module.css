@@ -1,5 +1,10 @@
+/* The cell sizes itself to its content, so flex-wrap has nothing to wrap against without a width to
+ * push back with. The cap is what lets a deployment with several instances break over lines instead
+ * of stretching the column. */
 .tags {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 4px;
+    max-width: 24rem;
+    white-space: normal;
 }
