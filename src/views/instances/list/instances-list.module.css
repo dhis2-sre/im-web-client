@@ -12,6 +12,13 @@
 .clickableRow {
     cursor: pointer;
 }
+.sortableHeader {
+    cursor: pointer;
+    user-select: none;
+}
+.searchInput {
+    min-width: 250px;
+}
 .groupName {
     font-size: 1.2rem;
     font-weight: bold;
