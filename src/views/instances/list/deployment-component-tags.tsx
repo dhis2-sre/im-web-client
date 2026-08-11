@@ -7,7 +7,11 @@ import styles from './deployment-component-tags.module.css'
 /* One tag per replica running for the deployment, across all its instances, labelled with the
  * component it belongs to and coloured by that replica's own health. A component with several
  * replicas therefore shows several tags, so one unhealthy replica stays visible instead of being
- * averaged away, and a component with none still shows as neutral rather than disappearing. */
+ * averaged away, and a component with none still shows as neutral rather than disappearing.
+ *
+ * The label carries the stack because these tags flatten every instance of the deployment into one
+ * row, where a bare component name is ambiguous: a dhis2-v2 instance alongside a chap one shows two
+ * components called db. The details page needs no such prefix, having a section per instance. */
 export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deploymentId }) => {
     const { instances, loading, error } = useLiveComponents(deploymentId)
 
@@ -25,12 +29,12 @@ export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deployme
                     component.replicas.length === 0
                         ? [
                               <Tag key={`${instance.instanceId}-${component.name}`} neutral>
-                                  {component.name}
+                                  {`${instance.stackName}:${component.name}`}
                               </Tag>,
                           ]
                         : component.replicas.map((replica) => (
                               <Tag key={`${instance.instanceId}-${component.name}-${replica.name}`} {...getReplicaTagProps(replica)}>
-                                  {component.name}
+                                  {`${instance.stackName}:${component.name}`}
                               </Tag>
                           ))
                 )
