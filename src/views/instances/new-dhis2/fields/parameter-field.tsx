@@ -8,6 +8,8 @@ import {
     IMAGE_PULL_POLICY,
     IMAGE_REPOSITORY,
     IMAGE_TAG,
+    WORKER_IMAGE_TAG,
+    WORKER_IMAGE_PULL_POLICY,
     INSTALL_REDIS,
     PGADMIN_CONFIRM_PASSWORD,
     PGADMIN_PASSWORD,
@@ -44,15 +46,18 @@ export type ParameterFieldProps = {
 export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode }) => {
     switch (parameterName) {
         case IMAGE_TAG:
-            // The chap chart tags its api and worker images together, so one tag covers both.
             if (stackId === 'chap') {
                 return <ImageTagSelect displayName={displayName} stackId={stackId} organization="dhis2-chap" repository="chap-core" registry="ghcr" />
             }
             return <ImageTagSelect displayName={displayName} stackId={stackId} />
+        // The chap worker runs its own image, so it carries its own tag rather than sharing the api's.
+        case WORKER_IMAGE_TAG:
+            return <ImageTagSelect displayName={displayName} stackId={stackId} parameterName={parameterName} organization="dhis2-chap" repository="chap-worker" registry="ghcr" />
         case IMAGE_REPOSITORY:
             return <ImageRepositorySelect displayName={displayName} />
         case DATABASE_ID:
         case IMAGE_PULL_POLICY:
+        case WORKER_IMAGE_PULL_POLICY:
             return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case STORAGE_TYPE:
             return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
