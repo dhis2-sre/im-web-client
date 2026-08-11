@@ -45,3 +45,12 @@ td {
 .expandedComponents {
     padding: 8px 16px 16px;
 }
+
+/* Status, the second column, holds a wrapping block of component tags whose intrinsic width is every
+ * tag on one line, so the table hands it far more room than it needs. Giving the column a width lets
+ * the tags wrap inside it. Positional because the cell components do not pass a class through to the
+ * element, and important because the table's own styles otherwise win, as with the colours above. */
+.wrapper th:nth-child(2),
+.wrapper td:nth-child(2) {
+    width: 17rem !important;
+}

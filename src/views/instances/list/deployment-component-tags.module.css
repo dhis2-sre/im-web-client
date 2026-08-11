@@ -1,5 +1,10 @@
+/* The Status column carries the width (see instances-list.module.css), so the tags simply fill it
+ * and wrap. Sizing them here instead either left the column half empty or, with a percentage width,
+ * let the intrinsic pass measure every tag on one line and stretch the column. */
 .tags {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 4px;
+    width: 100%;
+    white-space: normal;
 }
