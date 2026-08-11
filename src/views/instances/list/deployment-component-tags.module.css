@@ -1,12 +1,10 @@
-/* Filling the cell rather than sizing to the tags, so they wrap at whatever width the table gives
- * the column instead of leaving it half empty. The cap stops a deployment with a single component
- * from widening the column on the table's behalf, since a wrapping block's min-content is only its
- * widest tag and the column is otherwise free to grow. */
+/* The Status column carries the width (see instances-list.module.css), so the tags simply fill it
+ * and wrap. Sizing them here instead either left the column half empty or, with a percentage width,
+ * let the intrinsic pass measure every tag on one line and stretch the column. */
 .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     width: 100%;
-    max-width: 32rem;
     white-space: normal;
 }
