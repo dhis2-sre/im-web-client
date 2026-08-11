@@ -1,10 +1,12 @@
-/* The cell sizes itself to its content, so flex-wrap has nothing to wrap against without a width to
- * push back with. The cap is what lets a deployment with several instances break over lines instead
- * of stretching the column. */
+/* Filling the cell rather than sizing to the tags, so they wrap at whatever width the table gives
+ * the column instead of leaving it half empty. The cap stops a deployment with a single component
+ * from widening the column on the table's behalf, since a wrapping block's min-content is only its
+ * widest tag and the column is otherwise free to grow. */
 .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    max-width: 16rem;
+    width: 100%;
+    max-width: 32rem;
     white-space: normal;
 }
