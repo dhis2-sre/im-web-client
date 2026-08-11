@@ -5,6 +5,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    max-width: 24rem;
+    max-width: 16rem;
     white-space: normal;
 }
