@@ -11,13 +11,16 @@ import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 interface ImageTagSelectProps {
     displayName: string
     stackId?: Dhis2StackName
+    /* Which parameter the chosen tag is written to. Defaults to IMAGE_TAG; a stack whose components
+     * carry their own images, as chap's worker does, names the one it means. */
+    parameterName?: string
     organization?: string
     repository?: string
     registry?: string
 }
 
-const useImageTagField = (stackId: Dhis2StackName) => {
-    const fieldName = `${stackId}.${IMAGE_TAG}`
+const useImageTagField = (stackId: Dhis2StackName, parameterName: string) => {
+    const fieldName = `${stackId}.${parameterName}`
     const { input } = useField<string>(fieldName)
     const { value, onChange } = input
     return { value, onChange }
@@ -112,9 +115,16 @@ const useCheckImageExists = (repository, organization?: string, registry?: strin
     return { imageLoading, checkImageExists }
 }
 
-export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId = 'dhis2-core', organization, repository: fixedRepository, registry }) => {
+export const ImageTagSelect: FC<ImageTagSelectProps> = ({
+    displayName,
+    stackId = 'dhis2-core',
+    parameterName = IMAGE_TAG,
+    organization,
+    repository: fixedRepository,
+    registry,
+}) => {
     const form = useForm()
-    const { value: imageValue, onChange: onImageChange } = useImageTagField(stackId)
+    const { value: imageValue, onChange: onImageChange } = useImageTagField(stackId, parameterName)
     const dynamicRepository = useRepositoryValue()
     const repository = fixedRepository ?? dynamicRepository
     const resolvedOrganization = organization ?? 'dhis2'
