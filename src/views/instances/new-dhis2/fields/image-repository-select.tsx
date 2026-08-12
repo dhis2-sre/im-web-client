@@ -4,6 +4,7 @@ import { FC, useMemo } from 'react'
 import { useField } from 'react-final-form'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { IMAGE_REPOSITORY } from '../constants.ts'
+import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import styles from './fields.module.css'
 
 type CustomOption = {
@@ -12,6 +13,8 @@ type CustomOption = {
     secondaryText: string
 }
 
+/* Kept for the callers that still reach for the dhis2-core field by name. The component itself
+ * takes the stack, since a stack other than dhis2-core reads and writes its own namespace. */
 export const IMAGE_REPOSITORY_FIELD_NAME = `dhis2-core.${IMAGE_REPOSITORY}`
 const predefinedOptions = new Map<string, CustomOption>([
     [
@@ -68,8 +71,8 @@ const CustomSelectOption: FC<{
     </div>
 )
 
-export const ImageRepositorySelect: FC<{ displayName: string }> = ({ displayName }) => {
-    const { meta, input } = useField(IMAGE_REPOSITORY_FIELD_NAME, {
+export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2StackName }> = ({ displayName, stackId = 'dhis2-core' }) => {
+    const { meta, input } = useField(`${stackId}.${IMAGE_REPOSITORY}`, {
         validate: hasValue,
     })
     const [{ data, error, loading }] = useAuthAxios({

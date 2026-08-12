@@ -54,7 +54,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case WORKER_IMAGE_TAG:
             return <ImageTagSelect displayName={displayName} stackId={stackId} parameterName={parameterName} organization="dhis2-chap" repository="chap-worker" registry="ghcr" />
         case IMAGE_REPOSITORY:
-            return <ImageRepositorySelect displayName={displayName} />
+            return <ImageRepositorySelect displayName={displayName} stackId={stackId} />
         case DATABASE_ID:
         case IMAGE_PULL_POLICY:
         case WORKER_IMAGE_PULL_POLICY:

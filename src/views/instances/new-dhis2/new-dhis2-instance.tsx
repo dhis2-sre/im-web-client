@@ -5,6 +5,7 @@ import { Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
 import { useDhis2DeploymentCreation } from '../../../hooks/index.ts'
+import { DEFAULT_TTL_SECONDS } from './fields/ttl-presets.ts'
 import { NewDhis2InstanceForm } from './new-dhis2-instance-form.tsx'
 import styles from './styles.module.css'
 
@@ -19,7 +20,7 @@ export const NewDhis2Instance: FC = () => {
         <>
             <Heading title="Create a new DHIS2 Core Instance" />
             <Card className={styles.container}>
-                <Form onSubmit={createDeployment} keepDirtyOnReinitialize>
+                <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit }) => <NewDhis2InstanceForm handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} />}
                 </Form>
             </Card>
