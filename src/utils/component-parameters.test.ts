@@ -61,13 +61,26 @@ describe('groupParametersByComponent', () => {
         expect(leftover).toEqual([])
     })
 
-    it('treats a stack without groups as one flat list', () => {
+    it('gives a single component stack every parameter, groups or not', () => {
         const ungrouped: StackWithParameterGroups = {
             name: 'dhis2-core',
             parameters: [{ parameterName: 'IMAGE_TAG', displayName: 'Image Tag', priority: 1 }],
         }
 
         const { byComponent, leftover } = groupParametersByComponent(parameters({ IMAGE_TAG: '2.42' }), ungrouped, ['dhis2'])
+
+        expect(byComponent.dhis2.map((entry) => entry.name)).toEqual(['IMAGE_TAG'])
+        expect(leftover).toEqual([])
+    })
+
+    it('leaves parameters unattributed when a stack without groups has several components', () => {
+        // Nothing says which of them a parameter configures, so they stay one list for the instance.
+        const ungrouped: StackWithParameterGroups = {
+            name: 'dhis2',
+            parameters: [{ parameterName: 'IMAGE_TAG', displayName: 'Image Tag', priority: 1 }],
+        }
+
+        const { byComponent, leftover } = groupParametersByComponent(parameters({ IMAGE_TAG: '2.42' }), ungrouped, ['dhis2', 'db'])
 
         expect(byComponent).toEqual({})
         expect(leftover.map((entry) => entry.name)).toEqual(['IMAGE_TAG'])

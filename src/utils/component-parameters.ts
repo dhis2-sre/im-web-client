@@ -33,6 +33,10 @@ export const groupParametersByComponent = (
         return { byComponent: {}, leftover: [] }
     }
 
+    /* A stack with one component has nothing else its parameters could configure, so they all belong
+     * to it whether or not the stack bothers to declare groups. */
+    const soleComponent = componentNames.length === 1 ? componentNames[0] : undefined
+
     const metadata = new Map((stack?.parameters ?? []).map((parameter) => [parameter.parameterName ?? '', parameter]))
     const groups = stack?.parameterGroups ?? []
 
@@ -70,7 +74,7 @@ export const groupParametersByComponent = (
             value: parameter?.value ?? '',
         }
 
-        const owner = groupName ? ownerOfGroup.get(groupName) : undefined
+        const owner = (groupName ? ownerOfGroup.get(groupName) : undefined) ?? soleComponent
         if (owner) {
             byComponent[owner] = [...(byComponent[owner] ?? []), entry]
         } else {
