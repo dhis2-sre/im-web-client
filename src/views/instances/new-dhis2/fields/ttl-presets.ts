@@ -9,6 +9,10 @@ export const DATETIME_FORMAT = `${DATE_FORMAT} HH:mm`
 
 export type TtlPreset = { label: string; seconds: number }
 
+/* What a new deployment gets if nobody touches the Lifetime field. A day is long enough to be
+ * useful and short enough that a forgotten instance cleans itself up. */
+export const DEFAULT_TTL_SECONDS = DAY_IN_SECONDS
+
 export const TTL_PRESETS: TtlPreset[] = [
     { label: '1 hour', seconds: HOUR_IN_SECONDS },
     { label: '6 hours', seconds: 6 * HOUR_IN_SECONDS },

@@ -1,5 +1,5 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 import { Field, useField } from 'react-final-form'
 import { useAuthAxios } from '../../../../hooks/index.ts'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
@@ -9,8 +9,9 @@ export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayNa
     const fieldName = `${stackId}.${parameterName}`
     const {
         meta: { initial: initialValue },
+        input,
     } = useField(fieldName, {
-        subscription: { initial: true },
+        subscription: { initial: true, value: true },
     })
     const [{ data, error, loading }] = useAuthAxios({
         url: '/integrations',
@@ -31,6 +32,17 @@ export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayNa
                   label,
               }))
     }, [data, initialValue])
+
+    /* A parameter whose options are environment specific, the database being the one that matters,
+     * has no default the stack could carry, so the field would sit empty and invalid until someone
+     * opened it. The first option is as good a starting point as any and beats a blocked form.
+     * Parameters that do carry a default already have a value here, so this leaves them alone. */
+    const { value, onChange } = input
+    useEffect(() => {
+        if (!value && options.length > 0) {
+            onChange(options[0].value)
+        }
+    }, [value, options, onChange])
 
     return (
         <Field
