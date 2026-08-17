@@ -21,6 +21,7 @@ import {
     DEPLOY_CHAP,
     DHIS2_ENABLED,
     DHIS2_REGISTER,
+    ENABLE_DORIS,
 } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -72,6 +73,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case DEPLOY_CHAP:
         case DHIS2_ENABLED:
         case DHIS2_REGISTER:
+        case ENABLE_DORIS:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Email'} type="email" sensitive={sensitive} formMode={formMode} />
