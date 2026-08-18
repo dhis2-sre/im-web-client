@@ -6,6 +6,7 @@ import type { FC } from 'react'
 import { useForm, useFormState } from 'react-final-form'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import type { GroupedParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
+import type { DeploymentStep } from '../../../hooks/use-stack-deployment-creation.ts'
 import { DescriptionTextarea } from '../new-dhis2/fields/description-textarea.tsx'
 import { GroupSelect } from '../new-dhis2/fields/group-select.tsx'
 import { NameInput } from '../new-dhis2/fields/name-input.tsx'
@@ -14,6 +15,7 @@ import { TtlSelect } from '../new-dhis2/fields/ttl-select.tsx'
 import { ParameterFieldset } from '../new-dhis2/parameter-fieldset.tsx'
 import styles from '../new-dhis2/styles.module.css'
 import { CompanionSection } from './companion-section.tsx'
+import { DeploymentProgress } from './deployment-progress.tsx'
 import { GroupFieldset } from './group-fieldset.tsx'
 
 export const STACK_ID = 'dhis2-v2'
@@ -21,7 +23,9 @@ export const STACK_ID = 'dhis2-v2'
 export const NewDhis2V2Form: FC<{
     handleCancel: () => void
     handleSubmit: (event?: Partial<Pick<React.SyntheticEvent, 'preventDefault' | 'stopPropagation'>>) => Promise<AnyObject | undefined> | undefined
-}> = ({ handleCancel, handleSubmit }) => {
+    name?: string
+    steps: DeploymentStep[]
+}> = ({ handleCancel, handleSubmit, name, steps }) => {
     const { groups, companions, initialParameterValues, sensitiveParameters, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
     const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid } = useFormState({
@@ -111,6 +115,7 @@ export const NewDhis2V2Form: FC<{
                     Cancel
                 </Button>
             </ButtonStrip>
+            <DeploymentProgress name={name ?? ''} steps={steps} />
         </form>
     )
 }
