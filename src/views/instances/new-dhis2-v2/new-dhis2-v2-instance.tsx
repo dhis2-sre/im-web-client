@@ -33,14 +33,14 @@ export const NewDhis2V2Instance: FC = () => {
         },
         [groups]
     )
-    const createDeployment = useStackDeploymentCreation(STACK_ID, getIncludedParameters, allCompanions)
+    const { createDeployment, steps } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, allCompanions)
 
     return (
         <>
             <Heading title="Create a new DHIS2 Instance (v2)" />
             <Card className={styles.container}>
                 <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
-                    {({ handleSubmit }) => <NewDhis2V2Form handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} />}
+                    {({ handleSubmit, values }) => <NewDhis2V2Form handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} name={values.name} steps={steps} />}
                 </Form>
             </Card>
         </>
