@@ -13,9 +13,6 @@ type CustomOption = {
     secondaryText: string
 }
 
-/* Kept for the callers that still reach for the dhis2-core field by name. The component itself
- * takes the stack, since a stack other than dhis2-core reads and writes its own namespace. */
-export const IMAGE_REPOSITORY_FIELD_NAME = `dhis2-core.${IMAGE_REPOSITORY}`
 const predefinedOptions = new Map<string, CustomOption>([
     [
         'core',

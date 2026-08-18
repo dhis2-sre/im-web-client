@@ -3,9 +3,8 @@ import { useField, useForm } from 'react-final-form'
 import classes from '../../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect } from '../../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../../hooks/index.ts'
-import { IMAGE_TAG } from '../constants.ts'
+import { IMAGE_REPOSITORY, IMAGE_TAG } from '../constants.ts'
 import { Dhis2StackName } from '../parameter-fieldset.tsx'
-import { IMAGE_REPOSITORY_FIELD_NAME } from './image-repository-select.tsx'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
 interface ImageTagSelectProps {
@@ -64,10 +63,10 @@ const useResetImageTagFieldWhenSelectionNotAvailable = (availableOptions: string
     }, [availableOptions, form, fieldName, stackId])
 }
 
-const useRepositoryValue = () => {
+const useRepositoryValue = (stackId: Dhis2StackName) => {
     const {
         input: { value: repository },
-    } = useField<string>(IMAGE_REPOSITORY_FIELD_NAME, { subscription: { value: true } })
+    } = useField<string>(`${stackId}.${IMAGE_REPOSITORY}`, { subscription: { value: true } })
 
     return repository
 }
@@ -125,7 +124,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({
 }) => {
     const form = useForm()
     const { value: imageValue, onChange: onImageChange } = useImageTagField(stackId, parameterName)
-    const dynamicRepository = useRepositoryValue()
+    const dynamicRepository = useRepositoryValue(stackId)
     const repository = fixedRepository ?? dynamicRepository
     const resolvedOrganization = organization ?? 'dhis2'
     const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
