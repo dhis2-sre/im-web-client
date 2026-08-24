@@ -12,7 +12,6 @@ import { GroupSelect } from '../new-dhis2/fields/group-select.tsx'
 import { NameInput } from '../new-dhis2/fields/name-input.tsx'
 import { PublicCheckbox } from '../new-dhis2/fields/public-checkbox.tsx'
 import { TtlSelect } from '../new-dhis2/fields/ttl-select.tsx'
-import { ParameterFieldset } from '../new-dhis2/parameter-fieldset.tsx'
 import styles from '../new-dhis2/styles.module.css'
 import { CompanionSection } from './companion-section.tsx'
 import { DeploymentProgress } from './deployment-progress.tsx'
@@ -96,12 +95,10 @@ export const NewDhis2V2Form: FC<{
                         sensitiveParameters={sensitiveParameters}
                     />
                 ))}
-            {/* A companion the stack gates on a condition renders its own sections when that
-                condition holds. PgAdmin is offered unconditionally and keeps its opt-in checkbox. */}
-            {!error &&
-                !loading &&
-                companions.filter((companion) => companion.when).map((companion) => <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} />)}
-            {!error && !loading && <ParameterFieldset stackId="pgadmin" displayName="PgAdmin" optional />}
+            {/* Every companion the stack declares, gated the way it was declared: a condition renders
+                the sections when it holds, no condition renders an opt-in checkbox. Nothing here
+                names a particular companion. */}
+            {!error && !loading && companions.map((companion) => <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} />)}
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">
                     {submitError}
