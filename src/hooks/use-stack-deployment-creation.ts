@@ -14,9 +14,9 @@ const SETTLED_PAUSE_MS = 800
 
 /* Creates a deployment with an instance of the given stack plus any opted-in companion stacks and
  * deploys it. Only the listed parameters are sent for the main stack, so values entered in sections
- * that a visibility condition later hid never reach the backend. A companion the stack gates on a
- * condition is included while that condition holds, since the condition is the opt-in; one offered
- * unconditionally is included when the form's include_<stack> checkbox is set. Confirm-password
+ * that a visibility condition later hid never reach the backend. A companion is included while the
+ * condition the stack gates it on holds, since that condition is the opt-in, and a companion
+ * declared without one is always included, the same reading the form renders by. Confirm-password
  * helper fields are never sent. */
 export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[], companions: StackCompanion[] = []) => {
     const navigate = useNavigate()
@@ -36,9 +36,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
     const createDeployment = useCallback(
         async (values: AnyObject) => {
             const stackValuesForCompanions: AnyObject = values[stackName] ?? {}
-            const includedCompanions = companions.filter((companion) =>
-                companion.when ? stackValuesForCompanions[companion.when.parameter] === companion.when.equals : Boolean(values[`include_${companion.name}`])
-            )
+            const includedCompanions = companions.filter((companion) => !companion.when || stackValuesForCompanions[companion.when.parameter] === companion.when.equals)
             const deployedStacks = [stackName, ...includedCompanions.map((companion) => companion.name)]
             setSteps(deployedStacks.map((name) => ({ stackName: name, status: 'pending' })))
 
