@@ -1,7 +1,7 @@
-import { Center, CircularLoader, CheckboxFieldFF, NoticeBox } from '@dhis2/ui'
+import { Center, CircularLoader, NoticeBox } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useEffect, useMemo } from 'react'
-import { Field, useField, useForm } from 'react-final-form'
+import { useForm } from 'react-final-form'
 import { useDhis2StackParameters } from '../../../hooks/index.ts'
 import { ParameterField } from './fields/parameter-field.tsx'
 import styles from './styles.module.css'
@@ -20,21 +20,9 @@ export type Dhis2PrimaryField =
     | 'REDIS_STORAGE_SIZE'
 export type Dhis2StackPrimaryParameters = Map<Dhis2StackName, Set<Dhis2PrimaryField>>
 
-export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; optional?: boolean; formMode?: 'create' | 'update' }> = ({
-    stackId,
-    displayName,
-    optional,
-    formMode = 'create',
-}) => {
+export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: string; formMode?: 'create' | 'update' }> = ({ stackId, displayName, formMode = 'create' }) => {
     const form = useForm()
     const { loading, error, primaryParameters, secondaryParameters, initialParameterValues, sensitiveParameters } = useDhis2StackParameters(stackId)
-    const includeStackFieldName = `include_${stackId}`
-    const {
-        input: { value: includeStackFieldValue },
-    } = useField(includeStackFieldName, {
-        subscription: { value: true },
-    })
-    const shouldShowParameterFields = !optional || includeStackFieldValue
     const areParameterValuesInitialized = useMemo(() => {
         const { values } = form.getState()
         const valuesLookup = new Set(Object.keys(values[stackId] ?? {}))
@@ -67,30 +55,23 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
 
             {!error && !loading && primaryParameters && (
                 <fieldset className={cx(styles.fieldset, styles.parameters, styles.primary)}>
-                    <legend className={styles.legend}>
-                        {optional ? (
-                            <Field type="checkbox" name={includeStackFieldName} label={displayName} component={CheckboxFieldFF} className={styles.optionalStackCheckbox} />
-                        ) : (
-                            displayName
-                        )}
-                    </legend>
-                    {shouldShowParameterFields &&
-                        primaryParameters.map(({ displayName, parameterName }) => (
-                            <ParameterField
-                                stackId={stackId}
-                                key={parameterName}
-                                parameterName={parameterName}
-                                displayName={displayName}
-                                sensitive={sensitiveParameters[parameterName]}
-                                formMode={formMode}
-                            />
-                        ))}
+                    <legend className={styles.legend}>{displayName}</legend>
+                    {primaryParameters.map(({ displayName, parameterName }) => (
+                        <ParameterField
+                            stackId={stackId}
+                            key={parameterName}
+                            parameterName={parameterName}
+                            displayName={displayName}
+                            sensitive={sensitiveParameters[parameterName]}
+                            formMode={formMode}
+                        />
+                    ))}
                 </fieldset>
             )}
 
-            {!error && !loading && secondaryParameters && shouldShowParameterFields && (
+            {!error && !loading && secondaryParameters && (
                 <details>
-                    <summary className={styles.summary}>Advanced configuration {shouldShowParameterFields}</summary>
+                    <summary className={styles.summary}>Advanced configuration</summary>
                     <fieldset className={cx(styles.fieldset, styles.parameters, styles.secondary)}>
                         {!error &&
                             !loading &&
@@ -109,7 +90,7 @@ export const ParameterFieldset: FC<{ stackId: Dhis2StackName; displayName: strin
                 </details>
             )}
 
-            {shouldShowParameterFields && <hr className={styles.hr} />}
+            <hr className={styles.hr} />
         </>
     )
 }

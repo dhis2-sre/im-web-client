@@ -95,9 +95,8 @@ export const NewDhis2V2Form: FC<{
                         sensitiveParameters={sensitiveParameters}
                     />
                 ))}
-            {/* Every companion the stack declares, gated the way it was declared: a condition renders
-                the sections when it holds, no condition renders an opt-in checkbox. Nothing here
-                names a particular companion. */}
+            {/* Every companion the stack declares, each shown while the condition it was declared
+                with holds. Nothing here names a particular companion. */}
             {!error && !loading && companions.map((companion) => <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} />)}
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">

@@ -68,7 +68,7 @@ export const NewDhis2InstanceForm = ({ handleCancel, handleSubmit, mode = 'creat
                     <ParameterFieldset stackId="dhis2-core" displayName="DHIS2 Core" />
                     <CompanionFieldset stackId="minio" displayName="MinIO" sourceStack="dhis2-core" sourceField="STORAGE_TYPE" sourceValue="minio" />
                     <ParameterFieldset stackId="dhis2-db" displayName="Database" />
-                    <ParameterFieldset stackId="pgadmin" displayName="PG Admin" optional />
+                    <CompanionFieldset stackId="pgadmin" displayName="PG Admin" sourceStack="dhis2-db" sourceField="ENABLE_PGADMIN" sourceValue="true" />
                     <CompanionFieldset stackId="chap" displayName="CHAP" sourceStack="dhis2-core" sourceField="DEPLOY_CHAP" sourceValue="true" />
                 </>
             )}
