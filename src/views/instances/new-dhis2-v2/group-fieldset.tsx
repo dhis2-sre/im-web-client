@@ -3,9 +3,9 @@ import type { FC } from 'react'
 import type { GroupedParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
 import { StackParameterGroup, StackParameterWithGroup } from '../../../types/index.ts'
-import { ParameterField } from '../new-dhis2/fields/parameter-field.tsx'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
-import styles from '../new-dhis2/styles.module.css'
+import { ParameterField } from '../fields/parameter-field.tsx'
+import { Dhis2StackName } from '../parameters.ts'
+import styles from '../styles.module.css'
 import ownStyles from './group-fieldset.module.css'
 
 /* Parameters shown directly in a group's section; everything else goes under its Advanced

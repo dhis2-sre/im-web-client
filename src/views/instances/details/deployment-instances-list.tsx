@@ -7,7 +7,7 @@ import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import { Deployment } from '../../../types/index.ts'
 import { DeleteButton } from '../list/delete-menu-button.tsx'
 import { DeploymentActionsMenu } from '../list/deployment-actions-menu.tsx'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
+import { Dhis2StackName } from '../parameters.ts'
 import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 
 /* The stacks a deployment is made of. Status is not here: the components table below owns it, down to
@@ -50,12 +50,7 @@ export const DeploymentInstancesList: FC<{
                             <DataTableCell staticStyle align="right">
                                 <ButtonStrip>
                                     {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
-                                        <ViewInstanceMenuItem
-                                            group={deployment.group}
-                                            name={instance.name}
-                                            stackName={instance.stackName as Dhis2StackName}
-                                            parameters={instance.parameters}
-                                        />
+                                        <ViewInstanceMenuItem group={deployment.group} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
                                     )}
                                     <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={() => navigate('/instances')} />
                                     <DeploymentActionsMenu deployment={deployment} refetch={refetch} />

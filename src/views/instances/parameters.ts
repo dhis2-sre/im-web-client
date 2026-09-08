@@ -1,6 +1,5 @@
-import { Dhis2PrimaryField, Dhis2StackName } from './parameter-fieldset.tsx'
+export type Dhis2StackName = 'pgadmin' | 'chap' | 'dhis2-v2'
 
-export const DHIS2_STACK_ID = 'dhis2'
 export const DATABASE_ID = 'DATABASE_ID'
 export const FLYWAY_MIGRATE_OUT_OF_ORDER = 'FLYWAY_MIGRATE_OUT_OF_ORDER'
 export const FLYWAY_REPAIR_BEFORE_MIGRATION = 'FLYWAY_REPAIR_BEFORE_MIGRATION'
@@ -12,9 +11,6 @@ export const WORKER_IMAGE_PULL_POLICY = 'WORKER_IMAGE_PULL_POLICY'
 export const IMAGE_PULL_POLICY = 'IMAGE_PULL_POLICY'
 export const STORAGE_TYPE = 'STORAGE_TYPE'
 export const SAME_SITE_COOKIES = 'SAME_SITE_COOKIES'
-export const INSTALL_REDIS = 'INSTALL_REDIS'
-export const ALLOW_SUSPEND = 'ALLOW_SUSPEND'
-export const DEPLOY_GLOWROOT = 'DEPLOY_GLOWROOT'
 export const DEPLOY_CHAP = 'DEPLOY_CHAP'
 export const DHIS2_ENABLED = 'DHIS2_ENABLED'
 export const DHIS2_REGISTER = 'DHIS2_REGISTER'
@@ -26,11 +22,3 @@ export const PGADMIN_PASSWORD = 'PGADMIN_PASSWORD'
 export const PGADMIN_CONFIRM_PASSWORD = 'PGADMIN_CONFIRM_PASSWORD'
 export const OPTIONAL_FIELDS = new Set([JAVA_OPTS])
 export const CUSTOM_DHIS2_CONFIG = 'CUSTOM_DHIS2_CONFIG'
-
-export const STACK_PRIMARY_PARAMETERS = new Map<Dhis2StackName, Set<Dhis2PrimaryField>>([
-    ['dhis2-core', new Set(['IMAGE_TAG', 'IMAGE_REPOSITORY'])],
-    ['dhis2-db', new Set(['DATABASE_ID'])],
-    ['minio', new Set(['DATABASE_ID'])],
-    ['pgadmin', new Set(['PGADMIN_USERNAME', 'PGADMIN_PASSWORD', 'PGADMIN_CONFIRM_PASSWORD'])],
-    ['chap', new Set(['IMAGE_TAG', 'DATABASE_SIZE', 'REDIS_STORAGE_SIZE'])],
-])

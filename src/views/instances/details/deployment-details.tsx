@@ -17,7 +17,6 @@ export const DeploymentDetails: FC = () => {
         <div className={styles.wrapper}>
             <Heading title={title}>
                 <Button onClick={() => navigate('/instances')}>Back to list</Button>
-                {deployment && <Button onClick={() => navigate(`/instances/${deployment.id}/edit`)}>Edit</Button>}
             </Heading>
 
             {error && !deployment && (

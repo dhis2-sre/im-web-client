@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAuthAxios } from '../../../../hooks/index.ts'
-import { ClusterResources } from '../../../../types/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { ClusterResources } from '../../../types/index.ts'
 
 export const useGroupSelectHelpText = (groupName: string): string => {
     const [resources, setResources] = useState<ClusterResources>({})

@@ -10,21 +10,18 @@ import {
     IMAGE_TAG,
     WORKER_IMAGE_TAG,
     WORKER_IMAGE_PULL_POLICY,
-    INSTALL_REDIS,
     PGADMIN_CONFIRM_PASSWORD,
     PGADMIN_PASSWORD,
     PGADMIN_USERNAME,
     STORAGE_TYPE,
     SAME_SITE_COOKIES,
-    ALLOW_SUSPEND,
-    DEPLOY_GLOWROOT,
     DEPLOY_CHAP,
     DHIS2_ENABLED,
     DHIS2_REGISTER,
     ENABLE_DORIS,
     ENABLE_PGADMIN,
-} from '../constants.ts'
-import { Dhis2StackName } from '../parameter-fieldset.tsx'
+    Dhis2StackName,
+} from '../parameters.ts'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
 import { ConfirmPasswordInput } from './confirm-password.tsx'
 import { ImageRepositorySelect } from './image-repository-select.tsx'
@@ -68,9 +65,6 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case FLYWAY_MIGRATE_OUT_OF_ORDER:
         case FLYWAY_REPAIR_BEFORE_MIGRATION:
         case ENABLE_QUERY_LOGGING:
-        case INSTALL_REDIS:
-        case ALLOW_SUSPEND:
-        case DEPLOY_GLOWROOT:
         case DEPLOY_CHAP:
         case DHIS2_ENABLED:
         case DHIS2_REGISTER:

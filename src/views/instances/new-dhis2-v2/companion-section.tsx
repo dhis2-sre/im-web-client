@@ -5,7 +5,7 @@ import { useForm } from 'react-final-form'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
 import { StackCompanion } from '../../../types/index.ts'
-import { Dhis2StackName } from '../new-dhis2/parameter-fieldset.tsx'
+import { Dhis2StackName } from '../parameters.ts'
 import { GroupFieldset } from './group-fieldset.tsx'
 
 /* A companion stack's own parameters, shown while the condition the offering stack declared holds.
