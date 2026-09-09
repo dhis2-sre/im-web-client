@@ -4,7 +4,7 @@ import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Database } from '../../../types/index.ts'
-import { AsyncActionProps } from './actions-dropdown-menu.tsx'
+import { AsyncActionProps } from './action-types.ts'
 import styles from './save-as-modal.module.css'
 
 interface SaveAsModalProps extends AsyncActionProps {

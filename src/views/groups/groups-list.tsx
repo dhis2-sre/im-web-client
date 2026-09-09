@@ -32,7 +32,9 @@ export const GroupsList: FC = () => {
                 <TableBody>
                     {data?.map((group) => (
                         <DataTableRow key={group.name}>
-                            <DataTableCell><Link to={`/groups/${group.name}`}>{group.name}</Link></DataTableCell>
+                            <DataTableCell>
+                                <Link to={`/groups/${group.name}`}>{group.name}</Link>
+                            </DataTableCell>
                             <DataTableCell>{group.namespace}</DataTableCell>
                             <DataTableCell>{group.hostname}</DataTableCell>
                             <DataTableCell>{group.description}</DataTableCell>

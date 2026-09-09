@@ -1,6 +1,19 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import type { BaseButtonProps } from '@dhis2/ui'
-import { Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import {
+    Button,
+    ButtonStrip,
+    Center,
+    CheckboxField,
+    CircularLoader,
+    InputField,
+    Modal,
+    ModalActions,
+    ModalContent,
+    ModalTitle,
+    SingleSelectField,
+    SingleSelectOption,
+} from '@dhis2/ui'
 import cx from 'classnames'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
