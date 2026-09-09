@@ -42,7 +42,12 @@ const refreshTokens = () => {
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        if (error.response?.status !== 401) {
+        /* Only try to refresh an expired session. A 401 from the login itself means bad
+         * credentials, and a 401 from the refresh endpoint means the session is gone; refreshing
+         * in those cases masks the real error (e.g. "invalid email and password combination"
+         * became "refresh token not found"). */
+        const requestUrl = error.config?.url ?? ''
+        if (error.response?.status !== 401 || requestUrl.endsWith('/tokens') || requestUrl.endsWith('/refresh')) {
             return Promise.reject(error)
         }
 
@@ -50,9 +55,12 @@ axiosInstance.interceptors.response.use(
             await refreshTokens()
 
             return axios(error.config)
-        } catch (refreshError) {
+        } catch {
             dispatchUnauthorizedEvent()
-            return Promise.reject(refreshError)
+            /* Reject with the error from the request the caller actually made. That the refresh
+             * attempt also failed is an implementation detail of this interceptor, and passing it
+             * on renders /refresh's response in whichever view happened to be mounted. */
+            return Promise.reject(error)
         }
     }
 )
