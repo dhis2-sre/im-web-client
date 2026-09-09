@@ -5,15 +5,10 @@ import { STACK_NAMES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance } from '../../../types/index.ts'
 import { OnActionCompletFn } from '../details/action-types.ts'
 import { SaveAsMenuItem } from '../details/save-as-menu-item.tsx'
-import { DEPLOY_GLOWROOT } from '../new-dhis2/constants.ts'
 import { DeploymentWideActionMenuItem } from './deployment-wide-action-menu-item.tsx'
 
-/* A dump needs one target, so unlike restart and reset this resolves the instance that owns the
- * database: the umbrella instance, or the separate database instance in the classic composition. */
-const DATABASE_STACKS = [STACK_NAMES.DB, 'dhis2-v2', 'dhis2']
-
-const findByStack = (instances: DeploymentInstance[], stackNames: string[]) =>
-    stackNames.map((stackName) => instances.find((instance) => instance.stackName === stackName)).find(Boolean)
+// A dump needs one target, so unlike restart and reset this resolves the instance that owns the database.
+const findByStack = (instances: DeploymentInstance[], stackName: string) => instances.find((instance) => instance.stackName === stackName)
 
 export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => void }> = ({ deployment, refetch }) => {
     const anchor = useRef<HTMLSpanElement>(null)
@@ -21,10 +16,8 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => 
     const [loading, setLoading] = useState(false)
 
     const instances = deployment.instances ?? []
-    const database = findByStack(instances, DATABASE_STACKS)
-    const pgAdmin = findByStack(instances, [STACK_NAMES.PG_ADMIN])
-    const core = findByStack(instances, [STACK_NAMES.CORE])
-    const glowrootEnabled = core?.parameters?.[DEPLOY_GLOWROOT]?.value === 'true'
+    const database = findByStack(instances, STACK_NAMES.DHIS2)
+    const pgAdmin = findByStack(instances, STACK_NAMES.PG_ADMIN)
 
     const onStart = useCallback(() => {
         setOpen(false)
@@ -63,7 +56,6 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => 
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
-                        {glowrootEnabled && <MenuItem dense icon={<IconLaunch16 />} label="Open Glowroot" onClick={() => openPath(`${deployment.name}-glowroot`)} />}
                         {database && <SaveAsMenuItem instanceId={database.id} stackName={database.stackName} onStart={onStart} onComplete={onComplete} />}
                         <DeploymentWideActionMenuItem action="restart" instances={instances} deploymentName={deployment.name} onStart={onStart} onComplete={onComplete} />
                         <DeploymentWideActionMenuItem action="reset" instances={instances} deploymentName={deployment.name} onStart={onStart} onComplete={onComplete} />

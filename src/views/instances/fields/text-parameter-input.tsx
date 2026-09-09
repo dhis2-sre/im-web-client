@@ -1,7 +1,7 @@
 import { InputFieldFF, hasValue } from '@dhis2/ui'
 import { FC } from 'react'
 import { Field } from 'react-final-form'
-import { OPTIONAL_FIELDS } from '../constants.ts'
+import { OPTIONAL_FIELDS } from '../parameters.ts'
 import { ParameterFieldProps } from './parameter-field.tsx'
 
 export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)

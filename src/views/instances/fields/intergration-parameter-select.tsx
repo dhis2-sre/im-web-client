@@ -1,7 +1,7 @@
 import { SingleSelectFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useMemo } from 'react'
 import { Field, useField } from 'react-final-form'
-import { useAuthAxios } from '../../../../hooks/index.ts'
+import { useAuthAxios } from '../../../hooks/index.ts'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 import { ParameterFieldProps } from './parameter-field.tsx'
 

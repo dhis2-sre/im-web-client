@@ -1,10 +1,9 @@
 import { FC, useEffect, useMemo, useState, useCallback } from 'react'
 import { useField, useForm } from 'react-final-form'
-import classes from '../../../../components/searchable-single-select.module.css'
-import { SearchableSingleSelect } from '../../../../components/searchable-single-select.tsx'
-import { useAuthAxios } from '../../../../hooks/index.ts'
-import { IMAGE_REPOSITORY, IMAGE_TAG } from '../constants.ts'
-import { Dhis2StackName } from '../parameter-fieldset.tsx'
+import classes from '../../../components/searchable-single-select.module.css'
+import { SearchableSingleSelect } from '../../../components/searchable-single-select.tsx'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG } from '../parameters.ts'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
 interface ImageTagSelectProps {
@@ -114,14 +113,7 @@ const useCheckImageExists = (repository, organization?: string, registry?: strin
     return { imageLoading, checkImageExists }
 }
 
-export const ImageTagSelect: FC<ImageTagSelectProps> = ({
-    displayName,
-    stackId = 'dhis2-core',
-    parameterName = IMAGE_TAG,
-    organization,
-    repository: fixedRepository,
-    registry,
-}) => {
+export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId = 'dhis2-v2', parameterName = IMAGE_TAG, organization, repository: fixedRepository, registry }) => {
     const form = useForm()
     const { value: imageValue, onChange: onImageChange } = useImageTagField(stackId, parameterName)
     const dynamicRepository = useRepositoryValue(stackId)

@@ -2,9 +2,8 @@ import { SingleSelectField, hasValue } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useMemo } from 'react'
 import { useField } from 'react-final-form'
-import { useAuthAxios } from '../../../../hooks/index.ts'
-import { IMAGE_REPOSITORY } from '../constants.ts'
-import { Dhis2StackName } from '../parameter-fieldset.tsx'
+import { useAuthAxios } from '../../../hooks/index.ts'
+import { Dhis2StackName, IMAGE_REPOSITORY } from '../parameters.ts'
 import styles from './fields.module.css'
 
 type CustomOption = {
@@ -68,7 +67,7 @@ const CustomSelectOption: FC<{
     </div>
 )
 
-export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2StackName }> = ({ displayName, stackId = 'dhis2-core' }) => {
+export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2StackName }> = ({ displayName, stackId = 'dhis2-v2' }) => {
     const { meta, input } = useField(`${stackId}.${IMAGE_REPOSITORY}`, {
         validate: hasValue,
     })
