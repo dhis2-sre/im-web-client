@@ -19,8 +19,8 @@ export const Login = () => {
         [login, email, password, rememberMe]
     )
     const onGoogleLogin = useCallback(() => {
-        window.location.href = `${baseURL}/auth/google`
-    }, [])
+        window.location.href = `${baseURL}/auth/google?rememberMe=${rememberMe}`
+    }, [rememberMe])
 
     return (
         <form className={styles.container} onSubmit={onSubmit}>
