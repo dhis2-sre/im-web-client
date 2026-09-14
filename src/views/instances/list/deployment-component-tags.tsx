@@ -1,6 +1,6 @@
 import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useLiveComponents } from '../../../hooks/index.ts'
+import { DeploymentInstanceComponents } from '../../../types/index.ts'
 import { getReplicaTagProps } from '../../../utils/replica-tag.ts'
 import styles from './deployment-component-tags.module.css'
 
@@ -15,9 +15,7 @@ import styles from './deployment-component-tags.module.css'
  * bare and only what is deployed alongside them is qualified. The details page needs no prefix at
  * all, having a section per instance. */
 const componentLabel = (stackName: string, componentName: string) => (stackName.startsWith('dhis2') ? componentName : `${stackName}:${componentName}`)
-export const DeploymentComponentTags: FC<{ deploymentId: number }> = ({ deploymentId }) => {
-    const { instances, loading, error } = useLiveComponents(deploymentId)
-
+export const DeploymentComponentTags: FC<{ instances?: DeploymentInstanceComponents[]; loading: boolean; error?: unknown }> = ({ instances, loading, error }) => {
     if (loading && !instances) {
         return <CircularLoader extrasmall />
     }

@@ -6,10 +6,12 @@ import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent } from '../../../types/index.ts'
 import { SaveAsModal } from './save-as-modal.tsx'
 
-/* Operations the menu knows how to perform; every other advertised operation is shown disabled so
+/* Operations this menu accounts for; every other advertised operation is shown disabled so
  * capabilities stay visible until they get an action here. restartReplica is deliberately not
- * surfaced in the UI, the API keeps it for scripting. */
-const handledOperations = ['restart', 'restartReplica', 'databaseSave']
+ * surfaced in the UI, the API keeps it for scripting, and filestoreBackup has no action of its own
+ * because it has no endpoint of its own: it runs as part of a database save, which is why the save
+ * item says so rather than offering the file store separately. */
+const handledOperations = ['restart', 'restartReplica', 'databaseSave', 'filestoreBackup']
 
 export const ComponentOperationsMenu: FC<{
     instanceId: number
