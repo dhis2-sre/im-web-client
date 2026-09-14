@@ -4,13 +4,22 @@ import { useState } from 'react'
 import { AsyncActionProps } from './action-types.ts'
 import { SaveAsModal } from './save-as-modal.tsx'
 
-export const SaveAsMenuItem: FC<AsyncActionProps> = ({ instanceId, stackName, onStart, onComplete }) => {
+export const SaveAsMenuItem: FC<AsyncActionProps & { savesFilestore?: boolean }> = ({ instanceId, stackName, savesFilestore, onStart, onComplete }) => {
     const [showModal, setShowModal] = useState<boolean>(false)
 
     return (
         <>
-            <MenuItem dense label="Save database as" icon={<IconSave16 />} onClick={() => setShowModal(true)} />
-            {showModal && <SaveAsModal onClose={() => setShowModal(false)} instanceId={instanceId} stackName={stackName} onStart={onStart} onComplete={onComplete} />}
+            <MenuItem dense label={savesFilestore ? 'Save database and file store as' : 'Save database as'} icon={<IconSave16 />} onClick={() => setShowModal(true)} />
+            {showModal && (
+                <SaveAsModal
+                    onClose={() => setShowModal(false)}
+                    instanceId={instanceId}
+                    stackName={stackName}
+                    savesFilestore={savesFilestore}
+                    onStart={onStart}
+                    onComplete={onComplete}
+                />
+            )}
         </>
     )
 }

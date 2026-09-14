@@ -2,21 +2,26 @@ import { Button, IconLaunch16, IconMore24, Menu, MenuItem, Popover } from '@dhis
 import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { STACK_NAMES } from '../../../constants.ts'
-import { Deployment, DeploymentInstance } from '../../../types/index.ts'
+import { Deployment, DeploymentInstance, DeploymentInstanceComponents } from '../../../types/index.ts'
 import { OnActionCompletFn } from '../details/action-types.ts'
 import { SaveAsMenuItem } from '../details/save-as-menu-item.tsx'
 import { DeploymentWideActionMenuItem } from './deployment-wide-action-menu-item.tsx'
 
-// A dump needs one target, so unlike restart and reset this resolves the instance that owns the database.
+// A dump needs one target, so unlike restart and reset this resolves the one instance that owns the
+// database, and it asks the components what they can do rather than matching on stack name.
+const advertises = (components: DeploymentInstanceComponents[] | undefined, operation: string) =>
+    components?.find((instance) => instance.components.some((component) => component.supportedOperations.includes(operation)))
+
 const findByStack = (instances: DeploymentInstance[], stackName: string) => instances.find((instance) => instance.stackName === stackName)
 
-export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => void }> = ({ deployment, refetch }) => {
+export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: DeploymentInstanceComponents[]; refetch: () => void }> = ({ deployment, components, refetch }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const instances = deployment.instances ?? []
-    const database = findByStack(instances, STACK_NAMES.DHIS2)
+    const database = advertises(components, 'databaseSave')
+    const savesFilestore = advertises(components, 'filestoreBackup') !== undefined
     const pgAdmin = findByStack(instances, STACK_NAMES.PG_ADMIN)
 
     const onStart = useCallback(() => {
@@ -56,7 +61,15 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; refetch: () => 
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
-                        {database && <SaveAsMenuItem instanceId={database.id} stackName={database.stackName} onStart={onStart} onComplete={onComplete} />}
+                        {database && (
+                            <SaveAsMenuItem
+                                instanceId={database.instanceId}
+                                stackName={database.stackName}
+                                savesFilestore={savesFilestore}
+                                onStart={onStart}
+                                onComplete={onComplete}
+                            />
+                        )}
                         <DeploymentWideActionMenuItem action="restart" instances={instances} deploymentName={deployment.name} onStart={onStart} onComplete={onComplete} />
                         <DeploymentWideActionMenuItem action="reset" instances={instances} deploymentName={deployment.name} onStart={onStart} onComplete={onComplete} />
                     </Menu>
