@@ -28,7 +28,7 @@ const axiosInstance = createAxiosInstance()
 
 let refreshInFlight: Promise<unknown> | null = null
 
-const refreshTokens = () => {
+export const refreshTokens = () => {
     if (!refreshInFlight) {
         refreshInFlight = createAxiosInstance()
             .post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })

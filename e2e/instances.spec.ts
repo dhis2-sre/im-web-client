@@ -24,7 +24,7 @@ test.describe('new instance', () => {
         test.setTimeout(2 * 60 * 1000) // 2 minutes
 
         await page.getByRole('link', { name: 'Instances' }).click()
-        await page.getByRole('button', { name: 'New instance' }).click()
+        await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await expect(page.getByRole('group', { name: 'Basic information' })).toBeVisible()
         await expect(page.getByRole('group', { name: 'DHIS2 Core' })).toBeVisible()
@@ -97,7 +97,7 @@ test.describe('new instance', () => {
 
         // Create the instance to update.
         await page.getByRole('link', { name: 'Instances' }).click()
-        await page.getByRole('button', { name: 'New instance' }).click()
+        await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
         await page.getByRole('textbox', { name: 'Description' }).fill('Initial description.')
