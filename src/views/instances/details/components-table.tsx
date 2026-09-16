@@ -49,7 +49,9 @@ export const ComponentsTable: FC<{
                                   expandableContent: <ComponentParametersTable parameters={parameters} />,
                               }
                             : {}
-                    const operations = <ComponentOperationsMenu instanceId={instanceId} stackName={stackName} component={component} onChanged={onChanged} />
+                    const operations = (replica?: string) => (
+                        <ComponentOperationsMenu instanceId={instanceId} stackName={stackName} component={component} replica={replica} onChanged={onChanged} />
+                    )
 
                     return (
                         <Fragment key={component.name}>
@@ -65,7 +67,7 @@ export const ComponentsTable: FC<{
                                     <DataTableCell>
                                         <Moment date={replica.createdAt} fromNow />
                                     </DataTableCell>
-                                    <DataTableCell align="right">{operations}</DataTableCell>
+                                    <DataTableCell align="right">{operations(replica.name)}</DataTableCell>
                                 </DataTableRow>
                             ))}
                             {component.replicas.length === 0 && (
@@ -76,7 +78,7 @@ export const ComponentsTable: FC<{
                                     <DataTableCell>No replicas</DataTableCell>
                                     <DataTableCell></DataTableCell>
                                     <DataTableCell></DataTableCell>
-                                    <DataTableCell align="right">{operations}</DataTableCell>
+                                    <DataTableCell align="right">{operations()}</DataTableCell>
                                 </DataTableRow>
                             )}
                         </Fragment>
