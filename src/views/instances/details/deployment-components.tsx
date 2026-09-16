@@ -1,12 +1,12 @@
 import { CircularLoader } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useLiveComponents } from '../../../hooks/index.ts'
+import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import { Deployment } from '../../../types/index.ts'
 import { InstanceComponentsSection } from './instance-components-section.tsx'
 import styles from './instance-components.module.css'
 
-export const DeploymentComponents: FC<{ deployment: Deployment }> = ({ deployment }) => {
-    const { instances, loading, error, refetch } = useLiveComponents(deployment.id)
+export const DeploymentComponents: FC<{ deployment: Deployment; components: LiveComponents }> = ({ deployment, components }) => {
+    const { instances, loading, error, refetch } = components
 
     return (
         <>

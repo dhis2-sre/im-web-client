@@ -75,3 +75,6 @@ export const useLiveComponents = (deploymentId: number) => {
 
     return { instances, loading, error, refetch }
 }
+
+// The shape the hook returns, so a component can be handed the one shared query as a prop.
+export type LiveComponents = ReturnType<typeof useLiveComponents>

@@ -9,7 +9,7 @@ export const SaveAsMenuItem: FC<AsyncActionProps & { savesFilestore?: boolean }>
 
     return (
         <>
-            <MenuItem dense label={savesFilestore ? 'Save database and file store as' : 'Save database as'} icon={<IconSave16 />} onClick={() => setShowModal(true)} />
+            <MenuItem dense label="Backup" icon={<IconSave16 />} onClick={() => setShowModal(true)} />
             {showModal && (
                 <SaveAsModal
                     onClose={() => setShowModal(false)}

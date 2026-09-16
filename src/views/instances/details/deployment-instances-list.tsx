@@ -4,7 +4,7 @@ import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
-import { Deployment } from '../../../types/index.ts'
+import { Deployment, DeploymentInstanceComponents } from '../../../types/index.ts'
 import { DeleteButton } from '../list/delete-menu-button.tsx'
 import { DeploymentActionsMenu } from '../list/deployment-actions-menu.tsx'
 import { Dhis2StackName } from '../parameters.ts'
@@ -18,8 +18,9 @@ import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 export const DeploymentInstancesList: FC<{
     deployment: Deployment
     loading: boolean
+    components?: DeploymentInstanceComponents[]
     refetch: () => void
-}> = ({ deployment, loading, refetch }) => {
+}> = ({ deployment, loading, components, refetch }) => {
     const navigate = useNavigate()
 
     return (
@@ -53,7 +54,7 @@ export const DeploymentInstancesList: FC<{
                                         <ViewInstanceMenuItem group={deployment.group} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
                                     )}
                                     <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={() => navigate('/instances')} />
-                                    <DeploymentActionsMenu deployment={deployment} refetch={refetch} />
+                                    <DeploymentActionsMenu deployment={deployment} components={components} refetch={refetch} />
                                 </ButtonStrip>
                             </DataTableCell>
                         </tr>
