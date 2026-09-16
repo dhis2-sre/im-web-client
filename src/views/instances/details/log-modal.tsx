@@ -1,5 +1,5 @@
 import { Button, ButtonStrip, Center, CircularLoader, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import styles from './log-modal.module.css'
@@ -49,11 +49,30 @@ export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica
         }
     }, [requestLog, cancelLog, componentName, replica])
 
+    /* The log is followed, so new lines arrive for as long as the modal is open. The view stays at
+     * the end as they do, unless the reader has scrolled up to look at something. */
+    const container = useRef<HTMLDivElement>(null)
+    const followTail = useRef(true)
+
+    const onScroll = useCallback(() => {
+        const element = container.current
+        if (element) {
+            followTail.current = element.scrollHeight - element.scrollTop - element.clientHeight < 32
+        }
+    }, [])
+
+    useEffect(() => {
+        const element = container.current
+        if (element && followTail.current) {
+            element.scrollTop = element.scrollHeight
+        }
+    }, [log])
+
     return (
         <Modal fluid onClose={onClose}>
             <ModalTitle>Logs: {replica}</ModalTitle>
             <ModalContent>
-                <div className={styles.container}>
+                <div className={styles.container} ref={container} onScroll={onScroll}>
                     {!log && !error && (
                         <Center>
                             <CircularLoader />
