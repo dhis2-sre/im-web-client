@@ -7,8 +7,8 @@ import { OnActionCompletFn } from '../details/action-types.ts'
 import { SaveAsMenuItem } from '../details/save-as-menu-item.tsx'
 import { DeploymentWideActionMenuItem } from './deployment-wide-action-menu-item.tsx'
 
-// A dump needs one target, so unlike restart and reset this resolves the one instance that owns the
-// database, and it asks the components what they can do rather than matching on stack name.
+// A backup needs one target, so unlike restart and reset this resolves the one instance that owns
+// the database, and it asks the components what they can do rather than matching on stack name.
 const advertises = (components: DeploymentInstanceComponents[] | undefined, operation: string) =>
     components?.find((instance) => instance.components.some((component) => component.supportedOperations.includes(operation)))
 
@@ -20,8 +20,13 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
     const [loading, setLoading] = useState(false)
 
     const instances = deployment.instances ?? []
+    /* One backup covers the deployment: the dump and the file store are written together and linked,
+     * so this offers a single action whenever any component can back either of them up, rather than
+     * one per component, which would back the same pair up twice. */
     const database = advertises(components, 'databaseSave')
-    const savesFilestore = advertises(components, 'filestoreBackup') !== undefined
+    const filestore = advertises(components, 'filestoreBackup')
+    const backupTarget = database ?? filestore
+    const savesFilestore = filestore !== undefined
     const pgAdmin = findByStack(instances, STACK_NAMES.PG_ADMIN)
 
     const onStart = useCallback(() => {
@@ -61,10 +66,10 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
-                        {database && (
+                        {backupTarget && (
                             <SaveAsMenuItem
-                                instanceId={database.instanceId}
-                                stackName={database.stackName}
+                                instanceId={backupTarget.instanceId}
+                                stackName={backupTarget.stackName}
                                 savesFilestore={savesFilestore}
                                 onStart={onStart}
                                 onComplete={onComplete}

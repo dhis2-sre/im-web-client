@@ -8,9 +8,9 @@ import { SaveAsModal } from './save-as-modal.tsx'
 
 /* Operations this menu accounts for; every other advertised operation is shown disabled so
  * capabilities stay visible until they get an action here. restartReplica is deliberately not
- * surfaced in the UI, the API keeps it for scripting, and filestoreBackup has no action of its own
- * because it has no endpoint of its own: it runs as part of a database save, which is why the save
- * item says so rather than offering the file store separately. */
+ * surfaced in the UI, the API keeps it for scripting. databaseSave and filestoreBackup share the
+ * one Backup item: the dump and the file store are written together and linked, so the component
+ * advertising either capability offers the same backup. */
 const handledOperations = ['restart', 'restartReplica', 'databaseSave', 'filestoreBackup']
 
 export const ComponentOperationsMenu: FC<{
@@ -22,6 +22,8 @@ export const ComponentOperationsMenu: FC<{
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [showSaveAs, setShowSaveAs] = useState(false)
+
+    const backsUp = component.supportedOperations.includes('databaseSave') || component.supportedOperations.includes('filestoreBackup')
 
     const { show: showAlert } = useAlert(
         ({ message }) => message,
@@ -65,10 +67,10 @@ export const ComponentOperationsMenu: FC<{
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={onRestart} />}
-                        {component.supportedOperations.includes('databaseSave') && (
+                        {backsUp && (
                             <MenuItem
                                 dense
-                                label="Save database as"
+                                label="Backup"
                                 onClick={() => {
                                     setOpen(false)
                                     setShowSaveAs(true)
