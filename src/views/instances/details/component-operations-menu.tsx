@@ -4,24 +4,28 @@ import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent } from '../../../types/index.ts'
+import { LogModal } from './log-modal.tsx'
 import { SaveAsModal } from './save-as-modal.tsx'
 
 /* Operations this menu accounts for; every other advertised operation is shown disabled so
  * capabilities stay visible until they get an action here. restartReplica is deliberately not
  * surfaced in the UI, the API keeps it for scripting. databaseSave and filestoreBackup share the
  * one Backup item: the dump and the file store are written together and linked, so the component
- * advertising either capability offers the same backup. */
-const handledOperations = ['restart', 'restartReplica', 'databaseSave', 'filestoreBackup']
+ * advertising either capability offers the same backup. logs is offered on the replica rows only,
+ * since a log belongs to one pod rather than to the component as a whole. */
+const handledOperations = ['restart', 'restartReplica', 'databaseSave', 'filestoreBackup', 'logs']
 
 export const ComponentOperationsMenu: FC<{
     instanceId: number
     stackName: string
     component: InstanceComponent
+    replica?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, component, onChanged }) => {
+}> = ({ instanceId, stackName, component, replica, onChanged }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [showSaveAs, setShowSaveAs] = useState(false)
+    const [showLog, setShowLog] = useState(false)
 
     const backsUp = component.supportedOperations.includes('databaseSave') || component.supportedOperations.includes('filestoreBackup')
 
@@ -52,6 +56,7 @@ export const ComponentOperationsMenu: FC<{
 
     return (
         <>
+            {showLog && replica && <LogModal instanceId={instanceId} componentName={component.name} replica={replica} onClose={() => setShowLog(false)} />}
             {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
             <span ref={anchor}>
                 <Button
@@ -74,6 +79,16 @@ export const ComponentOperationsMenu: FC<{
                                 onClick={() => {
                                     setOpen(false)
                                     setShowSaveAs(true)
+                                }}
+                            />
+                        )}
+                        {component.supportedOperations.includes('logs') && replica && (
+                            <MenuItem
+                                dense
+                                label="Logs"
+                                onClick={() => {
+                                    setOpen(false)
+                                    setShowLog(true)
                                 }}
                             />
                         )}
