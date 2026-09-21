@@ -13,8 +13,11 @@ export const ComponentsTable: FC<{
     stackName: string
     components: InstanceComponent[]
     parametersByComponent: Record<string, ParameterEntry[]>
+    namespace?: string
+    deploymentId?: number
+    instanceName?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, components, parametersByComponent, onChanged }) => {
+}> = ({ instanceId, stackName, components, parametersByComponent, namespace, deploymentId, instanceName, onChanged }) => {
     /* Keyed per row rather than per component, so expanding one replica of a component does not
      * expand its siblings and repeat the same parameters underneath each of them. */
     const [expandedRows, setExpandedRows] = useState<string[]>([])
@@ -50,7 +53,16 @@ export const ComponentsTable: FC<{
                               }
                             : {}
                     const operations = (replica?: string) => (
-                        <ComponentOperationsMenu instanceId={instanceId} stackName={stackName} component={component} replica={replica} onChanged={onChanged} />
+                        <ComponentOperationsMenu
+                            instanceId={instanceId}
+                            stackName={stackName}
+                            component={component}
+                            replica={replica}
+                            namespace={namespace}
+                            deploymentId={deploymentId}
+                            instanceName={instanceName}
+                            onChanged={onChanged}
+                        />
                     )
 
                     return (

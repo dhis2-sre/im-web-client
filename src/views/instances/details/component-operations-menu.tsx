@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent } from '../../../types/index.ts'
+import { grafanaLogsUrl } from '../../../utils/grafana-logs.ts'
 import { LogModal } from './log-modal.tsx'
 import { SaveAsModal } from './save-as-modal.tsx'
 
@@ -20,12 +21,17 @@ export const ComponentOperationsMenu: FC<{
     stackName: string
     component: InstanceComponent
     replica?: string
+    namespace?: string
+    deploymentId?: number
+    instanceName?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, component, replica, onChanged }) => {
+}> = ({ instanceId, stackName, component, replica, namespace, deploymentId, instanceName, onChanged }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [showSaveAs, setShowSaveAs] = useState(false)
     const [showLog, setShowLog] = useState(false)
+
+    const grafanaUrl = grafanaLogsUrl({ namespace, deploymentId, instanceName, component: component.name })
 
     const backsUp = component.supportedOperations.includes('databaseSave') || component.supportedOperations.includes('filestoreBackup')
 
@@ -92,6 +98,7 @@ export const ComponentOperationsMenu: FC<{
                                 }}
                             />
                         )}
+                        {grafanaUrl && <MenuItem dense label="Logs in Grafana" href={grafanaUrl} target="_blank" onClick={() => setOpen(false)} />}
                         {component.supportedOperations
                             .filter((operation) => !handledOperations.includes(operation))
                             .map((operation) => (
