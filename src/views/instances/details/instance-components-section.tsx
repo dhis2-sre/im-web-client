@@ -34,8 +34,8 @@ export const InstanceComponentsSection: FC<{
                 components={instanceComponents.components}
                 parametersByComponent={byComponent}
                 namespace={instance?.group?.namespace}
-                deploymentId={instance?.deploymentId}
                 instanceName={instanceComponents.instanceName}
+                groupId={instance?.group?.id}
                 onChanged={onChanged}
             />
             {/* Stacks that declare no parameter groups have nothing to hang off a component, so their

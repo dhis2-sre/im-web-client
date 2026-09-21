@@ -22,16 +22,16 @@ export const ComponentOperationsMenu: FC<{
     component: InstanceComponent
     replica?: string
     namespace?: string
-    deploymentId?: number
     instanceName?: string
+    groupId?: number
     onChanged: () => void
-}> = ({ instanceId, stackName, component, replica, namespace, deploymentId, instanceName, onChanged }) => {
+}> = ({ instanceId, stackName, component, replica, namespace, instanceName, groupId, onChanged }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [showSaveAs, setShowSaveAs] = useState(false)
     const [showLog, setShowLog] = useState(false)
 
-    const grafanaUrl = grafanaLogsUrl({ namespace, deploymentId, instanceName, component: component.name })
+    const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
 
     const backsUp = component.supportedOperations.includes('databaseSave') || component.supportedOperations.includes('filestoreBackup')
 

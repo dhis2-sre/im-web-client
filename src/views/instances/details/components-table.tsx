@@ -14,10 +14,10 @@ export const ComponentsTable: FC<{
     components: InstanceComponent[]
     parametersByComponent: Record<string, ParameterEntry[]>
     namespace?: string
-    deploymentId?: number
     instanceName?: string
+    groupId?: number
     onChanged: () => void
-}> = ({ instanceId, stackName, components, parametersByComponent, namespace, deploymentId, instanceName, onChanged }) => {
+}> = ({ instanceId, stackName, components, parametersByComponent, namespace, instanceName, groupId, onChanged }) => {
     /* Keyed per row rather than per component, so expanding one replica of a component does not
      * expand its siblings and repeat the same parameters underneath each of them. */
     const [expandedRows, setExpandedRows] = useState<string[]>([])
@@ -59,8 +59,8 @@ export const ComponentsTable: FC<{
                             component={component}
                             replica={replica}
                             namespace={namespace}
-                            deploymentId={deploymentId}
                             instanceName={instanceName}
+                            groupId={groupId}
                             onChanged={onChanged}
                         />
                     )
