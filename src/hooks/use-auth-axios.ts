@@ -55,9 +55,12 @@ axiosInstance.interceptors.response.use(
             await refreshTokens()
 
             return axios(error.config)
-        } catch (refreshError) {
+        } catch {
             dispatchUnauthorizedEvent()
-            return Promise.reject(refreshError)
+            /* Reject with the error from the request the caller actually made. That the refresh
+             * attempt also failed is an implementation detail of this interceptor, and passing it
+             * on renders /refresh's response in whichever view happened to be mounted. */
+            return Promise.reject(error)
         }
     }
 )
