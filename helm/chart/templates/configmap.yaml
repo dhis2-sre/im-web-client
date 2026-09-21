@@ -6,3 +6,4 @@ metadata:
     {{- include "im-web-client.labels" . | nindent 4 }}
 data:
   API_URL: {{ .Values.apiUrl | quote }}
+  GRAFANA_LOGS_URL: {{ .Values.grafanaLogsUrl | quote }}

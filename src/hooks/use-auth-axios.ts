@@ -7,7 +7,7 @@ import { RefreshTokenRequest } from '../types/index.ts'
 
 declare global {
     interface Window {
-        _env_?: { API_URL?: string }
+        _env_?: { API_URL?: string; GRAFANA_LOGS_URL?: string }
     }
 }
 
