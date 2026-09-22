@@ -98,7 +98,20 @@ export const ComponentOperationsMenu: FC<{
                                 }}
                             />
                         )}
-                        {grafanaUrl && <MenuItem dense label="Logs in Grafana" href={grafanaUrl} target="_blank" onClick={() => setOpen(false)} />}
+                        {grafanaUrl && (
+                            /* The menu item swallows a plain click on its own link, it only lets a
+                             * modified one through, so the new tab is opened here instead. */
+                            <MenuItem
+                                dense
+                                label="Logs in Grafana"
+                                href={grafanaUrl}
+                                target="_blank"
+                                onClick={() => {
+                                    setOpen(false)
+                                    window.open(grafanaUrl, '_blank', 'noopener,noreferrer')
+                                }}
+                            />
+                        )}
                         {component.supportedOperations
                             .filter((operation) => !handledOperations.includes(operation))
                             .map((operation) => (
