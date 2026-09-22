@@ -13,6 +13,7 @@ services:
       target: builder
     environment:
       API_URL: ${API_URL}
+      GRAFANA_LOGS_URL: ${GRAFANA_LOGS_URL:-}
     stdin_open: true
     tty: true
     volumes:

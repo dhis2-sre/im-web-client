@@ -9,3 +9,5 @@ services:
     # Substituted into the built assets by the entrypoint, so one image serves every environment.
     environment:
       API_URL: ${API_URL}
+      # Same dashboard the chart points at. Empty hides the component log links.
+      GRAFANA_LOGS_URL: ${GRAFANA_LOGS_URL:-https://grafana.im.dhis2.org/d/b275a775-8360-485a-896c-832ef6fef29d/instance-logs}
