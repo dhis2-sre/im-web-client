@@ -8,8 +8,9 @@ import { useAuthAxios } from './use-auth-axios.ts'
 export type DeploymentStepStatus = 'pending' | 'running' | 'success' | 'error'
 export type DeploymentStep = { stackName: string; status: DeploymentStepStatus }
 
-/* A stack counts as running from the moment its instance is registered until the deployment
- * finishes, because deploying is one call covering every instance rather than one per stack. */
+/* A stack counts as running while its instance is being registered, and registered once the call
+ * returns. Deploying is what happens after that, asynchronously, and is watched on the details page
+ * rather than here. */
 const SETTLED_PAUSE_MS = 800
 
 /* Creates a deployment with an instance of the given stack plus any opted-in companion stacks and
@@ -61,6 +62,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 const instancePayload: SaveInstanceRequest = { stackName, parameters, public: values.public }
                 setStatus([stackName], 'running')
                 await executePost({ url: `/deployments/${deployment.id}/instance`, data: instancePayload })
+                setStatus([stackName], 'success')
 
                 for (const companion of includedCompanions) {
                     const companionValues: AnyObject = values[companion.name] ?? {}
@@ -73,10 +75,12 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                     const companionPayload: SaveInstanceRequest = { stackName: companion.name, parameters: companionParameters }
                     setStatus([companion.name], 'running')
                     await executePost({ url: `/deployments/${deployment.id}/instance`, data: companionPayload })
+                    setStatus([companion.name], 'success')
                 }
 
+                /* Deploying is accepted rather than performed, so this returns long before anything
+                 * runs in the cluster. The details page is where the deploy is watched. */
                 await executePost({ url: `/deployments/${deployment.id}/deploy` })
-                setStatus(deployedStacks, 'success')
                 /* Long enough for the check marks to be seen before the details page replaces them. */
                 await new Promise((resolve) => setTimeout(resolve, SETTLED_PAUSE_MS))
                 navigate(`/instances/${deployment.id}/details`)

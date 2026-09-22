@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ComponentStatusEventData } from '../types/index.ts'
+import { ComponentStatusEventData, DeploymentEventData } from '../types/index.ts'
 import { baseURL, refreshTokens, useAuthAxios } from './use-auth-axios.ts'
 
 export type DatabaseSaveData = {
@@ -34,6 +34,13 @@ export type SseEvent = {
     data: DatabaseSaveData
 }
 
+/* Per-instance deploy progress is transient like component status, so seq makes every event a fresh
+ * object and consumers fire on it even when two payloads are identical. */
+export type DeploymentEvent = {
+    seq: number
+    data: DeploymentEventData
+}
+
 const STREAM_RECONNECT_DELAY_MS = 3_000
 const STREAM_RECONNECT_MAX_DELAY_MS = 30_000
 
@@ -41,10 +48,12 @@ export const useNotifications = () => {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [lastSseEvent, setLastSseEvent] = useState<SseEvent | null>(null)
     const [lastComponentStatus, setLastComponentStatus] = useState<ComponentStatusEvent | null>(null)
+    const [lastDeploymentEvent, setLastDeploymentEvent] = useState<DeploymentEvent | null>(null)
     /* Counts the times the event stream has come up. Consumers watch it to reload what they cannot
      * have been told about while it was down. */
     const [streamEpoch, setStreamEpoch] = useState(0)
     const componentStatusSeq = useRef(0)
+    const deploymentEventSeq = useRef(0)
 
     const [, fetchNotifications] = useAuthAxios<Notification[]>('/notifications', { manual: true, autoCatch: true })
     const [, executeMarkRead] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true })
@@ -124,6 +133,20 @@ export const useNotifications = () => {
 
             es.addEventListener('database-save', makeHandler('database-save'))
             es.addEventListener('filestore-backup', makeHandler('filestore-backup'))
+            es.addEventListener('deployment', (e: MessageEvent) => {
+                try {
+                    const data = JSON.parse(e.data) as DeploymentEventData
+                    deploymentEventSeq.current += 1
+                    setLastDeploymentEvent({ seq: deploymentEventSeq.current, data })
+                    /* Only the deploy's outcome is persisted, and it is the one the bell shows. */
+                    if (!data.instanceId) {
+                        refreshRef.current()
+                    }
+                } catch (err) {
+                    console.error('[notifications] failed to parse deployment event', { raw: e.data, err })
+                }
+            })
+
             es.addEventListener('component-status', (e: MessageEvent) => {
                 try {
                     const data = JSON.parse(e.data) as ComponentStatusEventData
@@ -158,5 +181,5 @@ export const useNotifications = () => {
 
     const unreadCount = notifications.filter((n) => !n.read).length
 
-    return { notifications, unreadCount, lastSseEvent, lastComponentStatus, streamEpoch, markRead, markAllRead }
+    return { notifications, unreadCount, lastSseEvent, lastComponentStatus, lastDeploymentEvent, streamEpoch, markRead, markAllRead }
 }
