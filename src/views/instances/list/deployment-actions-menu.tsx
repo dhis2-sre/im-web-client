@@ -1,6 +1,7 @@
-import { Button, IconLaunch16, IconMore24, Menu, MenuItem, Popover } from '@dhis2/ui'
+import { Button, IconEdit16, IconLaunch16, IconMore24, Menu, MenuItem, Popover } from '@dhis2/ui'
 import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { STACK_NAMES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceComponents } from '../../../types/index.ts'
 import { OnActionCompletFn } from '../details/action-types.ts'
@@ -16,6 +17,7 @@ const findByStack = (instances: DeploymentInstance[], stackName: string) => inst
 
 export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: DeploymentInstanceComponents[]; refetch: () => void }> = ({ deployment, components, refetch }) => {
     const anchor = useRef<HTMLSpanElement>(null)
+    const navigate = useNavigate()
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -65,6 +67,7 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
             {open && (
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
+                        <MenuItem dense icon={<IconEdit16 />} label="Edit" onClick={() => navigate(`/instances/${deployment.id}/edit`)} />
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
                         {backupTarget && (
                             <SaveAsMenuItem

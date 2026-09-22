@@ -1,6 +1,7 @@
 export { useAuth } from './use-auth.ts'
 export { useAuthAxios } from './use-auth-axios.ts'
 export { useDeploymentDetails } from './use-deployment-details.ts'
+export { useDeploymentEdit } from './use-deployment-edit.ts'
 export { useNotifications } from './use-notifications.ts'
 export { useNotificationsContext } from './use-notifications-context.ts'
 export { useLiveComponents } from './use-live-components.ts'

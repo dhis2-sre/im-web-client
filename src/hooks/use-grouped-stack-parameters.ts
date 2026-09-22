@@ -48,7 +48,21 @@ export const useGroupedStackParameters = (stackName: string) => {
         [parameters]
     )
 
+    /* Why each parameter cannot change once the instance has been deployed, for the ones that
+     * cannot. The stack is the only place that knows, so the form renders the reason rather than
+     * inventing its own wording. */
+    const immutableReasons = useMemo(
+        () =>
+            parameters.reduce<Record<string, string>>((reasons, parameter) => {
+                if (parameter.parameterName && parameter.immutableReason) {
+                    reasons[parameter.parameterName] = parameter.immutableReason
+                }
+                return reasons
+            }, {}),
+        [parameters]
+    )
+
     const companions = useMemo(() => stack?.companions ?? [], [stack])
 
-    return { loading, error, groups, companions, initialParameterValues, sensitiveParameters }
+    return { loading, error, groups, companions, initialParameterValues, sensitiveParameters, immutableReasons }
 }
