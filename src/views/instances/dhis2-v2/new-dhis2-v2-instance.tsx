@@ -9,7 +9,7 @@ import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-para
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
-import { NewDhis2V2Form, STACK_ID } from './new-dhis2-v2-form.tsx'
+import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
@@ -34,7 +34,7 @@ export const NewDhis2V2Instance: FC = () => {
             <Heading title="Create a new DHIS2 Instance (v2)" />
             <Card className={styles.container}>
                 <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
-                    {({ handleSubmit, values }) => <NewDhis2V2Form handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} name={values.name} steps={steps} />}
+                    {({ handleSubmit, values }) => <Dhis2V2Form handleCancel={navigateToInstanceList} handleSubmit={handleSubmit} name={values.name} steps={steps} />}
                 </Form>
             </Card>
         </>

@@ -26,6 +26,7 @@ import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
 import { ConfirmPasswordInput } from './confirm-password.tsx'
 import { ImageRepositorySelect } from './image-repository-select.tsx'
 import { ImageTagSelect } from './image-tag-select.tsx'
+import { ImmutableParameterField } from './immutable-parameter-field.tsx'
 import { IntergrationParameterSelect } from './intergration-parameter-select.tsx'
 import { SameSiteCookiesSelect } from './same-site-cookies-select.tsx'
 import { TextParameterInput } from './text-parameter-input.tsx'
@@ -40,9 +41,15 @@ export type ParameterFieldProps = {
     type?: string
     sensitive?: boolean
     formMode?: 'create' | 'update'
+    /* Set while editing a deployed instance whose stack says this parameter can no longer change. */
+    immutableReason?: string
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode }) => {
+export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode, immutableReason }) => {
+    if (immutableReason) {
+        return <ImmutableParameterField stackId={stackId} parameterName={parameterName} displayName={displayName} reason={immutableReason} />
+    }
+
     switch (parameterName) {
         case IMAGE_TAG:
             if (stackId === 'chap') {

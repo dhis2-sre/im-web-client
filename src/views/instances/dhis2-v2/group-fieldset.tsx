@@ -42,7 +42,9 @@ export const GroupFieldset: FC<{
     parameters: StackParameterWithGroup[]
     subGroups?: GroupedParameters[]
     sensitiveParameters: Record<string, boolean>
-}> = ({ stackId, group, parameters, subGroups = [], sensitiveParameters }) => {
+    immutableReasons?: Record<string, string>
+    formMode?: 'create' | 'update'
+}> = ({ stackId, group, parameters, subGroups = [], sensitiveParameters, immutableReasons = {}, formMode = 'create' }) => {
     const primary = parameters.filter((parameter) => PRIMARY_PARAMETERS.has(parameter.parameterName ?? ''))
     const secondary = parameters.filter((parameter) => !PRIMARY_PARAMETERS.has(parameter.parameterName ?? ''))
 
@@ -53,6 +55,8 @@ export const GroupFieldset: FC<{
             parameterName={parameter.parameterName ?? ''}
             displayName={parameter.displayName ?? parameter.parameterName ?? ''}
             sensitive={sensitiveParameters[parameter.parameterName ?? '']}
+            formMode={formMode}
+            immutableReason={formMode === 'update' ? immutableReasons[parameter.parameterName ?? ''] : undefined}
         />
     )
 
@@ -75,6 +79,8 @@ export const GroupFieldset: FC<{
                             group={subGroup.group}
                             parameters={subGroup.parameters}
                             sensitiveParameters={sensitiveParameters}
+                            immutableReasons={immutableReasons}
+                            formMode={formMode}
                         />
                     ))}
                 </div>

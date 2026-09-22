@@ -17,6 +17,7 @@ export const DeploymentDetails: FC = () => {
     return (
         <div className={styles.wrapper}>
             <Heading title={title}>
+                {deployment && <Button onClick={() => navigate(`/instances/${deployment.id}/edit`)}>Edit</Button>}
                 <Button onClick={() => navigate('/instances')}>Back to list</Button>
             </Heading>
 
