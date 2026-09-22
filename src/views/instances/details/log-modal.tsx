@@ -1,4 +1,4 @@
-import { Button, ButtonStrip, Center, CircularLoader, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, Center, CircularLoader, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
@@ -8,11 +8,15 @@ type LogModalProps = {
     instanceId: number
     componentName: string
     replica: string
+    containers: string[]
     onClose: () => void
 }
 
-export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica, onClose }) => {
+export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica, containers, onClose }) => {
     const [log, setLog] = useState('')
+    /* Empty means whichever container the API picks, which is the first one the pod declares. Pods
+     * running a single container never show the picker, so nothing else can be selected there. */
+    const [container, setContainer] = useState('')
     /* The request is configured with the url alone so the hook keeps handing back the same execute
      * function: it compares the config, and a config carrying onDownloadProgress compares unequal
      * on every render. As an effect dependency that would re-issue the request for every chunk of
@@ -29,9 +33,10 @@ export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica
      * the hook's own, which is what holds the abort signal; a signal passed in here is replaced. */
     useEffect(() => {
         let current = true
+        setLog('')
 
         requestLog({
-            params: { selector: componentName, replica },
+            params: { selector: componentName, replica, container },
             /* The growing response body is read off the request itself. Some progress events carry
              * no target, and a cancelled request can still deliver one, so anything but a string
              * from the current request leaves what is on screen alone. */
@@ -47,22 +52,22 @@ export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica
             current = false
             cancelLog()
         }
-    }, [requestLog, cancelLog, componentName, replica])
+    }, [requestLog, cancelLog, componentName, replica, container])
 
     /* The log is followed, so new lines arrive for as long as the modal is open. The view stays at
      * the end as they do, unless the reader has scrolled up to look at something. */
-    const container = useRef<HTMLDivElement>(null)
+    const logView = useRef<HTMLDivElement>(null)
     const followTail = useRef(true)
 
     const onScroll = useCallback(() => {
-        const element = container.current
+        const element = logView.current
         if (element) {
             followTail.current = element.scrollHeight - element.scrollTop - element.clientHeight < 32
         }
     }, [])
 
     useEffect(() => {
-        const element = container.current
+        const element = logView.current
         if (element && followTail.current) {
             element.scrollTop = element.scrollHeight
         }
@@ -72,7 +77,21 @@ export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica
         <Modal fluid onClose={onClose}>
             <ModalTitle>Logs: {replica}</ModalTitle>
             <ModalContent>
-                <div className={styles.container} ref={container} onScroll={onScroll}>
+                {containers.length > 1 && (
+                    <SingleSelectField
+                        dense
+                        inputWidth="280px"
+                        className={styles.picker}
+                        label="Container"
+                        selected={container || containers[0]}
+                        onChange={({ selected }) => setContainer(selected)}
+                    >
+                        {containers.map((name) => (
+                            <SingleSelectOption key={name} label={name} value={name} />
+                        ))}
+                    </SingleSelectField>
+                )}
+                <div className={styles.container} ref={logView} onScroll={onScroll}>
                     {!log && !error && (
                         <Center>
                             <CircularLoader />
