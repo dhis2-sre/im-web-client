@@ -2,7 +2,7 @@ import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTab
 import { Fragment, useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { InstanceComponent } from '../../../types/index.ts'
+import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
 import { getReplicaTagProps, replicaStatusLabel } from '../../../utils/replica-tag.ts'
 import { ComponentOperationsMenu } from './component-operations-menu.tsx'
@@ -52,7 +52,7 @@ export const ComponentsTable: FC<{
                                   expandableContent: <ComponentParametersTable parameters={parameters} />,
                               }
                             : {}
-                    const operations = (replica?: string) => (
+                    const operations = (replica?: InstanceComponentReplica) => (
                         <ComponentOperationsMenu
                             instanceId={instanceId}
                             stackName={stackName}
@@ -79,7 +79,7 @@ export const ComponentsTable: FC<{
                                     <DataTableCell>
                                         <Moment date={replica.createdAt} fromNow />
                                     </DataTableCell>
-                                    <DataTableCell align="right">{operations(replica.name)}</DataTableCell>
+                                    <DataTableCell align="right">{operations(replica)}</DataTableCell>
                                 </DataTableRow>
                             ))}
                             {component.replicas.length === 0 && (

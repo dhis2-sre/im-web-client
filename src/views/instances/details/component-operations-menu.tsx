@@ -3,7 +3,7 @@ import { Button, IconMore24, Menu, MenuItem, Popover } from '@dhis2/ui'
 import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { InstanceComponent } from '../../../types/index.ts'
+import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { grafanaLogsUrl } from '../../../utils/grafana-logs.ts'
 import { LogModal } from './log-modal.tsx'
 import { SaveAsModal } from './save-as-modal.tsx'
@@ -20,7 +20,7 @@ export const ComponentOperationsMenu: FC<{
     instanceId: number
     stackName: string
     component: InstanceComponent
-    replica?: string
+    replica?: InstanceComponentReplica
     namespace?: string
     instanceName?: string
     groupId?: number
@@ -62,7 +62,9 @@ export const ComponentOperationsMenu: FC<{
 
     return (
         <>
-            {showLog && replica && <LogModal instanceId={instanceId} componentName={component.name} replica={replica} onClose={() => setShowLog(false)} />}
+            {showLog && replica && (
+                <LogModal instanceId={instanceId} componentName={component.name} replica={replica.name} containers={replica.containers ?? []} onClose={() => setShowLog(false)} />
+            )}
             {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
             <span ref={anchor}>
                 <Button

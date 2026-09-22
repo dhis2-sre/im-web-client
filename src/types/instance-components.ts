@@ -7,6 +7,7 @@ export type InstanceComponentReplica = {
     ready: boolean
     restarts: number
     createdAt: string
+    containers: string[]
 }
 
 export type InstanceComponent = {
