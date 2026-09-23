@@ -4,7 +4,7 @@
 # dhis2-infrastructure runs this as its own compose project per environment, alongside the im-manager
 # one, both joined to a shared ingress network.
 services:
-  prod:
+  web:
     image: dhis2/im-web-client:${IMAGE_TAG:-latest}
     # Substituted into the built assets by the entrypoint, so one image serves every environment.
     environment:

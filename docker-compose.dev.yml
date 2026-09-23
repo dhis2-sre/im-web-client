@@ -2,7 +2,7 @@
 # the development and test services. .envrc puts this in COMPOSE_FILE; servers pass explicit -f
 # flags and never see it.
 services:
-  prod:
+  web:
     build: .
     ports:
       - "8080:8080"

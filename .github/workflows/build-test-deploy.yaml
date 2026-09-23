@@ -23,6 +23,7 @@ jobs:
         with:
             PROCESS_NAME: nginx
             POD_NAME: im-web-client
+            SERVICE_NAME: web
         secrets:
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
             DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
