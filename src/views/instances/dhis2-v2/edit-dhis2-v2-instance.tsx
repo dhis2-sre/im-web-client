@@ -53,7 +53,7 @@ export const EditDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
     const { id } = useParams()
     const deploymentId = parseInt(id!, 10)
-    const [{ data: deployment, loading, error }] = useDeploymentDetails()
+    const [{ data: deployment, error }] = useDeploymentDetails()
     const [pendingRemoval, setPendingRemoval] = useState<{ names: string[]; confirm: () => void; cancel: () => void } | null>(null)
 
     const { groups, companions } = useGroupedStackParameters(STACK_ID)
@@ -99,19 +99,21 @@ export const EditDhis2V2Instance: FC = () => {
         [deployment, companions, saveEdit]
     )
 
-    if (loading && !deployment) {
+    if (error && !deployment) {
+        return (
+            <NoticeBox error title="Could not load instance">
+                {error.message}
+            </NoticeBox>
+        )
+    }
+
+    /* The fetch is kicked off from an effect, so the first render has no deployment, no error and is
+     * not yet loading. Anything other than an outright failure waits rather than reporting one. */
+    if (!deployment) {
         return (
             <Center>
                 <CircularLoader />
             </Center>
-        )
-    }
-
-    if (error || !deployment) {
-        return (
-            <NoticeBox error title="Could not load instance">
-                {error?.message}
-            </NoticeBox>
         )
     }
 
