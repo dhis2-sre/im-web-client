@@ -15,10 +15,10 @@ dev:
 docker-image:
 	@echo "ENVIRONMENT: $$ENVIRONMENT"; \
 	echo "API_URL: $$API_URL"; \
-	IMAGE_TAG=$(tag) docker compose build prod
+	IMAGE_TAG=$(tag) docker compose build web
 
 push-docker-image:
-	IMAGE_TAG=$(tag) docker compose push prod
+	IMAGE_TAG=$(tag) docker compose push web
 
 clean:
 	$(clean-cmd)
@@ -46,6 +46,6 @@ keys:
 	echo TODO
 
 smoke-test:
-	IMAGE_TAG=$(tag) docker compose up -d prod
+	IMAGE_TAG=$(tag) docker compose up -d web
 
 .PHONY: init check keys smoke-test
