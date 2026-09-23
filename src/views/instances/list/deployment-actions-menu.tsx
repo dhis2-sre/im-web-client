@@ -62,7 +62,15 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
         // The row navigates to the details page on click; menu and modal clicks must not reach it.
         <span onClick={(event) => event.stopPropagation()}>
             <span ref={anchor}>
-                <Button small secondary loading={loading} icon={<IconMore24 />} onClick={() => setOpen((current) => !current)} dataTest="deployment-actions-menu-button" />
+                <Button
+                    small
+                    secondary
+                    loading={loading}
+                    icon={<IconMore24 />}
+                    aria-label={`Actions for ${deployment.name}`}
+                    onClick={() => setOpen((current) => !current)}
+                    dataTest="deployment-actions-menu-button"
+                />
             </span>
             {open && (
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
