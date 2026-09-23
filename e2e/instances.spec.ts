@@ -72,7 +72,7 @@ test.describe('new instance', () => {
         await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
         await page.getByRole('button', { name: 'Back to list' }).click()
 
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 60000 })
+        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         const newInstanceRow = page.getByRole('row', { name: randomName })
         await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
@@ -130,7 +130,7 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'Create instance' }).click()
         await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
         await page.getByRole('button', { name: 'Back to list' }).click()
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 60000 })
+        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // Open details, then the edit form.
         await page.getByRole('row', { name: randomName }).click()
@@ -162,7 +162,7 @@ test.describe('new instance', () => {
 
         // Cleanup.
         await page.getByRole('button', { name: 'Back to list' }).click()
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 30000 })
+        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 30000 })
         await page.getByRole('row', { name: randomName }).getByRole('button', { name: 'Delete' }).click()
         const confirmDialog = page.locator('[aria-modal="true"]')
         await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
