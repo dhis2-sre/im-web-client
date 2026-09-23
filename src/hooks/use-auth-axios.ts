@@ -7,7 +7,7 @@ import { RefreshTokenRequest } from '../types/index.ts'
 
 declare global {
     interface Window {
-        _env_?: { API_URL?: string }
+        _env_?: { API_URL?: string; GRAFANA_LOGS_URL?: string }
     }
 }
 
@@ -28,7 +28,7 @@ const axiosInstance = createAxiosInstance()
 
 let refreshInFlight: Promise<unknown> | null = null
 
-const refreshTokens = () => {
+export const refreshTokens = () => {
     if (!refreshInFlight) {
         refreshInFlight = createAxiosInstance()
             .post<RefreshTokenRequest>('/refresh', null, { headers: { 'Content-Type': 'application/json' } })

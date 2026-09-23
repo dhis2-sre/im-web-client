@@ -24,11 +24,11 @@ test.describe('new instance', () => {
         test.setTimeout(2 * 60 * 1000) // 2 minutes
 
         await page.getByRole('link', { name: 'Instances' }).click()
-        await page.getByRole('button', { name: 'New instance' }).click()
+        await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await expect(page.getByRole('group', { name: 'Basic information' })).toBeVisible()
-        await expect(page.getByRole('group', { name: 'DHIS2 Core' })).toBeVisible()
-        await expect(page.getByRole('group', { name: 'Database' })).toBeVisible()
+        await expect(page.getByRole('group', { name: 'DHIS 2 Core' })).toBeVisible()
+        await expect(page.getByRole('group', { name: 'PostgreSQL' })).toBeVisible()
 
         const randomName = 'e2e-test-' + Math.random().toString().substring(8)
         await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
@@ -46,7 +46,7 @@ test.describe('new instance', () => {
 
         // Select the DHIS2 core image tag
         const imageTagSelect = page
-            .getByRole('group', { name: 'DHIS2 Core' })
+            .getByRole('group', { name: 'DHIS 2 Core' })
             .locator('div', { hasText: /^Image Tag/ })
             .getByTestId('dhis2-uicore-select-input')
         await imageTagSelect.click()
@@ -72,7 +72,7 @@ test.describe('new instance', () => {
         await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
         await page.getByRole('button', { name: 'Back to list' }).click()
 
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 60000 })
+        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         const newInstanceRow = page.getByRole('row', { name: randomName })
         await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
@@ -97,7 +97,7 @@ test.describe('new instance', () => {
 
         // Create the instance to update.
         await page.getByRole('link', { name: 'Instances' }).click()
-        await page.getByRole('button', { name: 'New instance' }).click()
+        await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await page.getByRole('textbox', { name: 'Name' }).fill(randomName)
         await page.getByRole('textbox', { name: 'Description' }).fill('Initial description.')
@@ -111,7 +111,7 @@ test.describe('new instance', () => {
         await page.keyboard.press('Escape')
 
         const imageTagSelect = page
-            .getByRole('group', { name: 'DHIS2 Core' })
+            .getByRole('group', { name: 'DHIS 2 Core' })
             .locator('div', { hasText: /^Image Tag/ })
             .getByTestId('dhis2-uicore-select-input')
         await imageTagSelect.click()
@@ -130,7 +130,7 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'Create instance' }).click()
         await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
         await page.getByRole('button', { name: 'Back to list' }).click()
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 60000 })
+        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // Open details, then the edit form.
         await page.getByRole('row', { name: randomName }).click()
@@ -142,11 +142,10 @@ test.describe('new instance', () => {
         const descriptionInput = page.getByRole('textbox', { name: 'Description' })
         await descriptionInput.fill(updatedDescription)
 
-        // Update the image tag. Exercises the dhis2-core instance PATCH and the
-        // consumed-parameters validation path that previously rejected updates.
+        // Update the image tag, which is what makes the edit imply a redeploy.
         if (dhis2CoreUpdateImageTag !== dhis2CoreImageTag) {
             const editImageTagSelect = page
-                .getByRole('group', { name: 'DHIS2 Core' })
+                .getByRole('group', { name: 'DHIS 2 Core' })
                 .locator('div', { hasText: /^Image Tag/ })
                 .getByTestId('dhis2-uicore-select-input')
             await editImageTagSelect.click()
@@ -155,7 +154,7 @@ test.describe('new instance', () => {
             await page.keyboard.press('Escape')
         }
 
-        await page.getByRole('button', { name: 'Update instance' }).click()
+        await page.getByRole('button', { name: 'Save changes' }).click()
 
         // Successful update redirects back to the details view.
         await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible({ timeout: 30000 })
@@ -163,7 +162,7 @@ test.describe('new instance', () => {
 
         // Cleanup.
         await page.getByRole('button', { name: 'Back to list' }).click()
-        await expect(page.getByRole('cell', { name: randomName })).toBeVisible({ timeout: 30000 })
+        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 30000 })
         await page.getByRole('row', { name: randomName }).getByRole('button', { name: 'Delete' }).click()
         const confirmDialog = page.locator('[aria-modal="true"]')
         await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')

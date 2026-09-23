@@ -1,26 +1,10 @@
-import {
-    Button,
-    ButtonStrip,
-    Center,
-    CircularLoader,
-    DataTable,
-    DataTableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableRow,
-    IconAdd24,
-    NoticeBox,
-    Checkbox,
-} from '@dhis2/ui'
+import { Button, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableRow, IconAdd24, NoticeBox, Checkbox } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { Heading, MomentExpiresFromNow } from '../../../components/index.ts'
-import { DeleteButton } from './delete-menu-button.tsx'
+import { Heading } from '../../../components/index.ts'
+import { DeploymentRow } from './deployment-row.tsx'
 import useDeployments from './filter-deployments.tsx'
-import InstanceTag from './instance-tag.tsx'
 import styles from './instances-list.module.css'
-import { OpenButton } from './open-button.tsx'
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
     const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
@@ -62,39 +46,12 @@ export const InstancesList: FC = () => {
                             </DataTableRow>
 
                             {group.deployments?.map((deployment) => (
-                                <tr
-                                    className={styles.clickableRow}
+                                <DeploymentRow
                                     key={deployment.id}
-                                    onClick={(e) => {
-                                        if ((e.target as HTMLElement).closest('[data-test="dhis2-uicore-modal"]')) {
-                                            return
-                                        }
-                                        navigate(`/instances/${deployment.id}/details`, { state: deployment })
-                                    }}
-                                >
-                                    <DataTableCell>{deployment.name}</DataTableCell>
-                                    <DataTableCell>
-                                        {deployment.instances?.map(({ stackName, id }) => (
-                                            <InstanceTag key={stackName} instanceId={id} stackName={stackName} />
-                                        ))}
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <Moment date={deployment.createdAt} fromNow />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <Moment date={deployment.updatedAt} fromNow />
-                                    </DataTableCell>
-                                    <DataTableCell>{deployment.user.email}</DataTableCell>
-                                    <DataTableCell>
-                                        <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
-                                    </DataTableCell>
-                                    <DataTableCell>
-                                        <ButtonStrip>
-                                            <OpenButton deployment={deployment} />
-                                            <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
-                                        </ButtonStrip>
-                                    </DataTableCell>
-                                </tr>
+                                    deployment={deployment}
+                                    onNavigate={(target) => navigate(`/instances/${target.id}/details`, { state: target })}
+                                    refetch={refetch}
+                                />
                             ))}
                         </DataTableBody>
                     ))}
