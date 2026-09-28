@@ -4,11 +4,14 @@ import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Database } from '../../../types/index.ts'
-import { AsyncActionProps } from './actions-dropdown-menu.tsx'
+import { AsyncActionProps } from './action-types.ts'
 import styles from './save-as-modal.module.css'
 
 interface SaveAsModalProps extends AsyncActionProps {
     onClose: () => void
+    // The file store rides along with the dump whenever a component advertises filestoreBackup, so
+    // the deployment that has one says so rather than leaving the second artifact a surprise.
+    savesFilestore?: boolean
 }
 
 const defaultFormat = 'custom'
@@ -17,7 +20,7 @@ const formats = new Map<string, { label: string; extension: string }>([
     ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
 ])
 
-export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, stackName, onClose, onStart, onComplete }) => {
+export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, stackName, savesFilestore, onClose, onStart, onComplete }) => {
     const [name, setName] = useState<string>('')
     const [format, setFormat] = useState<string>(defaultFormat)
     const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
@@ -76,6 +79,7 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, stackName, onClo
                     <InputField className={styles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
                     <span className={styles.extension}>{extension}</span>
                 </div>
+                {savesFilestore && <p className={styles.note}>The file store is saved alongside the database and linked to it, so restoring this entry restores both.</p>}
                 <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
                     {Array.from(formats.keys()).map((key) => (
                         <SingleSelectOption key={key} label={formats.get(key).label} value={key} />

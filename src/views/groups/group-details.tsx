@@ -1,4 +1,16 @@
-import { Button, Center, CircularLoader, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16, NoticeBox } from '@dhis2/ui'
+import {
+    Button,
+    Center,
+    CircularLoader,
+    DataTable,
+    DataTableBody as TableBody,
+    DataTableCell,
+    DataTableColumnHeader,
+    DataTableHead as TableHead,
+    DataTableRow,
+    IconCheckmark16,
+    NoticeBox,
+} from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
 import Moment from 'react-moment'
@@ -66,15 +78,11 @@ export const GroupDetails: FC = () => {
                     </DataTableRow>
                     <DataTableRow>
                         <DataTableCell>Created</DataTableCell>
-                        <DataTableCell>
-                            {group?.createdAt && <Moment date={group.createdAt} fromNow />}
-                        </DataTableCell>
+                        <DataTableCell>{group?.createdAt && <Moment date={group.createdAt} fromNow />}</DataTableCell>
                     </DataTableRow>
                     <DataTableRow>
                         <DataTableCell>Updated</DataTableCell>
-                        <DataTableCell>
-                            {group?.updatedAt && <Moment date={group.updatedAt} fromNow />}
-                        </DataTableCell>
+                        <DataTableCell>{group?.updatedAt && <Moment date={group.updatedAt} fromNow />}</DataTableCell>
                     </DataTableRow>
                 </TableBody>
             </DataTable>

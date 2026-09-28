@@ -6,6 +6,9 @@ replicaCount: 1
 
 apiUrl: ""
 
+# Dashboard the component log links point at. Empty hides the links.
+grafanaLogsUrl: "https://grafana.im.dhis2.org/d/b275a775-8360-485a-896c-832ef6fef29d/instance-logs"
+
 image:
     repository: dhis2/im-web-client
     pullPolicy: IfNotPresent

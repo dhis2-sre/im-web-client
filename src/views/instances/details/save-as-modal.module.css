@@ -46,3 +46,8 @@
 .extension {
     line-height: 40px;
 }
+
+.note {
+    margin: 0 0 12px;
+    color: var(--colors-grey700, #4a5768);
+}

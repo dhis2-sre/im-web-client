@@ -55,6 +55,8 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
         }
     }, [name, namespace, hostname, description, deployable, clusterId, createGroup, onComplete, showAlert])
 
+    const incomplete = !name.trim() || !namespace.trim() || !hostname.trim() || !description.trim()
+
     return (
         <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>New group</ModalTitle>
@@ -72,7 +74,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={onCreate} disabled={loading}>
+                    <Button onClick={onCreate} disabled={loading || incomplete}>
                         Create
                     </Button>
                     <Button onClick={onCancel} disabled={loading}>

@@ -1,0 +1,9 @@
+.container {
+    width: 85vw;
+    height: 70vh;
+    overflow: auto;
+}
+
+.picker {
+    margin-bottom: 8px;
+}
