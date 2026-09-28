@@ -7,6 +7,8 @@ const useDeployments = () => {
     const LOCAL_STORAGE_KEY = 'showOnlyMyInstances'
     const [{ data, error, loading }, refetch] = useAuthAxios<GroupWithDeployments[]>('/deployments', {
         useCache: false,
+        autoCatch: true,
+        autoCancel: false,
     })
 
     /* The row offers no delete while its deployment is deploying, so the list has to follow the

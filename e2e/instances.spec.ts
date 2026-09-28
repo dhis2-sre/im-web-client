@@ -21,7 +21,7 @@ test.describe('new instance', () => {
     // its components on the UI.
     // TODO once the status is shown in the UI, update the test to make sure an instance becomes ready after creating it.
     test('create new dhis2 instance', async ({ page }) => {
-        test.setTimeout(20 * 60 * 1000) // the teardown waits the deploy out, since a delete mid-deploy is refused
+        test.setTimeout(30 * 60 * 1000) // the teardown waits the deploy out, since a delete mid-deploy is refused
 
         await page.getByRole('link', { name: 'Instances' }).click()
         await page.getByRole('button', { name: 'New instance', exact: true }).click()
@@ -83,7 +83,7 @@ test.describe('new instance', () => {
     })
 
     test('update existing dhis2 instance', async ({ page }) => {
-        test.setTimeout(25 * 60 * 1000) // both the edit and the teardown wait the deploy out
+        test.setTimeout(50 * 60 * 1000) // the edit waits out the first deploy and the teardown waits out the redeploy it triggers
 
         const randomName = 'e2e-test-' + Math.random().toString().substring(8)
         const updatedDescription = 'Updated by e2e test.'

@@ -9,9 +9,14 @@ export const isDeploying = (deployment: Deployment) =>
 
 export const DEPLOYING_REFUSAL = 'This instance is deploying. Wait for the deploy to finish.'
 
-/* The API reports why it refused in the response body, as text. Preferring it to a message written
- * here is what tells a user that a delete was refused rather than broken. */
-export const serverMessage = (error: unknown, fallback: string) => {
-    const data = (error as { response?: { data?: unknown } })?.response?.data
-    return typeof data === 'string' && data.trim() !== '' ? data : fallback
+/* A refusal carries its reason in the response body, as text, and saying that is what tells a user
+ * the request was turned away rather than broken. Only a conflict is read this way: the body of a
+ * 500 names a request id, and a gateway answering a 502 sends an HTML page, neither of which is
+ * something to put in an alert. */
+export const refusalMessage = (error: unknown, fallback: string) => {
+    const response = (error as { response?: { status?: number; data?: unknown } })?.response
+    if (response?.status !== 409) {
+        return fallback
+    }
+    return typeof response.data === 'string' && response.data.trim() !== '' ? response.data : fallback
 }

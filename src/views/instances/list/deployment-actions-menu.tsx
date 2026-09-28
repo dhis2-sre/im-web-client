@@ -77,9 +77,13 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
             {open && (
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
-                        <span title={deploying ? DEPLOYING_REFUSAL : undefined}>
-                            <MenuItem dense icon={<IconEdit16 />} label="Edit" disabled={deploying} onClick={() => navigate(`/instances/${deployment.id}/edit`)} />
-                        </span>
+                        <MenuItem
+                            dense
+                            icon={<IconEdit16 />}
+                            label={<span title={deploying ? DEPLOYING_REFUSAL : undefined}>Edit</span>}
+                            disabled={deploying}
+                            onClick={() => navigate(`/instances/${deployment.id}/edit`)}
+                        />
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
                         {backupTarget && (
                             <SaveAsMenuItem
