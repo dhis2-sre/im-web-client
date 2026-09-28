@@ -10,7 +10,10 @@ export const useDatabaseLabel = (databaseId?: string) => {
     const resolvable = id !== '' && id !== '0'
     const [{ data, loading }] = useAuthAxios<Database>(`/databases/${id}`, { manual: !resolvable, autoCatch: true })
 
-    if (!data?.name) {
+    /* axios-hooks keeps the previous response while the next request is in flight and when it fails,
+     * so a resolved label is only this id's while nothing is loading. Otherwise it could be the name
+     * of the database asked about before this one. */
+    if (loading || !resolvable || !data?.name) {
         return { label: id, loading: resolvable && loading }
     }
 

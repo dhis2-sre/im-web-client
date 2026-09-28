@@ -7,6 +7,10 @@ import { ParameterEntry } from '../../../utils/component-parameters.ts'
 const DatabaseLink: FC<{ id: string }> = ({ id }) => {
     const { label } = useDatabaseLabel(id)
 
+    if (!id) {
+        return null
+    }
+
     return <Link to={`/databases/${id}`}>{label}</Link>
 }
 
