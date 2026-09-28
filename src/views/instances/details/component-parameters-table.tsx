@@ -1,7 +1,18 @@
 import { Button, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLock16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { useDatabaseLabel } from '../../../hooks/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
+
+const DatabaseLink: FC<{ id: string }> = ({ id }) => {
+    const { label } = useDatabaseLabel(id)
+
+    if (!id) {
+        return null
+    }
+
+    return <Link to={`/databases/${id}`}>{label}</Link>
+}
 
 export const ComponentParametersTable: FC<{ parameters: ParameterEntry[] }> = ({ parameters }) => (
     <DataTable>
@@ -23,7 +34,7 @@ export const ComponentParametersTable: FC<{ parameters: ParameterEntry[] }> = ({
                                 </Button>
                             </span>
                         )}
-                        {!parameter.sensitive && parameter.name === 'DATABASE_ID' && <Link to={`/databases/${parameter.value}`}>{parameter.value}</Link>}
+                        {!parameter.sensitive && parameter.name === 'DATABASE_ID' && <DatabaseLink id={String(parameter.value ?? '')} />}
                         {!parameter.sensitive && parameter.name !== 'DATABASE_ID' && parameter.value}
                     </DataTableCell>
                 </DataTableRow>

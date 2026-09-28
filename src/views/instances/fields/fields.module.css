@@ -54,3 +54,9 @@
     color: var(--colors-red700);
     margin-top: 4px;
 }
+
+.validationError {
+    font-size: 12px;
+    color: var(--colors-red700);
+    margin-top: 4px;
+}
