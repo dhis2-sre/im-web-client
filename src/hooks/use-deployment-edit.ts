@@ -2,6 +2,7 @@ import { FORM_ERROR } from 'final-form'
 import type { AnyObject } from 'final-form'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { refusalMessage } from '../utils/deploy-state.ts'
 import { buildEditPayload } from './build-edit-payload.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 
@@ -21,7 +22,7 @@ export const useDeploymentEdit = (stackName: string, deploymentId: number, getIn
                 return undefined
             } catch (error) {
                 console.error(error)
-                return { [FORM_ERROR]: error instanceof Error ? error.message : 'Could not save the changes' }
+                return { [FORM_ERROR]: refusalMessage(error, 'Could not save the changes') }
             }
         },
         [executePatch, navigate, deploymentId, stackName, getIncludedParameters]

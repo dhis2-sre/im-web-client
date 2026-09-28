@@ -4,6 +4,7 @@ import Moment from 'react-moment'
 import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
+import { isDeploying } from '../../../utils/deploy-state.ts'
 import { DeleteButton } from './delete-menu-button.tsx'
 import { DeploymentActionsMenu } from './deployment-actions-menu.tsx'
 import { DeploymentComponentTags } from './deployment-component-tags.tsx'
@@ -42,7 +43,7 @@ export const DeploymentRow: FC<{ deployment: Deployment; onNavigate: (deployment
             <DataTableCell>
                 <ButtonStrip>
                     <OpenButton deployment={deployment} />
-                    <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={refetch} />
+                    <DeleteButton id={deployment.id} displayName={deployment.name} deploying={isDeploying(deployment)} onComplete={refetch} />
                     <DeploymentActionsMenu deployment={deployment} components={instances} refetch={refetch} />
                 </ButtonStrip>
             </DataTableCell>

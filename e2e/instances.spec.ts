@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { login, logout, uploadTestDatabase, deleteTestDatabase, targetGroup, dhis2CoreImageTag, dhis2CoreUpdateImageTag } from './utils/index.ts'
+import { login, logout, uploadTestDatabase, deleteTestDatabase, deleteDeployment, targetGroup, dhis2CoreImageTag, dhis2CoreUpdateImageTag } from './utils/index.ts'
 
 test.describe('new instance', () => {
     let dbFileName: string
@@ -21,7 +21,7 @@ test.describe('new instance', () => {
     // its components on the UI.
     // TODO once the status is shown in the UI, update the test to make sure an instance becomes ready after creating it.
     test('create new dhis2 instance', async ({ page }) => {
-        test.setTimeout(2 * 60 * 1000) // 2 minutes
+        test.setTimeout(30 * 60 * 1000) // the teardown waits the deploy out, since a delete mid-deploy is refused
 
         await page.getByRole('link', { name: 'Instances' }).click()
         await page.getByRole('button', { name: 'New instance', exact: true }).click()
@@ -74,23 +74,16 @@ test.describe('new instance', () => {
 
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
+        // A deploy holds the deployment's deploy lock and the backend refuses a delete until it
+        // finishes, so the row says so instead of offering a delete that would be turned away.
         const newInstanceRow = page.getByRole('row', { name: randomName })
-        await newInstanceRow.getByRole('button', { name: 'Delete' }).click()
+        await expect(newInstanceRow.getByRole('button', { name: 'Delete' })).toBeDisabled()
 
-        // Scope to the confirmation dialog. @dhis2/ui's Modal sets aria-modal="true"
-        // but not role="dialog" (see upstream issue), so we scope via the aria-modal
-        // attribute rather than getByRole('dialog').
-        const confirmDialog = page.locator('[aria-modal="true"]')
-        await expect(confirmDialog.getByText(`Are you sure you want to delete instance "${randomName}"`)).toBeVisible()
-        await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
-
-        // Instance teardown is backend-heavy and can exceed the default timeout, especially
-        // when the instance is still provisioning at delete time (see TODO at the top of this test).
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 90000 })
+        await deleteDeployment(page, randomName)
     })
 
     test('update existing dhis2 instance', async ({ page }) => {
-        test.setTimeout(3 * 60 * 1000) // 3 minutes
+        test.setTimeout(50 * 60 * 1000) // the edit waits out the first deploy and the teardown waits out the redeploy it triggers
 
         const randomName = 'e2e-test-' + Math.random().toString().substring(8)
         const updatedDescription = 'Updated by e2e test.'
@@ -132,9 +125,11 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'Back to list' }).click()
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
-        // Open details, then the edit form.
+        // Open details, then the edit form. An edit takes the same deploy lock a deploy holds, so
+        // the page offers no edit until the deploy lands.
         await page.getByRole('row', { name: randomName }).click()
         await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Edit', exact: true })).toBeEnabled({ timeout: 15 * 60 * 1000 })
         await page.getByRole('button', { name: 'Edit', exact: true }).click()
         await expect(page.getByRole('heading', { name: `Edit ${randomName}` })).toBeVisible()
 
@@ -162,10 +157,6 @@ test.describe('new instance', () => {
 
         // Cleanup.
         await page.getByRole('button', { name: 'Back to list' }).click()
-        await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 30000 })
-        await page.getByRole('row', { name: randomName }).getByRole('button', { name: 'Delete' }).click()
-        const confirmDialog = page.locator('[aria-modal="true"]')
-        await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${randomName}"`)).toBeVisible({ timeout: 90000 })
+        await deleteDeployment(page, randomName)
     })
 })
