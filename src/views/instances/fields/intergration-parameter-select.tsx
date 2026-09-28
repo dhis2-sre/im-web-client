@@ -13,13 +13,28 @@ export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayNa
     } = useField(fieldName, {
         subscription: { initial: true, value: true },
     })
-    const [{ data, error, loading }] = useAuthAxios({
-        url: '/integrations',
-        method: 'POST',
-        data: {
-            key: parameterName,
+    const [{ data, error, loading }, refetch] = useAuthAxios(
+        {
+            url: '/integrations',
+            method: 'POST',
+            data: {
+                key: parameterName,
+            },
         },
-    })
+        { useCache: false, autoCatch: true }
+    )
+
+    /* Uploading the database this form needs means leaving the form, and coming back to a list that
+     * does not have it is a reload of a form someone has already filled in. Remounting refetches on
+     * its own now that the response is not cached; this covers the other tab, where the form is
+     * never unmounted at all. */
+    useEffect(() => {
+        const refresh = () => {
+            void refetch()
+        }
+        window.addEventListener('focus', refresh)
+        return () => window.removeEventListener('focus', refresh)
+    }, [refetch])
     const options = useMemo(() => {
         if (!data) {
             return initialValue ? [{ value: initialValue, label: initialValue }] : []

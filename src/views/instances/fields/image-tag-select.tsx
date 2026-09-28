@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState, useCallback } from 'react'
+import { FC, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useField, useForm } from 'react-final-form'
 import classes from '../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect } from '../../../components/searchable-single-select.tsx'
@@ -26,7 +26,7 @@ const useImageTagField = (stackId: Dhis2StackName, parameterName: string) => {
 
 const useIntegrationsOptions = (organization: string, repository: string, registry?: string) => {
     const payload = { url: '/integrations', method: 'POST', data: {} }
-    const options = { manual: true, autoCatch: true }
+    const options = { manual: true, autoCatch: true, useCache: false }
     const [{ data }, refetch] = useAuthAxios(payload, options)
 
     useEffect(() => {
@@ -48,18 +48,29 @@ const useIntegrationsOptions = (organization: string, repository: string, regist
     return images
 }
 
-const useResetImageTagFieldWhenSelectionNotAvailable = (availableOptions: string[], form, stackId: Dhis2StackName) => {
-    const fieldName = `${stackId}.${IMAGE_TAG}`
-    useEffect(() => {
-        if (availableOptions.length) {
-            const currentSelectedValue = form.getState().values[stackId]?.IMAGE_TAG
+/* A tag belongs to the repository it was picked from, so changing the repository drops it rather
+ * than carrying it over to a repository that may not publish it at all. The previous attempt at this
+ * compared the selection against the offered options, which could never fire: the selected tag is
+ * added to those options so it stays visible, so it was always found among them. Comparing against
+ * the repository instead also leaves a tag that has aged out of its own repository's listing alone,
+ * which the options comparison would have cleared on opening the edit form. */
+const useResetImageTagWhenRepositoryChanges = ({ repository, form, fieldName, onReset }: { repository: string; form; fieldName: string; onReset: () => void }) => {
+    const previousRepository = useRef<string | undefined>(undefined)
 
-            if (currentSelectedValue && !availableOptions.includes(currentSelectedValue)) {
-                form.change(fieldName, undefined)
-                form.blur(fieldName)
-            }
+    useEffect(() => {
+        if (!repository) {
+            return
         }
-    }, [availableOptions, form, fieldName, stackId])
+        if (previousRepository.current === undefined || previousRepository.current === repository) {
+            previousRepository.current = repository
+            return
+        }
+
+        previousRepository.current = repository
+        onReset()
+        form.change(fieldName, undefined)
+        form.blur(fieldName)
+    }, [repository, form, fieldName, onReset])
 }
 
 const useRepositoryValue = (stackId: Dhis2StackName) => {
@@ -120,27 +131,24 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     const repository = fixedRepository ?? dynamicRepository
     const resolvedOrganization = organization ?? 'dhis2'
     const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
-    const [additionallyLoadedOptions, setAdditionallyLoadedOptions] = useState<string[]>([])
+    /* Tags typed in and confirmed against the registry, which the listing did not return. They are
+     * verified against one repository, so they go when the repository does. */
+    const [verifiedOptions, setVerifiedOptions] = useState<string[]>([])
     const loadedOptions = useIntegrationsOptions(resolvedOrganization, repository, registry)
 
-    const [options, setOptions] = useState<string[]>(loadedOptions)
-    const [filteredOptions, setFilteredOptions] = useState<string[]>(options)
+    const [filteredOptions, setFilteredOptions] = useState<string[]>([])
     const [filtered, setFiltered] = useState(false)
 
-    useEffect(() => {
-        if (loadedOptions) {
-            const unique = new Set<string>([...additionallyLoadedOptions, ...loadedOptions])
-            setOptions(Array.from(unique))
-        }
-    }, [additionallyLoadedOptions, loadedOptions])
+    const options = useMemo(() => Array.from(new Set<string>([...loadedOptions, ...verifiedOptions])), [loadedOptions, verifiedOptions])
 
-    useEffect(() => {
-        if (imageValue) {
-            setAdditionallyLoadedOptions((prev) => (prev.includes(imageValue) ? prev : [...prev, imageValue]))
-        }
-    }, [imageValue])
-
-    useResetImageTagFieldWhenSelectionNotAvailable(options, form, stackId)
+    /* Everything the select holds was derived from one repository, the filter a search left behind
+     * included, so all of it goes when the repository changes. */
+    const clearOptionsOfPreviousRepository = useCallback(() => {
+        setVerifiedOptions([])
+        setFilteredOptions([])
+        setFiltered(false)
+    }, [])
+    useResetImageTagWhenRepositoryChanges({ repository, form, fieldName: `${stackId}.${parameterName}`, onReset: clearOptionsOfPreviousRepository })
 
     const filterOptions = useCallback(
         async ({ value: tag }) => {
@@ -161,11 +169,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
             const tagExists = await checkImageExists({ repository, tag })
 
             if (tagExists) {
-                setAdditionallyLoadedOptions((prevAdditionallyLoadedOptions) =>
-                    prevAdditionallyLoadedOptions.includes(tag) ? prevAdditionallyLoadedOptions : [...prevAdditionallyLoadedOptions, tag]
-                )
-                const nextOptions = [...options, tag]
-                setOptions(nextOptions)
+                setVerifiedOptions((previous) => (previous.includes(tag) ? previous : [...previous, tag]))
                 setFilteredOptions([tag])
                 setFiltered(true)
                 return
@@ -177,7 +181,12 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
         [options, checkImageExists, repository]
     )
 
-    const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
+    /* An instance can be pinned to a tag its repository has since stopped listing, and a select that
+     * drops it renders as though nothing were chosen. */
+    const displayOptions = useMemo(() => {
+        const all = imageValue && !options.includes(imageValue) ? [...options, imageValue] : options
+        return (filtered ? filteredOptions : all).map(mapStringToValueLabel)
+    }, [filtered, filteredOptions, options, imageValue])
 
     return (
         <div>

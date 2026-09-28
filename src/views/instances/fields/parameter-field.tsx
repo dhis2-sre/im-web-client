@@ -26,6 +26,7 @@ import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
 import { ConfirmPasswordInput } from './confirm-password.tsx'
 import { ImageRepositorySelect } from './image-repository-select.tsx'
 import { ImageTagSelect } from './image-tag-select.tsx'
+import { ImmutableDatabaseField } from './immutable-database-field.tsx'
 import { ImmutableParameterField } from './immutable-parameter-field.tsx'
 import { IntergrationParameterSelect } from './intergration-parameter-select.tsx'
 import { SameSiteCookiesSelect } from './same-site-cookies-select.tsx'
@@ -47,6 +48,9 @@ export type ParameterFieldProps = {
 
 export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode, immutableReason }) => {
     if (immutableReason) {
+        if (parameterName === DATABASE_ID) {
+            return <ImmutableDatabaseField stackId={stackId} parameterName={parameterName} displayName={displayName} reason={immutableReason} />
+        }
         return <ImmutableParameterField stackId={stackId} parameterName={parameterName} displayName={displayName} reason={immutableReason} />
     }
 
