@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
+import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
 import { DeploymentComponents } from './deployment-components.tsx'
 import styles from './deployment-details.module.css'
 import { DeploymentInstancesList } from './deployment-instances-list.tsx'
@@ -17,7 +18,13 @@ export const DeploymentDetails: FC = () => {
     return (
         <div className={styles.wrapper}>
             <Heading title={title}>
-                {deployment && <Button onClick={() => navigate(`/instances/${deployment.id}/edit`)}>Edit</Button>}
+                {deployment && (
+                    <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                        <Button disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
+                            Edit
+                        </Button>
+                    </span>
+                )}
                 <Button onClick={() => navigate('/instances')}>Back to list</Button>
             </Heading>
 

@@ -5,12 +5,14 @@ import type { FC } from 'react'
 import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { DeploymentInstance } from '../../../types/index.ts'
+import { DEPLOYING_REFUSAL, serverMessage } from '../../../utils/deploy-state.ts'
 
 export const DeleteButton: FC<{
     id: number
     displayName: string
+    deploying?: boolean
     onComplete: () => void
-}> = ({ id, displayName, onComplete }) => {
+}> = ({ id, displayName, deploying, onComplete }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     const { show: showAlert } = useAlert(
@@ -50,7 +52,7 @@ export const DeleteButton: FC<{
                 onComplete()
             } catch (error) {
                 console.error(error)
-                showAlert({ message: `There was an error when deleting instance "${displayName}"`, isCritical: true })
+                showAlert({ message: serverMessage(error, `There was an error when deleting instance "${displayName}"`), isCritical: true })
             }
         },
         [executeDelete, setShowConfirmationModal, displayName, showAlert, onComplete]
@@ -63,9 +65,11 @@ export const DeleteButton: FC<{
                     Are you sure you want to delete instance &quot;{displayName}&quot;
                 </ConfirmationModal>
             )}
-            <Button small secondary destructive icon={<IconDelete16 />} onClick={onClick} loading={loading}>
-                Delete
-            </Button>
+            <span title={deploying ? DEPLOYING_REFUSAL : undefined}>
+                <Button small secondary destructive icon={<IconDelete16 />} onClick={onClick} loading={loading} disabled={deploying}>
+                    Delete
+                </Button>
+            </span>
         </>
     )
 }

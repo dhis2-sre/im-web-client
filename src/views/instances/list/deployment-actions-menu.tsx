@@ -4,6 +4,7 @@ import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { STACK_NAMES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceComponents } from '../../../types/index.ts'
+import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
 import { OnActionCompletFn } from '../details/action-types.ts'
 import { SaveAsMenuItem } from '../details/save-as-menu-item.tsx'
 import { DeploymentWideActionMenuItem } from './deployment-wide-action-menu-item.tsx'
@@ -30,6 +31,7 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
     const backupTarget = database ?? filestore
     const savesFilestore = filestore !== undefined
     const pgAdmin = findByStack(instances, STACK_NAMES.PG_ADMIN)
+    const deploying = isDeploying(deployment)
 
     const onStart = useCallback(() => {
         setOpen(false)
@@ -75,7 +77,9 @@ export const DeploymentActionsMenu: FC<{ deployment: Deployment; components?: De
             {open && (
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
-                        <MenuItem dense icon={<IconEdit16 />} label="Edit" onClick={() => navigate(`/instances/${deployment.id}/edit`)} />
+                        <span title={deploying ? DEPLOYING_REFUSAL : undefined}>
+                            <MenuItem dense icon={<IconEdit16 />} label="Edit" disabled={deploying} onClick={() => navigate(`/instances/${deployment.id}/edit`)} />
+                        </span>
                         {pgAdmin && <MenuItem dense icon={<IconLaunch16 />} label="Open pgAdmin" onClick={() => openPath(`${deployment.name}-pgadmin`)} />}
                         {backupTarget && (
                             <SaveAsMenuItem

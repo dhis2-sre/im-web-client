@@ -1,6 +1,6 @@
-import { useState, useMemo, useContext, useCallback } from 'react'
+import { useState, useMemo, useContext, useCallback, useEffect } from 'react'
 import { AuthContext } from '../../../contexts/auth-context.ts'
-import { useAuthAxios } from '../../../hooks/index.ts'
+import { useAuthAxios, useNotificationsContext } from '../../../hooks/index.ts'
 import { GroupWithDeployments } from '../../../types/index.ts'
 
 const useDeployments = () => {
@@ -8,6 +8,17 @@ const useDeployments = () => {
     const [{ data, error, loading }, refetch] = useAuthAxios<GroupWithDeployments[]>('/deployments', {
         useCache: false,
     })
+
+    /* The row offers no delete while its deployment is deploying, so the list has to follow the
+     * deploy rather than show whatever was true when it loaded. The event says which deployment
+     * moved, not what the new status is, so the answer still comes from the endpoint. */
+    const { lastDeploymentEvent } = useNotificationsContext()
+    useEffect(() => {
+        if (!lastDeploymentEvent) {
+            return
+        }
+        void refetch()
+    }, [lastDeploymentEvent, refetch])
 
     const [showOnlyMyInstances, _setShowOnlyMyInstances] = useState<boolean>(() => {
         try {

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceComponents, DeploymentInstanceDeployState } from '../../../types/index.ts'
+import { isDeploying } from '../../../utils/deploy-state.ts'
 import { DeleteButton } from '../list/delete-menu-button.tsx'
 import { DeploymentActionsMenu } from '../list/deployment-actions-menu.tsx'
 import { Dhis2StackName } from '../parameters.ts'
@@ -42,6 +43,7 @@ export const DeploymentInstancesList: FC<{
     refetch: () => void
 }> = ({ deployment, loading, components, refetch }) => {
     const navigate = useNavigate()
+    const deploying = isDeploying(deployment)
 
     return (
         <DataTable>
@@ -77,7 +79,7 @@ export const DeploymentInstancesList: FC<{
                                     {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
                                         <ViewInstanceMenuItem group={deployment.group} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
                                     )}
-                                    <DeleteButton id={deployment.id} displayName={deployment.name} onComplete={() => navigate('/instances')} />
+                                    <DeleteButton id={deployment.id} displayName={deployment.name} deploying={deploying} onComplete={() => navigate('/instances')} />
                                     <DeploymentActionsMenu deployment={deployment} components={components} refetch={refetch} />
                                 </ButtonStrip>
                             </DataTableCell>
