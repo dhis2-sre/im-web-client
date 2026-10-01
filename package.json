@@ -78,7 +78,7 @@
         "@typescript-eslint/parser": "^8.60.0",
         "@vitejs/plugin-react": "^6.0.2",
         "dotenv": "^17.4.2",
-        "dotenv-expand": "^13.0.0",
+        "dotenv-expand": "^1000.0.0",
         "eslint": "^10.4.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-import": "^2.32.0",
