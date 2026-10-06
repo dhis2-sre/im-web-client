@@ -121,7 +121,7 @@ const useCheckImageExists = (repository, organization?: string, registry?: strin
                 params.set('registry', registry)
             }
             const query = params.size > 0 ? `?${params.toString()}` : ''
-            const url = `/integrations/image-exists/${repository}/${tag}${query}`
+            const url = `/integrations/image-exists/${repository}/${encodeURIComponent(tag)}${query}`
 
             try {
                 const response = await _checkImageExists({ url })
@@ -183,7 +183,9 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     useResetImageTagWhenRepositoryChanges({ repository, form, fieldName: `${stackId}.${parameterName}`, onReset: clearOptionsOfPreviousRepository })
 
     const filterOptions = useCallback(
-        async ({ value: tag }) => {
+        async ({ value }) => {
+            const tag = value?.trim()
+
             // Reset then filter value is being removed
             if (!tag) {
                 setFiltered(false)
