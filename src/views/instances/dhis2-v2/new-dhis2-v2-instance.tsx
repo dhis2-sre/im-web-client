@@ -16,6 +16,7 @@ import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 import { PresetPicker } from './preset-picker.tsx'
 
 const SUCCESS_OPTIONS = { success: true }
+const PRESETS_ENABLED = false
 
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
@@ -35,7 +36,7 @@ export const NewDhis2V2Instance: FC = () => {
     )
     const { createDeployment, savePreset, steps } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
 
-    const [{ data: allPresets }, refetchPresets] = useAuthAxios<Deployment[]>('/deployments/presets', { autoCancel: false })
+    const [{ data: allPresets }, refetchPresets] = useAuthAxios<Deployment[]>('/deployments/presets', { autoCancel: false, manual: !PRESETS_ENABLED })
     const presets = useMemo(() => (allPresets ?? []).filter((preset) => preset.instances?.some((instance) => instance.stackName === STACK_ID)), [allPresets])
     const { show: showSaved } = useAlert(({ name }) => `Saved preset ${name}`, SUCCESS_OPTIONS)
 
@@ -71,19 +72,23 @@ export const NewDhis2V2Instance: FC = () => {
                 <Form onSubmit={submit} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
                         <>
-                            <PresetPicker presets={presets} mainStackName={STACK_ID} onDeleted={refetchPresets} />
+                            {PRESETS_ENABLED && <PresetPicker presets={presets} mainStackName={STACK_ID} onDeleted={refetchPresets} />}
                             <Dhis2V2Form
                                 handleCancel={navigateToInstanceList}
                                 handleSubmit={handleSubmit}
                                 name={values.name}
                                 steps={steps}
                                 nameCheckKey={nameCheckKey}
-                                onSavePreset={() => {
-                                    savingPreset.current = true
-                                    void Promise.resolve(form.submit()).finally(() => {
-                                        savingPreset.current = false
-                                    })
-                                }}
+                                onSavePreset={
+                                    PRESETS_ENABLED
+                                        ? () => {
+                                              savingPreset.current = true
+                                              void Promise.resolve(form.submit()).finally(() => {
+                                                  savingPreset.current = false
+                                              })
+                                          }
+                                        : undefined
+                                }
                             />
                         </>
                     )}
