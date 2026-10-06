@@ -18,7 +18,7 @@ const SETTLED_PAUSE_MS = 800
  * that a visibility condition later hid never reach the backend. A companion is included while the
  * condition the stack gates it on holds, since that condition is the opt-in, and a companion
  * declared without one is always included, the same reading the form renders by. Confirm-password
- * helper fields are never sent. */
+ * helper fields are never sent. Saving a preset stores the same deployment with nothing deployed. */
 export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[], companions: StackCompanion[] = []) => {
     const navigate = useNavigate()
     const [steps, setSteps] = useState<DeploymentStep[]>([])
@@ -34,8 +34,8 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         setSteps((current) => current.map((step) => (names.includes(step.stackName) ? { ...step, status } : step)))
     }, [])
 
-    const createDeployment = useCallback(
-        async (values: AnyObject) => {
+    const saveDeployment = useCallback(
+        async (values: AnyObject, preset: boolean) => {
             const stackValuesForCompanions: AnyObject = values[stackName] ?? {}
             const includedCompanions = companions.filter((companion) => !companion.when || stackValuesForCompanions[companion.when.parameter] === companion.when.equals)
             const deployedStacks = [stackName, ...includedCompanions.map((companion) => companion.name)]
@@ -47,6 +47,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                     group: values.groupName,
                     description: values.description,
                     ttl: values.ttl,
+                    preset,
                 }
                 const { data: deployment } = await executePost({ data: deploymentPayload })
 
@@ -78,6 +79,11 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                     setStatus([companion.name], 'success')
                 }
 
+                if (preset) {
+                    setSteps([])
+                    return undefined
+                }
+
                 /* Deploying is accepted rather than performed, so this returns long before anything
                  * runs in the cluster. The details page is where the deploy is watched. */
                 await executePost({ url: `/deployments/${deployment.id}/deploy` })
@@ -88,11 +94,14 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
             } catch (error) {
                 console.error(error)
                 setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                return { [FORM_ERROR]: error instanceof Error ? error.message : 'Could not create the deployment' }
+                return { [FORM_ERROR]: error instanceof Error ? error.message : `Could not ${preset ? 'save the preset' : 'create the deployment'}` }
             }
         },
         [executePost, navigate, stackName, getIncludedParameters, companions, setStatus]
     )
 
-    return { createDeployment, steps }
+    const createDeployment = useCallback((values: AnyObject) => saveDeployment(values, false), [saveDeployment])
+    const savePreset = useCallback((values: AnyObject) => saveDeployment(values, true), [saveDeployment])
+
+    return { createDeployment, savePreset, steps }
 }

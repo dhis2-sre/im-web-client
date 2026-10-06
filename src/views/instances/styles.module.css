@@ -62,3 +62,9 @@
 .submitError {
     margin-bottom: var(--spacers-dp16);
 }
+
+.presetRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp16);
+}

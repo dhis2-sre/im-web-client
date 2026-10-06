@@ -1,7 +1,7 @@
-import { Button, ButtonStrip, CircularLoader, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, CircularLoader, FlyoutMenu, MenuItem, NoticeBox, SplitButton } from '@dhis2/ui'
 import cx from 'classnames'
 import type { AnyObject } from 'final-form'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { FC } from 'react'
 import { useForm, useFormState } from 'react-final-form'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
@@ -31,8 +31,11 @@ export const Dhis2V2Form: FC<{
     steps?: DeploymentStep[]
     mode?: 'create' | 'edit'
     deployment?: Deployment
-}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment }) => {
+    onSavePreset?: () => void
+    nameCheckKey?: number
+}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset, nameCheckKey }) => {
     const isEdit = mode === 'edit'
+    const [submitMenuOpen, setSubmitMenuOpen] = useState(false)
     const formMode = isEdit ? 'update' : 'create'
     const { groups, companions, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
@@ -84,7 +87,7 @@ export const Dhis2V2Form: FC<{
         <form onSubmit={handleSubmit}>
             <fieldset className={cx(styles.fieldset, styles.main)}>
                 <legend className={styles.legend}>Basic information</legend>
-                {!isEdit && <NameInput />}
+                {!isEdit && <NameInput key={nameCheckKey} />}
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 {isEdit && deployment ? <ExtendTtlSelect deployment={deployment} /> : <TtlSelect />}
@@ -120,9 +123,32 @@ export const Dhis2V2Form: FC<{
                 </NoticeBox>
             )}
             <ButtonStrip>
-                <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
-                    {isEdit ? 'Save changes' : 'Create instance'}
-                </Button>
+                {isEdit || !onSavePreset ? (
+                    <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
+                        {isEdit ? 'Save changes' : 'Create instance'}
+                    </Button>
+                ) : (
+                    <SplitButton
+                        primary
+                        disabled={shouldDisableSubmit}
+                        type="submit"
+                        open={submitMenuOpen}
+                        onToggle={({ open }) => setSubmitMenuOpen(open)}
+                        component={
+                            <FlyoutMenu dense>
+                                <MenuItem
+                                    label="Save preset"
+                                    onClick={() => {
+                                        setSubmitMenuOpen(false)
+                                        onSavePreset()
+                                    }}
+                                />
+                            </FlyoutMenu>
+                        }
+                    >
+                        Create instance
+                    </SplitButton>
+                )}
                 <Button disabled={submitting} onClick={handleCancel}>
                     Cancel
                 </Button>
