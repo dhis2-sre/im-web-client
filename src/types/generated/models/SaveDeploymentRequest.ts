@@ -6,6 +6,7 @@ export type SaveDeploymentRequest = {
     description?: string;
     group?: string;
     name?: string;
+    preset?: boolean;
     ttl?: number;
 };
 

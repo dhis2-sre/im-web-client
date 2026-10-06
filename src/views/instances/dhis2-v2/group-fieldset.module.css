@@ -1,0 +1,8 @@
+.advanced {
+    grid-column: 1 / -1;
+}
+
+.subGroups {
+    grid-column: 1 / -1;
+    margin-top: var(--spacers-dp16);
+}

@@ -13,6 +13,7 @@ export type Deployment = {
     id?: number;
     instances?: Array<DeploymentInstance>;
     name?: string;
+    preset?: boolean;
     ttl?: number;
     updatedAt?: string;
     user?: User;

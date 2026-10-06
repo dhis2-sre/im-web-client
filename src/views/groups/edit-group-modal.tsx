@@ -1,6 +1,19 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import type { BaseButtonProps } from '@dhis2/ui'
-import { Button, ButtonStrip, Center, CheckboxField, CircularLoader, InputField, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import {
+    Button,
+    ButtonStrip,
+    Center,
+    CheckboxField,
+    CircularLoader,
+    InputField,
+    Modal,
+    ModalActions,
+    ModalContent,
+    ModalTitle,
+    SingleSelectField,
+    SingleSelectOption,
+} from '@dhis2/ui'
 import cx from 'classnames'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
@@ -47,6 +60,8 @@ export const EditGroupModal: FC<EditGroupModalProps> = ({ group, onComplete, onC
         }
     }, [namespace, hostname, description, deployable, clusterId, updateGroup, onComplete, showAlert])
 
+    const incomplete = !namespace.trim() || !hostname.trim() || !description.trim()
+
     return (
         <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>Edit group</ModalTitle>
@@ -63,7 +78,7 @@ export const EditGroupModal: FC<EditGroupModalProps> = ({ group, onComplete, onC
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={onSave} disabled={loading} primary>
+                    <Button onClick={onSave} disabled={loading || incomplete} primary>
                         Save
                     </Button>
                     <Button onClick={onCancel} disabled={loading}>
