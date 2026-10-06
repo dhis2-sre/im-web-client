@@ -131,7 +131,7 @@ export const Dhis2V2Form: FC<{
                     <SplitButton
                         primary
                         disabled={shouldDisableSubmit}
-                        type="submit"
+                        onClick={() => void handleSubmit()}
                         open={submitMenuOpen}
                         onToggle={({ open }) => setSubmitMenuOpen(open)}
                         component={
