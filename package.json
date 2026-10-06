@@ -29,10 +29,10 @@
         "@dhis2/data-engine": "^3.17.3",
         "@dhis2/ui": "^10.17.0",
         "@fontsource/roboto": "^5.3.0",
-        "axios": "^1.19.0",
+        "axios": "^1.20.0",
         "axios-hooks": "^5.1.1",
         "final-form": "^5.0.0",
-        "moment": "^2.30.1",
+        "moment": "^2.31.0",
         "pretty-bytes": "^7.1.0",
         "prop-types": "^15.8.1",
         "react": "^19.2.8",
@@ -58,7 +58,7 @@
         ]
     },
     "devDependencies": {
-        "@babel/core": "^8.0.5",
+        "@babel/core": "^8.0.6",
         "@babel/preset-env": "^8.0.2",
         "@babel/preset-react": "^8.0.1",
         "@eslint/compat": "^2.0.0",
