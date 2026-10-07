@@ -85,3 +85,12 @@
     border-end-start-radius: 0;
     padding: 0 var(--spacers-dp12);
 }
+
+.splitMenu {
+    display: flex;
+    padding-top: var(--spacers-dp4);
+}
+
+.splitMenu > button {
+    flex: 1;
+}

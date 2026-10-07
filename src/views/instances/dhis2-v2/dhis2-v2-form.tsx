@@ -1,4 +1,4 @@
-import { Button, ButtonStrip, CircularLoader, FlyoutMenu, IconChevronDown16, IconChevronUp16, Layer, MenuItem, NoticeBox, Popper } from '@dhis2/ui'
+import { Button, ButtonStrip, CircularLoader, IconChevronDown16, IconChevronUp16, Layer, NoticeBox, Popper } from '@dhis2/ui'
 import cx from 'classnames'
 import type { AnyObject } from 'final-form'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -140,15 +140,17 @@ export const Dhis2V2Form: FC<{
                         {submitMenuOpen && (
                             <Layer onBackdropClick={() => setSubmitMenuOpen(false)}>
                                 <Popper reference={submitMenuAnchor} placement="bottom-end">
-                                    <FlyoutMenu dense>
-                                        <MenuItem
-                                            label="Save preset"
+                                    <div className={styles.splitMenu} style={{ width: submitMenuAnchor.current?.offsetWidth }}>
+                                        <Button
+                                            primary
                                             onClick={() => {
                                                 setSubmitMenuOpen(false)
                                                 onSavePreset()
                                             }}
-                                        />
-                                    </FlyoutMenu>
+                                        >
+                                            Save preset
+                                        </Button>
+                                    </div>
                                 </Popper>
                             </Layer>
                         )}
