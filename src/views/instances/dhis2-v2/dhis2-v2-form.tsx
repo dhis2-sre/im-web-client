@@ -1,7 +1,7 @@
-import { Button, ButtonStrip, CircularLoader, FlyoutMenu, MenuItem, NoticeBox, SplitButton } from '@dhis2/ui'
+import { Button, ButtonStrip, CircularLoader, FlyoutMenu, IconChevronDown16, IconChevronUp16, Layer, MenuItem, NoticeBox, Popper } from '@dhis2/ui'
 import cx from 'classnames'
 import type { AnyObject } from 'final-form'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useForm, useFormState } from 'react-final-form'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
@@ -36,6 +36,7 @@ export const Dhis2V2Form: FC<{
 }> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset, nameCheckKey }) => {
     const isEdit = mode === 'edit'
     const [submitMenuOpen, setSubmitMenuOpen] = useState(false)
+    const submitMenuAnchor = useRef<HTMLDivElement>(null)
     const formMode = isEdit ? 'update' : 'create'
     const { groups, companions, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
@@ -128,26 +129,30 @@ export const Dhis2V2Form: FC<{
                         {isEdit ? 'Save changes' : 'Create instance'}
                     </Button>
                 ) : (
-                    <SplitButton
-                        primary
-                        disabled={shouldDisableSubmit}
-                        onClick={() => void handleSubmit()}
-                        open={submitMenuOpen}
-                        onToggle={({ open }) => setSubmitMenuOpen(open)}
-                        component={
-                            <FlyoutMenu dense>
-                                <MenuItem
-                                    label="Save preset"
-                                    onClick={() => {
-                                        setSubmitMenuOpen(false)
-                                        onSavePreset()
-                                    }}
-                                />
-                            </FlyoutMenu>
-                        }
-                    >
-                        Create instance
-                    </SplitButton>
+                    /* Built from two buttons rather than a SplitButton, which disables both halves together: a name taken by a deployment stops Create but not Save preset. */
+                    <div ref={submitMenuAnchor} className={styles.splitButton}>
+                        <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
+                            Create instance
+                        </Button>
+                        <Button primary disabled={pristine || submitting} onClick={() => setSubmitMenuOpen((open) => !open)} aria-label="More ways to save">
+                            {submitMenuOpen ? <IconChevronUp16 /> : <IconChevronDown16 />}
+                        </Button>
+                        {submitMenuOpen && (
+                            <Layer onBackdropClick={() => setSubmitMenuOpen(false)}>
+                                <Popper reference={submitMenuAnchor} placement="bottom-end">
+                                    <FlyoutMenu dense>
+                                        <MenuItem
+                                            label="Save preset"
+                                            onClick={() => {
+                                                setSubmitMenuOpen(false)
+                                                onSavePreset()
+                                            }}
+                                        />
+                                    </FlyoutMenu>
+                                </Popper>
+                            </Layer>
+                        )}
+                    </div>
                 )}
                 <Button disabled={submitting} onClick={handleCancel}>
                     Cancel
