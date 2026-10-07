@@ -3,7 +3,7 @@ import { Card } from '@dhis2/ui'
 import { FORM_ERROR } from 'final-form'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
@@ -44,7 +44,6 @@ export const NewDhis2V2Instance: FC = () => {
     const { show: showSaved } = useAlert(({ name }) => `Saved preset ${name}`, SUCCESS_OPTIONS)
 
     const { show: showSaveFailed } = useAlert(({ message }) => message, CRITICAL_OPTIONS)
-    const [nameCheckKey, setNameCheckKey] = useState(0)
     const savingPreset = useRef(false)
 
     /* A preset may share its name with a deployment, so the name field's availability error, which is about deployments, is the one error that doesn't stop it; the backend refuses a name another preset has. */
@@ -69,8 +68,6 @@ export const NewDhis2V2Instance: FC = () => {
             }
 
             showSaved({ name: values.name })
-            form.change('name', undefined)
-            setNameCheckKey((key) => key + 1)
             void refetchPresets()
         },
         [savePreset, showSaved, showSaveFailed, refetchPresets]
@@ -89,7 +86,6 @@ export const NewDhis2V2Instance: FC = () => {
                                 handleSubmit={handleSubmit}
                                 name={values.name}
                                 steps={steps}
-                                nameCheckKey={nameCheckKey}
                                 onSavePreset={PRESETS_ENABLED ? () => void saveAsPreset(form) : undefined}
                             />
                         </>

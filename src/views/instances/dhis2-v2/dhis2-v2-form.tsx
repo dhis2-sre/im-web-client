@@ -32,8 +32,7 @@ export const Dhis2V2Form: FC<{
     mode?: 'create' | 'edit'
     deployment?: Deployment
     onSavePreset?: () => void
-    nameCheckKey?: number
-}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset, nameCheckKey }) => {
+}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset }) => {
     const isEdit = mode === 'edit'
     const [submitMenuOpen, setSubmitMenuOpen] = useState(false)
     const submitMenuAnchor = useRef<HTMLDivElement>(null)
@@ -89,7 +88,7 @@ export const Dhis2V2Form: FC<{
         <form onSubmit={handleSubmit}>
             <fieldset className={cx(styles.fieldset, styles.main)}>
                 <legend className={styles.legend}>Basic information</legend>
-                {!isEdit && <NameInput key={nameCheckKey} />}
+                {!isEdit && <NameInput />}
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 {isEdit && deployment ? <ExtendTtlSelect deployment={deployment} /> : <TtlSelect />}
