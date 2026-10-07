@@ -1,7 +1,7 @@
-import { Button, ButtonStrip, CircularLoader, FlyoutMenu, MenuItem, NoticeBox, SplitButton } from '@dhis2/ui'
+import { Button, ButtonStrip, CircularLoader, IconChevronDown16, IconChevronUp16, Layer, NoticeBox, Popper } from '@dhis2/ui'
 import cx from 'classnames'
 import type { AnyObject } from 'final-form'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { useForm, useFormState } from 'react-final-form'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
@@ -32,10 +32,11 @@ export const Dhis2V2Form: FC<{
     mode?: 'create' | 'edit'
     deployment?: Deployment
     onSavePreset?: () => void
-    nameCheckKey?: number
-}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset, nameCheckKey }) => {
+}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset }) => {
     const isEdit = mode === 'edit'
     const [submitMenuOpen, setSubmitMenuOpen] = useState(false)
+    const submitMenuAnchor = useRef<HTMLDivElement>(null)
+    const [submitMenuWidth, setSubmitMenuWidth] = useState<number>()
     const formMode = isEdit ? 'update' : 'create'
     const { groups, companions, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
@@ -48,7 +49,7 @@ export const Dhis2V2Form: FC<{
             invalid: true,
         },
     })
-    const shouldDisableSubmit = pristine || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
+    const shouldDisableSubmit = (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
 
     /* A conditional group nests under the group that owns its enabling parameter, e.g. the MinIO
      * section renders inside DHIS 2 Core because STORAGE_TYPE lives there. */
@@ -87,7 +88,7 @@ export const Dhis2V2Form: FC<{
         <form onSubmit={handleSubmit}>
             <fieldset className={cx(styles.fieldset, styles.main)}>
                 <legend className={styles.legend}>Basic information</legend>
-                {!isEdit && <NameInput key={nameCheckKey} />}
+                {!isEdit && <NameInput />}
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 {isEdit && deployment ? <ExtendTtlSelect deployment={deployment} /> : <TtlSelect />}
@@ -128,26 +129,40 @@ export const Dhis2V2Form: FC<{
                         {isEdit ? 'Save changes' : 'Create instance'}
                     </Button>
                 ) : (
-                    <SplitButton
-                        primary
-                        disabled={shouldDisableSubmit}
-                        onClick={() => void handleSubmit()}
-                        open={submitMenuOpen}
-                        onToggle={({ open }) => setSubmitMenuOpen(open)}
-                        component={
-                            <FlyoutMenu dense>
-                                <MenuItem
-                                    label="Save preset"
-                                    onClick={() => {
-                                        setSubmitMenuOpen(false)
-                                        onSavePreset()
-                                    }}
-                                />
-                            </FlyoutMenu>
-                        }
-                    >
-                        Create instance
-                    </SplitButton>
+                    /* Built from two buttons rather than a SplitButton, which disables both halves together: a name taken by a deployment stops Create but not Save preset. */
+                    <div ref={submitMenuAnchor} className={styles.splitButton}>
+                        <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
+                            Create instance
+                        </Button>
+                        <Button
+                            primary
+                            disabled={submitting}
+                            onClick={() => {
+                                setSubmitMenuWidth(submitMenuAnchor.current?.offsetWidth)
+                                setSubmitMenuOpen((open) => !open)
+                            }}
+                            aria-label="More ways to save"
+                        >
+                            {submitMenuOpen ? <IconChevronUp16 /> : <IconChevronDown16 />}
+                        </Button>
+                        {submitMenuOpen && (
+                            <Layer onBackdropClick={() => setSubmitMenuOpen(false)}>
+                                <Popper reference={submitMenuAnchor} placement="bottom-end">
+                                    <div className={styles.splitMenu} style={{ width: submitMenuWidth }}>
+                                        <Button
+                                            primary
+                                            onClick={() => {
+                                                setSubmitMenuOpen(false)
+                                                onSavePreset()
+                                            }}
+                                        >
+                                            Save preset
+                                        </Button>
+                                    </div>
+                                </Popper>
+                            </Layer>
+                        )}
+                    </div>
                 )}
                 <Button disabled={submitting} onClick={handleCancel}>
                     Cancel
