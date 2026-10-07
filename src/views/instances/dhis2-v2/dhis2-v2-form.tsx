@@ -37,6 +37,7 @@ export const Dhis2V2Form: FC<{
     const isEdit = mode === 'edit'
     const [submitMenuOpen, setSubmitMenuOpen] = useState(false)
     const submitMenuAnchor = useRef<HTMLDivElement>(null)
+    const [submitMenuWidth, setSubmitMenuWidth] = useState<number>()
     const formMode = isEdit ? 'update' : 'create'
     const { groups, companions, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
@@ -134,13 +135,21 @@ export const Dhis2V2Form: FC<{
                         <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
                             Create instance
                         </Button>
-                        <Button primary disabled={pristine || submitting} onClick={() => setSubmitMenuOpen((open) => !open)} aria-label="More ways to save">
+                        <Button
+                            primary
+                            disabled={pristine || submitting}
+                            onClick={() => {
+                                setSubmitMenuWidth(submitMenuAnchor.current?.offsetWidth)
+                                setSubmitMenuOpen((open) => !open)
+                            }}
+                            aria-label="More ways to save"
+                        >
                             {submitMenuOpen ? <IconChevronUp16 /> : <IconChevronDown16 />}
                         </Button>
                         {submitMenuOpen && (
                             <Layer onBackdropClick={() => setSubmitMenuOpen(false)}>
                                 <Popper reference={submitMenuAnchor} placement="bottom-end">
-                                    <div className={styles.splitMenu} style={{ width: submitMenuAnchor.current?.offsetWidth }}>
+                                    <div className={styles.splitMenu} style={{ width: submitMenuWidth }}>
                                         <Button
                                             primary
                                             onClick={() => {
