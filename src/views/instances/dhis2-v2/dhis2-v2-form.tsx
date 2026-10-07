@@ -49,7 +49,7 @@ export const Dhis2V2Form: FC<{
             invalid: true,
         },
     })
-    const shouldDisableSubmit = pristine || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
+    const shouldDisableSubmit = (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
 
     /* A conditional group nests under the group that owns its enabling parameter, e.g. the MinIO
      * section renders inside DHIS 2 Core because STORAGE_TYPE lives there. */
@@ -136,7 +136,7 @@ export const Dhis2V2Form: FC<{
                         </Button>
                         <Button
                             primary
-                            disabled={pristine || submitting}
+                            disabled={submitting}
                             onClick={() => {
                                 setSubmitMenuWidth(submitMenuAnchor.current?.offsetWidth)
                                 setSubmitMenuOpen((open) => !open)
