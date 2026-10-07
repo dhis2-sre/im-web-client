@@ -94,3 +94,25 @@
 .splitMenu > button {
     flex: 1;
 }
+
+.presetOption {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacers-dp8);
+    padding: var(--spacers-dp8) var(--spacers-dp12);
+    font-size: 14px;
+    color: var(--colors-grey900);
+    cursor: pointer;
+}
+
+.presetOption:hover {
+    background-color: var(--colors-grey200);
+}
+
+.presetOption.active {
+    background-color: var(--colors-teal050);
+}
+
+.presetDetails {
+    color: var(--colors-grey600);
+}
