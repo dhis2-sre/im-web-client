@@ -1,5 +1,6 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Card } from '@dhis2/ui'
+import { FORM_ERROR } from 'final-form'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
@@ -11,12 +12,14 @@ import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-para
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
+import { validateDnsLabel } from '../fields/validate-dns-label.ts'
 import styles from '../styles.module.css'
 import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 import { PresetPicker } from './preset-picker.tsx'
 
 const SUCCESS_OPTIONS = { success: true }
-const PRESETS_ENABLED = false
+const CRITICAL_OPTIONS = { critical: true }
+const PRESETS_ENABLED = true
 
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
@@ -40,36 +43,44 @@ export const NewDhis2V2Instance: FC = () => {
     const presets = useMemo(() => (allPresets ?? []).filter((preset) => preset.instances?.some((instance) => instance.stackName === STACK_ID)), [allPresets])
     const { show: showSaved } = useAlert(({ name }) => `Saved preset ${name}`, SUCCESS_OPTIONS)
 
-    /* Both buttons submit the same form, so it is validated the same way either way; this records which one was pressed. */
-    const savingPreset = useRef(false)
+    const { show: showSaveFailed } = useAlert(({ message }) => message, CRITICAL_OPTIONS)
     const [nameCheckKey, setNameCheckKey] = useState(0)
+    const savingPreset = useRef(false)
 
-    const submit = useCallback(
-        async (values: AnyObject, form: FormApi) => {
-            if (!savingPreset.current) {
-                return createDeployment(values)
+    /* A preset may share its name with a deployment, so the name field's availability error, which is about deployments, is the one error that doesn't stop it; the backend refuses a name another preset has. */
+    const saveAsPreset = useCallback(
+        async (form: FormApi) => {
+            if (savingPreset.current) {
+                return
+            }
+            const { values, errors = {} } = form.getState()
+            if (Object.keys(errors).some((field) => field !== 'name') || validateDnsLabel(values.name ?? '')) {
+                void form.submit()
+                return
             }
 
-            const errors = await savePreset(values)
-            if (errors) {
-                return errors
+            savingPreset.current = true
+            const result = await savePreset(values).finally(() => {
+                savingPreset.current = false
+            })
+            if (result) {
+                showSaveFailed({ message: result[FORM_ERROR] ?? 'Could not save the preset' })
+                return
             }
 
-            /* The name now belongs to the preset, so it is cleared and the availability check that called it free is remounted. */
             showSaved({ name: values.name })
             form.change('name', undefined)
             setNameCheckKey((key) => key + 1)
             void refetchPresets()
-            return undefined
         },
-        [createDeployment, savePreset, showSaved, refetchPresets]
+        [savePreset, showSaved, showSaveFailed, refetchPresets]
     )
 
     return (
         <>
             <Heading title="Create a new DHIS2 Instance (v2)" />
             <Card className={styles.container}>
-                <Form onSubmit={submit} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
+                <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
                         <>
                             {PRESETS_ENABLED && <PresetPicker presets={presets} mainStackName={STACK_ID} onDeleted={refetchPresets} />}
@@ -79,16 +90,7 @@ export const NewDhis2V2Instance: FC = () => {
                                 name={values.name}
                                 steps={steps}
                                 nameCheckKey={nameCheckKey}
-                                onSavePreset={
-                                    PRESETS_ENABLED
-                                        ? () => {
-                                              savingPreset.current = true
-                                              void Promise.resolve(form.submit()).finally(() => {
-                                                  savingPreset.current = false
-                                              })
-                                          }
-                                        : undefined
-                                }
+                                onSavePreset={PRESETS_ENABLED ? () => void saveAsPreset(form) : undefined}
                             />
                         </>
                     )}

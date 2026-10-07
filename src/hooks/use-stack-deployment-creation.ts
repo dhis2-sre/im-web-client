@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios'
 import { FORM_ERROR } from 'final-form'
 import type { AnyObject } from 'final-form'
 import { useCallback, useState } from 'react'
@@ -94,7 +95,8 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
             } catch (error) {
                 console.error(error)
                 setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                return { [FORM_ERROR]: error instanceof Error ? error.message : `Could not ${preset ? 'save the preset' : 'create the deployment'}` }
+                const serverMessage = isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : undefined
+                return { [FORM_ERROR]: serverMessage ?? (error instanceof Error ? error.message : `Could not ${preset ? 'save the preset' : 'create the deployment'}`) }
             }
         },
         [executePost, navigate, stackName, getIncludedParameters, companions, setStatus]
