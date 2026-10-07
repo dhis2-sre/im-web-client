@@ -12,16 +12,22 @@ import { presetFormValues } from './preset-values.ts'
 
 const ERROR_OPTIONS = { critical: true }
 
+const presetKey = (preset: Deployment) => `${preset.groupName}/${preset.name}`
+
 export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; onDeleted: () => void }> = ({ presets, mainStackName, onDeleted }) => {
     const form = useForm()
-    const [selectedId, setSelectedId] = useState<string>()
+    /* Kept by group and name rather than id, since replacing a preset gives it a new id. */
+    const [selectedKey, setSelectedKey] = useState<string>()
+    const selected = presets.find((preset) => presetKey(preset) === selectedKey)
+    const selectedId = selected ? String(selected.id) : undefined
     const { show: showError } = useAlert(({ message }) => message, ERROR_OPTIONS)
     const [{ loading: loadingPreset }, fetchPreset] = useAuthAxios<Deployment>({ method: 'GET' }, { manual: true, autoCancel: false })
     const [{ loading: deleting }, deletePreset] = useAuthAxios({ method: 'DELETE' }, { manual: true, autoCancel: false })
 
     const loadPreset = useCallback(
         async ({ selected }: { selected: string }) => {
-            setSelectedId(selected)
+            const preset = presets.find(({ id }) => String(id) === selected)
+            setSelectedKey(preset && presetKey(preset))
             try {
                 const { data: preset } = await fetchPreset({ url: `/deployments/${selected}` })
                 form.restart(presetFormValues(preset, mainStackName, form.getState().initialValues ?? {}))
@@ -29,13 +35,13 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; on
                 showError({ message: `Could not load the preset: ${error instanceof Error ? error.message : error}` })
             }
         },
-        [fetchPreset, form, mainStackName, showError]
+        [fetchPreset, form, mainStackName, presets, showError]
     )
 
     const removePreset = useCallback(async () => {
         try {
             await deletePreset({ url: `/deployments/${selectedId}` })
-            setSelectedId(undefined)
+            setSelectedKey(undefined)
             onDeleted()
         } catch (error) {
             showError({ message: `Could not delete the preset: ${error instanceof Error ? error.message : error}` })
