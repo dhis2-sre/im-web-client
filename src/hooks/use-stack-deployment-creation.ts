@@ -36,7 +36,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
     }, [])
 
     const saveDeployment = useCallback(
-        async (values: AnyObject, preset: boolean) => {
+        async (values: AnyObject, preset: boolean, overwrite = false) => {
             const stackValuesForCompanions: AnyObject = values[stackName] ?? {}
             const includedCompanions = companions.filter((companion) => !companion.when || stackValuesForCompanions[companion.when.parameter] === companion.when.equals)
             const deployedStacks = [stackName, ...includedCompanions.map((companion) => companion.name)]
@@ -49,6 +49,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                     description: values.description,
                     ttl: values.ttl,
                     preset,
+                    overwrite,
                 }
                 const { data: deployment } = await executePost({ data: deploymentPayload })
 
@@ -96,14 +97,21 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 console.error(error)
                 setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
                 const serverMessage = isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : undefined
-                return { [FORM_ERROR]: serverMessage ?? (error instanceof Error ? error.message : `Could not ${preset ? 'save the preset' : 'create the deployment'}`) }
+                const taken = isAxiosError(error) && error.response?.status === 409
+                if (taken) {
+                    setSteps([])
+                }
+                return {
+                    [FORM_ERROR]: serverMessage ?? (error instanceof Error ? error.message : `Could not ${preset ? 'save the preset' : 'create the deployment'}`),
+                    ...(preset && { taken }),
+                }
             }
         },
         [executePost, navigate, stackName, getIncludedParameters, companions, setStatus]
     )
 
     const createDeployment = useCallback((values: AnyObject) => saveDeployment(values, false), [saveDeployment])
-    const savePreset = useCallback((values: AnyObject) => saveDeployment(values, true), [saveDeployment])
+    const savePreset = useCallback((values: AnyObject, overwrite = false) => saveDeployment(values, true, overwrite), [saveDeployment])
 
     return { createDeployment, savePreset, steps }
 }

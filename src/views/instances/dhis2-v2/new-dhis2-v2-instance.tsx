@@ -3,10 +3,10 @@ import { Card } from '@dhis2/ui'
 import { FORM_ERROR } from 'final-form'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate } from 'react-router-dom'
-import { Heading } from '../../../components/index.ts'
+import { ConfirmationModal, Heading } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
@@ -46,6 +46,29 @@ export const NewDhis2V2Instance: FC = () => {
     const { show: showSaveFailed } = useAlert(({ message }) => message, CRITICAL_OPTIONS)
     const savingPreset = useRef(false)
 
+    const [presetToReplace, setPresetToReplace] = useState<AnyObject>()
+
+    const storePreset = useCallback(
+        async (values: AnyObject, overwrite: boolean) => {
+            savingPreset.current = true
+            const result = await savePreset(values, overwrite).finally(() => {
+                savingPreset.current = false
+            })
+            if (result?.taken && !overwrite) {
+                setPresetToReplace(values)
+                return
+            }
+            if (result) {
+                showSaveFailed({ message: result[FORM_ERROR] ?? 'Could not save the preset' })
+                return
+            }
+
+            showSaved({ name: values.name })
+            void refetchPresets()
+        },
+        [savePreset, showSaved, showSaveFailed, refetchPresets]
+    )
+
     /* A preset may share its name with a deployment, so the name field's availability error, which is about deployments, is the one error that doesn't stop it; the backend refuses a name another preset has. */
     const saveAsPreset = useCallback(
         async (form: FormApi) => {
@@ -58,19 +81,9 @@ export const NewDhis2V2Instance: FC = () => {
                 return
             }
 
-            savingPreset.current = true
-            const result = await savePreset(values).finally(() => {
-                savingPreset.current = false
-            })
-            if (result) {
-                showSaveFailed({ message: result[FORM_ERROR] ?? 'Could not save the preset' })
-                return
-            }
-
-            showSaved({ name: values.name })
-            void refetchPresets()
+            await storePreset(values, false)
         },
-        [savePreset, showSaved, showSaveFailed, refetchPresets]
+        [storePreset]
     )
 
     return (
@@ -92,6 +105,18 @@ export const NewDhis2V2Instance: FC = () => {
                     )}
                 </Form>
             </Card>
+            {presetToReplace && (
+                <ConfirmationModal
+                    destructive
+                    onCancel={() => setPresetToReplace(undefined)}
+                    onConfirm={() => {
+                        setPresetToReplace(undefined)
+                        void storePreset(presetToReplace, true)
+                    }}
+                >
+                    A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Replace it?
+                </ConfirmationModal>
+            )}
         </>
     )
 }
