@@ -5,7 +5,7 @@ import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ConfirmationModal, Heading } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
@@ -23,6 +23,7 @@ const PRESETS_ENABLED = true
 
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const navigateToInstanceList = useCallback(() => {
         navigate('/instances')
     }, [navigate])
@@ -93,7 +94,7 @@ export const NewDhis2V2Instance: FC = () => {
                 <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
                         <>
-                            {PRESETS_ENABLED && <PresetPicker presets={presets} mainStackName={STACK_ID} onDeleted={refetchPresets} />}
+                            {PRESETS_ENABLED && <PresetPicker presets={presets} mainStackName={STACK_ID} onDeleted={refetchPresets} initialPresetId={searchParams.get('preset') ?? undefined} />}
                             <Dhis2V2Form
                                 handleCancel={navigateToInstanceList}
                                 handleSubmit={handleSubmit}

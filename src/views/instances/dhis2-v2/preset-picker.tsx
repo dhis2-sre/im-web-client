@@ -2,24 +2,18 @@ import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, SingleSelectField } from '@dhis2/ui'
 import cx from 'classnames'
 import type { FC, MouseEvent } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-final-form'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { useDatabaseLabel } from '../../../hooks/use-database-label.ts'
 import type { Deployment } from '../../../types/index.ts'
 import fieldStyles from '../fields/fields.module.css'
 import styles from '../styles.module.css'
+import { usePresetSummary } from '../../presets/preset-summary.ts'
 import { presetFormValues } from './preset-values.ts'
 
 const ERROR_OPTIONS = { critical: true }
 
 const presetKey = (preset: Deployment) => `${preset.groupName}/${preset.name}`
-
-const COMPANION_FLAGS: [string, string][] = [
-    ['ENABLE_PGADMIN', 'pgAdmin'],
-    ['ENABLE_DORIS', 'Doris'],
-    ['DEPLOY_CHAP', 'CHAP'],
-]
 
 type PresetOptionProps = {
     label: string
@@ -32,15 +26,8 @@ type PresetOptionProps = {
 
 /* A SingleSelectOption only takes a string label, so this renders the same row with the preset's main settings after it. The select still filters and shows the selection by label. */
 const PresetOption: FC<PresetOptionProps> = ({ label, value, preset, mainStackName, active, onClick }) => {
-    const parameters = preset.instances?.find((instance) => instance.stackName === mainStackName)?.parameters ?? {}
-    const valueOf = (name: string) => parameters[name]?.value ?? ''
-    const { label: database } = useDatabaseLabel(valueOf('DATABASE_ID'))
-    const details = [
-        valueOf('IMAGE_TAG'),
-        database,
-        valueOf('STORAGE_TYPE'),
-        ...COMPANION_FLAGS.filter(([parameter]) => valueOf(parameter) === 'true').map(([, name]) => name),
-    ].filter(Boolean)
+    const { version, database, storage, companions } = usePresetSummary(preset, mainStackName)
+    const details = [version, database, storage, ...companions].filter(Boolean)
 
     return (
         <div className={cx(styles.presetOption, { [styles.active]: active })} data-value={value} onClick={(event) => onClick?.({}, event)}>
@@ -50,7 +37,7 @@ const PresetOption: FC<PresetOptionProps> = ({ label, value, preset, mainStackNa
     )
 }
 
-export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; onDeleted: () => void }> = ({ presets, mainStackName, onDeleted }) => {
+export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; onDeleted: () => void; initialPresetId?: string }> = ({ presets, mainStackName, onDeleted, initialPresetId }) => {
     const form = useForm()
     /* Kept by group and name rather than id, since replacing a preset gives it a new id. */
     const [selectedKey, setSelectedKey] = useState<string>()
@@ -73,6 +60,16 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; on
         },
         [fetchPreset, form, mainStackName, presets, showError]
     )
+
+    /* The presets list's Load opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
+    const appliedInitial = useRef(false)
+    useEffect(() => {
+        if (appliedInitial.current || !initialPresetId || !presets.some(({ id }) => String(id) === initialPresetId)) {
+            return
+        }
+        appliedInitial.current = true
+        void loadPreset({ selected: initialPresetId })
+    }, [initialPresetId, presets, loadPreset])
 
     const removePreset = useCallback(async () => {
         try {
