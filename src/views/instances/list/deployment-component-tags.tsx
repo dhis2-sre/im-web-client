@@ -12,9 +12,11 @@ import styles from './deployment-component-tags.module.css'
  * The label carries the stack because these tags flatten every instance of the deployment into one
  * row, where a bare component name is ambiguous: a dhis2-v2 instance alongside a chap one shows two
  * components called db. DHIS 2 is the default a deployment is built around, so its components stay
- * bare and only what is deployed alongside them is qualified. The details page needs no prefix at
- * all, having a section per instance. */
-const componentLabel = (stackName: string, componentName: string) => (stackName.startsWith('dhis2') ? componentName : `${stackName}:${componentName}`)
+ * bare and only what is deployed alongside them is qualified. A component named after its own stack,
+ * like pgadmin, is unambiguous already. The details page needs no prefix at all, having a section
+ * per instance. */
+const componentLabel = (stackName: string, componentName: string) =>
+    stackName.startsWith('dhis2') || componentName === stackName ? componentName : `${stackName}:${componentName}`
 export const DeploymentComponentTags: FC<{ instances?: DeploymentInstanceComponents[]; loading: boolean; error?: unknown }> = ({ instances, loading, error }) => {
     if (loading && !instances) {
         return <CircularLoader extrasmall />
