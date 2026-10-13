@@ -83,7 +83,9 @@ export const PresetDetails: FC = () => {
                     <Moment date={preset.updatedAt} fromNow />
                 </dd>
             </dl>
-            {preset.instances?.map((instance) => <PresetInstance key={instance.id} instance={instance} />)}
+            {preset.instances?.map((instance) => (
+                <PresetInstance key={instance.id} instance={instance} />
+            ))}
         </div>
     )
 }

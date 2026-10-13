@@ -32,7 +32,8 @@ export const Dhis2V2Form: FC<{
     mode?: 'create' | 'edit'
     deployment?: Deployment
     onSavePreset?: () => void
-}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset }) => {
+    onBulkDeploy?: () => void
+}> = ({ handleCancel, handleSubmit, name, steps = [], mode = 'create', deployment, onSavePreset, onBulkDeploy }) => {
     const isEdit = mode === 'edit'
     const [submitMenuOpen, setSubmitMenuOpen] = useState(false)
     const submitMenuAnchor = useRef<HTMLDivElement>(null)
@@ -158,6 +159,17 @@ export const Dhis2V2Form: FC<{
                                         >
                                             Save preset
                                         </Button>
+                                        {onBulkDeploy && (
+                                            <Button
+                                                primary
+                                                onClick={() => {
+                                                    setSubmitMenuOpen(false)
+                                                    onBulkDeploy()
+                                                }}
+                                            >
+                                                Bulk deploy
+                                            </Button>
+                                        )}
                                     </div>
                                 </Popper>
                             </Layer>
