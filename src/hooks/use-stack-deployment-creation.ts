@@ -9,6 +9,8 @@ import { useAuthAxios } from './use-auth-axios.ts'
 export type DeploymentStepStatus = 'pending' | 'running' | 'success' | 'error'
 export type DeploymentStep = { stackName: string; status: DeploymentStepStatus }
 export type BulkDeployment = { id: number; name: string }
+/* A refused bulk deploy created nothing. Any other failure, a lost reply or a server error, may have come after the deployments were created. */
+export type BulkDeployError = { message: string; refused: boolean }
 type BulkDeployRequest = { prefix: string; count: number; group: string; description?: string; ttl?: number; instances: SaveInstanceRequest[] }
 
 /* A stack counts as running while its instance is being registered, and registered once the call
@@ -128,7 +130,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
     const savePreset = useCallback((values: AnyObject, overwrite = false) => saveDeployment(values, true, overwrite), [saveDeployment])
 
     const bulkDeploy = useCallback(
-        async (values: AnyObject, prefix: string, count: number): Promise<{ deployments?: BulkDeployment[]; error?: string }> => {
+        async (values: AnyObject, prefix: string, count: number): Promise<{ deployments?: BulkDeployment[]; error?: BulkDeployError }> => {
             const payload: BulkDeployRequest = {
                 prefix,
                 count,
@@ -143,7 +145,13 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
             } catch (error) {
                 console.error(error)
                 const serverMessage = isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : undefined
-                return { error: serverMessage ?? (error instanceof Error ? error.message : 'Could not start the bulk deploy') }
+                const status = isAxiosError(error) ? error.response?.status : undefined
+                return {
+                    error: {
+                        message: serverMessage ?? (error instanceof Error ? error.message : 'Could not start the bulk deploy'),
+                        refused: !!status && status >= 400 && status < 500,
+                    },
+                }
             }
         },
         [executePost, buildInstances]

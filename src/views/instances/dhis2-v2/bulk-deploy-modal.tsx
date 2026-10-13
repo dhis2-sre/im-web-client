@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { useState } from 'react'
 import { useDebounce } from 'use-debounce'
 import { useAuthAxios } from '../../../hooks/index.ts'
+import type { BulkDeployError } from '../../../hooks/use-stack-deployment-creation.ts'
 import styles from '../styles.module.css'
 
 export const MAX_BULK_DEPLOYMENTS = 50
@@ -19,21 +20,24 @@ export const BulkDeployModal: FC<{
     group: string
     initialPrefix: string
     onCancel: () => void
-    onDeploy: (prefix: string, count: number) => Promise<string | undefined>
+    onDeploy: (prefix: string, count: number) => Promise<BulkDeployError | undefined>
 }> = ({ group, initialPrefix, onCancel, onDeploy }) => {
     const [prefix, setPrefix] = useState(initialPrefix)
     const [countInput, setCountInput] = useState('2')
     const [deploying, setDeploying] = useState(false)
-    const [deployError, setDeployError] = useState<string>()
+    const [deployError, setDeployError] = useState<BulkDeployError>()
     const count = parseCount(countInput)
     const [checkedPrefix] = useDebounce(prefix, 300)
     const [checkedCount] = useDebounce(count, 300)
     const ready = !!checkedPrefix && !!checkedCount
     const [{ data: availability, loading, error }] = useAuthAxios<BulkNameAvailability>(
         { url: '/deployments/bulk/availability', params: { group, prefix: checkedPrefix, count: checkedCount } },
-        { manual: !ready }
+        { manual: !ready, useCache: false }
     )
-    const current = ready && checkedPrefix === prefix && checkedCount === count && !loading && !error && availability
+    const current =
+        ready && checkedPrefix === prefix && checkedCount === count && !loading && !error && availability?.names.length === count && availability.names[0] === `${prefix}-1`
+            ? availability
+            : undefined
     const taken = new Set(current ? current.taken : [])
     const canDeploy = !!current && !current.reason && taken.size === 0 && !deploying
 
@@ -88,8 +92,8 @@ export const BulkDeployModal: FC<{
                 )}
                 {error && !loading && <NoticeBox error>Could not check the names: {error.message}</NoticeBox>}
                 {deployError && (
-                    <NoticeBox error title="Nothing was deployed">
-                        {deployError}
+                    <NoticeBox error title={deployError.refused ? 'Nothing was deployed' : 'The bulk deploy may have started'}>
+                        {deployError.refused ? deployError.message : `${deployError.message}. Check the instance list before trying again.`}
                     </NoticeBox>
                 )}
             </ModalContent>
