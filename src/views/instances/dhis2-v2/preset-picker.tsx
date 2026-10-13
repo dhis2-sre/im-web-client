@@ -37,7 +37,12 @@ const PresetOption: FC<PresetOptionProps> = ({ label, value, preset, mainStackNa
     )
 }
 
-export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; onDeleted: () => void; initialPresetId?: string }> = ({ presets, mainStackName, onDeleted, initialPresetId }) => {
+export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; onDeleted: () => void; initialPresetId?: string }> = ({
+    presets,
+    mainStackName,
+    onDeleted,
+    initialPresetId,
+}) => {
     const form = useForm()
     /* Kept by group and name rather than id, since replacing a preset gives it a new id. */
     const [selectedKey, setSelectedKey] = useState<string>()

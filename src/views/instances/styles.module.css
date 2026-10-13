@@ -88,6 +88,8 @@
 
 .splitMenu {
     display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp4);
     padding-top: var(--spacers-dp4);
 }
 
@@ -115,4 +117,45 @@
 
 .presetDetails {
     color: var(--colors-grey600);
+}
+
+.bulkIntro {
+    margin: 0 0 var(--spacers-dp16);
+    font-size: 14px;
+    color: var(--colors-grey800);
+}
+
+.bulkFields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacers-dp16);
+    margin-bottom: var(--spacers-dp16);
+}
+
+.bulkPrefix {
+    flex: 1;
+    min-width: 200px;
+}
+
+.bulkNames {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacers-dp4);
+    margin-bottom: var(--spacers-dp12);
+}
+
+.bulkName,
+.bulkNameTaken {
+    padding: 2px var(--spacers-dp8);
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 13px;
+    background: var(--colors-grey200);
+    color: var(--colors-grey900);
+}
+
+.bulkNameTaken {
+    background: var(--colors-red050);
+    color: var(--colors-red700);
+    text-decoration: line-through;
 }
