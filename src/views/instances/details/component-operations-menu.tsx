@@ -2,6 +2,7 @@ import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, IconMore24, Menu, MenuItem, Popover } from '@dhis2/ui'
 import { useCallback, useRef, useState } from 'react'
 import type { FC } from 'react'
+import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { grafanaLogsUrl } from '../../../utils/grafana-logs.ts'
@@ -14,7 +15,7 @@ import { SaveAsModal } from './save-as-modal.tsx'
  * one Backup item: the dump and the file store are written together and linked, so the component
  * advertising either capability offers the same backup. logs is offered on the replica rows only,
  * since a log belongs to one pod rather than to the component as a whole. */
-const handledOperations = ['restart', 'restartReplica', 'databaseSave', 'filestoreBackup', 'logs']
+const handledOperations = ['restart', 'restartReplica', 'reset', 'databaseSave', 'filestoreBackup', 'logs']
 
 export const ComponentOperationsMenu: FC<{
     instanceId: number
@@ -30,6 +31,7 @@ export const ComponentOperationsMenu: FC<{
     const [open, setOpen] = useState(false)
     const [showSaveAs, setShowSaveAs] = useState(false)
     const [showLog, setShowLog] = useState(false)
+    const [confirmReset, setConfirmReset] = useState(false)
 
     const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
 
@@ -60,17 +62,43 @@ export const ComponentOperationsMenu: FC<{
         }
     }, [restart, component.name, showAlert, onChanged])
 
+    const [{ loading: resetting }, reset] = useAuthAxios(
+        {
+            method: 'PUT',
+            url: `/instances/${instanceId}/reset`,
+        },
+        { manual: true, autoCancel: false }
+    )
+
+    const onReset = useCallback(async () => {
+        setConfirmReset(false)
+        try {
+            await reset({ params: { selector: component.name } })
+            showAlert({ message: `Successfully requested reset of component "${component.name}"`, isCritical: false })
+            onChanged()
+        } catch (resetError) {
+            showAlert({ message: `There was an error when requesting reset of component "${component.name}"`, isCritical: true })
+            console.error(resetError)
+        }
+    }, [reset, component.name, showAlert, onChanged])
+
     return (
         <>
             {showLog && replica && (
                 <LogModal instanceId={instanceId} componentName={component.name} replica={replica.name} containers={replica.containers ?? []} onClose={() => setShowLog(false)} />
+            )}
+            {confirmReset && (
+                <ConfirmationModal destructive onCancel={() => setConfirmReset(false)} onConfirm={onReset}>
+                    Are you sure you want to reset component &quot;{component.name}&quot;? Its data is replaced with the database the instance was deployed from, and the components
+                    reading it are restarted.
+                </ConfirmationModal>
             )}
             {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
             <span ref={anchor}>
                 <Button
                     small
                     secondary
-                    loading={restarting}
+                    loading={restarting || resetting}
                     icon={<IconMore24 />}
                     onClick={() => setOpen((current) => !current)}
                     dataTest={`component-operations-${component.name}`}
@@ -80,6 +108,17 @@ export const ComponentOperationsMenu: FC<{
                 <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
                     <Menu>
                         {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={onRestart} />}
+                        {component.supportedOperations.includes('reset') && (
+                            <MenuItem
+                                dense
+                                destructive
+                                label="Reset"
+                                onClick={() => {
+                                    setOpen(false)
+                                    setConfirmReset(true)
+                                }}
+                            />
+                        )}
                         {backsUp && (
                             <MenuItem
                                 dense
