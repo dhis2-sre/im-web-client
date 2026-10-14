@@ -40,6 +40,7 @@ export const Layout: FC = () => {
                             </button>
                         </Tooltip>
                     </NavLink>
+                    <NavLink to="/presets">Presets</NavLink>
                     <NavLink to="/databases">Databases</NavLink>
                     {isAdministrator && (
                         <>

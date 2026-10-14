@@ -23,7 +23,7 @@ const preset: Deployment = {
 }
 
 describe('presetFormValues', () => {
-    it('lays the preset over the initial values and leaves the name out', () => {
+    it('lays the preset over the initial values and restores the name', () => {
         const initialValues = {
             'name': 'typed-name',
             'ttl': 3600,
@@ -32,6 +32,7 @@ describe('presetFormValues', () => {
         }
 
         expect(presetFormValues(preset, 'dhis2-v2', initialValues)).toEqual({
+            'name': 'sierra-leone',
             'ttl': 7200,
             'groupName': 'play',
             'description': 'SL setup',

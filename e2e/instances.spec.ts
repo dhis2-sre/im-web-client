@@ -62,7 +62,7 @@ test.describe('new instance', () => {
         if (numberOfDatabases > 7) {
             await page.locator('#filter').fill(dbFileName)
         }
-        await page.getByText(dbFileName).dispatchEvent('click')
+        await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: dbFileName }).dispatchEvent('click')
         await page.keyboard.press('Escape') // dismiss dropdown layer
 
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
@@ -117,7 +117,7 @@ test.describe('new instance', () => {
         if (numberOfDatabases > 7) {
             await page.locator('#filter').fill(dbFileName)
         }
-        await page.getByText(dbFileName).dispatchEvent('click')
+        await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: dbFileName }).dispatchEvent('click')
         await page.keyboard.press('Escape')
 
         await page.getByRole('button', { name: 'Create instance' }).click()
