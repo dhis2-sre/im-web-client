@@ -89,8 +89,8 @@ export const ComponentOperationsMenu: FC<{
             )}
             {confirmReset && (
                 <ConfirmationModal destructive onCancel={() => setConfirmReset(false)} onConfirm={onReset}>
-                    Are you sure you want to reset component &quot;{component.name}&quot;? Its data is replaced with the database the instance was deployed from, and the other
-                    components are restarted.
+                    Are you sure you want to reset component &quot;{component.name}&quot;? Its data is replaced with the database the instance was deployed from, and the components
+                    reading it are restarted.
                 </ConfirmationModal>
             )}
             {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
