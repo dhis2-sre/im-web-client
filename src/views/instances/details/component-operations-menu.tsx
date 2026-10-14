@@ -74,10 +74,10 @@ export const ComponentOperationsMenu: FC<{
         setConfirmReset(false)
         try {
             await reset({ params: { selector: component.name } })
-            showAlert({ message: `Successfully reset component "${component.name}"`, isCritical: false })
+            showAlert({ message: `Successfully requested reset of component "${component.name}"`, isCritical: false })
             onChanged()
         } catch (resetError) {
-            showAlert({ message: `There was an error when resetting component "${component.name}"`, isCritical: true })
+            showAlert({ message: `There was an error when requesting reset of component "${component.name}"`, isCritical: true })
             console.error(resetError)
         }
     }, [reset, component.name, showAlert, onChanged])
