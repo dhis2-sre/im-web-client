@@ -13,7 +13,7 @@ export const NameInput = () => {
     return (
         <Field name="name" validate={validate}>
             {({ input, meta }) => {
-                const settled = (meta.modified || meta.touched) && !meta.validating && !!input.value
+                const settled = !meta.validating && !!input.value
                 return (
                     <InputFieldFF
                         input={input}

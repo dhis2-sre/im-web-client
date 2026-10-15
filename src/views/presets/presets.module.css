@@ -1,0 +1,32 @@
+.wrapper {
+    width: 100%;
+}
+
+.description {
+    color: var(--colors-grey600);
+    font-size: 13px;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--spacers-dp8) var(--spacers-dp24);
+    margin: var(--spacers-dp16) 0 var(--spacers-dp24);
+}
+
+.summary dt {
+    color: var(--colors-grey700);
+}
+
+.summary dd {
+    margin: 0;
+}
+
+.instance {
+    margin-bottom: var(--spacers-dp24);
+}
+
+.toolbar {
+    background-color: var(--colors-white);
+    font-weight: 500;
+}
