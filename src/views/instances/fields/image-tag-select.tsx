@@ -1,6 +1,6 @@
 import { hasValue } from '@dhis2/ui'
 import { FC, useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { useField, useForm } from 'react-final-form'
+import { useField } from 'react-final-form'
 import classes from '../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect } from '../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../hooks/index.ts'
@@ -73,13 +73,12 @@ const useIntegrationsOptions = (organization: string, repository: string, regist
     return { images, loading: !!repository && !current }
 }
 
-/* A tag belongs to the repository it was picked from, so changing the repository drops it rather
- * than carrying it over to a repository that may not publish it at all. The previous attempt at this
- * compared the selection against the offered options, which could never fire: the selected tag is
- * added to those options so it stays visible, so it was always found among them. Comparing against
- * the repository instead also leaves a tag that has aged out of its own repository's listing alone,
- * which the options comparison would have cleared on opening the edit form. */
-const useResetImageTagWhenRepositoryChanges = ({ repository, form, fieldName, onReset }: { repository: string; form; fieldName: string; onReset: () => void }) => {
+/* Everything the select holds was derived from one repository, so it goes when the repository
+ * changes. The tag itself is cleared by ImageRepositorySelect when the user picks another
+ * repository, not here: loading a preset restarts the form with a repository and a tag that belong
+ * together, and an effect watching the repository cannot tell that apart from a user's pick, so it
+ * dropped the preset's tag whenever its repository was not the default. */
+const useClearWhenRepositoryChanges = (repository: string, onChange: () => void) => {
     const previousRepository = useRef<string | undefined>(undefined)
 
     useEffect(() => {
@@ -92,10 +91,8 @@ const useResetImageTagWhenRepositoryChanges = ({ repository, form, fieldName, on
         }
 
         previousRepository.current = repository
-        onReset()
-        form.change(fieldName, undefined)
-        form.blur(fieldName)
-    }, [repository, form, fieldName, onReset])
+        onChange()
+    }, [repository, onChange])
 }
 
 const useRepositoryValue = (stackId: Dhis2StackName) => {
@@ -150,7 +147,6 @@ const useCheckImageExists = (repository, organization?: string, registry?: strin
 }
 
 export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId = 'dhis2-v2', parameterName = IMAGE_TAG, organization, repository: fixedRepository, registry }) => {
-    const form = useForm()
     const { value: imageValue, onChange: onImageChange, onBlur: onImageBlur, invalid, error } = useImageTagField(stackId, parameterName)
     const dynamicRepository = useRepositoryValue(stackId)
     const repository = fixedRepository ?? dynamicRepository
@@ -173,14 +169,12 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
         [loadedOptions, verifiedOptions, imageValue]
     )
 
-    /* Everything the select holds was derived from one repository, the filter a search left behind
-     * included, so all of it goes when the repository changes. */
     const clearOptionsOfPreviousRepository = useCallback(() => {
         setVerifiedOptions([])
         setFilteredOptions([])
         setFiltered(false)
     }, [])
-    useResetImageTagWhenRepositoryChanges({ repository, form, fieldName: `${stackId}.${parameterName}`, onReset: clearOptionsOfPreviousRepository })
+    useClearWhenRepositoryChanges(repository, clearOptionsOfPreviousRepository)
 
     const filterOptions = useCallback(
         async ({ value }) => {
