@@ -1,9 +1,9 @@
 import { SingleSelectField, hasValue } from '@dhis2/ui'
 import cx from 'classnames'
 import { FC, useMemo } from 'react'
-import { useField } from 'react-final-form'
+import { useField, useForm } from 'react-final-form'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Dhis2StackName, IMAGE_REPOSITORY } from '../parameters.ts'
+import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG } from '../parameters.ts'
 import styles from './fields.module.css'
 
 type CustomOption = {
@@ -67,7 +67,10 @@ const CustomSelectOption: FC<{
     </div>
 )
 
+/* A tag belongs to the repository it was picked from, so picking another repository drops it rather
+ * than carrying it over to a repository that may not publish it at all. */
 export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2StackName }> = ({ displayName, stackId = 'dhis2-v2' }) => {
+    const form = useForm()
     const { meta, input } = useField(`${stackId}.${IMAGE_REPOSITORY}`, {
         validate: hasValue,
     })
@@ -103,7 +106,15 @@ export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2Sta
             loading={loading}
             validationText={errorMessage}
             onChange={({ selected }) => {
-                input.onChange(selected)
+                if (selected === input.value) {
+                    return
+                }
+                const tagField = `${stackId}.${IMAGE_TAG}`
+                form.batch(() => {
+                    input.onChange(selected)
+                    form.change(tagField, undefined)
+                })
+                form.blur(tagField)
             }}
             selected={input.value as string}
             required
