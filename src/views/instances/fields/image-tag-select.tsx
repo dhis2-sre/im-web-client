@@ -1,4 +1,4 @@
-import { hasValue } from '@dhis2/ui'
+import { Help, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useField } from 'react-final-form'
 import classes from '../../../components/searchable-single-select.module.css'
@@ -153,7 +153,8 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     /* A repository given as a GHCR reference is looked up in GHCR, like the fixed repositories of other stacks. */
     const ghcr = fixedRepository ? undefined : parseGhcrRepository(dynamicRepository)
     const repository = fixedRepository ?? ghcr?.repository ?? dynamicRepository
-    const resolvedRegistry = ghcr ? 'ghcr' : registry
+    const isGhcr = ghcr !== undefined
+    const resolvedRegistry = isGhcr ? 'ghcr' : registry
     const resolvedOrganization = ghcr?.organization ?? organization ?? 'dhis2'
     const { imageLoading, checkImageExists } = useCheckImageExists(repository, ghcr?.organization ?? organization, resolvedRegistry)
     /* Tags typed in and confirmed against the registry, which the listing did not return. They are
@@ -198,6 +199,14 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
                 return
             }
 
+            /* IM can't list or check the tags of a private GHCR package, so the typed tag is offered as it is, and a
+             * wrong one shows up as a failed image pull. */
+            if (isGhcr) {
+                setFilteredOptions([tag])
+                setFiltered(true)
+                return
+            }
+
             const tagExists = await checkImageExists({ repository, tag })
 
             if (tagExists) {
@@ -210,7 +219,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
             setFilteredOptions([])
             setFiltered(true)
         },
-        [options, checkImageExists, repository]
+        [options, checkImageExists, repository, isGhcr]
     )
 
     const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
@@ -233,6 +242,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
                 onFilterChange={filterOptions}
             />
             {error && <div className={fieldClasses.validationError}>{error}</div>}
+            {isGhcr && <Help>Tags of private images are not listed, type the exact tag</Help>}
         </div>
     )
 }
