@@ -7,6 +7,7 @@ import { useAuthAxios } from '../../../hooks/index.ts'
 import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG } from '../parameters.ts'
 import fieldClasses from './fields.module.css'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
+import { parseGhcrRepository } from './parse-ghcr-repository.ts'
 
 interface ImageTagSelectProps {
     displayName: string
@@ -149,13 +150,16 @@ const useCheckImageExists = (repository, organization?: string, registry?: strin
 export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId = 'dhis2-v2', parameterName = IMAGE_TAG, organization, repository: fixedRepository, registry }) => {
     const { value: imageValue, onChange: onImageChange, onBlur: onImageBlur, invalid, error } = useImageTagField(stackId, parameterName)
     const dynamicRepository = useRepositoryValue(stackId)
-    const repository = fixedRepository ?? dynamicRepository
-    const resolvedOrganization = organization ?? 'dhis2'
-    const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
+    /* A repository given as a GHCR reference is looked up in GHCR, like the fixed repositories of other stacks. */
+    const ghcr = fixedRepository ? undefined : parseGhcrRepository(dynamicRepository)
+    const repository = fixedRepository ?? ghcr?.repository ?? dynamicRepository
+    const resolvedRegistry = ghcr ? 'ghcr' : registry
+    const resolvedOrganization = ghcr?.organization ?? organization ?? 'dhis2'
+    const { imageLoading, checkImageExists } = useCheckImageExists(repository, ghcr?.organization ?? organization, resolvedRegistry)
     /* Tags typed in and confirmed against the registry, which the listing did not return. They are
      * verified against one repository, so they go when the repository does. */
     const [verifiedOptions, setVerifiedOptions] = useState<string[]>([])
-    const { images: loadedOptions, loading: tagsLoading } = useIntegrationsOptions(resolvedOrganization, repository, registry)
+    const { images: loadedOptions, loading: tagsLoading } = useIntegrationsOptions(resolvedOrganization, repository, resolvedRegistry)
 
     const [filteredOptions, setFilteredOptions] = useState<string[]>([])
     const [filtered, setFiltered] = useState(false)

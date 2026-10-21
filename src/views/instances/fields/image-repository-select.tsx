@@ -47,6 +47,13 @@ const predefinedOptions = new Map<string, CustomOption>([
     ],
 ])
 
+/* Pulled from GitHub Container Registry, so it isn't among the Docker Hub repositories /integrations lists. */
+const privateOption: CustomOption = {
+    value: 'ghcr.io/dhis2/core-embargoed',
+    primaryText: 'Private',
+    secondaryText: 'Unpublished builds, restricted access',
+}
+
 const CustomSelectOption: FC<{
     label: string
     secondaryText: string
@@ -86,14 +93,14 @@ export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2Sta
     })
     const options = useMemo<CustomOption[]>(() => {
         if (!data) {
-            if (meta.initial) {
-                return [predefinedOptions.get(meta.initial as string) ?? { value: meta.initial, primaryText: meta.initial, secondaryText: '' }]
+            if (meta.initial && meta.initial !== privateOption.value) {
+                return [predefinedOptions.get(meta.initial as string) ?? { value: meta.initial, primaryText: meta.initial, secondaryText: '' }, privateOption]
             } else {
-                return []
+                return [privateOption]
             }
         }
 
-        return data.filter((value: string) => value.startsWith('core') && predefinedOptions.has(value)).map((value: string) => predefinedOptions.get(value))
+        return [...data.filter((value: string) => value.startsWith('core') && predefinedOptions.has(value)).map((value: string) => predefinedOptions.get(value)), privateOption]
     }, [data, meta.initial])
 
     const hasErrorState = error || (meta.touched && meta.invalid)
