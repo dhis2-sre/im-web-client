@@ -3,7 +3,7 @@ import cx from 'classnames'
 import { FC, useMemo } from 'react'
 import { useField, useForm } from 'react-final-form'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG } from '../parameters.ts'
+import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG, PRIVATE_IMAGE_REPOSITORIES } from '../parameters.ts'
 import styles from './fields.module.css'
 
 type CustomOption = {
@@ -47,12 +47,12 @@ const predefinedOptions = new Map<string, CustomOption>([
     ],
 ])
 
-/* Pulled from GitHub Container Registry, so it isn't among the Docker Hub repositories /integrations lists. */
-const privateOption: CustomOption = {
-    value: 'ghcr.io/dhis2/core-embargoed',
+/* Private repositories aren't among the Docker Hub repositories /integrations lists, so they are always offered. */
+const privateOptions: CustomOption[] = [...PRIVATE_IMAGE_REPOSITORIES].map((value) => ({
+    value,
     primaryText: 'Private',
     secondaryText: 'Unpublished builds, restricted access',
-}
+}))
 
 const CustomSelectOption: FC<{
     label: string
@@ -91,17 +91,18 @@ export const ImageRepositorySelect: FC<{ displayName: string; stackId?: Dhis2Sta
             },
         },
     })
-    const options = useMemo<CustomOption[]>(() => {
+    const listedOptions = useMemo<CustomOption[]>(() => {
         if (!data) {
-            if (meta.initial && meta.initial !== privateOption.value) {
-                return [predefinedOptions.get(meta.initial as string) ?? { value: meta.initial, primaryText: meta.initial, secondaryText: '' }, privateOption]
+            if (meta.initial && !PRIVATE_IMAGE_REPOSITORIES.has(meta.initial)) {
+                return [predefinedOptions.get(meta.initial as string) ?? { value: meta.initial, primaryText: meta.initial, secondaryText: '' }]
             } else {
-                return [privateOption]
+                return []
             }
         }
 
-        return [...data.filter((value: string) => value.startsWith('core') && predefinedOptions.has(value)).map((value: string) => predefinedOptions.get(value)), privateOption]
+        return data.filter((value: string) => value.startsWith('core') && predefinedOptions.has(value)).map((value: string) => predefinedOptions.get(value))
     }, [data, meta.initial])
+    const options = [...listedOptions, ...privateOptions]
 
     const hasErrorState = error || (meta.touched && meta.invalid)
     const errorMessage = hasErrorState ? (error?.message ?? meta.error) : ''
