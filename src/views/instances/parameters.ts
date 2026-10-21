@@ -22,3 +22,4 @@ export const PGADMIN_PASSWORD = 'PGADMIN_PASSWORD'
 export const PGADMIN_CONFIRM_PASSWORD = 'PGADMIN_CONFIRM_PASSWORD'
 export const OPTIONAL_FIELDS = new Set([JAVA_OPTS])
 export const CUSTOM_DHIS2_CONFIG = 'CUSTOM_DHIS2_CONFIG'
+export const PRIVATE_IMAGE_REPOSITORIES = new Set(['ghcr.io/dhis2/core-embargoed'])
