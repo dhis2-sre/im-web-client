@@ -1,0 +1,61 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["typescript", "react", "import", "jsx-a11y", "unicorn", "oxc"],
+    "env": { "browser": true, "node": true, "es2024": true },
+    "ignorePatterns": ["dist/**", "src/types/generated/**", "src/types/generated-types.d.ts", "e2e/**"],
+    "categories": {
+        "correctness": "error",
+        "suspicious": "warn"
+    },
+    "rules": {
+        "no-unused-vars": ["error", { "ignoreRestSiblings": true, "caughtErrors": "none" }],
+        "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": true }],
+        "no-console": ["warn", { "allow": ["warn", "error"] }],
+        "no-debugger": "error",
+        "eqeqeq": ["error", "smart"],
+        "curly": "error",
+
+        "typescript/no-explicit-any": "warn",
+        "typescript/consistent-type-imports": "off",
+        "typescript/no-non-null-assertion": "warn",
+
+        "react/rules-of-hooks": "error",
+        "react/exhaustive-deps": "warn",
+        "react/jsx-key": "error",
+        "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+        "react/no-array-index-key": "warn",
+        "react/jsx-no-target-blank": "error",
+        "react/no-danger": "error",
+        "react/self-closing-comp": "error",
+        "react/react-in-jsx-scope": "off",
+
+        "import/no-duplicates": "error",
+        "import/no-self-import": "error",
+        "import/no-cycle": "warn",
+
+        "jsx-a11y/no-autofocus": "off",
+        "jsx-a11y/click-events-have-key-events": "warn",
+        "jsx-a11y/no-static-element-interactions": "warn",
+        "jsx-a11y/no-noninteractive-element-interactions": "warn",
+        "jsx-a11y/anchor-is-valid": "error",
+        "jsx-a11y/control-has-associated-label": "off",
+
+        "react/set-state-in-effect": "off",
+        "react/immutability": "off",
+        "import/no-unassigned-import": "off",
+        "no-shadow": "off",
+        "no-underscore-dangle": "off",
+        "unicorn/no-array-sort": "off",
+        "unicorn/consistent-function-scoping": "off",
+        "unicorn/prefer-add-event-listener": "off",
+        "unicorn/no-useless-fallback-in-spread": "error",
+        "unicorn/no-array-for-each": "off"
+    },
+    "overrides": [
+        {
+            "files": ["**/*.test.{ts,tsx}", "src/setupTests.ts"],
+            "plugins": ["jest"],
+            "env": { "jest": true }
+        }
+    ]
+}
