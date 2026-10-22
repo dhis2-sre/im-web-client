@@ -8,15 +8,21 @@ export const deleteDeployment = async (page: Page, name: string, deployTimeout =
     await page.getByRole('link', { name: 'Instances' }).click()
     await expect(page.getByRole('cell', { name, exact: true })).toBeVisible({ timeout: 60000 })
 
-    const deleteButton = page.getByRole('row', { name }).getByRole('button', { name: 'Delete' })
-    await expect(deleteButton).toBeEnabled({ timeout: deployTimeout })
-    await deleteButton.click()
+    // The open menu follows the list as it refetches, so it can stay open while the deploy lands.
+    await page
+        .getByRole('row', { name })
+        .getByRole('button', { name: `Actions for ${name}` })
+        .click()
+    const deleteItem = page.getByRole('menuitem', { name: 'Delete' })
+    await expect(deleteItem).not.toHaveAttribute('aria-disabled', 'true', { timeout: deployTimeout })
+    await deleteItem.dispatchEvent('click')
 
     // Scope to the confirmation dialog. @dhis2/ui's Modal sets aria-modal="true" but not
-    // role="dialog" (see upstream issue), so we scope via the aria-modal attribute.
+    // role="dialog" (see upstream issue), so we scope via the aria-modal attribute. Deleting an
+    // instance asks for its name to be typed out.
     const confirmDialog = page.locator('[aria-modal="true"]')
-    await expect(confirmDialog.getByText(`Are you sure you want to delete instance "${name}"`)).toBeVisible()
-    await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
+    await confirmDialog.getByLabel(`Type ${name} to confirm`).fill(name)
+    await confirmDialog.getByRole('button', { name: 'Delete' }).dispatchEvent('click')
 
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${name}"`)).toBeVisible({ timeout: 90000 })
 }
