@@ -9,6 +9,8 @@ type PageHeaderProps = {
      * generic word for it. The parent link and its slash stay and the row keeps its height, so
      * nothing jumps when the name arrives. */
     title?: string
+    /* How many things a list page shows, after any filters, next to its title. */
+    count?: number
     /* The list a details page belongs to, shown as a quiet link ahead of the title on the same line. */
     parent?: { label: string; to: string }
     actions?: ReactNode
@@ -16,7 +18,7 @@ type PageHeaderProps = {
 
 /* The parent link sits beside the heading rather than inside it, so the heading's accessible name is
  * the entity alone. It reads as one line with the title, but stays put while a long title wraps. */
-export const PageHeader: FC<PageHeaderProps> = ({ title, parent, actions }) => {
+export const PageHeader: FC<PageHeaderProps> = ({ title, count, parent, actions }) => {
     /* A name that arrives after the page opened fades in, so it reads as the page finishing loading.
      * A title that is there from the start just shows. */
     const [arrives] = useState(title === undefined)
@@ -36,7 +38,12 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, parent, actions }) => {
                             </span>
                         </span>
                     )}
-                    {title && <h1 className={`${styles.title}${arrival}`}>{title}</h1>}
+                    {title && (
+                        <h1 className={`${styles.title}${arrival}`}>
+                            {title}
+                            {count !== undefined && <span className={styles.count}> ({count})</span>}
+                        </h1>
+                    )}
                 </div>
                 {actions && <div className={styles.actions}>{actions}</div>}
             </div>
