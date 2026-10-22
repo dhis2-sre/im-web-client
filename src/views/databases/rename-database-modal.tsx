@@ -1,25 +1,21 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
 import { FC, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database, UpdateDatabaseRequest } from '../../types/index.ts'
 
 type RenameDatabaseModalProps = {
     onClose: () => void
     onComplete: () => void
-    togglePopover: () => void
     databaseId: number
     currentName: string
     currentDescription: string
 }
 
-export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, currentDescription, togglePopover }) => {
+export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, currentDescription }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const [newDescription, setNewDescription] = useState<string>(currentDescription)
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
+    const alert = useActionAlert()
 
     const [{ loading }, renameDatabase] = useAuthAxios<Database>(
         {
@@ -34,19 +30,13 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
             await renameDatabase({
                 data: { name: newName, description: newDescription } as UpdateDatabaseRequest,
             })
-            showAlert({
-                message: 'Database renamed successfully',
-                isCritical: false,
-            })
+            alert.success('Database renamed successfully')
             onComplete()
-            togglePopover()
+            onClose()
         } catch (error) {
-            showAlert({
-                message: error.response?.data?.message || 'There was a problem renaming the database',
-                isCritical: true,
-            })
+            alert.error(error.response?.data?.message || 'There was a problem renaming the database')
             onComplete()
-            togglePopover()
+            onClose()
         }
     }
 

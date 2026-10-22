@@ -1,359 +1,186 @@
-import {
-    Checkbox,
-    DataTable,
-    DataTableBody as TableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead as TableHead,
-    DataTableRow,
-    DataTableToolbar as TableToolbar,
-    IconFileDocument24,
-    IconFolder16,
-    InputField,
-} from '@dhis2/ui'
+import { Checkbox, IconFileDocument24, IconFolder16, InputField } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
+import type { FC } from 'react'
 import Moment from 'react-moment'
-import { useNavigate } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
-import { Database } from '../../types/index.ts'
-import { DatabaseRowAction } from './database-row-action.tsx'
-import { buildFlattenedList, buildTree, getNodeByPath, Item } from './database-tree-utils.ts'
+import { useSearchParams } from 'react-router-dom'
+import { Breadcrumbs, ListPage, OnlyMineFilter } from '../../components/index.ts'
+import type { Crumb, ListColumn } from '../../components/index.ts'
+import type { Database, GroupsWithDatabases } from '../../types/index.ts'
+import { DatabaseActionsMenu } from './database-actions-menu.tsx'
+import { buildFlattenedList, buildTree, getNodeByPath } from './database-tree-utils.ts'
 import styles from './databases-list.module.css'
-import useFilterDatabases from './filter-datebase.tsx'
 import { Locked } from './locked.tsx'
 import { UploadButton } from './upload-button.tsx'
-
-type SortField = 'name' | 'description' | 'size' | 'url' | 'created' | 'updated' | 'locked' | 'filestore'
-type SortDirection = 'asc' | 'desc'
+import { useDatabases } from './use-databases.ts'
 
 const VIEW_MODE_KEY = 'databaseViewMode'
 
-export const DatabasesList = () => {
-    const { data, refetch, showOnlyMyDatabases, setShowOnlyMyDatabases, searchTerm, setSearchTerm } = useFilterDatabases()
-    const [sortField, setSortField] = useState<SortField | null>(null)
-    const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
-    const [treeView, setTreeView] = useState<boolean>(() => localStorage.getItem(VIEW_MODE_KEY) === 'hierarchy')
-    const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
-    const [currentPath, setCurrentPath] = useState('')
-    const navigate = useNavigate()
+/* A row is a database, or in the tree view a folder: a group, or a path segment within one. */
+type DatabaseRow = { key: string; name: string; href: string; database?: Database }
 
-    const toggleViewMode = () => {
-        setTreeView((prev) => {
-            const next = !prev
-            localStorage.setItem(VIEW_MODE_KEY, next ? 'hierarchy' : 'flat')
-            return next
-        })
+const treeHref = (group?: string, path?: string) => {
+    const params = new URLSearchParams()
+    if (group) {
+        params.set('group', group)
+    }
+    if (path) {
+        params.set('path', path)
+    }
+    const search = params.toString()
+    return search ? `/databases?${search}` : '/databases'
+}
+
+const databaseRow = (database: Database, name = database.name): DatabaseRow => ({ key: `db-${database.id}`, name, href: `/databases/${database.id}`, database })
+
+const fromDatabase =
+    <V,>(value: (database: Database) => V, fallback: V) =>
+    (row: DatabaseRow) =>
+        row.database ? value(row.database) : fallback
+
+const columns: ListColumn<DatabaseRow>[] = [
+    {
+        key: 'name',
+        label: 'Name',
+        render: (row) =>
+            row.database ? (
+                row.name
+            ) : (
+                <span className={styles.folder}>
+                    <IconFolder16 />
+                    {row.name}
+                </span>
+            ),
+        sortValue: (row) => row.name,
+        width: '22%',
+    },
+    {
+        key: 'description',
+        label: 'Description',
+        render: fromDatabase((db) => db.description, null),
+        sortValue: fromDatabase((db) => db.description ?? '', ''),
+        width: '16%',
+    },
+    {
+        key: 'size',
+        label: 'Size',
+        render: fromDatabase((db) => <span title={`${db.size.toLocaleString()} bytes`}>{prettyBytes(db.size)}</span>, null),
+        sortValue: fromDatabase((db) => db.size ?? 0, 0),
+        width: '6rem',
+    },
+    { key: 'url', label: 'URL', render: fromDatabase((db) => db.url, null), sortValue: fromDatabase((db) => db.url ?? '', '') },
+    {
+        key: 'created',
+        label: 'Created',
+        render: fromDatabase(
+            (db) => (
+                <span title={db.createdAt}>
+                    <Moment date={db.createdAt} fromNow />
+                </span>
+            ),
+            null
+        ),
+        sortValue: fromDatabase((db) => db.createdAt ?? '', ''),
+        width: '8rem',
+    },
+    {
+        key: 'updated',
+        label: 'Updated',
+        render: fromDatabase(
+            (db) => (
+                <span title={db.updatedAt}>
+                    <Moment date={db.updatedAt} fromNow />
+                </span>
+            ),
+            null
+        ),
+        sortValue: fromDatabase((db) => db.updatedAt ?? '', ''),
+        width: '8rem',
+    },
+    { key: 'locked', label: 'Locked?', render: fromDatabase((db) => <Locked lock={db.lock} />, null), sortValue: fromDatabase((db) => Number(!!db.lock), 0), width: '6rem' },
+    {
+        key: 'filestore',
+        label: 'FS',
+        render: fromDatabase((db) => db.filestoreId !== 0 && <IconFileDocument24 />, null),
+        sortValue: fromDatabase((db) => Number(!!db.filestoreId), 0),
+        width: '4rem',
+    },
+]
+
+/* The tree view's rows and breadcrumb for where the search parameters point: the groups at the top,
+ * then the folders and databases at a path within one group. The breadcrumb follows the parameters
+ * alone, so it is in place while the rows load. */
+const treeView = (groups: GroupsWithDatabases[] | undefined, group: string | null, path: string): { crumbs: Crumb[]; rows?: DatabaseRow[] } => {
+    const root: Crumb = { label: 'Groups', to: treeHref() }
+    const groupRows = groups?.map((candidate): DatabaseRow => ({ key: `group-${candidate.name}`, name: candidate.name, href: treeHref(candidate.name) }))
+    if (!group) {
+        return { crumbs: [root], rows: groupRows }
     }
 
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-        } else {
-            setSortField(field)
-            setSortDirection('asc')
-        }
+    const segments = path.split('/').filter(Boolean)
+    const crumbs = [
+        root,
+        { label: group, to: treeHref(group) },
+        ...segments.map((segment, index) => ({ label: segment, to: treeHref(group, segments.slice(0, index + 1).join('/')) })),
+    ]
+    if (!groups) {
+        return { crumbs }
+    }
+    // A group the filters leave empty is not in the list; fall back to the groups that are.
+    const selected = groups.find((candidate) => candidate.name === group)
+    if (!selected) {
+        return { crumbs: [root], rows: groupRows }
     }
 
-    const compareByField = (a: { db?: Database; name?: string }, b: { db?: Database; name?: string }) => {
-        const dbA = a.db
-        const dbB = b.db
-        switch (sortField) {
-            case 'name':
-                return (a.name ?? dbA?.name ?? '').localeCompare(b.name ?? dbB?.name ?? '')
-            case 'description':
-                return (dbA?.description ?? '').localeCompare(dbB?.description ?? '')
-            case 'size':
-                return (dbA?.size ?? 0) - (dbB?.size ?? 0)
-            case 'url':
-                return (dbA?.url ?? '').localeCompare(dbB?.url ?? '')
-            case 'created':
-                return (dbA?.createdAt ?? '').localeCompare(dbB?.createdAt ?? '')
-            case 'updated':
-                return (dbA?.updatedAt ?? '').localeCompare(dbB?.updatedAt ?? '')
-            case 'locked':
-                return Number(!!dbA?.lock) - Number(!!dbB?.lock)
-            case 'filestore':
-                return Number(!!dbA?.filestoreId) - Number(!!dbB?.filestoreId)
-            default:
-                return 0
-        }
-    }
-
-    const sortItems = (items: Item[]) => {
-        if (!sortField) {
-            return items
-        }
-        const folders = items.filter((i) => i.type === 'folder')
-        const files = items.filter((i) => i.type === 'file')
-        files.sort((a, b) => {
-            const cmp = compareByField({ db: a.database, name: a.name }, { db: b.database, name: b.name })
-            return sortDirection === 'asc' ? cmp : -cmp
-        })
-        return [...folders, ...files]
-    }
-
-    const sortDatabases = (databases: Database[]) => {
-        if (!sortField) {
-            return databases
-        }
-        return [...databases].sort((a, b) => {
-            const cmp = compareByField({ db: a }, { db: b })
-            return sortDirection === 'asc' ? cmp : -cmp
-        })
-    }
-
-    const navigateToFolder = (path: string) => {
-        setCurrentPath(path)
-    }
-
-    const navigateToGroup = (groupName: string) => {
-        setSelectedGroup(groupName)
-        setCurrentPath('')
-    }
-
-    const navigateToRoot = () => {
-        setSelectedGroup(null)
-        setCurrentPath('')
-    }
-
-    const renderTreeBreadcrumb = () => {
-        if (!selectedGroup) {
-            return (
-                <TableToolbar className={styles.tabletoolbar}>
-                    <h2 className={styles.groupName}>Groups</h2>
-                </TableToolbar>
-            )
-        }
-        const segments = currentPath.split('/').filter(Boolean)
-        return (
-            <TableToolbar className={styles.tabletoolbar}>
-                <h2 className={styles.groupName}>
-                    <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={navigateToRoot}>
-                        Groups
-                    </span>
-                    {' > '}
-                    <span style={currentPath ? { cursor: 'pointer', textDecoration: 'underline' } : {}} onClick={currentPath ? () => navigateToFolder('') : undefined}>
-                        {selectedGroup}
-                    </span>
-                    {segments.map((segment, index) => {
-                        const partialPath = segments.slice(0, index + 1).join('/')
-                        const isLast = index === segments.length - 1
-                        return (
-                            <span key={index}>
-                                {' > '}
-                                <span style={isLast ? {} : { cursor: 'pointer', textDecoration: 'underline' }} onClick={isLast ? undefined : () => navigateToFolder(partialPath)}>
-                                    {segment}
-                                </span>
-                            </span>
-                        )
-                    })}
-                </h2>
-            </TableToolbar>
-        )
-    }
-
-    const renderDatabaseCells = (database: Database) => {
-        const onClick = () => navigate(`/databases/${database.id}`)
-        return (
-            <>
-                <DataTableCell staticStyle onClick={onClick}>
-                    {database.description}
-                </DataTableCell>
-                <DataTableCell staticStyle onClick={onClick}>
-                    <span title={`${database.size.toLocaleString()} bytes`}>{prettyBytes(database.size)}</span>
-                </DataTableCell>
-                <DataTableCell staticStyle onClick={onClick}>
-                    {database.url}
-                </DataTableCell>
-                <DataTableCell staticStyle onClick={onClick}>
-                    <span title={database.createdAt}>
-                        <Moment date={database.createdAt} fromNow />
-                    </span>
-                </DataTableCell>
-                <DataTableCell staticStyle onClick={onClick}>
-                    <span title={database.updatedAt}>
-                        <Moment date={database.updatedAt} fromNow />
-                    </span>
-                </DataTableCell>
-                <DataTableCell staticStyle onClick={onClick}>
-                    <Locked lock={database.lock} />
-                </DataTableCell>
-                <DataTableCell staticStyle onClick={onClick}>
-                    {database.filestoreId !== 0 && <IconFileDocument24 />}
-                </DataTableCell>
-                <DataTableCell staticStyle align="right">
-                    <DatabaseRowAction database={database} groupName={database.groupName} refetch={refetch} />
-                </DataTableCell>
-            </>
-        )
-    }
-
-    const renderHierarchyRow = (item: Item) => {
-        if (item.type === 'folder') {
-            return (
-                <DataTableRow key={item.path}>
-                    <DataTableCell>
-                        <span onClick={() => navigateToFolder(item.path)} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
-                            <IconFolder16 />
-                            <span style={{ marginLeft: '4px' }}>{item.name}</span>
-                        </span>
-                    </DataTableCell>
-                    <DataTableCell colSpan="9" />
-                </DataTableRow>
-            )
-        }
-        const database = item.database!
-        return (
-            <tr className={styles.clickableRow} key={database.id}>
-                <DataTableCell staticStyle onClick={() => navigate(`/databases/${database.id}`)}>
-                    {item.name}
-                </DataTableCell>
-                {renderDatabaseCells(database)}
-            </tr>
-        )
-    }
-
-    const renderFlatRow = (database: Database) => {
-        return (
-            <tr className={styles.clickableRow} key={database.id}>
-                <DataTableCell staticStyle onClick={() => navigate(`/databases/${database.id}`)}>
-                    {database.name}
-                </DataTableCell>
-                {renderDatabaseCells(database)}
-            </tr>
-        )
-    }
-
-    const renderTableHeader = () => (
-        <TableHead>
-            <DataTableRow>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('name')}>
-                        Name {sortField === 'name' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('description')}>
-                        Description {sortField === 'description' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('size')}>
-                        Size {sortField === 'size' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('url')}>
-                        URL {sortField === 'url' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('created')}>
-                        Created {sortField === 'created' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('updated')}>
-                        Updated {sortField === 'updated' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('locked')}>
-                        Locked? {sortField === 'locked' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader>
-                    <span className={styles.sortableHeader} onClick={() => handleSort('filestore')}>
-                        FS {sortField === 'filestore' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
-                    </span>
-                </DataTableColumnHeader>
-                <DataTableColumnHeader />
-            </DataTableRow>
-        </TableHead>
+    const node = getNodeByPath(buildTree(selected.databases), path)
+    const rows = buildFlattenedList(node, { currentPath: path }).map(
+        (item): DatabaseRow => (item.database ? databaseRow(item.database, item.name) : { key: `folder-${item.path}`, name: item.name, href: treeHref(group, item.path) })
     )
+    return { crumbs, rows }
+}
 
-    const renderEmptyRow = () => (
-        <DataTableRow>
-            <DataTableCell colSpan="9">
-                <h3>No databases</h3>
-            </DataTableCell>
-        </DataTableRow>
-    )
+export const DatabasesList: FC = () => {
+    const { groups, total, error, loading, refetch, onlyMine, setOnlyMine, searchTerm, setSearchTerm } = useDatabases()
+    const [tree, setTree] = useState<boolean>(() => localStorage.getItem(VIEW_MODE_KEY) === 'hierarchy')
+    const [searchParams] = useSearchParams()
+    const refresh = () => void refetch()
 
-    const renderTreeView = () => {
-        if (!selectedGroup) {
-            return (
-                <DataTable>
-                    {renderTableHeader()}
-                    <TableBody>
-                        {(!data || data.length === 0) && renderEmptyRow()}
-                        {data?.map((group) => (
-                            <DataTableRow key={group.name}>
-                                <DataTableCell>
-                                    <span onClick={() => navigateToGroup(group.name)} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
-                                        <IconFolder16 />
-                                        <span style={{ marginLeft: '4px' }}>{group.name}</span>
-                                    </span>
-                                </DataTableCell>
-                                <DataTableCell colSpan="9" />
-                            </DataTableRow>
-                        ))}
-                    </TableBody>
-                </DataTable>
-            )
-        }
-
-        const group = data?.find((g) => g.name === selectedGroup)
-        const databases = group?.databases || []
-        const tree = buildTree(databases)
-        const currentNode = getNodeByPath(tree, currentPath)
-        const items = sortItems(buildFlattenedList(currentNode, { level: 0, currentPath }))
-
-        return (
-            <DataTable>
-                {renderTableHeader()}
-                <TableBody>
-                    {items.length === 0 && renderEmptyRow()}
-                    {items.map((item) => renderHierarchyRow(item))}
-                </TableBody>
-            </DataTable>
-        )
+    const toggleTree = (next: boolean) => {
+        setTree(next)
+        localStorage.setItem(VIEW_MODE_KEY, next ? 'hierarchy' : 'flat')
     }
 
-    const renderFlatView = () => (
-        <>
-            {data?.map((group) => {
-                const flatDatabases = sortDatabases(group.databases || [])
-                return (
-                    <div key={group.name}>
-                        <TableToolbar className={styles.tabletoolbar}>
-                            <h2 className={styles.groupName}>{group.name}</h2>
-                        </TableToolbar>
-                        <DataTable>
-                            {renderTableHeader()}
-                            <TableBody>
-                                {flatDatabases.length === 0 && renderEmptyRow()}
-                                {flatDatabases.map((db) => renderFlatRow(db))}
-                            </TableBody>
-                        </DataTable>
-                    </div>
-                )
-            })}
-        </>
-    )
+    const treeState = tree ? treeView(groups, searchParams.get('group'), searchParams.get('path') ?? '') : undefined
+    const filtered = onlyMine || searchTerm !== ''
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title="Databases">
-                <UploadButton onComplete={refetch} />
-                <Checkbox checked={showOnlyMyDatabases} label="Show only my databases" onChange={() => setShowOnlyMyDatabases(!showOnlyMyDatabases)} />
-                <Checkbox checked={treeView} label="Tree view" onChange={toggleViewMode} />
-                <InputField placeholder="Search databases..." value={searchTerm} onChange={({ value }) => setSearchTerm(value)} dense className={styles.searchInput} />
-            </Heading>
-
-            {treeView && renderTreeBreadcrumb()}
-            {treeView ? renderTreeView() : renderFlatView()}
-        </div>
+        <ListPage
+            title="Databases"
+            count={groups?.reduce((sum, group) => sum + group.databases.length, 0)}
+            actions={<UploadButton onComplete={refresh} />}
+            filters={
+                <>
+                    <OnlyMineFilter label="Show only my databases" checked={onlyMine} onChange={setOnlyMine} />
+                    <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
+                    <InputField placeholder="Search databases..." value={searchTerm} onChange={({ value }) => setSearchTerm(value ?? '')} dense className={styles.search} />
+                </>
+            }
+            above={treeState && <Breadcrumbs items={treeState.crumbs} />}
+            columns={columns}
+            rows={treeState?.rows}
+            groups={treeState ? undefined : groups?.map((group) => ({ key: group.name, title: group.name, rows: group.databases.map((db) => databaseRow(db)) }))}
+            rowKey={(row) => row.key}
+            rowHref={(row) => row.href}
+            renderRowActions={(row) => row.database && <DatabaseActionsMenu database={row.database} refetch={refresh} />}
+            rowActionsWidth="3.5rem"
+            pinned={(row) => !row.database}
+            loading={loading}
+            error={error ? { title: 'Could not retrieve databases', description: error.message } : undefined}
+            empty={
+                filtered && total > 0
+                    ? { title: 'No matching databases', description: 'Clear the search or turn off "Show only my databases" to see more.' }
+                    : { title: 'No databases', description: 'Upload one with Upload database.' }
+            }
+        />
     )
 }

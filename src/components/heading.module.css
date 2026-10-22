@@ -1,4 +1,0 @@
-/* Matches the space Page leaves above its header and between the header and the body. */
-.heading {
-    padding: var(--spacers-dp16) 0;
-}
