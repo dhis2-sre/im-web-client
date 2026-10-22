@@ -54,6 +54,100 @@ Prettier and the linters enforce most of this. Follow it while writing so the fi
 - Avoid `!important`. If the `@dhis2/ui` styles win, scope your selector more tightly first.
 - Only reference classes that exist in the module you import, and delete classes when you remove their last use.
 
+## Product UI design principles
+
+Design serious, functional software interfaces. Prioritise clarity, coherence, efficiency, and restraint over visual novelty.
+
+The standard is a well-designed professional tool, not a Dribbble concept, marketing website, or generic SaaS dashboard.
+
+### 1. Restraint and economy
+
+- Every visible element must earn its place.
+- Avoid unnecessary secondary labels, descriptions, subtitles, introductory paragraphs, and instructional text. Let the layout, grouping, labels, and controls do the explaining.
+- Do not add explanatory text merely to make an interface feel complete.
+- Prefer removing an element to introducing another element to explain it.
+- Do not add badges, icons, dividers, cards, or containers without a specific communicative or functional purpose.
+- Avoid redundant headings when the surrounding navigation or context already establishes where the user is.
+- Use progressive disclosure for genuine complexity, not to conceal poor information architecture.
+
+### 2. Clarity through structure
+
+- Make relationships apparent through proximity, alignment, spacing, and hierarchy before introducing borders or containers.
+- Use the fewest levels of visual hierarchy necessary.
+- Avoid nested cards and excessive panelisation.
+- Do not treat every concept as a separate card. Use lists, tables, sections, and direct layouts when more appropriate.
+- Prefer familiar, established interaction patterns over novel ones.
+- Make the primary action apparent without artificially enlarging or decorating it.
+- Preserve useful information density. Do not spread a simple task across an unnecessarily large interface.
+
+### 3. Interaction design
+
+- Design around what the user is trying to accomplish, not around the available UI components.
+- Prefer direct manipulation over secondary configuration interfaces where practical.
+- Avoid introducing additional modes, steps, dialogs, or confirmation screens unless they solve a genuine problem.
+- Keep relevant actions close to the objects they affect.
+- Make system state and the consequences of actions clear.
+- Avoid hiding frequently used actions behind menus merely to achieve visual minimalism.
+- Use sensible defaults to reduce required decisions.
+- Support keyboard navigation, predictable focus, and appropriate feedback.
+- Prefer established browser and platform conventions.
+
+### 4. Language and microcopy
+
+- Use short, precise, concrete language.
+- Prefer nouns and verbs familiar to the user over abstract product terminology.
+- Buttons should describe the action they perform.
+- Do not repeat the heading in the supporting description.
+- Avoid welcoming messages, promotional language, encouragement, and conversational filler in functional interfaces.
+- Avoid phrases such as "Seamlessly manage", "Get started by", "Everything you need", and "Easily configure".
+- Do not invent helper text for every form field.
+- Add guidance when it prevents a likely mistake, resolves genuine ambiguity, or explains a non-obvious consequence.
+- Preserve necessary visible form labels and accessible names. Concision must not compromise accessibility.
+
+### 5. Visual design
+
+- Prefer a restrained, coherent visual system over fashionable styling.
+- Typography, spacing, alignment, and proportion should carry the visual hierarchy.
+- Use colour purposefully: status, meaning, interaction, and emphasis.
+- Avoid decorative gradients, oversized radii, gratuitous shadows, floating cards, and excessive whitespace.
+- Do not use large hero headings in operational interfaces.
+- Avoid decorative icons when text is equally clear.
+- Motion should communicate state, continuity, or causality. Do not add animation for decoration.
+- Use existing components, design tokens, and established patterns before inventing new ones.
+- Aim for quiet precision rather than conspicuous polish.
+
+### 6. Design decision discipline
+
+Before introducing a new UI element, consider:
+
+- What user need does this serve?
+- Is the information or function already available?
+- Could existing structure communicate this without another element?
+- Is this a familiar pattern in comparable professional software?
+- Would removing it make the interface less understandable or less usable?
+
+Do not automatically add elements simply because they commonly appear in generated interfaces.
+
+When several solutions are viable, prefer the simpler one with fewer concepts, fewer steps, and less visual machinery.
+
+### 7. Review the result
+
+After implementing an interface, review the actual rendered UI, not just the code.
+
+Look specifically for:
+
+- Redundant descriptions and labels
+- Unnecessary containers, cards, and dividers
+- Competing visual hierarchy
+- Excessive whitespace or poor information density
+- Unnecessary interaction steps
+- Inconsistent component patterns
+- Missing states or ambiguous actions
+
+Perform a simplification pass: identify elements that can be removed or consolidated without sacrificing usability.
+
+Do not equate more interface with more completeness.
+
 ## TypeScript and general code
 
 These are adapted from [Ultracite](https://www.ultracite.ai/)'s rules, keeping the ones that fit this codebase.
