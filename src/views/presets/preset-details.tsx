@@ -9,7 +9,7 @@ import { useAuthAxios, useStack } from '../../hooks/index.ts'
 import type { Deployment, DeploymentInstance, StackWithParameterGroups } from '../../types/index.ts'
 import { groupParametersByComponent } from '../../utils/component-parameters.ts'
 import { ComponentParametersTable } from '../instances/details/component-parameters-table.tsx'
-import { DeletePresetButton } from './delete-preset-button.tsx'
+import { PresetActionsMenu } from './preset-actions-menu.tsx'
 import { presetMainInstance } from './preset-summary.ts'
 
 const PresetInstance: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
@@ -56,7 +56,7 @@ export const PresetDetails: FC = () => {
                         <Button primary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
                             Load
                         </Button>
-                        <DeletePresetButton preset={preset} onDeleted={() => navigate('/presets')} />
+                        <PresetActionsMenu preset={preset} onDeleted={() => navigate('/presets')} />
                     </>
                 )
             }
