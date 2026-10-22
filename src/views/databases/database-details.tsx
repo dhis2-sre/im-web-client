@@ -21,7 +21,6 @@ export const DatabaseDetails = () => {
         return (
             <Page
                 parent={{ label: 'Databases', to: '/databases' }}
-                title="Database"
                 loading={loading || !error}
                 error={error ? { title: 'Could not fetch the database', description: error.message } : undefined}
             />

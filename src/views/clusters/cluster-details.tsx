@@ -17,7 +17,7 @@ export const ClusterDetails: FC = () => {
     return (
         <Page
             parent={{ label: 'Clusters', to: '/clusters' }}
-            title={cluster?.name || 'Cluster'}
+            title={cluster?.name}
             actions={cluster && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
             loading={loading}
             error={error ? { title: 'Could not fetch cluster details', description: error.message } : undefined}

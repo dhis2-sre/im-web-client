@@ -103,12 +103,7 @@ export const EditDhis2V2Instance: FC = () => {
      * not yet loading. Anything other than an outright failure waits rather than reporting one. */
     if (!deployment) {
         return (
-            <Page
-                parent={{ label: 'Instances', to: '/instances' }}
-                title="Edit instance"
-                loading={!error}
-                error={error ? { title: 'Could not load instance', description: error.message } : undefined}
-            />
+            <Page parent={{ label: 'Instances', to: '/instances' }} loading={!error} error={error ? { title: 'Could not load instance', description: error.message } : undefined} />
         )
     }
 

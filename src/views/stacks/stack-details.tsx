@@ -21,7 +21,7 @@ export const StackDetails = () => {
     }
 
     return (
-        <Page key={name} parent={{ label: 'Stacks', to: '/stacks' }} title={stack?.name ?? name ?? 'Stack'} loading={loading} error={pageError}>
+        <Page key={name} parent={{ label: 'Stacks', to: '/stacks' }} title={stack?.name ?? name} loading={loading} error={pageError}>
             {stack && (
                 <>
                     {sections.map((section) => (

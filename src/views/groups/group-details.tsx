@@ -17,7 +17,7 @@ export const GroupDetails: FC = () => {
     return (
         <Page
             parent={{ label: 'Groups', to: '/groups' }}
-            title={group?.name || name || 'Group'}
+            title={group?.name ?? name}
             actions={group && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
             loading={loading}
             error={error ? { title: 'Could not fetch group details', description: error.message } : undefined}

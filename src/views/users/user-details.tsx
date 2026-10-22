@@ -16,7 +16,7 @@ export const UserDetails = () => {
         <Page
             key={id}
             parent={{ label: 'Users', to: '/users' }}
-            title={user?.email ?? 'User'}
+            title={user?.email}
             actions={
                 user && (
                     <>

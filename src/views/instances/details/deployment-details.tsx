@@ -16,7 +16,7 @@ const overviewItems = (deployment: Deployment): KeyValueItem[] => [
     { label: 'Created', value: <Moment date={deployment.createdAt} fromNow /> },
     { label: 'Updated', value: <Moment date={deployment.updatedAt} fromNow /> },
     { label: 'Expires', value: <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} /> },
-    { label: 'Description', value: deployment.description || 'No instance description' },
+    ...(deployment.description ? [{ label: 'Description', value: deployment.description }] : []),
 ]
 
 export const DeploymentDetails: FC = () => {
@@ -26,7 +26,7 @@ export const DeploymentDetails: FC = () => {
     return (
         <Page
             parent={{ label: 'Instances', to: '/instances' }}
-            title={deployment?.name ?? 'Instance'}
+            title={deployment?.name}
             actions={
                 deployment && (
                     <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>

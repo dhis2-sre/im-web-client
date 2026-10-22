@@ -70,14 +70,25 @@
     overflow-wrap: anywhere;
 }
 
+.arrival {
+    animation: fadeIn 150ms ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .arrival {
+        animation: none;
+    }
+}
+
 .actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacers-dp8);
-}
-
-.meta {
-    font-size: var(--text-md);
-    color: var(--colors-grey700);
 }

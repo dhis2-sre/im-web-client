@@ -49,7 +49,7 @@ export const PresetDetails: FC = () => {
     return (
         <Page
             parent={{ label: 'Presets', to: '/presets' }}
-            title={(preset?.preset && preset.name) || 'Preset'}
+            title={preset?.preset ? preset.name : undefined}
             actions={
                 preset?.preset && (
                     <>
