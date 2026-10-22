@@ -1,0 +1,63 @@
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8) var(--spacers-dp24);
+}
+
+.groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp16);
+}
+
+/* Frames the flat table and the body's states the way a group's panel frames its table. */
+.frame {
+    overflow-x: auto;
+    background-color: var(--colors-white);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 4px;
+}
+
+.frame table {
+    border: none;
+}
+
+/* A long URL or email wraps inside its column instead of widening the table. */
+.cell {
+    overflow-wrap: anywhere;
+}
+
+.rowLink {
+    color: var(--colors-blue700);
+    font-weight: 500;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.rowLink:hover,
+.rowLink:focus-visible {
+    text-decoration: underline;
+}
+
+.detail {
+    margin-top: var(--spacers-dp4);
+    font-size: var(--text-sm);
+    color: var(--colors-grey700);
+}
+
+.rowActions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp8);
+    white-space: nowrap;
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
