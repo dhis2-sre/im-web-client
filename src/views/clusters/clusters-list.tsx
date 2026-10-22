@@ -2,20 +2,21 @@ import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHe
 import { FC } from 'react'
 import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
-import styles from './clusters-list.module.css'
 import { NewClusterButton } from './new-cluster-button.tsx'
 
 export const ClustersList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<Cluster[]>('/clusters', { useCache: false })
+    const [{ data, loading, error }, refetch] = useAuthAxios<Cluster[]>('/clusters', { useCache: false })
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title="Clusters">
-                <NewClusterButton onComplete={refetch} />
-            </Heading>
+        <Page
+            title="Clusters"
+            actions={<NewClusterButton onComplete={refetch} />}
+            loading={loading && !data}
+            error={error && !data ? { title: 'Could not fetch clusters', description: error.message } : undefined}
+        >
             <DataTable>
                 <TableHead>
                     <DataTableRow>
@@ -46,6 +47,6 @@ export const ClustersList: FC = () => {
                     })}
                 </TableBody>
             </DataTable>
-        </div>
+        </Page>
     )
 }

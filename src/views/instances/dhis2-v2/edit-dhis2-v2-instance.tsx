@@ -1,10 +1,10 @@
-import { Button, ButtonStrip, Card, Center, CircularLoader, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, Card, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Heading } from '../../../components/index.ts'
+import { Page } from '../../../components/index.ts'
 import { useDeploymentDetails, useDeploymentEdit } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { Deployment, StackCompanion } from '../../../types/index.ts'
@@ -99,27 +99,21 @@ export const EditDhis2V2Instance: FC = () => {
         [deployment, companions, saveEdit]
     )
 
-    if (error && !deployment) {
-        return (
-            <NoticeBox error title="Could not load instance">
-                {error.message}
-            </NoticeBox>
-        )
-    }
-
     /* The fetch is kicked off from an effect, so the first render has no deployment, no error and is
      * not yet loading. Anything other than an outright failure waits rather than reporting one. */
     if (!deployment) {
         return (
-            <Center>
-                <CircularLoader />
-            </Center>
+            <Page
+                parent={{ label: 'Instances', to: '/instances' }}
+                title="Edit instance"
+                loading={!error}
+                error={error ? { title: 'Could not load instance', description: error.message } : undefined}
+            />
         )
     }
 
     return (
-        <>
-            <Heading title={`Edit ${deployment.name ?? 'instance'}`} />
+        <Page parent={{ label: 'Instances', to: '/instances' }} title={`Edit ${deployment.name ?? 'instance'}`}>
             <Card className={styles.container}>
                 <Form onSubmit={submit} initialValues={initialValues} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => <Dhis2V2Form handleSubmit={handleSubmit} handleCancel={navigateToDetails} mode="edit" deployment={deployment} />}
@@ -142,6 +136,6 @@ export const EditDhis2V2Instance: FC = () => {
                     </ModalActions>
                 </Modal>
             )}
-        </>
+        </Page>
     )
 }
