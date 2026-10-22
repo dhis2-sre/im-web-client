@@ -23,7 +23,8 @@ export const Layout: FC = () => {
                 </h1>
                 {/* New instance lives on the Instances page as its primary action, not as a button nested inside this link. */}
                 <nav className={styles.navlist} aria-label="Main">
-                    <p className={styles.group}>Workspace</p>
+                    {/* A lone heading over the only group labels nothing, so the groups are named only when there are two. */}
+                    {isAdministrator && <p className={styles.group}>Workspace</p>}
                     <NavLink to="/instances">Instances</NavLink>
                     <NavLink to="/presets">Presets</NavLink>
                     <NavLink to="/databases">Databases</NavLink>
