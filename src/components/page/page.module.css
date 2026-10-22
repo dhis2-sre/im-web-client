@@ -11,8 +11,10 @@
     gap: var(--spacers-dp4);
 }
 
+/* As tall as a button, so a title sits at the same height whether or not the page has actions. */
 .titleRow {
     display: flex;
+    min-height: 36px;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
@@ -23,7 +25,7 @@
  * screens and only drop below once the row is too narrow for both. */
 .heading {
     display: flex;
-    flex: 1 1 20rem;
+    flex: 1 1 12rem;
     align-items: baseline;
     gap: var(--spacers-dp8);
     min-width: 0;
