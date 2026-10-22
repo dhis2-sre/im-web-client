@@ -1,10 +1,10 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tag } from '@dhis2/ui'
+import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import { Fragment, useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
+import { replicaStatus, StatusIndicator } from '../../../components/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
-import { getReplicaTagProps, replicaStatusLabel } from '../../../utils/replica-tag.ts'
 import { ComponentOperationsMenu } from './component-operations-menu.tsx'
 import { ComponentParametersTable } from './component-parameters-table.tsx'
 
@@ -71,7 +71,7 @@ export const ComponentsTable: FC<{
                                 <DataTableRow key={replica.name} {...rowProps(replica.name)}>
                                     {parameters.length === 0 && <DataTableCell />}
                                     <DataTableCell>
-                                        <Tag {...getReplicaTagProps(replica)}>{replicaStatusLabel(replica)}</Tag>
+                                        <StatusIndicator status={replicaStatus(replica)} />
                                     </DataTableCell>
                                     <DataTableCell>{component.name}</DataTableCell>
                                     <DataTableCell>{replica.name}</DataTableCell>

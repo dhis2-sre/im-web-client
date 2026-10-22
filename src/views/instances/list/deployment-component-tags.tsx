@@ -1,7 +1,7 @@
 import { CircularLoader, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
+import { replicaStatus, toneTagProps } from '../../../components/index.ts'
 import { DeploymentInstanceComponents } from '../../../types/index.ts'
-import { getReplicaTagProps } from '../../../utils/replica-tag.ts'
 import styles from './deployment-component-tags.module.css'
 
 /* One tag per replica running for the deployment, across all its instances, labelled with the
@@ -36,7 +36,7 @@ export const DeploymentComponentTags: FC<{ instances?: DeploymentInstanceCompone
                               </Tag>,
                           ]
                         : component.replicas.map((replica) => (
-                              <Tag key={`${instance.instanceId}-${component.name}-${replica.name}`} {...getReplicaTagProps(replica)}>
+                              <Tag key={`${instance.instanceId}-${component.name}-${replica.name}`} {...toneTagProps(replicaStatus(replica).tone)}>
                                   {componentLabel(instance.stackName, component.name)}
                               </Tag>
                           ))
