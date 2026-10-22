@@ -19,11 +19,51 @@
     gap: var(--spacers-dp8) var(--spacers-dp16);
 }
 
-.title {
-    margin: 0;
+/* Grows to fill the row and wraps a long title inside it, so the actions stay beside it on wide
+ * screens and only drop below once the row is too narrow for both. */
+.heading {
+    display: flex;
+    flex: 1 1 20rem;
+    align-items: baseline;
+    gap: var(--spacers-dp8);
+    min-width: 0;
     font-size: var(--text-xl);
-    font-weight: 500;
     line-height: 1.3;
+}
+
+.parent {
+    display: inline-flex;
+    flex: none;
+    align-items: baseline;
+    gap: var(--spacers-dp8);
+    white-space: nowrap;
+    font-weight: 400;
+    color: var(--colors-grey600);
+}
+
+.parentLink {
+    color: inherit;
+    text-decoration: none;
+    border-radius: 2px;
+}
+
+.parentLink:hover,
+.parentLink:focus-visible {
+    color: var(--colors-grey800);
+    text-decoration: underline;
+}
+
+.parentLink:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 2px;
+}
+
+.title {
+    min-width: 0;
+    margin: 0;
+    font-size: inherit;
+    font-weight: 500;
+    line-height: inherit;
     color: var(--colors-grey900);
     overflow-wrap: anywhere;
 }

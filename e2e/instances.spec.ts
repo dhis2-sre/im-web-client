@@ -68,9 +68,9 @@ test.describe('new instance', () => {
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
 
-        // Navigate back to the instances list through the breadcrumb
-        await expect(page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Instances' })).toBeVisible({ timeout: 60000 })
-        await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Instances' }).click()
+        // Navigate back to the instances list through the sidebar
+        await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
 
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
@@ -121,8 +121,8 @@ test.describe('new instance', () => {
         await page.keyboard.press('Escape')
 
         await page.getByRole('button', { name: 'Create instance' }).click()
-        await expect(page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Instances' })).toBeVisible({ timeout: 60000 })
-        await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Instances' }).click()
+        await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // Open details, then the edit form. An edit takes the same deploy lock a deploy holds, so
@@ -156,7 +156,7 @@ test.describe('new instance', () => {
         await expect(page.getByText(updatedDescription)).toBeVisible()
 
         // Cleanup.
-        await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Instances' }).click()
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await deleteDeployment(page, randomName)
     })
 })

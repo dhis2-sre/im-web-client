@@ -4,8 +4,8 @@ import styles from './breadcrumbs.module.css'
 
 export type Crumb = { label: string; to: string }
 
-/* The way back up from a page, one level per crumb. The current page is not repeated here, since the
- * title right below names it. */
+/* A path through real hierarchy, such as a folder in the databases tree. Not for the page header,
+ * which takes a single parent link on the title's line instead. */
 export const Breadcrumbs: FC<{ items: Crumb[] }> = ({ items }) => (
     <nav aria-label="Breadcrumb">
         <ol className={styles.list}>

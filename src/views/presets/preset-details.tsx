@@ -48,7 +48,7 @@ export const PresetDetails: FC = () => {
 
     return (
         <Page
-            breadcrumbs={[{ label: 'Presets', to: '/presets' }]}
+            parent={{ label: 'Presets', to: '/presets' }}
             title={(preset?.preset && preset.name) || 'Preset'}
             actions={
                 preset?.preset && (

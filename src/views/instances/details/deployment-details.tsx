@@ -25,7 +25,7 @@ export const DeploymentDetails: FC = () => {
 
     return (
         <Page
-            breadcrumbs={[{ label: 'Instances', to: '/instances' }]}
+            parent={{ label: 'Instances', to: '/instances' }}
             title={deployment?.name ?? 'Instance'}
             actions={
                 deployment && (
