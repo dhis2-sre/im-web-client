@@ -1,0 +1,4 @@
+/* The popper measures this span, so it sits tight around the button. */
+.anchor {
+    display: inline-flex;
+}
