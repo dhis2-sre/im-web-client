@@ -6,7 +6,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Heading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/generated/models/Database.ts'
-import styles from './databases-list.module.css'
 
 export const DatabaseDetails = () => {
     const navigate = useNavigate()
@@ -21,7 +20,7 @@ export const DatabaseDetails = () => {
 
     if (loading || !db) {
         return (
-            <Center className={styles.loaderWrap}>
+            <Center>
                 <CircularLoader />
             </Center>
         )
@@ -70,8 +69,8 @@ export const DatabaseDetails = () => {
             <Heading title="Database details">
                 <Button onClick={() => navigate('/databases')}>Back to list</Button>
             </Heading>
-            <div className={styles.cardWrap}>
-                <Card className={styles.card}>
+            <div>
+                <Card>
                     <DataTable>
                         <DataTableHead>
                             <DataTableRow>

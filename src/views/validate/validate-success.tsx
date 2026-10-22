@@ -7,7 +7,7 @@ export const ValidateSuccess = () => (
         <Card className={classes.card}>
             <h1 className={classes.headline}>Account verification</h1>
 
-            <NoticeBox valid className={classes.successMessage} title="You've successfully activated your account!">
+            <NoticeBox valid title="You've successfully activated your account!">
                 You can log in <Link to="/">here</Link>.
             </NoticeBox>
         </Card>

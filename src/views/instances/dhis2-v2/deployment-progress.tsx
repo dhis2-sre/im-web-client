@@ -45,7 +45,7 @@ export const DeploymentProgress: FC<{ name: string; steps: DeploymentStep[] }> =
             <ul className={styles.steps}>
                 {steps.map((step) => (
                     <li key={step.stackName} className={styles.step}>
-                        <span className={styles.label}>
+                        <span>
                             {name} <span className={styles.stackName}>({step.stackName})</span>
                         </span>
                         <span className={styles.dots}>{step.status === 'running' ? dots : ''}</span>
