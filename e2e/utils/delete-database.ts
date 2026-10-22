@@ -13,10 +13,11 @@ export const deleteTestDatabase = async (page: Page, name: string) => {
 
     // Scope to the confirmation dialog. @dhis2/ui's Modal sets aria-modal="true"
     // but not role="dialog" (see upstream issue), so we scope via the aria-modal
-    // attribute rather than getByRole('dialog').
+    // attribute rather than getByRole('dialog'). Deleting a database asks for its
+    // name to be typed out.
     const confirmDialog = page.locator('[aria-modal="true"]')
-    await expect(confirmDialog.getByText('Are you sure you want to delete')).toBeVisible()
-    await confirmDialog.getByRole('button', { name: 'Confirm' }).dispatchEvent('click')
+    await confirmDialog.getByLabel(`Type ${name} to confirm`).fill(name)
+    await confirmDialog.getByRole('button', { name: 'Delete' }).dispatchEvent('click')
 
     const expectMessage = page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`Successfully deleted [^/]+/${name}`))
     await expect(expectMessage).toBeVisible()

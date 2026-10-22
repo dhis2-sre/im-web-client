@@ -1,6 +1,6 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, Modal, ModalActions, ModalContent, ModalTitle, InputField, ButtonStrip } from '@dhis2/ui'
 import { FC, useState, useEffect, useCallback } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/index.ts'
 import styles from './upload-database-modal.module.css'
@@ -10,7 +10,6 @@ type CopyDatabaseModalProps = {
     onComplete: () => void
     databaseId: number
     currentName: string
-    togglePopover: () => void
 }
 
 const GroupSelect: FC<{
@@ -64,13 +63,10 @@ const useGroups = () => {
     return { groups, selectedGroup, setSelectedGroup, groupsLoading }
 }
 
-export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, togglePopover }) => {
+export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const { groups, selectedGroup, setSelectedGroup, groupsLoading } = useGroups()
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
+    const alert = useActionAlert()
 
     const [{ loading }, copyDatabase] = useAuthAxios(
         {
@@ -82,10 +78,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
 
     const onCopyDatabase = useCallback(async () => {
         if (newName === currentName) {
-            showAlert({
-                message: 'New name cannot be the same as the current name.',
-                isCritical: true,
-            })
+            alert.error('New name cannot be the same as the current name.')
             return
         }
 
@@ -93,21 +86,15 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
             await copyDatabase({
                 data: { group: selectedGroup, name: newName },
             })
-            showAlert({
-                message: `Database "${currentName}" copied successfully.`,
-                isCritical: false,
-            })
+            alert.success(`Database "${currentName}" copied successfully.`)
             onComplete()
-            togglePopover()
+            onClose()
         } catch {
-            showAlert({
-                message: 'There was a problem copying the database',
-                isCritical: true,
-            })
+            alert.error('There was a problem copying the database')
             onComplete()
-            togglePopover()
+            onClose()
         }
-    }, [newName, togglePopover, currentName, selectedGroup, copyDatabase, showAlert, onComplete])
+    }, [newName, currentName, selectedGroup, copyDatabase, alert, onComplete, onClose])
 
     return (
         <Modal onClose={onClose}>
