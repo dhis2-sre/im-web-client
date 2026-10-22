@@ -21,6 +21,8 @@ The dev server needs `VITE_API_URL`. Copy `.env.example` to `.env` and set `CLAS
 
 **Before you say a change is done, run `yarn format`, `yarn lint`, `yarn build` and `yarn test`, and make sure all four pass.** The husky pre-commit hook runs format and lint too.
 
+`yarn oxlint` fails if the warning count goes above the `--max-warnings` cap in `package.json`. The remaining warnings are mostly clickable rows on the list pages and import cycles, in files the UI redesign is rewriting, so they get fixed as each screen is rebuilt rather than patched first and rewritten later. Don't add warnings, and when your change removes some, lower the cap to the new count.
+
 ## Code style
 
 Prettier and the linters enforce most of this. Follow it while writing so the fixers have little to do.
