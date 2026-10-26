@@ -18,12 +18,12 @@ import { useDeployments } from './use-deployments.ts'
 
 type RowStatus = Pick<LiveComponents, 'instances' | 'loading' | 'error'>
 
-/* Every deployment's components, kept by the list rather than by each row, so the status filter knows
+/* The deployments' components, kept by the list rather than by each row, so the status filter knows
  * the health of rows it is hiding. The status chip and the actions menu read the same entry. */
 const Statuses = createContext<Map<number, RowStatus>>(new Map())
 
-/* Loads one deployment's components, live, and reports them to the list. One per deployment, mounted
- * whatever the filters show, so filtering never refetches. */
+/* Loads one deployment's components, live, and reports them to the list. One per deployment in scope
+ * (see inScope), mounted whatever the search and status filters show, so typing never refetches. */
 const LoadStatus: FC<{ id: number; onChange: (id: number, status: RowStatus) => void }> = ({ id, onChange }) => {
     const { instances, loading, error } = useLiveComponents(id)
     useEffect(() => onChange(id, { instances, loading, error }), [id, instances, loading, error, onChange])
@@ -72,6 +72,7 @@ export const InstancesList: FC = () => {
     const report = useCallback((id: number, status: RowStatus) => setStatuses((current) => new Map(current).set(id, status)), [])
 
     const all = groups?.flatMap((group) => group.deployments ?? []) ?? []
+    const inScope = all.filter(filters.inScope)
     const health = (deployment: Deployment) => {
         const components = statuses.get(deployment.id)?.instances
         return components ? deploymentHealth(components) : undefined
@@ -83,11 +84,11 @@ export const InstancesList: FC = () => {
             rows: (group.deployments ?? []).filter((deployment) => filters.matches(deployment, health(deployment))),
         }))
         .filter((group) => group.rows.length > 0)
-    const checking = all.filter((deployment) => statuses.get(deployment.id)?.loading !== false).length
+    const checking = inScope.filter((deployment) => statuses.get(deployment.id)?.loading !== false).length
 
     return (
         <Statuses.Provider value={statuses}>
-            {all.map((deployment) => (
+            {inScope.map((deployment) => (
                 <StatusLoader key={deployment.id} id={deployment.id} onChange={report} />
             ))}
             <ListPage

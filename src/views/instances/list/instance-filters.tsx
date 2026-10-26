@@ -67,6 +67,13 @@ export const useInstanceFilters = () => {
     }, [set, setOnlyMine])
     const active = onlyMine || filters.search.trim() !== '' || filters.group !== 'all' || filters.status !== 'all' || filters.expiringSoon
 
+    /* The filters that are set once and left, rather than typed into, so the list can load components
+     * only for what they let through without refetching on every letter of a search. */
+    const inScope = useCallback(
+        (deployment: Deployment) => isShown(deployment.user) && (filters.group === 'all' || deployment.groupName === filters.group),
+        [filters.group, isShown]
+    )
+
     /* A deployment whose components haven't loaded has no health yet, so a status filter leaves it out
      * until they arrive. */
     const matches = useCallback(
@@ -75,17 +82,12 @@ export const useInstanceFilters = () => {
             if (search && ![deployment.name, deployment.user?.email, deployment.description].some((text) => text?.toLowerCase().includes(search))) {
                 return false
             }
-            return (
-                isShown(deployment.user) &&
-                (filters.group === 'all' || deployment.groupName === filters.group) &&
-                (filters.status === 'all' || health === filters.status) &&
-                (!filters.expiringSoon || isExpiringSoon(deployment, now))
-            )
+            return inScope(deployment) && (filters.status === 'all' || health === filters.status) && (!filters.expiringSoon || isExpiringSoon(deployment, now))
         },
-        [filters, isShown, now]
+        [filters, inScope, now]
     )
 
-    return { filters, set, clear, active, onlyMine, setOnlyMine, matches }
+    return { filters, set, clear, active, onlyMine, setOnlyMine, inScope, matches }
 }
 
 type InstanceFilterBarProps = {
