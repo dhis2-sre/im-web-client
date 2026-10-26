@@ -1,22 +1,3 @@
-/* The input's own width: 100% outranks a plain class, so the size comes from a flex basis, which wins
- * in a flex row, and a matching min-width, which the group's natural width counts where a basis isn't. */
-.search {
-    flex: 0 0 18rem;
-    min-width: 18rem;
-}
-
-/* The search and the select sit closer together than the bar's checkboxes, as one set of fields. */
-.fields {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacers-dp8);
-}
-
-.select {
-    min-width: 10rem;
-}
-
 .folder {
     display: inline-flex;
     align-items: center;

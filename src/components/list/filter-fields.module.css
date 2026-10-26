@@ -1,0 +1,17 @@
+.fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8);
+}
+
+/* The input's own width: 100% outranks a plain class, so the size comes from a flex basis, which wins
+ * in a flex row, and a matching min-width, which the fields' natural width counts where a basis isn't. */
+.search {
+    flex: 0 0 18rem;
+    min-width: 18rem;
+}
+
+.select {
+    min-width: 10rem;
+}

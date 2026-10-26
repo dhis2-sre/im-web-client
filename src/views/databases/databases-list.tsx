@@ -1,9 +1,9 @@
-import { Button, Checkbox, IconFolder16, Input, SingleSelect, SingleSelectOption } from '@dhis2/ui'
+import { Button, Checkbox, IconFolder16 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { Breadcrumbs, ListPage, OnlyMineFilter } from '../../components/index.ts'
+import { Breadcrumbs, FilterFields, GroupFilter, ListPage, OnlyMineFilter, SearchFilter } from '../../components/index.ts'
 import type { Crumb, ListColumn } from '../../components/index.ts'
 import type { Database, GroupsWithDatabases } from '../../types/index.ts'
 import { DatabaseActionsMenu } from './database-actions-menu.tsx'
@@ -169,8 +169,6 @@ export const DatabasesList: FC = () => {
 
     const treeState = tree ? treeView(groups, { group, path: params.get('path') ?? '', query: searchTerm }) : undefined
     const filtered = onlyMine || searchTerm !== '' || group !== null
-    /* The select lists every group, plus one a link names that isn't there, so it shows what filters. */
-    const groupOptions = group && !groupNames.includes(group) ? [...groupNames, group] : groupNames
 
     return (
         <ListPage
@@ -178,30 +176,10 @@ export const DatabasesList: FC = () => {
             actions={<UploadButton onComplete={refresh} />}
             filters={
                 <>
-                    {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
-                     * leave ariaLabel out, so it goes in by spread. */}
-                    <div className={styles.fields}>
-                        <Input
-                            {...{ ariaLabel: 'Search databases' }}
-                            placeholder="Search databases…"
-                            value={searchTerm}
-                            onChange={({ value }) => setSearchTerm(value ?? '')}
-                            dense
-                            className={styles.search}
-                        />
-                        <SingleSelect
-                            dense
-                            prefix="Group"
-                            selected={group ?? 'all'}
-                            onChange={({ selected }) => setGroup(selected === 'all' ? null : selected)}
-                            className={styles.select}
-                        >
-                            <SingleSelectOption value="all" label="All" />
-                            {groupOptions.map((name) => (
-                                <SingleSelectOption key={name} value={name} label={name} />
-                            ))}
-                        </SingleSelect>
-                    </div>
+                    <FilterFields>
+                        <SearchFilter label="Search databases" placeholder="Search databases…" value={searchTerm} onChange={setSearchTerm} />
+                        <GroupFilter groups={groupNames} selected={group} onChange={setGroup} />
+                    </FilterFields>
                     <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
                     <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
                 </>

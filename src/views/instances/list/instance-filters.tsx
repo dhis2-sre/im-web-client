@@ -1,7 +1,7 @@
-import { Button, Checkbox, Input, SingleSelect, SingleSelectOption } from '@dhis2/ui'
+import { Button, Checkbox, SingleSelect, SingleSelectOption } from '@dhis2/ui'
 import { useCallback, useMemo, useState } from 'react'
 import type { FC } from 'react'
-import { OnlyMineFilter, useOnlyMine, useSavedSearchParams } from '../../../components/index.ts'
+import { FilterFields, GroupFilter, OnlyMineFilter, SearchFilter, useOnlyMine, useSavedSearchParams } from '../../../components/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import type { DeploymentHealth } from './component-health.ts'
 import { isExpiringSoon } from './expires-cell.tsx'
@@ -88,10 +88,6 @@ export const useInstanceFilters = () => {
     return { filters, set, clear, active, onlyMine, setOnlyMine, matches }
 }
 
-/* The options, plus the selected one if a link names something the list doesn't have (yet): the select
- * has to show what is filtering the list. */
-const withSelected = (names: string[], selected: string, none: string) => (selected === none || names.includes(selected) ? names : [...names, selected])
-
 type InstanceFilterBarProps = {
     state: ReturnType<typeof useInstanceFilters>
     groupNames: string[]
@@ -104,29 +100,15 @@ export const InstanceFilterBar: FC<InstanceFilterBarProps> = ({ state, groupName
 
     return (
         <>
-            <div className={styles.fields}>
-                {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
-                 * leave ariaLabel out, so it goes in by spread. */}
-                <Input
-                    dense
-                    {...{ ariaLabel: 'Search instances' }}
-                    placeholder="Search name, owner or description…"
-                    value={filters.search}
-                    onChange={({ value }) => set({ search: value ?? '' })}
-                    className={styles.search}
-                />
-                <SingleSelect dense prefix="Group" selected={filters.group} onChange={({ selected }) => set({ group: selected })} className={styles.select}>
-                    <SingleSelectOption value="all" label="All" />
-                    {withSelected(groupNames, filters.group, 'all').map((name) => (
-                        <SingleSelectOption key={name} value={name} label={name} />
-                    ))}
-                </SingleSelect>
+            <FilterFields>
+                <SearchFilter label="Search instances" placeholder="Search name, owner or description…" value={filters.search} onChange={(value) => set({ search: value })} />
+                <GroupFilter groups={groupNames} selected={filters.group === 'all' ? null : filters.group} onChange={(value) => set({ group: value ?? 'all' })} />
                 <SingleSelect dense prefix="Status" selected={filters.status} onChange={({ selected }) => set({ status: selected as Filters['status'] })} className={styles.select}>
                     {STATUS_OPTIONS.map((option) => (
                         <SingleSelectOption key={option.value} value={option.value} label={option.label} />
                     ))}
                 </SingleSelect>
-            </div>
+            </FilterFields>
             <Checkbox dense label="Expiring soon" checked={filters.expiringSoon} onChange={({ checked }) => set({ expiringSoon: checked })} />
             <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
             {filters.status !== 'all' && checking > 0 && <span className={styles.checking}>Checking the status of {checking} more…</span>}
