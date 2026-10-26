@@ -89,7 +89,8 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                 const href = index === 0 ? rowHref?.(row) : undefined
                 const detail = column.detail?.(row)
                 return (
-                    <DataTableCell key={column.key} className={cellClass(column)}>
+                    /* Static, because only the name link and the actions respond to a click, so the row shouldn't look pressed. The hover is our own, in the CSS module. */
+                    <DataTableCell key={column.key} staticStyle className={cellClass(column)}>
                         {href ? (
                             <Link to={href} className={styles.rowLink}>
                                 {content}
@@ -102,7 +103,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                 )
             })}
             {renderRowActions && (
-                <DataTableCell align="right">
+                <DataTableCell staticStyle align="right">
                     <div className={styles.rowActions}>{renderRowActions(row)}</div>
                 </DataTableCell>
             )}

@@ -17,6 +17,11 @@
     border: none;
 }
 
+/* The cells are static so a row never looks pressed; the hover stays, to help the eye follow a row across. */
+.frame tbody tr:hover > td {
+    background-color: var(--colors-grey100);
+}
+
 /* Words wrap between themselves; only a single word too long for any line is broken. */
 .cell {
     overflow-wrap: break-word;
