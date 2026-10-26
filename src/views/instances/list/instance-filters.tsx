@@ -162,7 +162,7 @@ export const InstanceFilterBar: FC<InstanceFilterBarProps> = ({ state, groupName
                 </SingleSelect>
             </div>
             <Checkbox dense label="Expiring soon" checked={filters.expiringSoon} onChange={({ checked }) => set({ expiringSoon: checked })} />
-            <OnlyMineFilter label="Only mine" checked={onlyMine} onChange={setOnlyMine} />
+            <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
             {filters.status !== 'all' && checking > 0 && <span className={styles.checking}>Checking the status of {checking} more…</span>}
             {active && (
                 <Button small secondary onClick={clear}>

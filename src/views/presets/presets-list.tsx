@@ -1,4 +1,5 @@
-import { Button } from '@dhis2/ui'
+import { Button, Input } from '@dhis2/ui'
+import { useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
@@ -7,6 +8,7 @@ import type { ListColumn } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
 import { presetMainInstance, presetSummary } from './preset-summary.ts'
+import styles from './presets-list.module.css'
 
 const PresetDatabase: FC<{ preset: Deployment }> = ({ preset }) => <>{useDatabaseLabel(presetSummary(preset).databaseId).label}</>
 
@@ -34,12 +36,30 @@ const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
 export const PresetsList: FC = () => {
     const [{ data: presets, loading, error }] = useAuthAxios<Deployment[]>('/deployments/presets', { useCache: false })
     const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyPresets')
-    const shown = presets?.filter((preset) => isShown(preset.user))
+    const [searchTerm, setSearchTerm] = useState('')
+    const term = searchTerm.trim().toLowerCase()
+    const shown = presets?.filter(
+        (preset) => isShown(preset.user) && (!term || [preset.name, preset.user?.email, preset.description].some((text) => text?.toLowerCase().includes(term)))
+    )
 
     return (
         <ListPage
             title="Presets"
-            filters={<OnlyMineFilter label="Show only my presets" checked={onlyMine} onChange={setOnlyMine} />}
+            filters={
+                <>
+                    {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
+                     * leave ariaLabel out, so it goes in by spread. */}
+                    <Input
+                        dense
+                        {...{ ariaLabel: 'Search presets' }}
+                        placeholder="Search name, owner or description…"
+                        value={searchTerm}
+                        onChange={({ value }) => setSearchTerm(value ?? '')}
+                        className={styles.search}
+                    />
+                    <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
+                </>
+            }
             columns={columns}
             rows={shown}
             rowKey={(preset) => preset.id}
@@ -48,12 +68,19 @@ export const PresetsList: FC = () => {
             loading={loading}
             error={error ? { title: 'Could not fetch the presets', description: error.message } : undefined}
             empty={
-                onlyMine && presets?.length
+                (onlyMine || term) && presets?.length
                     ? {
-                          title: 'None of the presets are yours',
+                          title: 'No matching presets',
                           action: (
-                              <Button small secondary onClick={() => setOnlyMine(false)}>
-                                  Show everyone’s
+                              <Button
+                                  small
+                                  secondary
+                                  onClick={() => {
+                                      setSearchTerm('')
+                                      setOnlyMine(false)
+                                  }}
+                              >
+                                  Clear filters
                               </Button>
                           ),
                       }

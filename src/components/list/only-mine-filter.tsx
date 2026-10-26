@@ -34,6 +34,7 @@ export const useOnlyMine = (storageKey: string) => {
     return { onlyMine, setOnlyMine, isShown }
 }
 
-export const OnlyMineFilter: FC<{ label: string; checked: boolean; onChange: (checked: boolean) => void }> = ({ label, checked, onChange }) => (
-    <Checkbox dense label={label} checked={checked} onChange={({ checked: next }) => onChange(next)} />
+/* The same words on every list, so the toggle reads as one control wherever it appears. */
+export const OnlyMineFilter: FC<{ checked: boolean; onChange: (checked: boolean) => void }> = ({ checked, onChange }) => (
+    <Checkbox dense label="Only mine" checked={checked} onChange={({ checked: next }) => onChange(next)} />
 )

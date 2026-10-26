@@ -154,8 +154,6 @@ export const DatabasesList: FC = () => {
             actions={<UploadButton onComplete={refresh} />}
             filters={
                 <>
-                    <OnlyMineFilter label="Show only my databases" checked={onlyMine} onChange={setOnlyMine} />
-                    <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
                     {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
                      * leave ariaLabel out, so it goes in by spread. */}
                     <Input
@@ -166,6 +164,8 @@ export const DatabasesList: FC = () => {
                         dense
                         className={styles.search}
                     />
+                    <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
+                    <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
                 </>
             }
             above={treeState && <Breadcrumbs items={treeState.crumbs} />}
