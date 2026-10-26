@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthAxios, useNotificationsContext } from '../../../hooks/index.ts'
 import { GroupWithDeployments } from '../../../types/index.ts'
 
@@ -11,14 +11,16 @@ export const useDeployments = () => {
 
     /* The row offers no delete while its deployment is deploying, so the list has to follow the
      * deploy rather than show whatever was true when it loaded. The event says which deployment
-     * moved, not what the new status is, so the answer still comes from the endpoint. */
-    const { lastDeploymentEvent } = useNotificationsContext()
+     * moved, not what the new status is, so the answer still comes from the endpoint. Counting the
+     * events lets a burst that lands in one render reload the list once. */
+    const { onDeploymentEvent } = useNotificationsContext()
+    const [moves, setMoves] = useState(0)
+    useEffect(() => onDeploymentEvent(() => setMoves((count) => count + 1)), [onDeploymentEvent])
     useEffect(() => {
-        if (!lastDeploymentEvent) {
-            return
+        if (moves) {
+            void refetch()
         }
-        void refetch()
-    }, [lastDeploymentEvent, refetch])
+    }, [moves, refetch])
 
     return { groups: data, error, loading, refetch }
 }

@@ -36,7 +36,7 @@ export const useLiveComponents = (deploymentId: number) => {
         { url: `/deployments/${deploymentId}/components` },
         { useCache: false, autoCatch: true }
     )
-    const { lastComponentStatus, streamEpoch } = useNotificationsContext()
+    const { onComponentStatus, streamEpoch } = useNotificationsContext()
     const [instances, setInstances] = useState<DeploymentInstanceComponents[] | undefined>(undefined)
 
     useEffect(() => {
@@ -55,23 +55,27 @@ export const useLiveComponents = (deploymentId: number) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [streamEpoch])
 
-    useEffect(() => {
-        if (!lastComponentStatus || lastComponentStatus.data.deploymentId !== deploymentId) {
-            return
-        }
-        setInstances((current) => {
-            if (!current) {
-                return current
-            }
-            const patched = applyComponentStatus(current, lastComponentStatus.data)
-            if (!patched) {
-                refetch()
-                return current
-            }
-            return patched
-        })
+    useEffect(
+        () =>
+            onComponentStatus((event) => {
+                if (event.deploymentId !== deploymentId) {
+                    return
+                }
+                setInstances((current) => {
+                    if (!current) {
+                        return current
+                    }
+                    const patched = applyComponentStatus(current, event)
+                    if (!patched) {
+                        refetch()
+                        return current
+                    }
+                    return patched
+                })
+            }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lastComponentStatus, deploymentId])
+        [onComponentStatus, deploymentId]
+    )
 
     return { instances, loading, error, refetch }
 }
