@@ -36,6 +36,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
     const [, executeDelete] = useAuthAxios({ method: 'DELETE', url: `/deployments/${deployment.id}` }, { manual: true, autoCancel: false })
 
     const instances = deployment.instances ?? []
+    const hasStacks = instances.length > 0
     const deploying = isDeploying(deployment)
     const name = deployment.name
     /* One backup covers the deployment: the dump and the file store are written together and linked,
@@ -70,10 +71,6 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
         }
     }
 
-    if (instances.length === 0) {
-        return null
-    }
-
     return (
         <>
             <ActionsMenu
@@ -91,12 +88,13 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                         onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
                     },
                     backupTarget && { label: 'Back up', onClick: () => setSavingAs(true) },
-                    {
+                    /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
+                    hasStacks && {
                         label: 'Restart',
                         confirm: { title: 'Restart instance', message: `Restart every component of "${name}"?`, confirmLabel: 'Restart' },
                         onClick: actOnAll('restart'),
                     },
-                    {
+                    hasStacks && {
                         label: 'Reset',
                         destructive: true,
                         confirm: {
