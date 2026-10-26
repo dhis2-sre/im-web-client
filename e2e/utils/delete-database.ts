@@ -19,6 +19,6 @@ export const deleteTestDatabase = async (page: Page, name: string) => {
     await confirmDialog.getByLabel(`Type ${name} to confirm`).fill(name)
     await confirmDialog.getByRole('button', { name: 'Delete' }).dispatchEvent('click')
 
-    const expectMessage = page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`Successfully deleted [^/]+/${name}`))
+    const expectMessage = page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`^Deleted [^/]+/${name}$`))
     await expect(expectMessage).toBeVisible()
 }

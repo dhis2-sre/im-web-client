@@ -24,5 +24,5 @@ export const deleteDeployment = async (page: Page, name: string, deployTimeout =
     await confirmDialog.getByLabel(`Type ${name} to confirm`).fill(name)
     await confirmDialog.getByRole('button', { name: 'Delete' }).dispatchEvent('click')
 
-    await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Successfully deleted instance "${name}"`)).toBeVisible({ timeout: 90000 })
+    await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Deleted ${name}`, { exact: true })).toBeVisible({ timeout: 90000 })
 }
