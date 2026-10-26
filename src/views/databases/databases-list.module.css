@@ -8,3 +8,16 @@
     align-items: center;
     gap: var(--spacers-dp4);
 }
+
+/* Figures of equal width, so sizes read down the column. */
+.size {
+    font-variant-numeric: tabular-nums;
+}
+
+.description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}

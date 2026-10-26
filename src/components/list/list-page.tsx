@@ -20,6 +20,8 @@ export type ListColumn<T> = {
     breakAnywhere?: boolean
     /* Short values, such as dates and versions, stay on one line. */
     nowrap?: boolean
+    /* Figures, such as sizes, line up when right-aligned. */
+    align?: 'left' | 'right'
 }
 
 export type ListGroup<T> = { key: string; title: string; rows: T[] }
@@ -86,7 +88,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                 const detail = column.detail?.(row)
                 return (
                     /* Static, because only the name link and the actions respond to a click, so the row shouldn't look pressed. The hover is our own, in the CSS module. */
-                    <DataTableCell key={column.key} staticStyle className={cellClass(column)}>
+                    <DataTableCell key={column.key} staticStyle align={column.align} className={cellClass(column)}>
                         {href ? (
                             <Link to={href} className={styles.rowLink}>
                                 {content}
@@ -133,6 +135,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                                 key={column.key}
                                 name={column.key}
                                 width={column.width}
+                                align={column.align}
                                 sortDirection={column.sortValue ? (sort.key === column.key ? sort.direction : 'default') : undefined}
                                 onSortIconClick={column.sortValue ? ({ name, direction }) => onSort({ key: name, direction }) : undefined}
                             >

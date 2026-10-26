@@ -41,7 +41,8 @@ const fromDatabase =
     (row: DatabaseRow) =>
         row.database ? value(row.database) : fallback
 
-/* The description rides under the name, since most databases have none. */
+/* The description rides under the name, since most databases have none, clamped to two lines with
+ * the whole of it on hover. */
 const columns: ListColumn<DatabaseRow>[] = [
     {
         key: 'name',
@@ -55,32 +56,34 @@ const columns: ListColumn<DatabaseRow>[] = [
                     {row.name}
                 </span>
             ),
-        detail: fromDatabase((db) => db.description, null),
+        detail: fromDatabase(
+            (db) =>
+                db.description && (
+                    <span className={styles.description} title={db.description}>
+                        {db.description}
+                    </span>
+                ),
+            null
+        ),
         sortValue: (row) => row.name,
         breakAnywhere: true,
     },
     {
         key: 'size',
         label: 'Size',
-        render: fromDatabase((db) => <span title={`${db.size.toLocaleString()} bytes`}>{prettyBytes(db.size)}</span>, null),
-        sortValue: fromDatabase((db) => db.size ?? 0, 0),
-        nowrap: true,
-    },
-    { key: 'url', label: 'URL', render: fromDatabase((db) => db.url, null), sortValue: fromDatabase((db) => db.url ?? '', ''), breakAnywhere: true },
-    {
-        key: 'created',
-        label: 'Created',
         render: fromDatabase(
             (db) => (
-                <span title={db.createdAt}>
-                    <Moment date={db.createdAt} fromNow />
+                <span className={styles.size} title={`${db.size.toLocaleString()} bytes`}>
+                    {prettyBytes(db.size)}
                 </span>
             ),
             null
         ),
-        sortValue: fromDatabase((db) => db.createdAt ?? '', ''),
+        sortValue: fromDatabase((db) => db.size ?? 0, 0),
         nowrap: true,
+        align: 'right',
     },
+    { key: 'url', label: 'URL', render: fromDatabase((db) => db.url, null), sortValue: fromDatabase((db) => db.url ?? '', ''), breakAnywhere: true },
     {
         key: 'updated',
         label: 'Updated',
