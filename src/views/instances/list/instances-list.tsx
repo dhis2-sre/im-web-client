@@ -1,46 +1,56 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
-import { createContext, useContext } from 'react'
-import type { FC, ReactNode } from 'react'
+import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react'
+import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { ListPage, OnlyMineFilter } from '../../../components/index.ts'
+import { ListPage } from '../../../components/index.ts'
 import type { ListColumn } from '../../../components/index.ts'
 import { useLiveComponents } from '../../../hooks/index.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import type { Deployment } from '../../../types/index.ts'
+import { deploymentHealth } from './component-health.ts'
 import { DeploymentComponentTags } from './deployment-component-tags.tsx'
 import { ExpiresCell } from './expires-cell.tsx'
 import { InstanceActionsMenu } from './instance-actions-menu.tsx'
+import { InstanceFilterBar, useInstanceFilters } from './instance-filters.tsx'
 import { OpenButton } from './open-button.tsx'
 import { useDeployments } from './use-deployments.ts'
 
-/* One components fetch per row, shared by the status tags and the actions menu: both need the same
- * view, and the menu decides what it can offer from the operations the components advertise. */
-const RowComponents = createContext<LiveComponents | undefined>(undefined)
+type RowStatus = Pick<LiveComponents, 'instances' | 'loading' | 'error'>
 
-const RowComponentsScope: FC<{ row: Deployment; children: ReactNode }> = ({ row, children }) => (
-    <RowComponents.Provider value={useLiveComponents(row.id)}>{children}</RowComponents.Provider>
-)
+/* Every deployment's components, kept by the list rather than by each row, so the status filter knows
+ * the health of rows it is hiding. The status chip and the actions menu read the same entry. */
+const Statuses = createContext<Map<number, RowStatus>>(new Map())
 
-const StatusCell: FC = () => {
-    const live = useContext(RowComponents)
-    return <DeploymentComponentTags instances={live?.instances} loading={live?.loading ?? false} error={live?.error} />
+/* Loads one deployment's components, live, and reports them to the list. One per deployment, mounted
+ * whatever the filters show, so filtering never refetches. */
+const LoadStatus: FC<{ id: number; onChange: (id: number, status: RowStatus) => void }> = ({ id, onChange }) => {
+    const { instances, loading, error } = useLiveComponents(id)
+    useEffect(() => onChange(id, { instances, loading, error }), [id, instances, loading, error, onChange])
+    return null
+}
+// Memoised so a report, which re-renders the list, doesn't re-render every loader with it.
+const StatusLoader = memo(LoadStatus)
+
+const StatusCell: FC<{ id: number }> = ({ id }) => {
+    const status = useContext(Statuses).get(id)
+    return <DeploymentComponentTags instances={status?.instances} loading={status?.loading ?? true} error={status?.error} />
 }
 
 const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deployment, refetch }) => {
-    const live = useContext(RowComponents)
+    const status = useContext(Statuses).get(deployment.id)
 
     return (
         <>
             <OpenButton group={deployment.group} name={deployment.name} />
-            <InstanceActionsMenu deployment={deployment} components={live?.instances} onChanged={refetch} onDeleted={refetch} />
+            <InstanceActionsMenu deployment={deployment} components={status?.instances} onChanged={refetch} onDeleted={refetch} />
         </>
     )
 }
 
 const columns: ListColumn<Deployment>[] = [
     { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, breakAnywhere: true },
-    { key: 'status', label: 'Status', render: () => <StatusCell /> },
+    { key: 'status', label: 'Status', render: (deployment) => <StatusCell id={deployment.id} /> },
     {
         key: 'expires',
         label: 'Expires',
@@ -54,31 +64,60 @@ const columns: ListColumn<Deployment>[] = [
 
 export const InstancesList: FC = () => {
     const navigate = useNavigate()
-    const { groups, total, error, loading, refetch, onlyMine, setOnlyMine } = useDeployments()
+    const { groups, error, loading, refetch } = useDeployments()
     const refresh = () => void refetch()
+    const filters = useInstanceFilters()
+
+    const [statuses, setStatuses] = useState(() => new Map<number, RowStatus>())
+    const report = useCallback((id: number, status: RowStatus) => setStatuses((current) => new Map(current).set(id, status)), [])
+
+    const all = groups?.flatMap((group) => group.deployments ?? []) ?? []
+    const health = (deployment: Deployment) => {
+        const components = statuses.get(deployment.id)?.instances
+        return components ? deploymentHealth(components) : undefined
+    }
+    const shown = groups
+        ?.map((group) => ({
+            key: group.name ?? '',
+            title: group.name ?? '',
+            rows: (group.deployments ?? []).filter((deployment) => filters.matches(deployment, health(deployment))),
+        }))
+        .filter((group) => group.rows.length > 0)
+    const checking = all.filter((deployment) => statuses.get(deployment.id)?.loading !== false).length
 
     return (
-        <ListPage
-            title="Instances"
-            actions={
-                <Button primary icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
-                    New instance
-                </Button>
-            }
-            filters={<OnlyMineFilter label="Show only my instances" checked={onlyMine} onChange={setOnlyMine} />}
-            columns={columns}
-            groups={groups?.map((group) => ({ key: group.name ?? '', title: group.name ?? '', rows: group.deployments }))}
-            rowKey={(deployment) => deployment.id}
-            rowHref={(deployment) => `/instances/${deployment.id}/details`}
-            rowScope={RowComponentsScope}
-            renderRowActions={(deployment) => <RowActions deployment={deployment} refetch={refresh} />}
-            loading={loading}
-            error={error ? { title: 'Could not retrieve instances', description: error.message } : undefined}
-            empty={
-                onlyMine && total > 0
-                    ? { title: 'None of the instances are yours', action: <Button onClick={() => setOnlyMine(false)}>Show everyone’s</Button> }
-                    : { title: 'No instances' }
-            }
-        />
+        <Statuses.Provider value={statuses}>
+            {all.map((deployment) => (
+                <StatusLoader key={deployment.id} id={deployment.id} onChange={report} />
+            ))}
+            <ListPage
+                title="Instances"
+                actions={
+                    <Button primary icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
+                        New instance
+                    </Button>
+                }
+                filters={<InstanceFilterBar state={filters} groupNames={groups?.map((group) => group.name ?? '') ?? []} checking={checking} />}
+                columns={columns}
+                groups={shown}
+                rowKey={(deployment) => deployment.id}
+                rowHref={(deployment) => `/instances/${deployment.id}/details`}
+                renderRowActions={(deployment) => <RowActions deployment={deployment} refetch={refresh} />}
+                loading={loading}
+                error={error ? { title: 'Could not retrieve instances', description: error.message } : undefined}
+                empty={
+                    filters.active && all.length > 0
+                        ? {
+                              title: 'No matching instances',
+                              action: (
+                                  <Button small secondary onClick={filters.clear}>
+                                      Clear filters
+                                  </Button>
+                              ),
+                          }
+                        : { title: 'No instances' }
+                }
+            />
+        </Statuses.Provider>
     )
 }

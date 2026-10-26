@@ -1,8 +1,19 @@
+/* The filter bar joins the top of the table's frame: it takes the top corners, the frame the bottom. */
 .toolbar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--spacers-dp8) var(--spacers-dp24);
+    gap: var(--spacers-dp8) var(--spacers-dp16);
+    padding: var(--spacers-dp8) var(--spacers-dp12);
+    background-color: var(--colors-grey050);
+    border: 1px solid var(--colors-grey300);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.toolbar + .frame {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 /* Frames the table and the body's states. No overflow of its own: that would make it the scroll box

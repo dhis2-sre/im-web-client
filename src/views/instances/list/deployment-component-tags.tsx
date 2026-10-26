@@ -1,36 +1,15 @@
 import { Popover } from '@dhis2/ui'
 import { useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
-import { replicaStatus, ToneIcon } from '../../../components/index.ts'
-import type { Status, StatusTone } from '../../../components/index.ts'
+import { ToneIcon } from '../../../components/index.ts'
+import type { StatusTone } from '../../../components/index.ts'
 import { DeploymentInstanceComponents } from '../../../types/index.ts'
+import { toEntries } from './component-health.ts'
+import type { Entry } from './component-health.ts'
 import styles from './deployment-component-tags.module.css'
-
-/* The label carries the stack because the row flattens every instance of the deployment, where a bare
- * component name is ambiguous: a dhis2-v2 instance alongside a chap one has two components called db.
- * DHIS 2 is the default a deployment is built around, so its components stay bare and only what is
- * deployed alongside them is qualified. A component named after its own stack, like pgadmin, is
- * unambiguous already. The details page needs no prefix at all, having a section per instance. */
-const componentLabel = (stackName: string, componentName: string) =>
-    stackName.startsWith('dhis2') || componentName === stackName ? componentName : `${stackName}:${componentName}`
-
-type Entry = { key: string; label: string; status: Status }
 
 const SUMMARY_TONES: StatusTone[] = ['positive', 'negative', 'neutral']
 const TONE_WORDS: Record<StatusTone, string> = { positive: 'running', negative: 'failed', neutral: 'pending', progress: 'deploying' }
-
-/* One entry per replica, so one unhealthy replica of a component stays visible instead of being
- * averaged away, and a component with no replicas still counts as pending rather than disappearing. */
-const toEntries = (instances: DeploymentInstanceComponents[]): Entry[] =>
-    instances.flatMap((instance) =>
-        instance.components.flatMap((component) => {
-            const label = componentLabel(instance.stackName, component.name)
-            const key = `${instance.instanceId}-${component.name}`
-            return component.replicas.length === 0
-                ? [{ key, label, status: { label: 'Not running', tone: 'neutral' as const } }]
-                : component.replicas.map((replica) => ({ key: `${key}-${replica.name}`, label, status: replicaStatus(replica) }))
-        })
-    )
 
 /* The deployment's components counted by state in one chip, a segment per state that has any. Clicking
  * it lists every component under its state, so the whole picture is one click away. */

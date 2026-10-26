@@ -1,6 +1,6 @@
 import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import { useLayoutEffect, useRef, useState } from 'react'
-import type { FC, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Page } from '../page/page.tsx'
 import type { PageError } from '../page/page.tsx'
@@ -31,9 +31,9 @@ type ListPageProps<T> = {
     title: string
     /* The page's primary action, such as a New button. */
     actions?: ReactNode
-    /* The toolbar under the title: filters, toggles and search. */
+    /* A bar across the top of the table: filters, toggles and search. */
     filters?: ReactNode
-    /* Anything between the toolbar and the table, such as a breadcrumb through a folder tree. */
+    /* Anything above the table and its filter bar, such as a breadcrumb through a folder tree. */
     above?: ReactNode
     columns: ListColumn<T>[]
     /* Either flat rows, or groups, each under its own header row in the one table. */
@@ -46,8 +46,6 @@ type ListPageProps<T> = {
     renderRowActions?: (row: T) => ReactNode
     /* The column shrinks to fit its buttons unless given a width. */
     rowActionsWidth?: string
-    /* Wraps each row's cells, for state the cells share, such as one fetch for two columns. */
-    rowScope?: FC<{ row: T; children: ReactNode }>
     /* Rows that stay on top whatever the sort, such as folders above files. */
     pinned?: (row: T) => boolean
     loading?: boolean
@@ -69,7 +67,7 @@ const sortRows = <T,>(rows: T[], sort: Sort, { sortValue, pinned }: { sortValue?
     return [...rows.filter(pinned).sort(byValue), ...rows.filter((row) => !pinned(row)).sort(byValue)]
 }
 
-type ListTableProps<T> = Pick<ListPageProps<T>, 'columns' | 'rowKey' | 'rowHref' | 'renderRowActions' | 'rowActionsWidth' | 'rowScope' | 'pinned'> & {
+type ListTableProps<T> = Pick<ListPageProps<T>, 'columns' | 'rowKey' | 'rowHref' | 'renderRowActions' | 'rowActionsWidth' | 'pinned'> & {
     /* One section per group, each under a full-width header row, so the column headers show once. */
     groups: ListGroup<T>[]
     sort: Sort
@@ -78,9 +76,8 @@ type ListTableProps<T> = Pick<ListPageProps<T>, 'columns' | 'rowKey' | 'rowHref'
 
 const cellClass = <T,>(column: ListColumn<T>) => [styles.cell, column.breakAnywhere && styles.breakAnywhere, column.nowrap && styles.nowrap].filter(Boolean).join(' ')
 
-const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, rowActionsWidth = '1%', rowScope, pinned, sort, onSort }: ListTableProps<T>) => {
+const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, rowActionsWidth = '1%', pinned, sort, onSort }: ListTableProps<T>) => {
     const sortColumn = columns.find((column) => column.key === sort.key)
-    const Scope = rowScope
     const rowCells = (row: T) => (
         <>
             {columns.map((column, index) => {
@@ -159,7 +156,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                             </tr>
                         )}
                         {sorted(group.rows).map((row) => (
-                            <DataTableRow key={rowKey(row)}>{Scope ? <Scope row={row}>{rowCells(row)}</Scope> : rowCells(row)}</DataTableRow>
+                            <DataTableRow key={rowKey(row)}>{rowCells(row)}</DataTableRow>
                         ))}
                     </DataTableBody>
                 ))}
@@ -168,8 +165,8 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
     )
 }
 
-/* The scaffold of a list screen: a header with the title and the primary action, a toolbar for
- * filters, then the table, flat or split into groups by header rows. The body shows loading, error and
+/* The scaffold of a list screen: a header with the title and the primary action, then the table with
+ * its filter bar across the top, flat or split into groups by header rows. The body shows loading, error and
  * empty in place of the table while the header and toolbar stay put.
  *
  * Screens describe their columns and rows and never touch the table itself, so the table inside can
@@ -206,9 +203,11 @@ export const ListPage = <T,>({ title, actions, filters, above, groups, rows, loa
 
     return (
         <Page title={title} actions={actions}>
-            {filters && <div className={styles.toolbar}>{filters}</div>}
             {above}
-            {body()}
+            <div>
+                {filters && <div className={styles.toolbar}>{filters}</div>}
+                {body()}
+            </div>
         </Page>
     )
 }

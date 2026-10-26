@@ -8,18 +8,24 @@ import styles from './expires-cell.module.css'
 
 const EXPIRING_SOON_SECONDS = DAY_IN_SECONDS
 
+const expiresAt = (deployment: Deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000
+
+/* Under a day left. The cell marks only the viewer's own; the list's filter finds anyone's. */
+export const isExpiringSoon = (deployment: Deployment, now: number) => {
+    const remaining = (expiresAt(deployment) - now) / 1000
+    return remaining > 0 && remaining < EXPIRING_SOON_SECONDS
+}
+
 /* Flags the viewer's own instances in their last day. The dot is there so the warning doesn't rest on
  * colour alone. */
 export const ExpiresCell: FC<{ deployment: Deployment }> = ({ deployment }) => {
     const { currentUser } = useAuth()
     // shortcut: the clock is read once when the cell mounts, so a list left open doesn't turn amber until it remounts; tick it if that matters.
     const [now] = useState(Date.now)
-    const expiresAt = new Date(deployment.createdAt).getTime() + deployment.ttl * 1000
-    const remaining = (expiresAt - now) / 1000
-    const soon = deployment.user.id === currentUser?.id && remaining > 0 && remaining < EXPIRING_SOON_SECONDS
+    const soon = deployment.user.id === currentUser?.id && isExpiringSoon(deployment, now)
 
     return (
-        <span className={soon ? styles.expiringSoon : undefined} title={new Date(expiresAt).toLocaleString()}>
+        <span className={soon ? styles.expiringSoon : undefined} title={new Date(expiresAt(deployment)).toLocaleString()}>
             <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
             {soon && (
                 <>

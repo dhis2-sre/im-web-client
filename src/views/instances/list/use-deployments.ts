@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from 'react'
-import { useOnlyMine } from '../../../components/index.ts'
+import { useEffect } from 'react'
 import { useAuthAxios, useNotificationsContext } from '../../../hooks/index.ts'
 import { GroupWithDeployments } from '../../../types/index.ts'
 
@@ -21,15 +20,5 @@ export const useDeployments = () => {
         void refetch()
     }, [lastDeploymentEvent, refetch])
 
-    const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyInstances')
-
-    const groups = useMemo(
-        () =>
-            data
-                ?.map((group) => ({ ...group, deployments: (group.deployments ?? []).filter((deployment) => isShown(deployment.user)) }))
-                .filter((group) => group.deployments.length > 0),
-        [data, isShown]
-    )
-
-    return { groups, total: data?.reduce((sum, group) => sum + (group.deployments?.length ?? 0), 0) ?? 0, error, loading, refetch, onlyMine, setOnlyMine }
+    return { groups: data, error, loading, refetch }
 }

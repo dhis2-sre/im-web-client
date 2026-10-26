@@ -1,0 +1,23 @@
+/* The search and selects sit closer together than the bar's other controls, as one set of fields. */
+.fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8);
+}
+
+/* The input's own width: 100% outranks a plain class, so the size comes from a flex basis, which wins
+ * in a flex row, and a matching min-width, which the group's natural width counts where a basis isn't. */
+.search {
+    flex: 0 0 18rem;
+    min-width: 18rem;
+}
+
+.select {
+    min-width: 10rem;
+}
+
+.checking {
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
+}
