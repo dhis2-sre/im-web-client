@@ -87,7 +87,13 @@
     text-decoration: underline;
 }
 
+/* Clamped to two lines, the whole of it on hover, so a long description doesn't stretch its row. */
 .detail {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     margin-top: var(--spacers-dp4);
     font-size: var(--text-sm);
     color: var(--colors-grey700);

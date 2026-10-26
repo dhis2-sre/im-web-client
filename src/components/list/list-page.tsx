@@ -96,7 +96,11 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                         ) : (
                             content
                         )}
-                        {detail && <div className={styles.detail}>{detail}</div>}
+                        {detail && (
+                            <div className={styles.detail} title={typeof detail === 'string' ? detail : undefined}>
+                                {detail}
+                            </div>
+                        )}
                     </DataTableCell>
                 )
             })}

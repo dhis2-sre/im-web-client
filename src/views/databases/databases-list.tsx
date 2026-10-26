@@ -67,8 +67,7 @@ const fromDatabase =
     (row: DatabaseRow) =>
         row.database ? value(row.database) : fallback
 
-/* The description rides under the name, since most databases have none, clamped to two lines with
- * the whole of it on hover. */
+/* The description rides under the name, since most databases have none. */
 const columns: ListColumn<DatabaseRow>[] = [
     {
         key: 'name',
@@ -82,15 +81,7 @@ const columns: ListColumn<DatabaseRow>[] = [
                     {row.name}
                 </span>
             ),
-        detail: fromDatabase(
-            (db) =>
-                db.description && (
-                    <span className={styles.description} title={db.description}>
-                        {db.description}
-                    </span>
-                ),
-            null
-        ),
+        detail: fromDatabase((db) => db.description, null),
         sortValue: (row) => row.name,
         breakAnywhere: true,
     },
