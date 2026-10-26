@@ -49,7 +49,14 @@ export const PresetsList: FC = () => {
             error={error ? { title: 'Could not fetch the presets', description: error.message } : undefined}
             empty={
                 onlyMine && presets?.length
-                    ? { title: 'None of the presets are yours', action: <Button onClick={() => setOnlyMine(false)}>Show everyone’s</Button> }
+                    ? {
+                          title: 'None of the presets are yours',
+                          action: (
+                              <Button small secondary onClick={() => setOnlyMine(false)}>
+                                  Show everyone’s
+                              </Button>
+                          ),
+                      }
                     : { title: 'No presets', description: 'Presets are saved from the new instance form.' }
             }
         />

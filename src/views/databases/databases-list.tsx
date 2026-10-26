@@ -184,6 +184,8 @@ export const DatabasesList: FC = () => {
                           title: 'No matching databases',
                           action: (
                               <Button
+                                  small
+                                  secondary
                                   onClick={() => {
                                       setSearchTerm('')
                                       setOnlyMine(false)
