@@ -10,6 +10,38 @@
     cursor: pointer;
 }
 
+/* The chip's size while it loads: one icon and one digit inside the segment's padding and border. */
+.ghost {
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    border-radius: 4px;
+    background-color: var(--colors-grey200);
+    vertical-align: middle;
+    animation: ghost-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ghost-pulse {
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ghost {
+        animation: none;
+    }
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 .chip:hover {
     border-color: var(--colors-grey500);
 }

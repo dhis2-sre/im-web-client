@@ -1,4 +1,4 @@
-import { CircularLoader, Popover } from '@dhis2/ui'
+import { Popover } from '@dhis2/ui'
 import { useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
 import { replicaStatus, ToneIcon } from '../../../components/index.ts'
@@ -100,7 +100,14 @@ const StatusChip: FC<{ entries: Entry[] }> = ({ entries }) => {
 
 export const DeploymentComponentTags: FC<{ instances?: DeploymentInstanceComponents[]; loading: boolean; error?: unknown }> = ({ instances, loading, error }) => {
     if (loading && !instances) {
-        return <CircularLoader extrasmall />
+        /* A placeholder the size of a one-state chip, so rows keep their shape while each one's
+         * components load. It holds nothing: the deploy status the list already has answers a
+         * different question, and showing it first would flash a signal the chip then replaces. */
+        return (
+            <span className={styles.ghost}>
+                <span className={styles.visuallyHidden}>Loading status</span>
+            </span>
+        )
     }
     if (error || !instances) {
         return null
