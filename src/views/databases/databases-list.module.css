@@ -21,3 +21,12 @@
     -webkit-line-clamp: 2;
     line-clamp: 2;
 }
+
+.unknown {
+    color: var(--colors-grey500);
+}
+
+.noFile {
+    color: var(--colors-yellow800);
+    font-weight: 500;
+}

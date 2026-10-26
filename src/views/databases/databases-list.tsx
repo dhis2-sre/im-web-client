@@ -34,6 +34,32 @@ const treeHref = (query: string, group?: string, path?: string) => {
     return search ? `/databases?${search}` : '/databases'
 }
 
+/* What the size cell can honestly say. A save creates the record first and fills in the file's URL and
+ * size once the dump is uploaded, so a record without a URL is a save still running, or one that never
+ * finished: there is nothing to deploy or download. A size of 0 is a record from before sizes were
+ * kept, since even an empty dump has a gzip or archive header. */
+const DatabaseSize: FC<{ database: Database }> = ({ database }) => {
+    if (!database.url) {
+        return (
+            <span className={styles.noFile} title="No file: the save is still running or never finished, so there is nothing to deploy or download">
+                No file
+            </span>
+        )
+    }
+    if (!database.size) {
+        return (
+            <span className={styles.unknown} title="Size not recorded">
+                –
+            </span>
+        )
+    }
+    return (
+        <span className={styles.size} title={`${database.size.toLocaleString()} bytes`}>
+            {prettyBytes(database.size)}
+        </span>
+    )
+}
+
 const databaseRow = (database: Database, name = database.name): DatabaseRow => ({ key: `db-${database.id}`, name, href: `/databases/${database.id}`, database })
 
 const fromDatabase =
@@ -71,19 +97,11 @@ const columns: ListColumn<DatabaseRow>[] = [
     {
         key: 'size',
         label: 'Size',
-        render: fromDatabase(
-            (db) => (
-                <span className={styles.size} title={`${db.size.toLocaleString()} bytes`}>
-                    {prettyBytes(db.size)}
-                </span>
-            ),
-            null
-        ),
+        render: fromDatabase((db) => <DatabaseSize database={db} />, null),
         sortValue: fromDatabase((db) => db.size ?? 0, 0),
         nowrap: true,
         align: 'right',
     },
-    { key: 'url', label: 'URL', render: fromDatabase((db) => db.url, null), sortValue: fromDatabase((db) => db.url ?? '', ''), breakAnywhere: true },
     {
         key: 'updated',
         label: 'Updated',
