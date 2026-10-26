@@ -4,27 +4,9 @@ import type { FC } from 'react'
 import { FilterFields, GroupFilter, OnlyMineFilter, SearchFilter, useOnlyMine, useSavedSearchParams } from '../../../components/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import type { DeploymentHealth } from './component-health.ts'
-import { isExpiringSoon } from './expires-cell.tsx'
+import { isDefault, isExpiringSoon, PARAMS, readFilters } from './instance-filter-rules.ts'
+import type { Filters } from './instance-filter-rules.ts'
 import styles from './instance-filters.module.css'
-
-type Filters = { search: string; group: string; status: 'all' | DeploymentHealth; expiringSoon: boolean }
-
-/* Each filter's place in the URL. A filter at its default is left out, so a plain list has a plain address. */
-const PARAMS: Record<keyof Filters, string> = { search: 'q', group: 'group', status: 'status', expiringSoon: 'expiring' }
-const HEALTHS: string[] = ['healthy', 'errors', 'pending']
-
-const readFilters = (params: URLSearchParams): Filters => {
-    const status = params.get(PARAMS.status) ?? ''
-    return {
-        search: params.get(PARAMS.search) ?? '',
-        group: params.get(PARAMS.group) ?? 'all',
-        status: HEALTHS.includes(status) ? (status as DeploymentHealth) : 'all',
-        expiringSoon: params.get(PARAMS.expiringSoon) === '1',
-    }
-}
-
-const isDefault = (key: keyof Filters, value: Filters[keyof Filters]) =>
-    value === '' || value === false || (key === 'group' && value === 'all') || (key === 'status' && value === 'all')
 
 const STATUS_OPTIONS: { value: Filters['status']; label: string }[] = [
     { value: 'all', label: 'All' },

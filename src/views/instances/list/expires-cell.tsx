@@ -3,18 +3,8 @@ import type { FC } from 'react'
 import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { useAuth } from '../../../hooks/index.ts'
 import type { Deployment } from '../../../types/index.ts'
-import { DAY_IN_SECONDS } from '../fields/ttl-presets.ts'
 import styles from './expires-cell.module.css'
-
-const EXPIRING_SOON_SECONDS = DAY_IN_SECONDS
-
-const expiresAt = (deployment: Deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000
-
-/* Under a day left. The cell marks only the viewer's own; the list's filter finds anyone's. */
-export const isExpiringSoon = (deployment: Deployment, now: number) => {
-    const remaining = (expiresAt(deployment) - now) / 1000
-    return remaining > 0 && remaining < EXPIRING_SOON_SECONDS
-}
+import { expiresAt, isExpiringSoon } from './instance-filter-rules.ts'
 
 /* Flags the viewer's own instances in their last day. The dot is there so the warning doesn't rest on
  * colour alone. */
