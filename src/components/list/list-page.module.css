@@ -27,7 +27,9 @@
     border-radius: 4px;
 }
 
-.frame table {
+/* The frame draws the edge, so the table's own border goes. [class] lifts this past the table's
+ * styled-jsx rule, which otherwise ties on specificity and wins by loading later. */
+.frame table[class] {
     border: none;
 }
 
@@ -64,7 +66,8 @@
     z-index: 1;
     padding: var(--spacers-dp12) var(--spacers-dp12) var(--spacers-dp8);
     background-color: var(--colors-grey100);
-    border-top: 1px solid var(--colors-grey300);
+    /* Only below: above it sits the column headers' own bottom border, or the previous group's last
+     * row, whose border the table already hides. */
     border-bottom: 1px solid var(--colors-grey300);
     font-size: var(--text-md);
     font-weight: 500;
