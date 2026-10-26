@@ -6,7 +6,7 @@ export const deleteTestDatabase = async (page: Page, name: string) => {
     await page.getByRole('link', { name: 'Databases' }).click()
     await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
 
-    await expect(page.getByRole('cell', { name: name, exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name, exact: true })).toBeVisible()
     const row = page.getByRole('row', { name: name })
     await row.getByRole('button', { name: `Actions for ${name}` }).click()
     await page.getByRole('menuitem', { name: 'Delete' }).dispatchEvent('click')
