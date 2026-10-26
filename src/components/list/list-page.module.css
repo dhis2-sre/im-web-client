@@ -8,6 +8,8 @@
 /* Frames the table and the body's states. No overflow of its own: that would make it the scroll box
  * the sticky headers stick to, so a wide table scrolls with the page instead. */
 .frame {
+    /* Keeps the sticky headers' z-index inside the table, so menus and popovers opened from a row draw over them. */
+    isolation: isolate;
     min-width: fit-content;
     background-color: var(--colors-white);
     border: 1px solid var(--colors-grey300);
