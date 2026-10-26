@@ -42,9 +42,6 @@ const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deplo
 const columns: ListColumn<Deployment>[] = [
     { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, breakAnywhere: true },
     { key: 'status', label: 'Status', render: () => <StatusCell />, width: '12rem' },
-    { key: 'created', label: 'Created', render: (deployment) => <Moment date={deployment.createdAt} fromNow />, sortValue: (deployment) => deployment.createdAt, nowrap: true },
-    { key: 'updated', label: 'Updated', render: (deployment) => <Moment date={deployment.updatedAt} fromNow />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
-    { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, breakAnywhere: true },
     {
         key: 'expires',
         label: 'Expires',
@@ -52,6 +49,8 @@ const columns: ListColumn<Deployment>[] = [
         sortValue: (deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000,
         nowrap: true,
     },
+    { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, breakAnywhere: true },
+    { key: 'updated', label: 'Updated', render: (deployment) => <Moment date={deployment.updatedAt} fromNow />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
 ]
 
 export const InstancesList: FC = () => {
