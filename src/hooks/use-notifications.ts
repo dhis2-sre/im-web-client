@@ -39,8 +39,8 @@ export const useNotifications = () => {
     const [sseEvents] = useState(() => createEmitter<SseEvent>())
     const [componentStatuses] = useState(() => createEmitter<ComponentStatusEventData>())
     const [deploymentEvents] = useState(() => createEmitter<DeploymentEventData>())
-    /* Counts the times the event stream has come up. Consumers watch it to reload what they cannot
-     * have been told about while it was down. */
+    /* Counts the times the event stream has come up without picking up where it left off. Consumers
+     * watch it to reload what they cannot have been told about while it was down. */
     const [streamEpoch, setStreamEpoch] = useState(0)
 
     const [, fetchNotifications] = useAuthAxios<Notification[]>('/notifications', { manual: true, autoCatch: true })
@@ -85,8 +85,22 @@ export const useNotifications = () => {
             const es = new EventSource(`${baseURL}/events`, { withCredentials: true })
             source = es
 
+            /* When an established stream drops, the browser dials back in with the id of the last
+             * event it saw and the server replays everything since, so nothing is missed. A new
+             * EventSource, or one that never saw an event, starts from now instead. */
+            let resumable = false
+            const noteId = (e: MessageEvent) => {
+                resumable ||= e.lastEventId !== ''
+            }
+            for (const kind of ['database-save', 'filestore-backup', 'deployment', 'component-status']) {
+                es.addEventListener(kind, noteId)
+            }
+
             es.onopen = () => {
                 delay = STREAM_RECONNECT_DELAY_MS
+                if (resumable) {
+                    return
+                }
                 /* Anything that happened while the stream was down was never pushed, so consumers
                  * reload rather than carry on from a view that stopped being live. */
                 setStreamEpoch((current) => current + 1)
