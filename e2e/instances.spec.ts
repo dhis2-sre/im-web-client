@@ -68,8 +68,8 @@ test.describe('new instance', () => {
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
 
-        // Navigate back to the instances list through the sidebar
-        await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' })).toBeVisible({ timeout: 60000 })
+        // Creating ends on the details page; leaving any sooner would abort the requests still in flight.
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 60000 })
         await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
 
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
@@ -121,7 +121,7 @@ test.describe('new instance', () => {
         await page.keyboard.press('Escape')
 
         await page.getByRole('button', { name: 'Create instance' }).click()
-        await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' })).toBeVisible({ timeout: 60000 })
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 60000 })
         await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
