@@ -1,5 +1,5 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
-import { createContext, memo, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
@@ -69,7 +69,20 @@ export const InstancesList: FC = () => {
     const filters = useInstanceFilters()
 
     const [statuses, setStatuses] = useState(() => new Map<number, RowStatus>())
-    const report = useCallback((id: number, status: RowStatus) => setStatuses((current) => new Map(current).set(id, status)), [])
+    /* The loaders report from their effects, hundreds of them as their responses arrive. Each report
+     * setting state there re-rendered the whole list and chained past React's limit on updates from
+     * effects, so reports are collected and applied together once the effects have run. */
+    const pending = useRef(new Map<number, RowStatus>())
+    const report = useCallback((id: number, status: RowStatus) => {
+        if (pending.current.size === 0) {
+            setTimeout(() => {
+                const batch = pending.current
+                pending.current = new Map()
+                setStatuses((current) => new Map([...current, ...batch]))
+            })
+        }
+        pending.current.set(id, status)
+    }, [])
 
     const all = groups?.flatMap((group) => group.deployments ?? []) ?? []
     const inScope = all.filter(filters.inScope)
