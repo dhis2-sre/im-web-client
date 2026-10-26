@@ -36,7 +36,9 @@ export const TypedConfirmationModal: FC<TypedConfirmationModalProps> = ({ title,
                             </ul>
                         </div>
                     )}
+                    {/* The name is what ties the label to the input, so screen readers announce it. */}
                     <InputField
+                        name="typed-confirmation"
                         label={`Type ${name} to confirm`}
                         value={typed}
                         onChange={({ value }) => setTyped(value ?? '')}
