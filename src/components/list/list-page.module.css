@@ -5,9 +5,10 @@
     gap: var(--spacers-dp8) var(--spacers-dp24);
 }
 
-/* Frames the table and the body's states. */
+/* Frames the table and the body's states. No overflow of its own: that would make it the scroll box
+ * the sticky headers stick to, so a wide table scrolls with the page instead. */
 .frame {
-    overflow-x: auto;
+    min-width: fit-content;
     background-color: var(--colors-white);
     border: 1px solid var(--colors-grey300);
     border-radius: 4px;
@@ -15,6 +16,13 @@
 
 .frame table {
     border: none;
+}
+
+/* The column headers stay at the top of the page while the rows scroll under them. */
+.frame thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 /* The cells are static so a row never looks pressed; the hover stays, to help the eye follow a row across. */
@@ -36,7 +44,11 @@
     white-space: nowrap;
 }
 
+/* Each group's header sticks under the column headers, and the next group's header covers it as it arrives. */
 .groupHeader {
+    position: sticky;
+    top: var(--list-head-height, 0);
+    z-index: 1;
     padding: var(--spacers-dp12) var(--spacers-dp12) var(--spacers-dp8);
     background-color: var(--colors-grey100);
     border-top: 1px solid var(--colors-grey300);

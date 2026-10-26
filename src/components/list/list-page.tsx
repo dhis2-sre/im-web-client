@@ -1,5 +1,5 @@
 import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { FC, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Page } from '../page/page.tsx'
@@ -112,44 +112,61 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
     const sorted = (rows: T[]) => sortRows(rows, sort, { sortValue: sortColumn?.sortValue, pinned })
     const span = columns.length + (renderRowActions ? 1 : 0)
 
+    /* The group headers stick just under the column headers, whose height changes when a label wraps. */
+    const frame = useRef<HTMLDivElement>(null)
+    useLayoutEffect(() => {
+        const head = frame.current?.querySelector('thead')
+        if (!head) {
+            return
+        }
+        const update = () => frame.current?.style.setProperty('--list-head-height', `${head.offsetHeight}px`)
+        /* Set now as well: a remount's observer doesn't always report the starting size. */
+        update()
+        const observer = new ResizeObserver(update)
+        observer.observe(head)
+        return () => observer.disconnect()
+    }, [])
+
     return (
-        <DataTable>
-            <DataTableHead>
-                <DataTableRow>
-                    {columns.map((column) => (
-                        <DataTableColumnHeader
-                            key={column.key}
-                            name={column.key}
-                            width={column.width}
-                            sortDirection={column.sortValue ? (sort.key === column.key ? sort.direction : 'default') : undefined}
-                            onSortIconClick={column.sortValue ? ({ name, direction }) => onSort({ key: name, direction }) : undefined}
-                        >
-                            {column.label}
-                        </DataTableColumnHeader>
-                    ))}
-                    {renderRowActions && (
-                        <DataTableColumnHeader width={rowActionsWidth}>
-                            <span className={styles.visuallyHidden}>Actions</span>
-                        </DataTableColumnHeader>
-                    )}
-                </DataTableRow>
-            </DataTableHead>
-            {groups.map((group) => (
-                <DataTableBody key={group.key}>
-                    {group.title && (
-                        <tr>
-                            <th colSpan={span} scope="rowgroup" className={styles.groupHeader}>
-                                {group.title}
-                                <span className={styles.groupCount}> ({group.rows.length})</span>
-                            </th>
-                        </tr>
-                    )}
-                    {sorted(group.rows).map((row) => (
-                        <DataTableRow key={rowKey(row)}>{Scope ? <Scope row={row}>{rowCells(row)}</Scope> : rowCells(row)}</DataTableRow>
-                    ))}
-                </DataTableBody>
-            ))}
-        </DataTable>
+        <div ref={frame} className={styles.frame}>
+            <DataTable>
+                <DataTableHead>
+                    <DataTableRow>
+                        {columns.map((column) => (
+                            <DataTableColumnHeader
+                                key={column.key}
+                                name={column.key}
+                                width={column.width}
+                                sortDirection={column.sortValue ? (sort.key === column.key ? sort.direction : 'default') : undefined}
+                                onSortIconClick={column.sortValue ? ({ name, direction }) => onSort({ key: name, direction }) : undefined}
+                            >
+                                {column.label}
+                            </DataTableColumnHeader>
+                        ))}
+                        {renderRowActions && (
+                            <DataTableColumnHeader width={rowActionsWidth}>
+                                <span className={styles.visuallyHidden}>Actions</span>
+                            </DataTableColumnHeader>
+                        )}
+                    </DataTableRow>
+                </DataTableHead>
+                {groups.map((group) => (
+                    <DataTableBody key={group.key}>
+                        {group.title && (
+                            <tr>
+                                <th colSpan={span} scope="rowgroup" className={styles.groupHeader}>
+                                    {group.title}
+                                    <span className={styles.groupCount}> ({group.rows.length})</span>
+                                </th>
+                            </tr>
+                        )}
+                        {sorted(group.rows).map((row) => (
+                            <DataTableRow key={rowKey(row)}>{Scope ? <Scope row={row}>{rowCells(row)}</Scope> : rowCells(row)}</DataTableRow>
+                        ))}
+                    </DataTableBody>
+                ))}
+            </DataTable>
+        </div>
     )
 }
 
@@ -186,11 +203,7 @@ export const ListPage = <T,>({ title, count, actions, filters, above, groups, ro
                 </div>
             )
         }
-        return (
-            <div className={styles.frame}>
-                <ListTable {...table} groups={groups ?? [{ key: '', title: '', rows: rows ?? [] }]} sort={sort} onSort={setSort} />
-            </div>
-        )
+        return <ListTable {...table} groups={groups ?? [{ key: '', title: '', rows: rows ?? [] }]} sort={sort} onSort={setSort} />
     }
 
     return (
