@@ -5,13 +5,7 @@
     gap: var(--spacers-dp8) var(--spacers-dp24);
 }
 
-.groups {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacers-dp16);
-}
-
-/* Frames the flat table and the body's states the way a group's panel frames its table. */
+/* Frames the table and the body's states. */
 .frame {
     overflow-x: auto;
     background-color: var(--colors-white);
@@ -23,9 +17,34 @@
     border: none;
 }
 
-/* A long URL or email wraps inside its column instead of widening the table. */
+/* Words wrap between themselves; only a single word too long for any line is broken. */
 .cell {
+    overflow-wrap: break-word;
+}
+
+/* An email or path has no spaces to wrap at, so it may break anywhere rather than widen the table. */
+.breakAnywhere {
     overflow-wrap: anywhere;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.groupHeader {
+    padding: var(--spacers-dp12) var(--spacers-dp12) var(--spacers-dp8);
+    background-color: var(--colors-grey100);
+    border-top: 1px solid var(--colors-grey300);
+    border-bottom: 1px solid var(--colors-grey300);
+    font-size: var(--text-md);
+    font-weight: 500;
+    text-align: left;
+    color: var(--colors-grey900);
+}
+
+.groupCount {
+    font-weight: 400;
+    color: var(--colors-grey600);
 }
 
 .rowLink {

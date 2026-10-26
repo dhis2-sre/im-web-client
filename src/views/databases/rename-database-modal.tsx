@@ -30,11 +30,11 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
             await renameDatabase({
                 data: { name: newName, description: newDescription } as UpdateDatabaseRequest,
             })
-            alert.success('Database renamed successfully')
+            alert.success(`Renamed to ${newName}`)
             onComplete()
             onClose()
         } catch (error) {
-            alert.error(error.response?.data?.message || 'There was a problem renaming the database')
+            alert.error(error.response?.data?.message || `Couldn't rename ${currentName}`)
             onComplete()
             onClose()
         }

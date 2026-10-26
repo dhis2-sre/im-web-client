@@ -6,37 +6,33 @@ import { ListPage, OnlyMineFilter, useOnlyMine } from '../../components/index.ts
 import type { ListColumn } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
-import { PresetActionsMenu } from './preset-actions-menu.tsx'
 import { presetMainInstance, presetSummary } from './preset-summary.ts'
 
 const PresetDatabase: FC<{ preset: Deployment }> = ({ preset }) => <>{useDatabaseLabel(presetSummary(preset).databaseId).label}</>
 
 const columns: ListColumn<Deployment>[] = [
     { key: 'name', label: 'Name', render: (preset) => preset.name, detail: (preset) => preset.description, sortValue: (preset) => preset.name },
-    { key: 'group', label: 'Group', render: (preset) => preset.groupName, sortValue: (preset) => preset.groupName },
-    { key: 'version', label: 'DHIS2 version', render: (preset) => presetSummary(preset).version, sortValue: (preset) => presetSummary(preset).version },
-    { key: 'database', label: 'Database', render: (preset) => <PresetDatabase preset={preset} /> },
-    { key: 'storage', label: 'Storage', render: (preset) => presetSummary(preset).storage },
+    { key: 'group', label: 'Group', render: (preset) => preset.groupName, sortValue: (preset) => preset.groupName, breakAnywhere: true },
+    { key: 'version', label: 'DHIS2 version', render: (preset) => presetSummary(preset).version, sortValue: (preset) => presetSummary(preset).version, nowrap: true },
+    { key: 'database', label: 'Database', render: (preset) => <PresetDatabase preset={preset} />, breakAnywhere: true },
+    { key: 'storage', label: 'Storage', render: (preset) => presetSummary(preset).storage, nowrap: true },
     { key: 'companions', label: 'Companions', render: (preset) => presetSummary(preset).companions.join(', ') },
-    { key: 'owner', label: 'Owner', render: (preset) => preset.user?.email, sortValue: (preset) => preset.user?.email ?? '' },
-    { key: 'updated', label: 'Updated', render: (preset) => <Moment date={preset.updatedAt} fromNow />, sortValue: (preset) => preset.updatedAt },
+    { key: 'owner', label: 'Owner', render: (preset) => preset.user?.email, sortValue: (preset) => preset.user?.email ?? '', breakAnywhere: true },
+    { key: 'updated', label: 'Updated', render: (preset) => <Moment date={preset.updatedAt} fromNow />, sortValue: (preset) => preset.updatedAt, nowrap: true },
 ]
 
-const PresetRowActions: FC<{ preset: Deployment; onDeleted: () => void }> = ({ preset, onDeleted }) => {
+const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
     const navigate = useNavigate()
 
     return (
-        <>
-            <Button small secondary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-                Load
-            </Button>
-            <PresetActionsMenu preset={preset} onDeleted={onDeleted} />
-        </>
+        <Button small secondary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
+            Load
+        </Button>
     )
 }
 
 export const PresetsList: FC = () => {
-    const [{ data: presets, loading, error }, refetch] = useAuthAxios<Deployment[]>('/deployments/presets', { useCache: false })
+    const [{ data: presets, loading, error }] = useAuthAxios<Deployment[]>('/deployments/presets', { useCache: false })
     const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyPresets')
     const shown = presets?.filter((preset) => isShown(preset.user))
 
@@ -49,13 +45,13 @@ export const PresetsList: FC = () => {
             rows={shown}
             rowKey={(preset) => preset.id}
             rowHref={(preset) => `/presets/${preset.id}`}
-            renderRowActions={(preset) => <PresetRowActions preset={preset} onDeleted={() => void refetch()} />}
+            renderRowActions={(preset) => <LoadButton preset={preset} />}
             loading={loading}
             error={error ? { title: 'Could not fetch the presets', description: error.message } : undefined}
             empty={
                 onlyMine && presets?.length
-                    ? { title: 'None of the presets are yours', description: 'Turn off "Show only my presets" to see everyone\'s.' }
-                    : { title: 'No presets yet', description: 'Save a preset from the arrow next to Create instance on the new instance form.' }
+                    ? { title: 'None of the presets are yours', action: <Button onClick={() => setOnlyMine(false)}>Show everyone’s</Button> }
+                    : { title: 'No presets', description: 'Presets are saved from the new instance form.' }
             }
         />
     )

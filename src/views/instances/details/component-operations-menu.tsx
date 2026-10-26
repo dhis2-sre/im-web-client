@@ -7,14 +7,6 @@ import { grafanaLogsUrl } from '../../../utils/grafana-logs.ts'
 import { LogModal } from './log-modal.tsx'
 import { SaveAsModal } from './save-as-modal.tsx'
 
-/* Operations this menu accounts for; every other advertised operation is shown disabled so
- * capabilities stay visible until they get an action here. restartReplica is deliberately not
- * surfaced in the UI, the API keeps it for scripting. databaseSave and filestoreBackup share the
- * one Backup item: the dump and the file store are written together and linked, so the component
- * advertising either capability offers the same backup. logs is offered on the replica rows only,
- * since a log belongs to one pod rather than to the component as a whole. */
-const handledOperations = ['restart', 'restartReplica', 'reset', 'databaseSave', 'filestoreBackup', 'logs']
-
 export const ComponentOperationsMenu: FC<{
     instanceId: number
     stackName: string
@@ -37,11 +29,11 @@ export const ComponentOperationsMenu: FC<{
     const act = (action: 'restart' | 'reset') => async () => {
         try {
             await execute({ url: `/instances/${instanceId}/${action}`, params: { selector: component.name } })
-            alert.success(`Successfully requested ${action} of component "${component.name}"`)
+            alert.success(`${action === 'restart' ? 'Restart' : 'Reset'} requested for ${component.name}`)
             onChanged()
         } catch (error) {
             console.error(error)
-            alert.error(`There was an error when requesting ${action} of component "${component.name}"`)
+            alert.error(`Couldn't ${action} ${component.name}`)
         }
     }
 
@@ -71,12 +63,9 @@ export const ComponentOperationsMenu: FC<{
                         },
                         onClick: act('reset'),
                     },
-                    backsUp && { label: 'Backup', onClick: () => setShowSaveAs(true) },
+                    backsUp && { label: 'Back up', onClick: () => setShowSaveAs(true) },
                     supports('logs') && replica && { label: 'Logs', onClick: () => setShowLog(true) },
                     grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
-                    ...component.supportedOperations
-                        .filter((operation) => !handledOperations.includes(operation))
-                        .map((operation) => ({ label: operation, disabled: true, onClick: () => {} })),
                 ]}
             />
         </>

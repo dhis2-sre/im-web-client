@@ -1,4 +1,3 @@
-import { IconCopy16, IconDelete16, IconDownload16, IconEdit16 } from '@dhis2/ui'
 import { useState } from 'react'
 import type { FC } from 'react'
 import { ActionsMenu, useActionAlert } from '../../components/index.ts'
@@ -25,18 +24,18 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void }
             link.remove()
         } catch (error) {
             console.error(error)
-            alert.error('Could not retrieve database UID')
+            alert.error(`Couldn't start the download of ${fullName}`)
         }
     }
 
     const remove = async () => {
         try {
             await deleteDatabase()
-            alert.success(`Successfully deleted ${fullName}`)
+            alert.success(`Deleted ${fullName}`)
             refetch()
         } catch (error) {
             console.error('Error deleting database:', error)
-            alert.error(`There was an error when deleting ${fullName}`)
+            alert.error(`Couldn't delete ${fullName}`)
         }
     }
 
@@ -45,12 +44,11 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void }
             <ActionsMenu
                 label={`Actions for ${database.name}`}
                 items={[
-                    { label: 'Download', icon: <IconDownload16 />, onClick: download },
-                    { label: 'Rename', icon: <IconEdit16 />, onClick: () => setModal('rename') },
-                    { label: 'Copy', icon: <IconCopy16 />, onClick: () => setModal('copy') },
+                    { label: 'Download', onClick: download },
+                    { label: 'Rename', onClick: () => setModal('rename') },
+                    { label: 'Copy', onClick: () => setModal('copy') },
                     {
                         label: 'Delete',
-                        icon: <IconDelete16 />,
                         destructive: true,
                         confirm: {
                             title: 'Delete database',

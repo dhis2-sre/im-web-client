@@ -1,21 +1,19 @@
 import { Button, FlyoutMenu, IconMore16, Layer, MenuItem, Popper } from '@dhis2/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { FC, ReactElement } from 'react'
+import type { FC } from 'react'
 import styles from './actions-menu.module.css'
 import { useConfirmedAction } from './use-confirmed-action.tsx'
 import type { ConfirmOptions } from './use-confirmed-action.tsx'
 
 export type ActionItem = {
     label: string
-    icon?: ReactElement
     /* What the item does. While a returned promise is pending the menu button shows it is busy. */
     onClick: () => void | Promise<unknown>
     /* Ask first. The action runs only once the dialog is accepted. */
     confirm?: ConfirmOptions
     destructive?: boolean
-    disabled?: boolean
-    /* Shown on hover; for a disabled item, say why it is disabled. */
-    title?: string
+    /* Why the item cannot be used right now, shown under its label. The item is disabled while set. */
+    unavailable?: string
 }
 
 type ActionsMenuProps = {
@@ -107,10 +105,18 @@ export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, busy, dataTest
                                 <MenuItem
                                     key={item.label}
                                     dense
-                                    icon={item.icon}
-                                    label={item.title ? <span title={item.title}>{item.label}</span> : item.label}
+                                    label={
+                                        item.unavailable ? (
+                                            <span className={styles.unavailable}>
+                                                {item.label}
+                                                <span className={styles.reason}>{item.unavailable}</span>
+                                            </span>
+                                        ) : (
+                                            item.label
+                                        )
+                                    }
                                     destructive={item.destructive}
-                                    disabled={item.disabled}
+                                    disabled={Boolean(item.unavailable)}
                                     onClick={() => select(item)}
                                 />
                             ))}

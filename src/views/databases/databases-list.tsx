@@ -1,4 +1,4 @@
-import { Checkbox, IconFileDocument24, IconFolder16, InputField } from '@dhis2/ui'
+import { Button, Checkbox, IconFolder16, InputField } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
 import type { FC } from 'react'
@@ -38,6 +38,7 @@ const fromDatabase =
     (row: DatabaseRow) =>
         row.database ? value(row.database) : fallback
 
+/* The description rides under the name, since most databases have none. */
 const columns: ListColumn<DatabaseRow>[] = [
     {
         key: 'name',
@@ -51,24 +52,18 @@ const columns: ListColumn<DatabaseRow>[] = [
                     {row.name}
                 </span>
             ),
+        detail: fromDatabase((db) => db.description, null),
         sortValue: (row) => row.name,
-        width: '22%',
-    },
-    {
-        key: 'description',
-        label: 'Description',
-        render: fromDatabase((db) => db.description, null),
-        sortValue: fromDatabase((db) => db.description ?? '', ''),
-        width: '16%',
+        breakAnywhere: true,
     },
     {
         key: 'size',
         label: 'Size',
         render: fromDatabase((db) => <span title={`${db.size.toLocaleString()} bytes`}>{prettyBytes(db.size)}</span>, null),
         sortValue: fromDatabase((db) => db.size ?? 0, 0),
-        width: '6rem',
+        nowrap: true,
     },
-    { key: 'url', label: 'URL', render: fromDatabase((db) => db.url, null), sortValue: fromDatabase((db) => db.url ?? '', '') },
+    { key: 'url', label: 'URL', render: fromDatabase((db) => db.url, null), sortValue: fromDatabase((db) => db.url ?? '', ''), breakAnywhere: true },
     {
         key: 'created',
         label: 'Created',
@@ -81,7 +76,7 @@ const columns: ListColumn<DatabaseRow>[] = [
             null
         ),
         sortValue: fromDatabase((db) => db.createdAt ?? '', ''),
-        width: '8rem',
+        nowrap: true,
     },
     {
         key: 'updated',
@@ -95,16 +90,16 @@ const columns: ListColumn<DatabaseRow>[] = [
             null
         ),
         sortValue: fromDatabase((db) => db.updatedAt ?? '', ''),
-        width: '8rem',
+        nowrap: true,
     },
-    { key: 'locked', label: 'Locked?', render: fromDatabase((db) => <Locked lock={db.lock} />, null), sortValue: fromDatabase((db) => Number(!!db.lock), 0), width: '6rem' },
     {
-        key: 'filestore',
-        label: 'FS',
-        render: fromDatabase((db) => db.filestoreId !== 0 && <IconFileDocument24 />, null),
+        key: 'files',
+        label: 'Files',
+        render: fromDatabase((db) => (db.filestoreId !== 0 ? 'Included' : null), null),
         sortValue: fromDatabase((db) => Number(!!db.filestoreId), 0),
-        width: '4rem',
+        nowrap: true,
     },
+    { key: 'lock', label: 'Lock', render: fromDatabase((db) => <Locked lock={db.lock} />, null), sortValue: fromDatabase((db) => Number(!!db.lock), 0) },
 ]
 
 /* The tree view's rows and breadcrumb for where the search parameters point: the groups at the top,
@@ -162,7 +157,14 @@ export const DatabasesList: FC = () => {
                 <>
                     <OnlyMineFilter label="Show only my databases" checked={onlyMine} onChange={setOnlyMine} />
                     <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
-                    <InputField placeholder="Search databases..." value={searchTerm} onChange={({ value }) => setSearchTerm(value ?? '')} dense className={styles.search} />
+                    <InputField
+                        aria-label="Search databases"
+                        placeholder="Search databases…"
+                        value={searchTerm}
+                        onChange={({ value }) => setSearchTerm(value ?? '')}
+                        dense
+                        className={styles.search}
+                    />
                 </>
             }
             above={treeState && <Breadcrumbs items={treeState.crumbs} />}
@@ -172,14 +174,25 @@ export const DatabasesList: FC = () => {
             rowKey={(row) => row.key}
             rowHref={(row) => row.href}
             renderRowActions={(row) => row.database && <DatabaseActionsMenu database={row.database} refetch={refresh} />}
-            rowActionsWidth="3.5rem"
             pinned={(row) => !row.database}
             loading={loading}
             error={error ? { title: 'Could not retrieve databases', description: error.message } : undefined}
             empty={
                 filtered && total > 0
-                    ? { title: 'No matching databases', description: 'Clear the search or turn off "Show only my databases" to see more.' }
-                    : { title: 'No databases', description: 'Upload one with Upload database.' }
+                    ? {
+                          title: 'No matching databases',
+                          action: (
+                              <Button
+                                  onClick={() => {
+                                      setSearchTerm('')
+                                      setOnlyMine(false)
+                                  }}
+                              >
+                                  Clear filters
+                              </Button>
+                          ),
+                      }
+                    : { title: 'No databases' }
             }
         />
     )

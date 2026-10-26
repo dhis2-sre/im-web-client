@@ -1,4 +1,3 @@
-import { IconClockHistory16, IconDelete16, IconEdit16, IconLaunch16, IconSave16, IconSync16 } from '@dhis2/ui'
 import { useState } from 'react'
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -6,7 +5,7 @@ import { ActionsMenu, useActionAlert } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { Deployment, DeploymentInstanceComponents } from '../../../types/index.ts'
-import { DEPLOYING_REFUSAL, isDeploying, refusalMessage } from '../../../utils/deploy-state.ts'
+import { isDeploying, refusalMessage } from '../../../utils/deploy-state.ts'
 import { SaveAsModal } from '../details/save-as-modal.tsx'
 
 // A backup needs one target, so unlike restart and reset this resolves the one instance that owns
@@ -52,22 +51,22 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
             for (const instance of instances) {
                 await execute({ url: `/instances/${instance.id}/${action}` })
             }
-            alert.success(`Successfully requested ${action} of "${name}"`)
+            alert.success(`${action === 'restart' ? 'Restart' : 'Reset'} requested for ${name}`)
             onChanged()
         } catch (error) {
             console.error(error)
-            alert.error(`There was an error when trying to ${action} "${name}"`)
+            alert.error(`Couldn't ${action} ${name}`)
         }
     }
 
     const remove = async () => {
         try {
             await executeDelete()
-            alert.success(`Successfully deleted instance "${name}"`)
+            alert.success(`Deleted ${name}`)
             onDeleted()
         } catch (error) {
             console.error(error)
-            alert.error(refusalMessage(error, `There was an error when deleting instance "${name}"`))
+            alert.error(refusalMessage(error, `Couldn't delete ${name}`))
         }
     }
 
@@ -84,36 +83,34 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                 items={[
                     includeEdit && {
                         label: 'Edit',
-                        icon: <IconEdit16 />,
-                        disabled: deploying,
-                        title: deploying ? DEPLOYING_REFUSAL : undefined,
+                        unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         onClick: () => navigate(`/instances/${deployment.id}/edit`),
                     },
                     pgAdmin && {
                         label: 'Open pgAdmin',
-                        icon: <IconLaunch16 />,
                         onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
                     },
-                    backupTarget && { label: 'Backup', icon: <IconSave16 />, onClick: () => setSavingAs(true) },
+                    backupTarget && { label: 'Back up', onClick: () => setSavingAs(true) },
                     {
                         label: 'Restart',
-                        icon: <IconSync16 />,
                         confirm: { title: 'Restart instance', message: `Restart every component of "${name}"?`, confirmLabel: 'Restart' },
                         onClick: actOnAll('restart'),
                     },
                     {
                         label: 'Reset',
-                        icon: <IconClockHistory16 />,
                         destructive: true,
-                        confirm: { title: 'Reset instance', message: `Reset every component of "${name}"?`, confirmLabel: 'Reset', destructive: true },
+                        confirm: {
+                            title: 'Reset instance',
+                            message: `Reset every component of "${name}"? Their data is replaced with the database the instance was deployed from, and they are restarted.`,
+                            confirmLabel: 'Reset',
+                            destructive: true,
+                        },
                         onClick: actOnAll('reset'),
                     },
                     {
                         label: 'Delete',
-                        icon: <IconDelete16 />,
                         destructive: true,
-                        disabled: deploying,
-                        title: deploying ? DEPLOYING_REFUSAL : undefined,
+                        unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         confirm: {
                             title: 'Delete instance',
                             message: (
@@ -123,7 +120,8 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                             ),
                             confirmLabel: 'Delete',
                             destructive: true,
-                            typed: { name, consequences: instances.map((instance) => `The ${instance.stackName} stack and its components`) },
+                            /* With one stack the instance is the stack, so listing it would only repeat the name. */
+                            typed: { name, consequences: instances.length > 1 ? instances.map((instance) => instance.stackName) : undefined },
                         },
                         onClick: remove,
                     },

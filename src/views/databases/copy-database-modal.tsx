@@ -86,11 +86,11 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
             await copyDatabase({
                 data: { group: selectedGroup, name: newName },
             })
-            alert.success(`Database "${currentName}" copied successfully.`)
+            alert.success(`Copied to ${newName}`)
             onComplete()
             onClose()
         } catch {
-            alert.error('There was a problem copying the database')
+            alert.error(`Couldn't copy ${currentName}`)
             onComplete()
             onClose()
         }

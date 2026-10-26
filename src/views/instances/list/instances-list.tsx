@@ -37,20 +37,20 @@ const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deplo
     )
 }
 
-/* Fixed widths, so the tables of the groups line up. Status holds a wrapping block of component tags
- * and takes what room the others leave. */
+/* Status holds a wrapping block of component tags, so it keeps a minimum width rather than being
+ * squeezed to nothing when the window narrows. */
 const columns: ListColumn<Deployment>[] = [
-    { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, width: '18%' },
-    { key: 'status', label: 'Status', render: () => <StatusCell /> },
-    { key: 'created', label: 'Created', render: (deployment) => <Moment date={deployment.createdAt} fromNow />, sortValue: (deployment) => deployment.createdAt, width: '9rem' },
-    { key: 'updated', label: 'Updated', render: (deployment) => <Moment date={deployment.updatedAt} fromNow />, sortValue: (deployment) => deployment.updatedAt, width: '9rem' },
-    { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, width: '15%' },
+    { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, breakAnywhere: true },
+    { key: 'status', label: 'Status', render: () => <StatusCell />, width: '12rem' },
+    { key: 'created', label: 'Created', render: (deployment) => <Moment date={deployment.createdAt} fromNow />, sortValue: (deployment) => deployment.createdAt, nowrap: true },
+    { key: 'updated', label: 'Updated', render: (deployment) => <Moment date={deployment.updatedAt} fromNow />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
+    { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, breakAnywhere: true },
     {
         key: 'expires',
         label: 'Expires',
         render: (deployment) => <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />,
         sortValue: (deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000,
-        width: '9rem',
+        nowrap: true,
     },
 ]
 
@@ -75,13 +75,12 @@ export const InstancesList: FC = () => {
             rowHref={(deployment) => `/instances/${deployment.id}/details`}
             rowScope={RowComponentsScope}
             renderRowActions={(deployment) => <RowActions deployment={deployment} refetch={refresh} />}
-            rowActionsWidth="8rem"
             loading={loading}
             error={error ? { title: 'Could not retrieve instances', description: error.message } : undefined}
             empty={
                 onlyMine && total > 0
-                    ? { title: 'None of the instances are yours', description: 'Turn off "Show only my instances" to see everyone\'s.' }
-                    : { title: 'No instances', description: 'Create one with New instance.' }
+                    ? { title: 'None of the instances are yours', action: <Button onClick={() => setOnlyMine(false)}>Show everyone’s</Button> }
+                    : { title: 'No instances' }
             }
         />
     )
