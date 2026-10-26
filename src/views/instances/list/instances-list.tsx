@@ -3,12 +3,13 @@ import { createContext, useContext } from 'react'
 import type { FC, ReactNode } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { ListPage, MomentExpiresFromNow, OnlyMineFilter } from '../../../components/index.ts'
+import { ListPage, OnlyMineFilter } from '../../../components/index.ts'
 import type { ListColumn } from '../../../components/index.ts'
 import { useLiveComponents } from '../../../hooks/index.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { DeploymentComponentTags } from './deployment-component-tags.tsx'
+import { ExpiresCell } from './expires-cell.tsx'
 import { InstanceActionsMenu } from './instance-actions-menu.tsx'
 import { OpenButton } from './open-button.tsx'
 import { useDeployments } from './use-deployments.ts'
@@ -45,7 +46,7 @@ const columns: ListColumn<Deployment>[] = [
     {
         key: 'expires',
         label: 'Expires',
-        render: (deployment) => <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />,
+        render: (deployment) => <ExpiresCell deployment={deployment} />,
         sortValue: (deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000,
         nowrap: true,
     },
