@@ -1,4 +1,4 @@
-import { Button, Checkbox, IconFolder16, InputField } from '@dhis2/ui'
+import { Button, Checkbox, IconFolder16, Input } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
 import type { FC } from 'react'
@@ -156,8 +156,10 @@ export const DatabasesList: FC = () => {
                 <>
                     <OnlyMineFilter label="Show only my databases" checked={onlyMine} onChange={setOnlyMine} />
                     <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
-                    <InputField
-                        aria-label="Search databases"
+                    {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
+                     * leave ariaLabel out, so it goes in by spread. */}
+                    <Input
+                        {...{ ariaLabel: 'Search databases' }}
                         placeholder="Search databases…"
                         value={searchTerm}
                         onChange={({ value }) => setSearchTerm(value ?? '')}
