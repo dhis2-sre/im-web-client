@@ -60,7 +60,7 @@ export const PresetsList: FC = () => {
             filters={
                 <>
                     <FilterFields>
-                        <SearchFilter label="Search presets" placeholder="Search name, owner or description…" value={searchTerm} onChange={(value) => setParam('q', value)} />
+                        <SearchFilter label="Search presets" value={searchTerm} onChange={(value) => setParam('q', value)} />
                         <GroupFilter groups={groupNames} selected={group} onChange={(value) => setParam('group', value ?? '')} />
                     </FilterFields>
                     <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />

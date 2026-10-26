@@ -101,7 +101,7 @@ export const InstanceFilterBar: FC<InstanceFilterBarProps> = ({ state, groupName
     return (
         <>
             <FilterFields>
-                <SearchFilter label="Search instances" placeholder="Search name, owner or description…" value={filters.search} onChange={(value) => set({ search: value })} />
+                <SearchFilter label="Search instances" value={filters.search} onChange={(value) => set({ search: value })} />
                 <GroupFilter groups={groupNames} selected={filters.group === 'all' ? null : filters.group} onChange={(value) => set({ group: value ?? 'all' })} />
                 <SingleSelect dense prefix="Status" selected={filters.status} onChange={({ selected }) => set({ status: selected as Filters['status'] })} className={styles.select}>
                     {STATUS_OPTIONS.map((option) => (

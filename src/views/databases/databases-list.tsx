@@ -177,7 +177,7 @@ export const DatabasesList: FC = () => {
             filters={
                 <>
                     <FilterFields>
-                        <SearchFilter label="Search databases" placeholder="Search databases…" value={searchTerm} onChange={setSearchTerm} />
+                        <SearchFilter label="Search databases" value={searchTerm} onChange={setSearchTerm} />
                         <GroupFilter groups={groupNames} selected={group} onChange={setGroup} />
                     </FilterFields>
                     <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
