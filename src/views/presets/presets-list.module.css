@@ -1,4 +1,0 @@
-/* A basis rather than a width: the input's own width: 100% outranks a plain class, but not a flex basis. */
-.search {
-    flex: 0 1 18rem;
-}

@@ -1,19 +1,17 @@
-import { Button, Input } from '@dhis2/ui'
+import { Button } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { ListPage, OnlyMineFilter, useOnlyMine, useSavedSearchParams } from '../../components/index.ts'
+import { FilterFields, GroupFilter, ListPage, OnlyMineFilter, SearchFilter, useOnlyMine, useSavedSearchParams } from '../../components/index.ts'
 import type { ListColumn } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
 import { presetMainInstance, presetSummary } from './preset-summary.ts'
-import styles from './presets-list.module.css'
 
 const PresetDatabase: FC<{ preset: Deployment }> = ({ preset }) => <>{useDatabaseLabel(presetSummary(preset).databaseId).label}</>
 
 const columns: ListColumn<Deployment>[] = [
     { key: 'name', label: 'Name', render: (preset) => preset.name, detail: (preset) => preset.description, sortValue: (preset) => preset.name },
-    { key: 'group', label: 'Group', render: (preset) => preset.groupName, sortValue: (preset) => preset.groupName, breakAnywhere: true },
     { key: 'version', label: 'DHIS2 version', render: (preset) => presetSummary(preset).version, sortValue: (preset) => presetSummary(preset).version, nowrap: true },
     { key: 'database', label: 'Database', render: (preset) => <PresetDatabase preset={preset} />, breakAnywhere: true },
     { key: 'storage', label: 'Storage', render: (preset) => presetSummary(preset).storage, nowrap: true },
@@ -35,52 +33,52 @@ const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
 export const PresetsList: FC = () => {
     const [{ data: presets, loading, error }] = useAuthAxios<Deployment[]>('/deployments/presets', { useCache: false })
     const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyPresets')
-    const { params, setParam } = useSavedSearchParams('presetFilters')
+    const { params, setParams, setParam } = useSavedSearchParams('presetFilters')
     const searchTerm = params.get('q') ?? ''
-    const setSearchTerm = (value: string) => setParam('q', value)
+    const group = params.get('group')
     const term = searchTerm.trim().toLowerCase()
+    const clearFilters = () => {
+        setParams(new URLSearchParams(), { replace: true })
+        setOnlyMine(false)
+    }
+
+    const groupNames = [...new Set(presets?.map((preset) => preset.groupName))].sort()
     const shown = presets?.filter(
-        (preset) => isShown(preset.user) && (!term || [preset.name, preset.user?.email, preset.description].some((text) => text?.toLowerCase().includes(term)))
+        (preset) =>
+            isShown(preset.user) &&
+            (!group || preset.groupName === group) &&
+            (!term || [preset.name, preset.user?.email, preset.description].some((text) => text?.toLowerCase().includes(term)))
     )
+    /* One section per group, as on the other lists, in the order of the group names. */
+    const groups =
+        presets &&
+        groupNames.map((name) => ({ key: name, title: name, rows: shown?.filter((preset) => preset.groupName === name) ?? [] })).filter((section) => section.rows.length > 0)
 
     return (
         <ListPage
             title="Presets"
             filters={
                 <>
-                    {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
-                     * leave ariaLabel out, so it goes in by spread. */}
-                    <Input
-                        dense
-                        {...{ ariaLabel: 'Search presets' }}
-                        placeholder="Search name, owner or description…"
-                        value={searchTerm}
-                        onChange={({ value }) => setSearchTerm(value ?? '')}
-                        className={styles.search}
-                    />
+                    <FilterFields>
+                        <SearchFilter label="Search presets" placeholder="Search name, owner or description…" value={searchTerm} onChange={(value) => setParam('q', value)} />
+                        <GroupFilter groups={groupNames} selected={group} onChange={(value) => setParam('group', value ?? '')} />
+                    </FilterFields>
                     <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
                 </>
             }
             columns={columns}
-            rows={shown}
+            groups={groups}
             rowKey={(preset) => preset.id}
             rowHref={(preset) => `/presets/${preset.id}`}
             renderRowActions={(preset) => <LoadButton preset={preset} />}
             loading={loading}
             error={error ? { title: 'Could not fetch the presets', description: error.message } : undefined}
             empty={
-                (onlyMine || term) && presets?.length
+                (onlyMine || term || group) && presets?.length
                     ? {
                           title: 'No matching presets',
                           action: (
-                              <Button
-                                  small
-                                  secondary
-                                  onClick={() => {
-                                      setSearchTerm('')
-                                      setOnlyMine(false)
-                                  }}
-                              >
+                              <Button small secondary onClick={clearFilters}>
                                   Clear filters
                               </Button>
                           ),
