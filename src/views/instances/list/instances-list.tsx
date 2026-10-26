@@ -38,11 +38,9 @@ const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deplo
     )
 }
 
-/* Status holds a wrapping block of component tags, so it keeps a minimum width rather than being
- * squeezed to nothing when the window narrows. */
 const columns: ListColumn<Deployment>[] = [
     { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, breakAnywhere: true },
-    { key: 'status', label: 'Status', render: () => <StatusCell />, width: '12rem' },
+    { key: 'status', label: 'Status', render: () => <StatusCell /> },
     {
         key: 'expires',
         label: 'Expires',

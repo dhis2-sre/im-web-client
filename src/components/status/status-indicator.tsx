@@ -18,6 +18,10 @@ const ICONS: Record<StatusTone, FC> = {
 }
 
 export const toneTagProps = (tone: StatusTone) => TAG_PROPS[tone]
+export const ToneIcon: FC<{ tone: StatusTone }> = ({ tone }) => {
+    const Icon = ICONS[tone]
+    return <Icon />
+}
 
 export const StatusIndicator: FC<{ status: Status }> = ({ status }) => {
     const Icon = ICONS[status.tone]
