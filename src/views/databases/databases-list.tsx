@@ -1,4 +1,4 @@
-import { Button, Checkbox, IconFolder16, Input } from '@dhis2/ui'
+import { Button, Checkbox, IconFolder16, Input, SingleSelect, SingleSelectOption } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
 import type { FC } from 'react'
@@ -167,7 +167,7 @@ const treeView = (
 }
 
 export const DatabasesList: FC = () => {
-    const { params, groups, total, error, loading, refetch, onlyMine, setOnlyMine, searchTerm, setSearchTerm } = useDatabases()
+    const { params, groups, groupNames, group, setGroup, clearFilters, total, error, loading, refetch, onlyMine, setOnlyMine, searchTerm, setSearchTerm } = useDatabases()
     const [tree, setTree] = useState<boolean>(() => localStorage.getItem(VIEW_MODE_KEY) === 'hierarchy')
     const refresh = () => void refetch()
 
@@ -176,8 +176,10 @@ export const DatabasesList: FC = () => {
         localStorage.setItem(VIEW_MODE_KEY, next ? 'hierarchy' : 'flat')
     }
 
-    const treeState = tree ? treeView(groups, { group: params.get('group'), path: params.get('path') ?? '', query: searchTerm }) : undefined
-    const filtered = onlyMine || searchTerm !== ''
+    const treeState = tree ? treeView(groups, { group, path: params.get('path') ?? '', query: searchTerm }) : undefined
+    const filtered = onlyMine || searchTerm !== '' || group !== null
+    /* The select lists every group, plus one a link names that isn't there, so it shows what filters. */
+    const groupOptions = group && !groupNames.includes(group) ? [...groupNames, group] : groupNames
 
     return (
         <ListPage
@@ -187,14 +189,28 @@ export const DatabasesList: FC = () => {
                 <>
                     {/* Input rather than InputField, which drops the accessible name. Its types lag the component and
                      * leave ariaLabel out, so it goes in by spread. */}
-                    <Input
-                        {...{ ariaLabel: 'Search databases' }}
-                        placeholder="Search databases…"
-                        value={searchTerm}
-                        onChange={({ value }) => setSearchTerm(value ?? '')}
-                        dense
-                        className={styles.search}
-                    />
+                    <div className={styles.fields}>
+                        <Input
+                            {...{ ariaLabel: 'Search databases' }}
+                            placeholder="Search databases…"
+                            value={searchTerm}
+                            onChange={({ value }) => setSearchTerm(value ?? '')}
+                            dense
+                            className={styles.search}
+                        />
+                        <SingleSelect
+                            dense
+                            prefix="Group"
+                            selected={group ?? 'all'}
+                            onChange={({ selected }) => setGroup(selected === 'all' ? null : selected)}
+                            className={styles.select}
+                        >
+                            <SingleSelectOption value="all" label="All" />
+                            {groupOptions.map((name) => (
+                                <SingleSelectOption key={name} value={name} label={name} />
+                            ))}
+                        </SingleSelect>
+                    </div>
                     <Checkbox dense checked={tree} label="Tree view" onChange={({ checked }) => toggleTree(checked)} />
                     <OnlyMineFilter checked={onlyMine} onChange={setOnlyMine} />
                 </>
@@ -202,7 +218,13 @@ export const DatabasesList: FC = () => {
             above={treeState && <Breadcrumbs items={treeState.crumbs} />}
             columns={columns}
             rows={treeState?.rows}
-            groups={treeState ? undefined : groups?.map((group) => ({ key: group.name, title: group.name, rows: group.databases.map((db) => databaseRow(db)) }))}
+            groups={
+                treeState
+                    ? undefined
+                    : groups
+                          ?.filter((candidate) => !group || candidate.name === group)
+                          .map((candidate) => ({ key: candidate.name, title: candidate.name, rows: candidate.databases.map((db) => databaseRow(db)) }))
+            }
             rowKey={(row) => row.key}
             rowHref={(row) => row.href}
             renderRowActions={(row) => row.database && <DatabaseActionsMenu database={row.database} refetch={refresh} />}
@@ -214,14 +236,7 @@ export const DatabasesList: FC = () => {
                     ? {
                           title: 'No matching databases',
                           action: (
-                              <Button
-                                  small
-                                  secondary
-                                  onClick={() => {
-                                      setSearchTerm('')
-                                      setOnlyMine(false)
-                                  }}
-                              >
+                              <Button small secondary onClick={clearFilters}>
                                   Clear filters
                               </Button>
                           ),
