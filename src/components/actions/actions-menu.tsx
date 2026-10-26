@@ -1,5 +1,5 @@
-import { Button, FlyoutMenu, IconMore16, Layer, MenuItem, Popper } from '@dhis2/ui'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Button, FlyoutMenu, IconMore16, Layer, MenuDivider, MenuItem, Popper } from '@dhis2/ui'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
 import styles from './actions-menu.module.css'
 import { useConfirmedAction } from './use-confirmed-action.tsx'
@@ -101,24 +101,27 @@ export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, busy, dataTest
                 <Layer onBackdropClick={() => setOpen(false)}>
                     <Popper reference={anchor} placement="bottom-end">
                         <FlyoutMenu dense closeMenu={close}>
-                            {visibleItems.map((item) => (
-                                <MenuItem
-                                    key={item.label}
-                                    dense
-                                    label={
-                                        item.unavailable ? (
-                                            <span className={styles.unavailable}>
-                                                {item.label}
-                                                <span className={styles.reason}>{item.unavailable}</span>
-                                            </span>
-                                        ) : (
-                                            item.label
-                                        )
-                                    }
-                                    destructive={item.destructive}
-                                    disabled={Boolean(item.unavailable)}
-                                    onClick={() => select(item)}
-                                />
+                            {/* A divider sets the destructive actions apart from the ones before them. */}
+                            {visibleItems.map((item, index) => (
+                                <Fragment key={item.label}>
+                                    {item.destructive && index > 0 && !visibleItems[index - 1].destructive && <MenuDivider dense />}
+                                    <MenuItem
+                                        dense
+                                        label={
+                                            item.unavailable ? (
+                                                <span className={styles.unavailable}>
+                                                    {item.label}
+                                                    <span className={styles.reason}>{item.unavailable}</span>
+                                                </span>
+                                            ) : (
+                                                item.label
+                                            )
+                                        }
+                                        destructive={item.destructive}
+                                        disabled={Boolean(item.unavailable)}
+                                        onClick={() => select(item)}
+                                    />
+                                </Fragment>
                             ))}
                         </FlyoutMenu>
                     </Popper>
