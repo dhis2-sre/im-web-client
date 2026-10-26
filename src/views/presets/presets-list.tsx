@@ -39,7 +39,6 @@ export const PresetsList: FC = () => {
     return (
         <ListPage
             title="Presets"
-            count={shown?.length}
             filters={<OnlyMineFilter label="Show only my presets" checked={onlyMine} onChange={setOnlyMine} />}
             columns={columns}
             rows={shown}

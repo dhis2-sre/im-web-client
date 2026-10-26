@@ -61,7 +61,7 @@ export const DeploymentDetails: FC = () => {
                     </Panel>
                     {deployment.instances?.length > 0 ? (
                         <>
-                            <Panel title="Stacks" count={deployment.instances.length} flush>
+                            <Panel title="Stacks" flush>
                                 <DeploymentInstancesList deployment={deployment} loading={loading} />
                             </Panel>
                             <DeploymentComponents deployment={deployment} components={components} />

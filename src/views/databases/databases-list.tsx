@@ -151,7 +151,6 @@ export const DatabasesList: FC = () => {
     return (
         <ListPage
             title="Databases"
-            count={groups?.reduce((sum, group) => sum + group.databases.length, 0)}
             actions={<UploadButton onComplete={refresh} />}
             filters={
                 <>

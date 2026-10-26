@@ -60,7 +60,6 @@ export const InstancesList: FC = () => {
     return (
         <ListPage
             title="Instances"
-            count={groups?.reduce((sum, group) => sum + group.deployments.length, 0)}
             actions={
                 <Button primary icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance

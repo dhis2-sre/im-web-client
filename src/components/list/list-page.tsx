@@ -29,7 +29,6 @@ type Sort = { key: string; direction: SortDirection }
 
 type ListPageProps<T> = {
     title: string
-    count?: number
     /* The page's primary action, such as a New button. */
     actions?: ReactNode
     /* The toolbar under the title: filters, toggles and search. */
@@ -156,7 +155,6 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                             <tr>
                                 <th colSpan={span} scope="rowgroup" className={styles.groupHeader}>
                                     {group.title}
-                                    <span className={styles.groupCount}> ({group.rows.length})</span>
                                 </th>
                             </tr>
                         )}
@@ -170,13 +168,13 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
     )
 }
 
-/* The scaffold of a list screen: a header with a count and the primary action, a toolbar for
+/* The scaffold of a list screen: a header with the title and the primary action, a toolbar for
  * filters, then the table, flat or split into groups by header rows. The body shows loading, error and
  * empty in place of the table while the header and toolbar stay put.
  *
  * Screens describe their columns and rows and never touch the table itself, so the table inside can
  * change, for example to DataGrid, without changing them. */
-export const ListPage = <T,>({ title, count, actions, filters, above, groups, rows, loading, error, empty, ...table }: ListPageProps<T>) => {
+export const ListPage = <T,>({ title, actions, filters, above, groups, rows, loading, error, empty, ...table }: ListPageProps<T>) => {
     const [sort, setSort] = useState<Sort>({ key: '', direction: 'default' })
     const hasData = groups !== undefined || rows !== undefined
     const total = groups ? groups.reduce((sum, group) => sum + group.rows.length, 0) : (rows?.length ?? 0)
@@ -207,7 +205,7 @@ export const ListPage = <T,>({ title, count, actions, filters, above, groups, ro
     }
 
     return (
-        <Page title={title} count={hasData ? count : undefined} actions={actions}>
+        <Page title={title} actions={actions}>
             {filters && <div className={styles.toolbar}>{filters}</div>}
             {above}
             {body()}

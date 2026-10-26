@@ -61,11 +61,6 @@
     color: var(--colors-grey900);
 }
 
-.groupCount {
-    font-weight: 400;
-    color: var(--colors-grey600);
-}
-
 .rowLink {
     color: var(--colors-blue700);
     font-weight: 500;
