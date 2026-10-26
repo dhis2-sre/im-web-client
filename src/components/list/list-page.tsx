@@ -20,8 +20,8 @@ export type ListColumn<T> = {
     breakAnywhere?: boolean
     /* Short values, such as dates and versions, stay on one line. */
     nowrap?: boolean
-    /* Figures, such as sizes, line up when right-aligned. */
-    align?: 'left' | 'right'
+    /* Figures, such as sizes, line up when right-aligned; a column of icons sits centred. */
+    align?: 'left' | 'center' | 'right'
 }
 
 export type ListGroup<T> = { key: string; title: string; rows: T[] }

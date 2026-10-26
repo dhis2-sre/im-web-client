@@ -7,9 +7,9 @@ import { Breadcrumbs, ListPage, OnlyMineFilter } from '../../components/index.ts
 import type { Crumb, ListColumn } from '../../components/index.ts'
 import type { Database, GroupsWithDatabases } from '../../types/index.ts'
 import { DatabaseActionsMenu } from './database-actions-menu.tsx'
+import { FilestoreMarker, LockMarker } from './database-markers.tsx'
 import { buildFlattenedList, buildTree, getNodeByPath } from './database-tree-utils.ts'
 import styles from './databases-list.module.css'
-import { Locked } from './locked.tsx'
 import { UploadButton } from './upload-button.tsx'
 import { useDatabases } from './use-databases.ts'
 
@@ -99,13 +99,21 @@ const columns: ListColumn<DatabaseRow>[] = [
         nowrap: true,
     },
     {
-        key: 'files',
+        key: 'filestore',
         label: 'Files',
-        render: fromDatabase((db) => (db.filestoreId !== 0 ? 'Included' : null), null),
+        render: fromDatabase((db) => (db.filestoreId ? <FilestoreMarker /> : null), null),
         sortValue: fromDatabase((db) => Number(!!db.filestoreId), 0),
         nowrap: true,
+        align: 'center',
     },
-    { key: 'lock', label: 'Lock', render: fromDatabase((db) => <Locked lock={db.lock} />, null), sortValue: fromDatabase((db) => Number(!!db.lock), 0) },
+    {
+        key: 'lock',
+        label: 'Locked',
+        render: fromDatabase((db) => (db.lock ? <LockMarker lock={db.lock} /> : null), null),
+        sortValue: fromDatabase((db) => Number(!!db.lock), 0),
+        nowrap: true,
+        align: 'center',
+    },
 ]
 
 /* The tree view's rows and breadcrumb for where the search parameters point: the groups at the top,
