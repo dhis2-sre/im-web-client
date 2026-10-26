@@ -19,7 +19,7 @@ export const GroupDetails: FC = () => {
             parent={{ label: 'Groups', to: '/groups' }}
             title={group?.name ?? name}
             actions={group && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
-            loading={loading}
+            loading={loading && !group}
             error={error ? { title: 'Could not fetch group details', description: error.message } : undefined}
         >
             <DataTable>

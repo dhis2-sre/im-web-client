@@ -25,7 +25,7 @@ export const UserDetails = () => {
                     </>
                 )
             }
-            loading={loading}
+            loading={loading && !user}
             error={error ? { title: 'Could not fetch user details', description: error.message } : undefined}
         >
             {user && (

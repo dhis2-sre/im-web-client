@@ -19,7 +19,7 @@ export const ClusterDetails: FC = () => {
             parent={{ label: 'Clusters', to: '/clusters' }}
             title={cluster?.name}
             actions={cluster && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
-            loading={loading}
+            loading={loading && !cluster}
             error={error ? { title: 'Could not fetch cluster details', description: error.message } : undefined}
         >
             <DataTable>
