@@ -3,7 +3,6 @@ import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { useSearchParams } from 'react-router-dom'
 import { Breadcrumbs, ListPage, OnlyMineFilter } from '../../components/index.ts'
 import type { Crumb, ListColumn } from '../../components/index.ts'
 import type { Database, GroupsWithDatabases } from '../../types/index.ts'
@@ -19,8 +18,12 @@ const VIEW_MODE_KEY = 'databaseViewMode'
 /* A row is a database, or in the tree view a folder: a group, or a path segment within one. */
 type DatabaseRow = { key: string; name: string; href: string; database?: Database }
 
-const treeHref = (group?: string, path?: string) => {
+/* Folder links keep the search, so opening a folder doesn't clear it. */
+const treeHref = (query: string, group?: string, path?: string) => {
     const params = new URLSearchParams()
+    if (query) {
+        params.set('q', query)
+    }
     if (group) {
         params.set('group', group)
     }
@@ -105,19 +108,19 @@ const columns: ListColumn<DatabaseRow>[] = [
 /* The tree view's rows and breadcrumb for where the search parameters point: the groups at the top,
  * then the folders and databases at a path within one group. The breadcrumb follows the parameters
  * alone, so it is in place while the rows load. */
-const treeView = (groups: GroupsWithDatabases[] | undefined, group: string | null, path: string): { crumbs: Crumb[]; rows?: DatabaseRow[] } => {
-    const root: Crumb = { label: 'Groups', to: treeHref() }
-    const groupRows = groups?.map((candidate): DatabaseRow => ({ key: `group-${candidate.name}`, name: candidate.name, href: treeHref(candidate.name) }))
+const treeView = (
+    groups: GroupsWithDatabases[] | undefined,
+    { group, path, query }: { group: string | null; path: string; query: string }
+): { crumbs: Crumb[]; rows?: DatabaseRow[] } => {
+    const href = (inGroup?: string, atPath?: string) => treeHref(query, inGroup, atPath)
+    const root: Crumb = { label: 'Groups', to: href() }
+    const groupRows = groups?.map((candidate): DatabaseRow => ({ key: `group-${candidate.name}`, name: candidate.name, href: href(candidate.name) }))
     if (!group) {
         return { crumbs: [root], rows: groupRows }
     }
 
     const segments = path.split('/').filter(Boolean)
-    const crumbs = [
-        root,
-        { label: group, to: treeHref(group) },
-        ...segments.map((segment, index) => ({ label: segment, to: treeHref(group, segments.slice(0, index + 1).join('/')) })),
-    ]
+    const crumbs = [root, { label: group, to: href(group) }, ...segments.map((segment, index) => ({ label: segment, to: href(group, segments.slice(0, index + 1).join('/')) }))]
     if (!groups) {
         return { crumbs }
     }
@@ -129,15 +132,14 @@ const treeView = (groups: GroupsWithDatabases[] | undefined, group: string | nul
 
     const node = getNodeByPath(buildTree(selected.databases), path)
     const rows = buildFlattenedList(node, { currentPath: path }).map(
-        (item): DatabaseRow => (item.database ? databaseRow(item.database, item.name) : { key: `folder-${item.path}`, name: item.name, href: treeHref(group, item.path) })
+        (item): DatabaseRow => (item.database ? databaseRow(item.database, item.name) : { key: `folder-${item.path}`, name: item.name, href: href(group, item.path) })
     )
     return { crumbs, rows }
 }
 
 export const DatabasesList: FC = () => {
-    const { groups, total, error, loading, refetch, onlyMine, setOnlyMine, searchTerm, setSearchTerm } = useDatabases()
+    const { params, groups, total, error, loading, refetch, onlyMine, setOnlyMine, searchTerm, setSearchTerm } = useDatabases()
     const [tree, setTree] = useState<boolean>(() => localStorage.getItem(VIEW_MODE_KEY) === 'hierarchy')
-    const [searchParams] = useSearchParams()
     const refresh = () => void refetch()
 
     const toggleTree = (next: boolean) => {
@@ -145,7 +147,7 @@ export const DatabasesList: FC = () => {
         localStorage.setItem(VIEW_MODE_KEY, next ? 'hierarchy' : 'flat')
     }
 
-    const treeState = tree ? treeView(groups, searchParams.get('group'), searchParams.get('path') ?? '') : undefined
+    const treeState = tree ? treeView(groups, { group: params.get('group'), path: params.get('path') ?? '', query: searchTerm }) : undefined
     const filtered = onlyMine || searchTerm !== ''
 
     return (

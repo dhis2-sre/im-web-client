@@ -1,9 +1,8 @@
 import { Button, Input } from '@dhis2/ui'
-import { useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { ListPage, OnlyMineFilter, useOnlyMine } from '../../components/index.ts'
+import { ListPage, OnlyMineFilter, useOnlyMine, useSavedSearchParams } from '../../components/index.ts'
 import type { ListColumn } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
@@ -36,7 +35,9 @@ const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
 export const PresetsList: FC = () => {
     const [{ data: presets, loading, error }] = useAuthAxios<Deployment[]>('/deployments/presets', { useCache: false })
     const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyPresets')
-    const [searchTerm, setSearchTerm] = useState('')
+    const { params, setParam } = useSavedSearchParams('presetFilters')
+    const searchTerm = params.get('q') ?? ''
+    const setSearchTerm = (value: string) => setParam('q', value)
     const term = searchTerm.trim().toLowerCase()
     const shown = presets?.filter(
         (preset) => isShown(preset.user) && (!term || [preset.name, preset.user?.email, preset.description].some((text) => text?.toLowerCase().includes(term)))

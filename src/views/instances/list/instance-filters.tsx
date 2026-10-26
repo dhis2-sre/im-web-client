@@ -1,8 +1,7 @@
 import { Button, Checkbox, Input, SingleSelect, SingleSelectOption } from '@dhis2/ui'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { FC } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { OnlyMineFilter, useOnlyMine } from '../../../components/index.ts'
+import { OnlyMineFilter, useOnlyMine, useSavedSearchParams } from '../../../components/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import type { DeploymentHealth } from './component-health.ts'
 import { isExpiringSoon } from './expires-cell.tsx'
@@ -27,26 +26,6 @@ const readFilters = (params: URLSearchParams): Filters => {
 const isDefault = (key: keyof Filters, value: Filters[keyof Filters]) =>
     value === '' || value === false || (key === 'group' && value === 'all') || (key === 'status' && value === 'all')
 
-/* The tab's last filters, so a plain link to the list (the sidebar, a breadcrumb) comes back to them.
- * Per tab rather than for good, so a filter doesn't quietly linger into another day's work. */
-const SAVED_FILTERS_KEY = 'instanceFilters'
-
-const readSavedFilters = () => {
-    try {
-        return sessionStorage.getItem(SAVED_FILTERS_KEY) ?? ''
-    } catch {
-        return ''
-    }
-}
-
-const saveFilters = (query: string) => {
-    try {
-        sessionStorage.setItem(SAVED_FILTERS_KEY, query)
-    } catch {
-        // Without storage the filters last only as long as the address, which is no reason to fail.
-    }
-}
-
 const STATUS_OPTIONS: { value: Filters['status']; label: string }[] = [
     { value: 'all', label: 'All' },
     { value: 'healthy', label: 'Healthy' },
@@ -54,29 +33,16 @@ const STATUS_OPTIONS: { value: Filters['status']; label: string }[] = [
     { value: 'pending', label: 'Pending' },
 ]
 
-/* The Instances list's filters, kept in the URL so they survive leaving the page and a filtered list can
- * be shared as a link. "Only mine" stays in the browser instead, since in a shared link it would mean
- * whoever opened it. */
+/* The Instances list's filters, kept in the URL and remembered for the tab (see useSavedSearchParams).
+ * "Only mine" stays in the browser instead, since in a shared link it would mean whoever opened it. */
 export const useInstanceFilters = () => {
-    const [params, setParams] = useSearchParams()
+    const { params, setParams } = useSavedSearchParams('instanceFilters')
     const filters = useMemo(() => readFilters(params), [params])
-
-    /* Arriving with no filters in the address brings back the tab's last ones, before the first paint so
-     * the unfiltered list never flashes. A link that names filters wins, and becomes the saved ones. */
-    useLayoutEffect(() => {
-        const saved = readSavedFilters()
-        if (params.size === 0 && saved) {
-            setParams(saved, { replace: true })
-        }
-        // Only on arrival: after that, an empty address means the filters were cleared.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    useEffect(() => saveFilters(params.toString()), [params])
     const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyInstances')
     // shortcut: the clock is read once when the list mounts, so "expiring soon" doesn't move while the page stays open; tick it if that matters.
     const [now] = useState(Date.now)
 
-    /* Replacing rather than pushing, so typing a search doesn't leave a history entry per letter. */
+    /* Replacing rather than pushing, like useSavedSearchParams' own setter, but several filters at once. */
     const set = useCallback(
         (change: Partial<Filters>) =>
             setParams(
