@@ -1,24 +1,14 @@
-import { LogoIconWhite, IconAdd16, Tooltip } from '@dhis2/ui'
+import { LogoIconWhite } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useCallback } from 'react'
-import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
 import styles from './layout.module.css'
 import { LogoutButton } from './logout-button.tsx'
 import { NotificationBell } from './notifications/notification-bell.tsx'
 
 export const Layout: FC = () => {
-    const navigate = useNavigate()
-    const { isAdministrator } = useAuth()
+    const { currentUser, isAdministrator } = useAuth()
     const location = useLocation()
-    const toNewDhis2Instance = useCallback(
-        (event) => {
-            event.stopPropagation()
-            event.preventDefault()
-            navigate('/instances/new')
-        },
-        [navigate]
-    )
 
     if (location.pathname === '/') {
         return <Navigate to="/instances" />
@@ -31,19 +21,16 @@ export const Layout: FC = () => {
                     <LogoIconWhite className={styles.logo} />
                     Instance Manager
                 </h1>
-                <nav className={styles.navlist}>
-                    <NavLink to="/instances">
-                        Instances
-                        <Tooltip content="Create new DHIS2 Core instance">
-                            <button onClick={toNewDhis2Instance} className={styles.toNewDhis2Instance}>
-                                <IconAdd16 />
-                            </button>
-                        </Tooltip>
-                    </NavLink>
+                {/* New instance lives on the Instances page as its primary action, not as a button nested inside this link. */}
+                <nav className={styles.navlist} aria-label="Main">
+                    {/* A lone heading over the only group labels nothing, so the groups are named only when there are two. */}
+                    {isAdministrator && <p className={styles.group}>Workspace</p>}
+                    <NavLink to="/instances">Instances</NavLink>
                     <NavLink to="/presets">Presets</NavLink>
                     <NavLink to="/databases">Databases</NavLink>
                     {isAdministrator && (
                         <>
+                            <p className={styles.group}>Administration</p>
                             <NavLink to="/stacks">Stacks</NavLink>
                             <NavLink to="/users">Users</NavLink>
                             <NavLink to="/groups">Groups</NavLink>
@@ -53,6 +40,14 @@ export const Layout: FC = () => {
                 </nav>
                 <div className={styles.navFooter}>
                     <NotificationBell />
+                    {currentUser?.email && (
+                        <p className={styles.identity} title={currentUser.email}>
+                            <span className={styles.avatar} aria-hidden="true">
+                                {currentUser.email.charAt(0).toUpperCase()}
+                            </span>
+                            <span className={styles.email}>{currentUser.email}</span>
+                        </p>
+                    )}
                     <LogoutButton />
                 </div>
             </div>

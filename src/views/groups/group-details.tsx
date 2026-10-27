@@ -1,21 +1,9 @@
-import {
-    Button,
-    Center,
-    CircularLoader,
-    DataTable,
-    DataTableBody as TableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead as TableHead,
-    DataTableRow,
-    IconCheckmark16,
-    NoticeBox,
-} from '@dhis2/ui'
+import { Button, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
 import Moment from 'react-moment'
 import { useParams } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/generated/models/Group.ts'
 import { EditGroupModal } from './edit-group-modal.tsx'
@@ -26,28 +14,14 @@ export const GroupDetails: FC = () => {
 
     const [{ data: group, loading, error }, refetch] = useAuthAxios<Group>(`/groups/${name}/details`, { useCache: false })
 
-    if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
-    }
-
-    if (error) {
-        return (
-            <NoticeBox error title="Could not fetch group details">
-                {error.message}
-            </NoticeBox>
-        )
-    }
-
     return (
-        <div>
-            <Heading title={group?.name ?? ''}>
-                <Button onClick={() => setShowEditModal(true)}>Edit</Button>
-            </Heading>
-
+        <Page
+            parent={{ label: 'Groups', to: '/groups' }}
+            title={group?.name ?? name}
+            actions={group && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
+            loading={loading && !group}
+            error={error ? { title: 'Could not fetch group details', description: error.message } : undefined}
+        >
             <DataTable>
                 <TableHead>
                     <DataTableRow>
@@ -97,6 +71,6 @@ export const GroupDetails: FC = () => {
                     onCancel={() => setShowEditModal(false)}
                 />
             )}
-        </div>
+        </Page>
     )
 }

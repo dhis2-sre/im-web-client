@@ -6,7 +6,7 @@ import type { FC } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ConfirmationModal, Heading } from '../../../components/index.ts'
+import { ConfirmationModal, Page } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
@@ -117,8 +117,7 @@ export const NewDhis2V2Instance: FC = () => {
     )
 
     return (
-        <>
-            <Heading title="Create a new DHIS2 Instance (v2)" />
+        <Page parent={{ label: 'Instances', to: '/instances' }} title="New instance">
             <Card className={styles.container}>
                 <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
@@ -153,6 +152,6 @@ export const NewDhis2V2Instance: FC = () => {
                     A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Replace it?
                 </ConfirmationModal>
             )}
-        </>
+        </Page>
     )
 }

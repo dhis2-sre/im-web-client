@@ -11,7 +11,7 @@ export const InstancesList: FC = () => {
 
     return (
         <div className={styles.wrapper}>
-            <Heading title="All instances">
+            <Heading title="Instances">
                 <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
                     New instance
                 </Button>

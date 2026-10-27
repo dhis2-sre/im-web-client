@@ -1,20 +1,9 @@
-import {
-    Button,
-    Center,
-    CircularLoader,
-    DataTable,
-    DataTableBody as TableBody,
-    DataTableCell,
-    DataTableColumnHeader,
-    DataTableHead as TableHead,
-    DataTableRow,
-    NoticeBox,
-} from '@dhis2/ui'
+import { Button, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
 import Moment from 'react-moment'
 import { Link, useParams } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
 import { EditClusterModal } from './edit-cluster-modal.tsx'
@@ -25,28 +14,14 @@ export const ClusterDetails: FC = () => {
 
     const [{ data: cluster, loading, error }, refetch] = useAuthAxios<Cluster>(`/clusters/${id}`, { useCache: false })
 
-    if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
-    }
-
-    if (error) {
-        return (
-            <NoticeBox error title="Could not fetch cluster details">
-                {error.message}
-            </NoticeBox>
-        )
-    }
-
     return (
-        <div>
-            <Heading title={cluster?.name ?? ''}>
-                <Button onClick={() => setShowEditModal(true)}>Edit</Button>
-            </Heading>
-
+        <Page
+            parent={{ label: 'Clusters', to: '/clusters' }}
+            title={cluster?.name}
+            actions={cluster && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
+            loading={loading && !cluster}
+            error={error ? { title: 'Could not fetch cluster details', description: error.message } : undefined}
+        >
             <DataTable>
                 <TableHead>
                     <DataTableRow>
@@ -91,6 +66,6 @@ export const ClusterDetails: FC = () => {
                     onCancel={() => setShowEditModal(false)}
                 />
             )}
-        </div>
+        </Page>
     )
 }

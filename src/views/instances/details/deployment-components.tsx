@@ -1,25 +1,18 @@
-import { CircularLoader } from '@dhis2/ui'
 import type { FC } from 'react'
+import { NonIdealState, Panel } from '../../../components/index.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import { Deployment } from '../../../types/index.ts'
 import { InstanceComponentsSection } from './instance-components-section.tsx'
-import styles from './instance-components.module.css'
 
 export const DeploymentComponents: FC<{ deployment: Deployment; components: LiveComponents }> = ({ deployment, components }) => {
     const { instances, loading, error, refetch } = components
 
     return (
-        <>
-            <h3 className={styles.heading}>Components</h3>
+        <Panel title="Components" flush>
             {/* The listing queries the cluster for every component of every instance, so it is slow
              * by nature; show that something is happening rather than nothing. */}
-            {loading && !instances && (
-                <div className={styles.loading} data-test="deployment-components-loading">
-                    <CircularLoader small />
-                    <span>Fetching components from the cluster...</span>
-                </div>
-            )}
-            {error && !loading && <p className={styles.empty}>Could not load components, is the backend up to date?</p>}
+            {loading && !instances && <NonIdealState variant="loading" title="Fetching components from the cluster…" dataTest="deployment-components-loading" />}
+            {error && !loading && <NonIdealState variant="error" title="Could not load components" description="Is the backend up to date?" />}
             {(instances ?? []).map((instanceComponents) => (
                 <InstanceComponentsSection
                     key={instanceComponents.instanceId}
@@ -28,6 +21,6 @@ export const DeploymentComponents: FC<{ deployment: Deployment; components: Live
                     onChanged={refetch}
                 />
             ))}
-        </>
+        </Panel>
     )
 }

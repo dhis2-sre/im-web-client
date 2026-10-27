@@ -1,8 +1,8 @@
-import { ButtonStrip, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tag } from '@dhis2/ui'
+import { ButtonStrip, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { MomentExpiresFromNow } from '../../../components/index.ts'
+import { deployStatus, MomentExpiresFromNow, StatusIndicator } from '../../../components/index.ts'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceComponents, DeploymentInstanceDeployState } from '../../../types/index.ts'
 import { isDeploying } from '../../../utils/deploy-state.ts'
@@ -20,20 +20,8 @@ import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
  * belongs to the deployment, so every stack in it goes at the same moment. */
 
 const DeployStatusCell: FC<{ instance: DeploymentInstance & DeploymentInstanceDeployState }> = ({ instance }) => {
-    if (instance.deployStatus === 'failed') {
-        return (
-            <span title={instance.deployError}>
-                <Tag negative>Failed</Tag>
-            </span>
-        )
-    }
-    if (instance.deployStatus === 'pending' || instance.deployStatus === 'deploying') {
-        return <Tag>Deploying</Tag>
-    }
-    if (instance.deployStatus === 'deployed') {
-        return <Tag positive>Deployed</Tag>
-    }
-    return null
+    const status = deployStatus(instance)
+    return status ? <StatusIndicator status={status} /> : null
 }
 
 export const DeploymentInstancesList: FC<{
