@@ -18,6 +18,16 @@ a:hover {
     color: var(--colors-blue800);
 }
 
+/* Text for screen readers only: a status a dot shows by colour, a heading the page shows by layout. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 /* @dhis2/ui CalendarInput's internal .calendar-wrapper element renders with
    `background-color: none`, so underlying page content bleeds through.
    Global override (not a CSS module) targeting the upstream class name. */

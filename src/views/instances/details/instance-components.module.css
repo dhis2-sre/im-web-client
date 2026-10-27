@@ -62,8 +62,8 @@
     background-color: var(--colors-grey100);
 }
 
-/* Replica names are generated ids, easier to compare character by character in the system's monospace. */
+/* Replica names are generated ids, easier to compare character by character in monospace. */
 .mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-    font-size: 13px;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
 }

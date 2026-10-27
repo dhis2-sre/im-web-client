@@ -20,7 +20,7 @@ export const ExpiresCell: FC<{ deployment: Deployment }> = ({ deployment }) => {
             {soon && (
                 <>
                     <span className={styles.dot} aria-hidden="true" />
-                    <span className={styles.visuallyHidden}>(expiring soon)</span>
+                    <span className="visually-hidden">(expiring soon)</span>
                 </>
             )}
         </span>

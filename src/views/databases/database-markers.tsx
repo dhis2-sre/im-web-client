@@ -12,7 +12,7 @@ const lockDescription = (lock: Lock) => `${lockHolder(lock)}${lock.instance?.gro
 const Marker: FC<{ label: string; children: ReactNode }> = ({ label, children }) => (
     <span className={styles.marker} title={label}>
         {children}
-        <span className={styles.visuallyHidden}>{label}</span>
+        <span className="visually-hidden">{label}</span>
     </span>
 )
 

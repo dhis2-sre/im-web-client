@@ -148,7 +148,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                         ))}
                         {renderRowActions && (
                             <DataTableColumnHeader width={rowActionsWidth}>
-                                <span className={styles.visuallyHidden}>Actions</span>
+                                <span className="visually-hidden">Actions</span>
                             </DataTableColumnHeader>
                         )}
                     </DataTableRow>

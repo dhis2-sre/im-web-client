@@ -8,15 +8,6 @@
     border-radius: 50%;
 }
 
-.visuallyHidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
 .positive {
     background: var(--colors-green600);
 }

@@ -10,6 +10,12 @@
     --text-lg: 16px;
     --text-xl: 24px;
 
+    /* Monospace, for generated ids and literal values that are compared character by
+     * character. The system's own face, a size under the text it sits in, since at the
+     * same size it reads larger. */
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    --text-mono: 13px;
+
     /* Spacing: the @dhis2/ui scale, set by <CssVariables spacers>.
      * --spacers-dp4, dp8, dp12, dp16, dp24, dp32, dp48, dp64 cover the app's needs. */
 

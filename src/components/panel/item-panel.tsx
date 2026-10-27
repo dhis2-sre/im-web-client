@@ -43,7 +43,7 @@ export const ItemPanelList: FC<{ title: string; hideTitle?: boolean; children: R
 
     return (
         <section className={styles.list} aria-labelledby={titleId}>
-            <h2 id={titleId} className={hideTitle ? styles.visuallyHidden : styles.listTitle}>
+            <h2 id={titleId} className={hideTitle ? 'visually-hidden' : styles.listTitle}>
                 {title}
             </h2>
             {children}
