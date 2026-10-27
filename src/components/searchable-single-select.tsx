@@ -106,7 +106,6 @@ export const SearchableSingleSelect = ({
                 <SingleSelectOption key={value} value={value} label={label} />
             ))}
 
-            {hasSelectedInOptionList && selected && <SingleSelectOption className={classes.invisibleOption} value={selected} label="" />}
             {error && <Error msg={error} onRetryClick={onRetryClick} />}
         </SingleSelect>
     )
