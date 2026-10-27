@@ -29,11 +29,11 @@ describe('replicaStatus', () => {
     })
 
     it('is negative for a failed replica', () => {
-        expect(replicaStatus(replica('Failed', false)).tone).toBe('negative')
+        expect(replicaStatus(replica('Failed', false))).toEqual({ label: 'Failed', tone: 'negative' })
     })
 
-    it('is neutral while pending', () => {
-        expect(replicaStatus(replica('Pending', false))).toEqual({ label: 'Pending (not ready)', tone: 'neutral' })
+    it('is neutral while pending, which says on its own that it is not ready', () => {
+        expect(replicaStatus(replica('Pending', false))).toEqual({ label: 'Pending', tone: 'neutral' })
     })
 })
 

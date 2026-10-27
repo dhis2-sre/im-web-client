@@ -22,10 +22,11 @@ export const deployStatus = ({ deployStatus: status, deployError }: DeploymentIn
 }
 
 /* One replica's health: a failed pod is negative, a running and ready pod is positive, and anything
- * in between, such as pending or not yet ready, is neutral. The deployments list and the components
- * table both read it from here, so they cannot disagree about a replica. */
+ * in between, such as pending or not yet ready, is neutral. Only a running pod says it is not ready,
+ * since no other phase ever is. The deployments list and the components table both read it from here,
+ * so they cannot disagree about a replica. */
 export const replicaStatus = (replica: InstanceComponentReplica): Status => {
-    const label = replica.ready ? replica.phase : `${replica.phase} (not ready)`
+    const label = replica.phase === 'Running' && !replica.ready ? 'Running (not ready)' : replica.phase
     if (replica.phase === 'Failed') {
         return { label, tone: 'negative' }
     }
