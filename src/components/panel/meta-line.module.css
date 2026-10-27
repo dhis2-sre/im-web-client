@@ -1,0 +1,11 @@
+.line {
+    overflow-wrap: anywhere;
+}
+
+.separator {
+    margin-inline: var(--spacers-dp8);
+}
+
+.item {
+    white-space: nowrap;
+}

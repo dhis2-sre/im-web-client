@@ -1,0 +1,70 @@
+/* Sized like a panel's header, since an item panel stands where a panel would. */
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacers-dp8) var(--spacers-dp16);
+    min-height: 32px;
+    padding: var(--spacers-dp12) var(--spacers-dp16);
+}
+
+.header:not(:last-child) {
+    border-bottom: 1px solid var(--colors-grey300);
+}
+
+.identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp4) var(--spacers-dp12);
+    min-width: 0;
+}
+
+.name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    --status-dot-size: 8px;
+}
+
+.title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
+    overflow-wrap: anywhere;
+}
+
+.meta {
+    font-size: var(--text-sm);
+    color: var(--colors-grey700);
+    overflow-wrap: anywhere;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8);
+}
+
+/* An item's tables are read down, many rows at a time, so they sit tighter than a page's main
+ * tables. [class] lifts this past the cells' styled-jsx padding. */
+.body td[class],
+.body th[class] {
+    padding-block: var(--spacers-dp8);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp12);
+}
+
+.listTitle {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
