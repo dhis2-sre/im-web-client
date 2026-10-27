@@ -18,6 +18,9 @@ type InstanceActionsMenuProps = {
     components?: DeploymentInstanceComponents[]
     /* Off where Edit is already a button of its own, as on the details page. */
     includeEdit?: boolean
+    /* Every action as a button instead of a menu, as on the details page. pgAdmin is left out there,
+     * since its stack has an Open of its own. */
+    buttons?: boolean
     onChanged: () => void
     onDeleted: () => void
 }
@@ -27,7 +30,7 @@ type InstanceActionsMenuProps = {
  * endpoints without a selector cover all of them. Instances are walked in the order the deployment
  * lists them, which is the order they were added, so a stack is acted on after whatever it depends
  * on. */
-export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, components, includeEdit = true, onChanged, onDeleted }) => {
+export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, components, includeEdit = true, buttons, onChanged, onDeleted }) => {
     const navigate = useNavigate()
     const alert = useActionAlert()
     const [savingAs, setSavingAs] = useState(false)
@@ -75,7 +78,6 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
         <>
             <ActionsMenu
                 label={`Actions for ${name}`}
-                busy={backupRunning}
                 dataTest="deployment-actions-menu-button"
                 items={[
                     includeEdit && {
@@ -83,19 +85,22 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                         unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         onClick: () => navigate(`/instances/${deployment.id}/edit`),
                     },
-                    pgAdmin && {
-                        label: 'Open pgAdmin',
-                        onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
-                    },
-                    backupTarget && { label: 'Back up', onClick: () => setSavingAs(true) },
+                    pgAdmin &&
+                        !buttons && {
+                            label: 'Open pgAdmin',
+                            onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
+                        },
+                    backupTarget && { label: 'Back up', button: buttons, busy: backupRunning, onClick: () => setSavingAs(true) },
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
                     hasStacks && {
                         label: 'Restart',
+                        button: buttons,
                         confirm: { title: 'Restart instance', message: `Restart every component of "${name}"?`, confirmLabel: 'Restart' },
                         onClick: actOnAll('restart'),
                     },
                     hasStacks && {
                         label: 'Reset',
+                        button: buttons,
                         destructive: true,
                         confirm: {
                             title: 'Reset instance',
@@ -107,6 +112,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                     },
                     {
                         label: 'Delete',
+                        button: buttons,
                         destructive: true,
                         unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         confirm: {
