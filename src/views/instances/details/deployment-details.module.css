@@ -15,3 +15,6 @@
 .cardWrap > .card {
     width: 100%;
 }
+.toolbar {
+    margin-bottom: var(--spacers-dp8);
+}
