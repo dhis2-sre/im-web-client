@@ -2,12 +2,13 @@ import { Button } from '@dhis2/ui'
 import { FC, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { MetaLine, MomentExpiresFromNow, MomentFromNow, Page } from '../../../components/index.ts'
+import { MetaLine, MomentFromNow, Page } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment, DeploymentInstanceDeployState } from '../../../types/index.ts'
 import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
 import { deploymentStatus } from '../list/component-health.ts'
+import { ExpiresCell } from '../list/expires-cell.tsx'
 import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
 import { stackUrl } from '../list/open-button.tsx'
 import { DeploymentStacks } from './deployment-stacks.tsx'
@@ -20,9 +21,7 @@ const detailItems = (deployment: Deployment): ReactNode[] => {
     const dhis2 = deployment.instances?.find((instance) => instance.stackName === STACK_NAMES.DHIS2)
     const expired = new Date(deployment.createdAt).getTime() + deployment.ttl * 1000 < Date.now()
     return [
-        <>
-            {expired ? 'Expired' : 'Expires'} <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
-        </>,
+        <ExpiresCell key="expires" deployment={deployment} prefix={expired ? 'Expired' : 'Expires'} />,
         `Owned by ${deployment.user.email}`,
         <>
             Updated <MomentFromNow date={deployment.updatedAt} />

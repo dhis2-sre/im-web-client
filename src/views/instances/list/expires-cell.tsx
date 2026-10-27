@@ -7,8 +7,8 @@ import styles from './expires-cell.module.css'
 import { isExpiringSoon } from './instance-filter-rules.ts'
 
 /* Flags the viewer's own instances in their last day. The dot is there so the warning doesn't rest on
- * colour alone. */
-export const ExpiresCell: FC<{ deployment: Deployment }> = ({ deployment }) => {
+ * colour alone. A prefix, such as the details page's "Expires", is flagged along with the time. */
+export const ExpiresCell: FC<{ deployment: Deployment; prefix?: string }> = ({ deployment, prefix }) => {
     const { currentUser } = useAuth()
     // shortcut: the clock is read once when the cell mounts, so a list left open doesn't turn amber until it remounts; tick it if that matters.
     const [now] = useState(Date.now)
@@ -16,6 +16,7 @@ export const ExpiresCell: FC<{ deployment: Deployment }> = ({ deployment }) => {
 
     return (
         <span className={soon ? styles.expiringSoon : undefined}>
+            {prefix && `${prefix} `}
             <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
             {soon && (
                 <>
