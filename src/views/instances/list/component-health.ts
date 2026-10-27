@@ -1,6 +1,6 @@
-import { replicaStatus } from '../../../components/status/statuses.ts'
+import { deployStatus, replicaStatus } from '../../../components/status/statuses.ts'
 import type { Status } from '../../../components/status/statuses.ts'
-import type { DeploymentInstanceComponents } from '../../../types/index.ts'
+import type { DeploymentInstanceComponents, DeploymentInstanceDeployState } from '../../../types/index.ts'
 
 /* The label carries the stack because the row flattens every instance of the deployment, where a bare
  * component name is ambiguous: a dhis2-v2 instance alongside a chap one has two components called db.
@@ -38,4 +38,22 @@ export const deploymentHealth = (instances: DeploymentInstanceComponents[]): Dep
         return 'pending'
     }
     return 'healthy'
+}
+
+const HEALTH_STATUS: Record<DeploymentHealth, Status> = {
+    healthy: { label: 'Healthy', tone: 'positive' },
+    errors: { label: 'Has errors', tone: 'negative' },
+    pending: { label: 'Pending', tone: 'neutral' },
+}
+
+/* The deployment as a whole, for the tag beside its name. A failed or running deploy comes first,
+ * since the components cannot explain it; otherwise it is the components' health, in the words of
+ * the list's status filter. Nothing while the components are still being asked, or with no stacks. */
+export const deploymentStatus = (stacks: DeploymentInstanceDeployState[], components: DeploymentInstanceComponents[] | undefined): Status | undefined => {
+    const deploys = stacks.map(deployStatus)
+    const deploy = deploys.find((status) => status?.tone === 'negative') ?? deploys.find((status) => status?.tone === 'progress')
+    if (deploy) {
+        return deploy
+    }
+    return stacks.length > 0 && components ? HEALTH_STATUS[deploymentHealth(components)] : undefined
 }
