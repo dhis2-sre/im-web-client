@@ -23,8 +23,10 @@ jobs:
         steps:
             - uses: actions/checkout@v7
 
-            # Mirrors API_URL resolution in im-build-test-deploy.yaml: prefer matching feature env, fall back to dev.
+            # Use the feature env API only when an im-manager pull request on the same branch deploys it, otherwise dev.
             - name: Resolve API URL
+              env:
+                  GH_TOKEN: ${{ github.token }}
               run: |
                   if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
                       echo "API_URL=${{ inputs.api_url }}" >> $GITHUB_ENV
@@ -32,13 +34,15 @@ jobs:
                   fi
                   API_URL="https://api.im-dev.dhis2.org"
                   if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-                      SLUG=${GITHUB_HEAD_REF,,}
-                      SLUG=${SLUG//[^[:alnum:]]/-}
-                      SLUG=${SLUG::25}
-                      SLUG=${SLUG%-}
-                      CANDIDATE="https://${SLUG}.api.im-feat.dhis2.org"
-                      if [[ "$(curl -sSL -w %{http_code} -o /dev/null $CANDIDATE/health)" == "200" ]]; then
-                          API_URL="$CANDIDATE"
+                      PAIRED=$(gh api "repos/dhis2-sre/im-manager/pulls?state=open&head=dhis2-sre:$GITHUB_HEAD_REF" \
+                          --jq '[.[] | select(any(.labels[].name; . == "deploy"))] | length')
+                      if [[ "$PAIRED" -gt 0 ]]; then
+                          SLUG=${GITHUB_HEAD_REF,,}
+                          SLUG=${SLUG//[^[:alnum:]]/-}
+                          SLUG=${SLUG::25}
+                          SLUG=${SLUG%-}
+                          API_URL="https://${SLUG}.api.im-feat.dhis2.org"
+                          timeout 10m bash -c "until curl -sf $API_URL/health; do sleep 10; done"
                       fi
                   fi
                   echo "API_URL=$API_URL" >> $GITHUB_ENV
