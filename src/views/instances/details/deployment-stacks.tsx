@@ -4,13 +4,15 @@ import { deployStatus, ItemPanel, ItemPanelList, NonIdealState, Panel } from '..
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceDeployState } from '../../../types/index.ts'
+import { deploymentStatus } from '../list/component-health.ts'
 import { OpenButton } from '../list/open-button.tsx'
 import { InstanceComponentsSection } from './instance-components-section.tsx'
 
-/* The stacks a deployment is made of, each with its components inside it. The tag on a stack says
- * how its last deploy went, which its components cannot: a stack that failed to deploy has none to
- * show. Whether they are healthy now is the components table's to say, down to the replica. Open
- * resolves the stack's own address; what acts on the whole deployment is in the page header. */
+/* The stacks a deployment is made of, each with its components inside it. The dot on a stack is the
+ * same judgement as the one beside the page title, for that stack alone: a failed or running deploy
+ * first, since its components cannot explain it, otherwise their health now, so a deployed stack
+ * with a crashing component is not green. Until the components arrive it says how the deploy went.
+ * Open resolves the stack's own address; what acts on the whole deployment is in the page header. */
 export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComponents }> = ({ deployment, components }) => {
     const { instances, loading, error, refetch } = components
     const stacks = (deployment.instances ?? []) as (DeploymentInstance & DeploymentInstanceDeployState)[]
@@ -31,7 +33,7 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
                     <ItemPanel
                         key={stack.id}
                         title={stack.stackName}
-                        status={deployStatus(stack)}
+                        status={deploymentStatus([stack], live && [live]) ?? deployStatus(stack)}
                         meta={[
                             <>
                                 Created <Moment date={stack.createdAt} fromNow />
