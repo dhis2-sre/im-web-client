@@ -5,14 +5,15 @@ import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceDeployState } from '../../../types/index.ts'
 import { deploymentStatus } from '../list/component-health.ts'
-import { OpenButton } from '../list/open-button.tsx'
+import { stackUrl } from '../list/open-button.tsx'
 import { InstanceComponentsSection } from './instance-components-section.tsx'
+import { InstanceUrl } from './instance-url.tsx'
 
 /* The stacks a deployment is made of, each with its components inside it. The dot on a stack is the
  * same judgement as the one beside the page title, for that stack alone: a failed or running deploy
  * first, since its components cannot explain it, otherwise their health now, so a deployed stack
  * with a crashing component is not green. Until the components arrive it says how the deploy went.
- * Open resolves the stack's own address; what acts on the whole deployment is in the page header. */
+ * A stack that serves a page gets its own address; what acts on the whole deployment is in the page header. */
 export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComponents }> = ({ deployment, components }) => {
     const { instances, loading, error, refetch } = components
     const stacks = (deployment.instances ?? []) as (DeploymentInstance & DeploymentInstanceDeployState)[]
@@ -41,8 +42,10 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
                             <>
                                 Updated <Moment date={stack.updatedAt} fromNow />
                             </>,
+                            ...(VIEWABLE_INSTANCE_TYPES.includes(stack.stackName) && deployment.group?.hostname
+                                ? [<InstanceUrl key="url" url={stackUrl(deployment.group, stack.name, stack.stackName)} />]
+                                : []),
                         ]}
-                        actions={VIEWABLE_INSTANCE_TYPES.includes(stack.stackName) && <OpenButton group={deployment.group} name={stack.name} stackName={stack.stackName} />}
                     >
                         {live ? (
                             <InstanceComponentsSection instanceComponents={live} instance={stack} onChanged={refetch} />
