@@ -14,8 +14,8 @@ import type { Deployment } from '../../../types/index.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import { validateDnsLabel } from '../fields/validate-dns-label.ts'
 import styles from '../styles.module.css'
-import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
+import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 import { PresetPicker } from './preset-picker.tsx'
 
 const SUCCESS_OPTIONS = { success: true }
