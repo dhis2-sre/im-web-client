@@ -1,4 +1,7 @@
+/* Clips its contents to its rounded corners, which a flush table's square cells would otherwise paint
+ * over. clip rather than hidden, so the panel does not become a scroll container. */
 .panel {
+    overflow: clip;
     background-color: var(--colors-white);
     border: 1px solid var(--colors-grey300);
     border-radius: 4px;
