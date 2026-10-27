@@ -32,7 +32,9 @@ export const ComponentDetailsDrawer: FC<{ stackName: string; component: Instance
                         <DataTableRow>
                             <DataTableColumnHeader>Replica</DataTableColumnHeader>
                             <DataTableColumnHeader>Status</DataTableColumnHeader>
-                            <DataTableColumnHeader align="right">Restarts</DataTableColumnHeader>
+                            <DataTableColumnHeader align="right" className="header-end">
+                                Restarts
+                            </DataTableColumnHeader>
                             <DataTableColumnHeader>Created</DataTableColumnHeader>
                         </DataTableRow>
                     </DataTableHead>

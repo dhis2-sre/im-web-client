@@ -26,6 +26,9 @@ export type ListColumn<T> = {
 
 export type ListGroup<T> = { key: string; title: string; rows: T[] }
 
+/* Global classes in index.css that line a header's label up with its column; see there for why. */
+const HEADER_ALIGN = { center: 'header-center', right: 'header-end' }
+
 type SortDirection = 'default' | 'asc' | 'desc'
 type Sort = { key: string; direction: SortDirection }
 
@@ -140,6 +143,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                                 name={column.key}
                                 width={column.width}
                                 align={column.align}
+                                className={column.align && column.align !== 'left' ? HEADER_ALIGN[column.align] : undefined}
                                 sortDirection={column.sortValue ? (sort.key === column.key ? sort.direction : 'default') : undefined}
                                 onSortIconClick={column.sortValue ? ({ name, direction }) => onSort({ key: name, direction }) : undefined}
                             >

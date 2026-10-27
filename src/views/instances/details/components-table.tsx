@@ -47,7 +47,9 @@ export const ComponentsTable: FC<{
                         <DataTableColumnHeader>Component</DataTableColumnHeader>
                         <DataTableColumnHeader>Status</DataTableColumnHeader>
                         <DataTableColumnHeader>Replica</DataTableColumnHeader>
-                        <DataTableColumnHeader align="right">Restarts</DataTableColumnHeader>
+                        <DataTableColumnHeader align="right" className="header-end">
+                            Restarts
+                        </DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader />
                     </DataTableRow>

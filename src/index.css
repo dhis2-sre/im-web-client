@@ -34,3 +34,13 @@ a:hover {
 .calendar-wrapper {
     background-color: var(--colors-white);
 }
+
+/* @dhis2/ui's DataTableColumnHeader justifies a .label it never renders, so its align prop moves
+ * the cell but leaves the label at its start. A header given one of these as well follows it. */
+th.header-center span.top {
+    justify-content: center;
+}
+
+th.header-end span.top {
+    justify-content: flex-end;
+}
