@@ -55,8 +55,22 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, parent, status, descrip
             )}
             <div className={band ? `${styles.titleRow} ${styles.strip} ${styles.pinned}` : styles.titleRow}>
                 <div className={styles.heading}>
-                    {title && <h1 className={`${styles.title}${arrival}`}>{title}</h1>}
-                    {status && <StatusDot status={status} />}
+                    {/* The dot sits inside the title, held to its last word by a no-break space, so a title
+                     * that wraps keeps it at the end of its last line rather than out at the far edge of
+                     * the row. The space also parts the title from the dot's label for screen readers. */}
+                    {title && (
+                        <h1 className={`${styles.title}${arrival}`}>
+                            {title}
+                            {status && (
+                                <>
+                                    {'\u00a0'}
+                                    <span className={styles.titleDot}>
+                                        <StatusDot status={status} />
+                                    </span>
+                                </>
+                            )}
+                        </h1>
+                    )}
                 </div>
                 {actions && <div className={styles.actions}>{actions}</div>}
             </div>

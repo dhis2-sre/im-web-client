@@ -68,6 +68,12 @@
     overflow-wrap: anywhere;
 }
 
+.titleDot {
+    display: inline-flex;
+    margin-left: 2px;
+    vertical-align: middle;
+}
+
 .arrival {
     animation: fadeIn 150ms ease-out;
 }
