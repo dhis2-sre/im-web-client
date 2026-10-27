@@ -22,7 +22,7 @@ export const useGroupSelectHelpText = (groupName: string): string => {
     }
 
     if (loading) {
-        return 'Loading...'
+        return 'Loading…'
     }
 
     return `CPU ${resources.CPU}, Memory ${resources.Memory}${resources.Autoscaled ? ', autoscaled' : ''}`

@@ -46,7 +46,7 @@ export const ExtendTtlSelect = ({ deployment }: { deployment: Deployment }) => {
                 className={styles.field}
                 label={`Lifetime (${remainingLabel})`}
                 selected={selected}
-                placeholder="Pick a new lifetime..."
+                placeholder="Pick a new lifetime…"
                 onChange={({ selected: next }: { selected: string }) => handleSelect(next)}
                 helpText="How long this instance will run from now until automatic shutdown."
             >

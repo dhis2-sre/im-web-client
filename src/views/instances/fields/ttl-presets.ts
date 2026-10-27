@@ -2,7 +2,7 @@ export const HOUR_IN_SECONDS = 60 * 60
 export const DAY_IN_SECONDS = HOUR_IN_SECONDS * 24
 
 export const CUSTOM_VALUE = 'custom'
-export const CUSTOM_LABEL = 'Custom...'
+export const CUSTOM_LABEL = 'Custom…'
 
 export const DATE_FORMAT = 'YYYY-MM-DD'
 export const DATETIME_FORMAT = `${DATE_FORMAT} HH:mm`
