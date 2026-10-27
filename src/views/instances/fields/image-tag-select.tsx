@@ -1,10 +1,10 @@
-import { hasValue } from '@dhis2/ui'
+import { Help, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useField } from 'react-final-form'
 import classes from '../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect } from '../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG } from '../parameters.ts'
+import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG, PRIVATE_IMAGE_REPOSITORIES } from '../parameters.ts'
 import fieldClasses from './fields.module.css'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
@@ -31,7 +31,7 @@ const useImageTagField = (stackId: Dhis2StackName, parameterName: string) => {
     return { value, onChange, onBlur, invalid: meta.touched && meta.invalid, error: meta.touched ? (meta.error as string | undefined) : undefined }
 }
 
-const useIntegrationsOptions = (organization: string, repository: string, registry?: string) => {
+const useIntegrationsOptions = (organization: string, repository?: string, registry?: string) => {
     const payload = { url: '/integrations', method: 'POST', data: {} }
     const options = { manual: true, autoCatch: false, useCache: false }
     const [{ data }, refetch] = useAuthAxios(payload, options)
@@ -150,12 +150,15 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     const { value: imageValue, onChange: onImageChange, onBlur: onImageBlur, invalid, error } = useImageTagField(stackId, parameterName)
     const dynamicRepository = useRepositoryValue(stackId)
     const repository = fixedRepository ?? dynamicRepository
+    /* IM can't list or check the tags of a private repository, so the tag is taken as typed and a wrong one
+     * shows up as a failed image pull. */
+    const isPrivateRepository = PRIVATE_IMAGE_REPOSITORIES.has(repository)
     const resolvedOrganization = organization ?? 'dhis2'
     const { imageLoading, checkImageExists } = useCheckImageExists(repository, organization, registry)
     /* Tags typed in and confirmed against the registry, which the listing did not return. They are
      * verified against one repository, so they go when the repository does. */
     const [verifiedOptions, setVerifiedOptions] = useState<string[]>([])
-    const { images: loadedOptions, loading: tagsLoading } = useIntegrationsOptions(resolvedOrganization, repository, registry)
+    const { images: loadedOptions, loading: tagsLoading } = useIntegrationsOptions(resolvedOrganization, isPrivateRepository ? undefined : repository, registry)
 
     const [filteredOptions, setFilteredOptions] = useState<string[]>([])
     const [filtered, setFiltered] = useState(false)
@@ -194,6 +197,12 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
                 return
             }
 
+            if (isPrivateRepository) {
+                setFilteredOptions([tag])
+                setFiltered(true)
+                return
+            }
+
             const tagExists = await checkImageExists({ repository, tag })
 
             if (tagExists) {
@@ -206,7 +215,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
             setFilteredOptions([])
             setFiltered(true)
         },
-        [options, checkImageExists, repository]
+        [options, checkImageExists, repository, isPrivateRepository]
     )
 
     const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
@@ -229,6 +238,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
                 onFilterChange={filterOptions}
             />
             {error && <div className={fieldClasses.validationError}>{error}</div>}
+            {isPrivateRepository && <Help>Tags of private images are not listed, type the exact tag</Help>}
         </div>
     )
 }
