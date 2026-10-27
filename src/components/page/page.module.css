@@ -149,6 +149,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    /* 20px under the title row, less the pinned row's own bottom padding. */
+    padding-top: calc(20px - var(--bar-padding));
     padding-bottom: var(--spacers-dp16);
     border-bottom: 1px solid var(--colors-grey400);
 }
