@@ -36,13 +36,14 @@ export const ItemPanel: FC<{ title: string; status?: Status; meta?: ReactNode[];
 )
 
 /* A titled section of item panels. The items draw their own frames, so the section adds none: a
- * frame around them would only box the boxes. */
-export const ItemPanelList: FC<{ title: string; children: ReactNode }> = ({ title, children }) => {
+ * frame around them would only box the boxes. Where the page has nothing else to tell them apart
+ * from, the title can be hidden, staying for screen readers as the heading over the items' own. */
+export const ItemPanelList: FC<{ title: string; hideTitle?: boolean; children: ReactNode }> = ({ title, hideTitle, children }) => {
     const titleId = useId()
 
     return (
         <section className={styles.list} aria-labelledby={titleId}>
-            <h2 id={titleId} className={styles.listTitle}>
+            <h2 id={titleId} className={hideTitle ? styles.visuallyHidden : styles.listTitle}>
                 {title}
             </h2>
             {children}

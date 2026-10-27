@@ -27,7 +27,7 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
     }
 
     return (
-        <ItemPanelList title="Stacks">
+        <ItemPanelList title="Stacks" hideTitle>
             {stacks.map((stack) => {
                 const live = instances?.find((candidate) => candidate.instanceId === stack.id)
                 return (
