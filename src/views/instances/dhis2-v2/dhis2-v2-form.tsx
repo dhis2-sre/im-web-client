@@ -80,7 +80,7 @@ export const Dhis2V2Form: FC<{
             ...currentValues,
             [STACK_ID]: {
                 ...initialParameterValues,
-                ...(currentValues[STACK_ID] ?? {}),
+                ...currentValues[STACK_ID],
             },
         })
     }, [form, initialParameterValues, isEdit])

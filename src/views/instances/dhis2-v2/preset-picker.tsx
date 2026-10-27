@@ -6,9 +6,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-final-form'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { Deployment } from '../../../types/index.ts'
+import { usePresetSummary } from '../../presets/preset-summary.ts'
 import fieldStyles from '../fields/fields.module.css'
 import styles from '../styles.module.css'
-import { usePresetSummary } from '../../presets/preset-summary.ts'
 import { presetFormValues } from './preset-values.ts'
 
 const ERROR_OPTIONS = { critical: true }

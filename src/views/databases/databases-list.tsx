@@ -199,7 +199,7 @@ export const DatabasesList = () => {
                             <span style={{ marginLeft: '4px' }}>{item.name}</span>
                         </span>
                     </DataTableCell>
-                    <DataTableCell colSpan="9"></DataTableCell>
+                    <DataTableCell colSpan="9" />
                 </DataTableRow>
             )
         }
@@ -268,7 +268,7 @@ export const DatabasesList = () => {
                         FS {sortField === 'filestore' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
                     </span>
                 </DataTableColumnHeader>
-                <DataTableColumnHeader></DataTableColumnHeader>
+                <DataTableColumnHeader />
             </DataTableRow>
         </TableHead>
     )
@@ -296,7 +296,7 @@ export const DatabasesList = () => {
                                         <span style={{ marginLeft: '4px' }}>{group.name}</span>
                                     </span>
                                 </DataTableCell>
-                                <DataTableCell colSpan="9"></DataTableCell>
+                                <DataTableCell colSpan="9" />
                             </DataTableRow>
                         ))}
                     </TableBody>

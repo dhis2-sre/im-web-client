@@ -42,7 +42,7 @@ export const InstancesList: FC = () => {
                                 <DataTableColumnHeader>Updated</DataTableColumnHeader>
                                 <DataTableColumnHeader>Owner</DataTableColumnHeader>
                                 <DataTableColumnHeader>Expires</DataTableColumnHeader>
-                                <DataTableColumnHeader></DataTableColumnHeader>
+                                <DataTableColumnHeader />
                             </DataTableRow>
 
                             {group.deployments?.map((deployment) => (

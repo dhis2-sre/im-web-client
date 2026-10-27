@@ -1,0 +1,19 @@
+/* Design tokens for the app's own CSS. Colours, spacers, elevations and the
+ * @dhis2/ui layers come from <CssVariables> in app.tsx; this sheet adds what the
+ * library has no variable for and gives the scales one place to be read from.
+ * Nothing uses these yet: new and touched CSS should, instead of raw values. */
+:root {
+    /* Text: four sizes. Headings take --text-xl, body and table text --text-md. */
+    --text-sm: 12px;
+    --text-md: 14px;
+    --text-lg: 16px;
+    --text-xl: 20px;
+
+    /* Spacing: the @dhis2/ui scale, set by <CssVariables spacers>.
+     * --spacers-dp4, dp8, dp12, dp16, dp24, dp32, dp48, dp64 cover the app's needs. */
+
+    /* Stacking: below the library's own layers (--layers-applicationTop 2000,
+     * --layers-blocking 3000, --layers-alert 9999) so modals and alerts stay on top. */
+    --layers-sticky: 100;
+    --layers-popover: 1000;
+}

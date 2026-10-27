@@ -7,7 +7,7 @@ import styles from './deployment-summary.module.css'
 
 export const DeploymentSummary: FC<{ deployment: Deployment }> = ({ deployment }) => {
     return (
-        <div className={styles.wrapper}>
+        <div>
             <h2 className={styles.title}>{deployment.name}</h2>
             <div className={styles.row}>
                 <div className={styles.singleDetails}>

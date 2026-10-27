@@ -1,5 +1,4 @@
 import { Button, Card, CheckboxField, Help, InputField, LogoIcon } from '@dhis2/ui'
-import cx from 'classnames'
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
@@ -51,7 +50,6 @@ export const Login = () => {
                     disabled={isAuthenticating}
                 />
                 <CheckboxField
-                    className={cx(styles.field, styles.checkboxfield)}
                     name="rememberMe"
                     label="Remember me?"
                     checked={rememberMe}

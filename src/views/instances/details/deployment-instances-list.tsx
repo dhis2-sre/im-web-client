@@ -54,7 +54,7 @@ export const DeploymentInstancesList: FC<{
                     <DataTableColumnHeader>Created</DataTableColumnHeader>
                     <DataTableColumnHeader>Updated</DataTableColumnHeader>
                     <DataTableColumnHeader>Expires</DataTableColumnHeader>
-                    <DataTableColumnHeader></DataTableColumnHeader>
+                    <DataTableColumnHeader />
                 </DataTableRow>
             </DataTableHead>
             <DataTableBody loading={loading}>

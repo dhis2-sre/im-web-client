@@ -14,13 +14,11 @@ import {
     SingleSelectField,
     SingleSelectOption,
 } from '@dhis2/ui'
-import cx from 'classnames'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/generated/models/Cluster.ts'
 import { Group } from '../../types/generated/models/Group.ts'
-import styles from './groups-list.module.css'
 
 type EditGroupModalProps = {
     group: Group
@@ -66,11 +64,11 @@ export const EditGroupModal: FC<EditGroupModalProps> = ({ group, onComplete, onC
         <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>Edit group</ModalTitle>
             <ModalContent>
-                <InputField className={styles.field} label="Namespace" value={namespace} onChange={({ value }) => setNamespace(value)} required />
-                <InputField className={styles.field} label="Hostname" value={hostname} onChange={({ value }) => setHostname(value)} required />
-                <InputField className={styles.field} label="Description" value={description} onChange={({ value }) => setDescription(value)} required />
-                <CheckboxField className={cx(styles.field, styles.checkboxfield)} label="Deployable" checked={deployable} onChange={({ checked }) => setDeployable(checked)} />
-                <SingleSelectField className={styles.field} label="Cluster" selected={clusterId} onChange={({ selected }) => setClusterId(selected)} clearable>
+                <InputField label="Namespace" value={namespace} onChange={({ value }) => setNamespace(value)} required />
+                <InputField label="Hostname" value={hostname} onChange={({ value }) => setHostname(value)} required />
+                <InputField label="Description" value={description} onChange={({ value }) => setDescription(value)} required />
+                <CheckboxField label="Deployable" checked={deployable} onChange={({ checked }) => setDeployable(checked)} />
+                <SingleSelectField label="Cluster" selected={clusterId} onChange={({ selected }) => setClusterId(selected)} clearable>
                     {(clusters ?? []).map((cluster) => (
                         <SingleSelectOption key={cluster.id} label={cluster.name} value={String(cluster.id)} />
                     ))}

@@ -39,7 +39,7 @@ export const GroupsList: FC = () => {
                             <DataTableCell>{group.hostname}</DataTableCell>
                             <DataTableCell>{group.description}</DataTableCell>
                             <DataTableCell>{group.cluster.name}</DataTableCell>
-                            <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
+                            <DataTableCell>{group.deployable ? <IconCheckmark16 /> : null}</DataTableCell>
                             <DataTableCell>
                                 <Moment date={group.createdAt} fromNow />
                             </DataTableCell>
