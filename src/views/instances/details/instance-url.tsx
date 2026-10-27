@@ -1,10 +1,11 @@
-import { Button, IconCheckmark16, IconCopy16, IconLaunch16 } from '@dhis2/ui'
+import { IconCheckmark16, IconCopy16, IconLaunch16 } from '@dhis2/ui'
 import { useEffect, useState } from 'react'
 import type { FC } from 'react'
 import styles from './instance-url.module.css'
 
-/* An address to copy or open. The address itself is a link too, for anyone who expects it to be, and
- * is cut short with an ellipsis rather than wrapping; the copy and the tooltip keep it whole. */
+/* An address to copy or open: the address, a link itself, followed by quiet icons for copying it
+ * and opening it in a new tab. It is cut short with an ellipsis rather than wrapping; the copy
+ * and the tooltip keep it whole. */
 export const InstanceUrl: FC<{ url: string }> = ({ url }) => {
     const [copied, setCopied] = useState(false)
 
@@ -28,22 +29,18 @@ export const InstanceUrl: FC<{ url: string }> = ({ url }) => {
             <a className={styles.link} href={url} target="_blank" rel="noopener noreferrer" title={url}>
                 {url.replace(/^https:\/\//, '')}
             </a>
-            <Button
-                small
-                secondary
-                icon={copied ? <IconCheckmark16 /> : <IconCopy16 />}
+            <button
+                type="button"
+                className={`${styles.icon} ${copied ? styles.copied : ''}`}
                 aria-label={copied ? 'Copied' : 'Copy URL'}
                 title={copied ? 'Copied' : 'Copy URL'}
                 onClick={copy}
-            />
-            <Button
-                small
-                secondary
-                icon={<IconLaunch16 />}
-                aria-label="Open in a new tab"
-                title="Open in a new tab"
-                onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
-            />
+            >
+                {copied ? <IconCheckmark16 /> : <IconCopy16 />}
+            </button>
+            <a className={styles.icon} href={url} target="_blank" rel="noopener noreferrer" aria-label="Open in a new tab" title="Open in a new tab">
+                <IconLaunch16 />
+            </a>
         </span>
     )
 }
