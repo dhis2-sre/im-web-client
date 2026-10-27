@@ -1,5 +1,5 @@
 import { Button } from '@dhis2/ui'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import type { ReactNode } from 'react'
 import Moment from 'react-moment'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -12,6 +12,7 @@ import { deploymentStatus } from '../list/component-health.ts'
 import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
 import { stackUrl } from '../list/open-button.tsx'
 import { DeploymentStacks } from './deployment-stacks.tsx'
+import { ExtendLifetimeModal } from './extend-lifetime-modal.tsx'
 import { InstanceUrl } from './instance-url.tsx'
 
 /* When it goes away leads, since that is what people check most. DHIS2's address comes last with its
@@ -40,6 +41,7 @@ export const DeploymentDetails: FC = () => {
      * cluster about every component of every instance, and the actions need it to know whether
      * anything can be backed up. */
     const components = useLiveComponents(Number(id))
+    const [extending, setExtending] = useState(false)
 
     return (
         <Page
@@ -54,6 +56,11 @@ export const DeploymentDetails: FC = () => {
                         <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
                             <Button small primary disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
                                 Edit
+                            </Button>
+                        </span>
+                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                            <Button small disabled={isDeploying(deployment)} onClick={() => setExtending(true)}>
+                                Extend lifetime
                             </Button>
                         </span>
                         <InstanceActionsMenu
@@ -72,6 +79,7 @@ export const DeploymentDetails: FC = () => {
             summary={deployment && <MetaLine items={detailItems(deployment)} />}
         >
             {deployment && <DeploymentStacks deployment={deployment} components={components} />}
+            {deployment && extending && <ExtendLifetimeModal deployment={deployment} onClose={() => setExtending(false)} onExtended={() => void refetch()} />}
         </Page>
     )
 }
