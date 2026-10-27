@@ -1,6 +1,5 @@
 import type { FC } from 'react'
-import Moment from 'react-moment'
-import { deployStatus, ItemPanel, ItemPanelList, NonIdealState, Panel } from '../../../components/index.ts'
+import { deployStatus, ItemPanel, ItemPanelList, MomentFromNow, NonIdealState, Panel } from '../../../components/index.ts'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceDeployState } from '../../../types/index.ts'
@@ -37,10 +36,10 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
                         status={deploymentStatus([stack], live && [live]) ?? deployStatus(stack)}
                         meta={[
                             <>
-                                Created <Moment date={stack.createdAt} fromNow />
+                                Created <MomentFromNow date={stack.createdAt} />
                             </>,
                             <>
-                                Updated <Moment date={stack.updatedAt} fromNow />
+                                Updated <MomentFromNow date={stack.updatedAt} />
                             </>,
                             ...(VIEWABLE_INSTANCE_TYPES.includes(stack.stackName) && deployment.group?.hostname
                                 ? [<InstanceUrl key="url" url={stackUrl(deployment.group, stack.name, stack.stackName)} />]

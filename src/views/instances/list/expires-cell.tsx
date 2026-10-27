@@ -4,7 +4,7 @@ import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { useAuth } from '../../../hooks/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import styles from './expires-cell.module.css'
-import { expiresAt, isExpiringSoon } from './instance-filter-rules.ts'
+import { isExpiringSoon } from './instance-filter-rules.ts'
 
 /* Flags the viewer's own instances in their last day. The dot is there so the warning doesn't rest on
  * colour alone. */
@@ -15,7 +15,7 @@ export const ExpiresCell: FC<{ deployment: Deployment }> = ({ deployment }) => {
     const soon = deployment.user.id === currentUser?.id && isExpiringSoon(deployment, now)
 
     return (
-        <span className={soon ? styles.expiringSoon : undefined} title={new Date(expiresAt(deployment)).toLocaleString()}>
+        <span className={soon ? styles.expiringSoon : undefined}>
             <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
             {soon && (
                 <>

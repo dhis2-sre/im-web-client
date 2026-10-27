@@ -1,9 +1,8 @@
 import { Button } from '@dhis2/ui'
 import { FC, useState } from 'react'
 import type { ReactNode } from 'react'
-import Moment from 'react-moment'
 import { useNavigate, useParams } from 'react-router-dom'
-import { MetaLine, MomentExpiresFromNow, Page } from '../../../components/index.ts'
+import { MetaLine, MomentExpiresFromNow, MomentFromNow, Page } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment, DeploymentInstanceDeployState } from '../../../types/index.ts'
@@ -26,7 +25,7 @@ const detailItems = (deployment: Deployment): ReactNode[] => {
         </>,
         `Owned by ${deployment.user.email}`,
         <>
-            Updated <Moment date={deployment.updatedAt} fromNow />
+            Updated <MomentFromNow date={deployment.updatedAt} />
         </>,
         `Group: ${deployment.groupName}`,
         ...(dhis2 && deployment.group?.hostname ? [<InstanceUrl key="url" url={stackUrl(deployment.group, dhis2.name)} />] : []),

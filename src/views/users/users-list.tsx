@@ -1,8 +1,7 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Page } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { User } from '../../types/index.ts'
 
@@ -33,10 +32,10 @@ export const UsersList: FC = () => {
                             </DataTableCell>
                             <DataTableCell>{user.validated ? 'true' : 'false'}</DataTableCell>
                             <DataTableCell>
-                                <Moment date={user.createdAt} fromNow />
+                                <MomentFromNow date={user.createdAt} />
                             </DataTableCell>
                             <DataTableCell>
-                                <Moment date={user.updatedAt} fromNow />
+                                <MomentFromNow date={user.updatedAt} />
                             </DataTableCell>
                             <DataTableCell>
                                 <ul>

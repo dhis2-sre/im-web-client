@@ -1,7 +1,6 @@
 import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
-import { componentStatus, Drawer, replicaStatus, StatusDot, StatusIndicator } from '../../../components/index.ts'
+import { componentStatus, Drawer, MomentFromNow, replicaStatus, StatusDot, StatusIndicator } from '../../../components/index.ts'
 import { InstanceComponent } from '../../../types/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
 import { ComponentParametersTable } from './component-parameters-table.tsx'
@@ -48,7 +47,7 @@ export const ComponentDetailsDrawer: FC<{ stackName: string; component: Instance
                                 </DataTableCell>
                                 <DataTableCell staticStyle>{replica.restarts}</DataTableCell>
                                 <DataTableCell staticStyle>
-                                    <Moment date={replica.createdAt} fromNow />
+                                    <MomentFromNow date={replica.createdAt} />
                                 </DataTableCell>
                             </DataTableRow>
                         ))}

@@ -1,9 +1,8 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
 import { createContext, memo, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { ListPage } from '../../../components/index.ts'
+import { ListPage, MomentFromNow } from '../../../components/index.ts'
 import type { ListColumn } from '../../../components/index.ts'
 import { createEmitter } from '../../../hooks/create-emitter.ts'
 import { useLiveComponents } from '../../../hooks/index.ts'
@@ -102,7 +101,7 @@ const columns: ListColumn<Deployment>[] = [
         nowrap: true,
     },
     { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, breakAnywhere: true },
-    { key: 'updated', label: 'Updated', render: (deployment) => <Moment date={deployment.updatedAt} fromNow />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
+    { key: 'updated', label: 'Updated', render: (deployment) => <MomentFromNow date={deployment.updatedAt} />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
 ]
 
 export const InstancesList: FC = () => {

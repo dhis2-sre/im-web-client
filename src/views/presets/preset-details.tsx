@@ -1,9 +1,8 @@
 import { Button } from '@dhis2/ui'
 import type { FC, ReactNode } from 'react'
 import { useMemo } from 'react'
-import Moment from 'react-moment'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ActionsMenu, ItemPanel, ItemPanelList, MetaLine, Page, useActionAlert } from '../../components/index.ts'
+import { ActionsMenu, ItemPanel, ItemPanelList, MetaLine, MomentFromNow, Page, useActionAlert } from '../../components/index.ts'
 import type { PageError } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel, useStack } from '../../hooks/index.ts'
 import type { Deployment, DeploymentInstance, StackWithParameterGroups } from '../../types/index.ts'
@@ -40,7 +39,7 @@ const PresetFacts: FC<{ preset: Deployment }> = ({ preset }) => {
         `Group: ${preset.groupName}`,
         ...(preset.user?.email ? [`Owned by ${preset.user.email}`] : []),
         <>
-            Updated <Moment date={preset.updatedAt} fromNow />
+            Updated <MomentFromNow date={preset.updatedAt} />
         </>,
     ]
 

@@ -1,8 +1,7 @@
 import { Button, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import { Fragment, useState } from 'react'
 import type { FC } from 'react'
-import Moment from 'react-moment'
-import { componentStatus, replicaStatus, StatusIndicator } from '../../../components/index.ts'
+import { componentStatus, MomentFromNow, replicaStatus, StatusIndicator } from '../../../components/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
 import { ComponentDetailsDrawer } from './component-details-drawer.tsx'
@@ -76,7 +75,7 @@ export const ComponentsTable: FC<{
                                         )}
                                     </DataTableCell>
                                     <DataTableCell staticStyle>{only?.restarts}</DataTableCell>
-                                    <DataTableCell staticStyle>{only && <Moment date={only.createdAt} fromNow />}</DataTableCell>
+                                    <DataTableCell staticStyle>{only && <MomentFromNow date={only.createdAt} />}</DataTableCell>
                                     <DataTableCell staticStyle align="right">
                                         <span className={styles.rowActions}>
                                             <Button small secondary onClick={() => setViewing(component.name)}>
@@ -98,7 +97,7 @@ export const ComponentsTable: FC<{
                                             </DataTableCell>
                                             <DataTableCell staticStyle>{replica.restarts}</DataTableCell>
                                             <DataTableCell staticStyle>
-                                                <Moment date={replica.createdAt} fromNow />
+                                                <MomentFromNow date={replica.createdAt} />
                                             </DataTableCell>
                                             <DataTableCell staticStyle align="right">
                                                 {operations(component, replica, true)}

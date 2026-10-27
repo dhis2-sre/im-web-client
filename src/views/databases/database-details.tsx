@@ -1,9 +1,8 @@
 import { Card, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tooltip } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
-import Moment from 'react-moment'
 import { Link, useParams } from 'react-router-dom'
-import { Page } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/generated/models/Database.ts'
 
@@ -37,19 +36,11 @@ export const DatabaseDetails = () => {
         { name: 'Group', value: db.groupName },
         {
             name: 'Created',
-            value: db.createdAt ? (
-                <Tooltip content={<Moment date={db.createdAt} format="YYYY-MM-DD HH:mm:ss" />}>
-                    <Moment date={db.createdAt} fromNow />
-                </Tooltip>
-            ) : undefined,
+            value: db.createdAt ? <MomentFromNow date={db.createdAt} /> : undefined,
         },
         {
             name: 'Updated',
-            value: db.updatedAt ? (
-                <Tooltip content={<Moment date={db.updatedAt} format="YYYY-MM-DD HH:mm:ss" />}>
-                    <Moment date={db.updatedAt} fromNow />
-                </Tooltip>
-            ) : undefined,
+            value: db.updatedAt ? <MomentFromNow date={db.updatedAt} /> : undefined,
         },
         {
             name: 'Files',
