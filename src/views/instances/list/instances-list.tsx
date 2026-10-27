@@ -1,68 +1,137 @@
-import { Button, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableRow, IconAdd24, NoticeBox, Checkbox } from '@dhis2/ui'
+import { Button, IconAdd24 } from '@dhis2/ui'
+import { createContext, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { FC } from 'react'
+import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
-import { Heading } from '../../../components/index.ts'
-import { DeploymentRow } from './deployment-row.tsx'
-import useDeployments from './filter-deployments.tsx'
-import styles from './instances-list.module.css'
-export const InstancesList: FC = () => {
-    const navigate = useNavigate()
-    const { data, error, loading, refetch, showOnlyMyInstances, setShowOnlyMyInstances } = useDeployments()
+import { ListPage } from '../../../components/index.ts'
+import type { ListColumn } from '../../../components/index.ts'
+import { useLiveComponents } from '../../../hooks/index.ts'
+import type { LiveComponents } from '../../../hooks/use-live-components.ts'
+import type { Deployment } from '../../../types/index.ts'
+import { deploymentHealth } from './component-health.ts'
+import { DeploymentComponentTags } from './deployment-component-tags.tsx'
+import { ExpiresCell } from './expires-cell.tsx'
+import { InstanceActionsMenu } from './instance-actions-menu.tsx'
+import { InstanceFilterBar, useInstanceFilters } from './instance-filters.tsx'
+import { OpenButton } from './open-button.tsx'
+import { useDeployments } from './use-deployments.ts'
+
+type RowStatus = Pick<LiveComponents, 'instances' | 'loading' | 'error'>
+
+/* The deployments' components, kept by the list rather than by each row, so the status filter knows
+ * the health of rows it is hiding. The status chip and the actions menu read the same entry. */
+const Statuses = createContext<Map<number, RowStatus>>(new Map())
+
+/* Loads one deployment's components, live, and reports them to the list. One per deployment in scope
+ * (see inScope), mounted whatever the search and status filters show, so typing never refetches. */
+const LoadStatus: FC<{ id: number; onChange: (id: number, status: RowStatus) => void }> = ({ id, onChange }) => {
+    const { instances, loading, error } = useLiveComponents(id)
+    useEffect(() => onChange(id, { instances, loading, error }), [id, instances, loading, error, onChange])
+    return null
+}
+// Memoised so a report, which re-renders the list, doesn't re-render every loader with it.
+const StatusLoader = memo(LoadStatus)
+
+const StatusCell: FC<{ id: number }> = ({ id }) => {
+    const status = useContext(Statuses).get(id)
+    return <DeploymentComponentTags instances={status?.instances} loading={status?.loading ?? true} error={status?.error} />
+}
+
+const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deployment, refetch }) => {
+    const status = useContext(Statuses).get(deployment.id)
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title="Instances">
-                <Button icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
-                    New instance
-                </Button>
-                <Checkbox checked={showOnlyMyInstances} label="Show only my instances" onChange={() => setShowOnlyMyInstances(!showOnlyMyInstances)} />
-            </Heading>
+        <>
+            <OpenButton group={deployment.group} name={deployment.name} />
+            <InstanceActionsMenu deployment={deployment} components={status?.instances} onChanged={refetch} onDeleted={refetch} />
+        </>
+    )
+}
 
-            {error && !data && (
-                <NoticeBox error title="Could not retrieve instances">
-                    {error.message}
-                </NoticeBox>
-            )}
+const columns: ListColumn<Deployment>[] = [
+    { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, breakAnywhere: true },
+    { key: 'status', label: 'Status', render: (deployment) => <StatusCell id={deployment.id} /> },
+    {
+        key: 'expires',
+        label: 'Expires',
+        render: (deployment) => <ExpiresCell deployment={deployment} />,
+        sortValue: (deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000,
+        nowrap: true,
+    },
+    { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, breakAnywhere: true },
+    { key: 'updated', label: 'Updated', render: (deployment) => <Moment date={deployment.updatedAt} fromNow />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
+]
 
-            {data?.length === 0 && <h3>No instances</h3>}
+export const InstancesList: FC = () => {
+    const navigate = useNavigate()
+    const { groups, error, loading, refetch } = useDeployments()
+    const refresh = () => void refetch()
+    const filters = useInstanceFilters()
 
-            {data?.length > 0 && (
-                <DataTable>
-                    {data?.map((group) => (
-                        <DataTableBody key={group.name}>
-                            <DataTableRow>
-                                <DataTableCell staticStyle colSpan="9">
-                                    <h2 className={styles.groupName}>{group.name}</h2>
-                                </DataTableCell>
-                            </DataTableRow>
-                            <DataTableRow>
-                                <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                <DataTableColumnHeader>Status</DataTableColumnHeader>
-                                <DataTableColumnHeader>Created</DataTableColumnHeader>
-                                <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                                <DataTableColumnHeader>Owner</DataTableColumnHeader>
-                                <DataTableColumnHeader>Expires</DataTableColumnHeader>
-                                <DataTableColumnHeader />
-                            </DataTableRow>
+    const [statuses, setStatuses] = useState(() => new Map<number, RowStatus>())
+    /* The loaders report from their effects, hundreds of them as their responses arrive. Each report
+     * setting state there re-rendered the whole list and chained past React's limit on updates from
+     * effects, so reports are collected and applied together once the effects have run. */
+    const pending = useRef(new Map<number, RowStatus>())
+    const report = useCallback((id: number, status: RowStatus) => {
+        if (pending.current.size === 0) {
+            setTimeout(() => {
+                const batch = pending.current
+                pending.current = new Map()
+                setStatuses((current) => new Map([...current, ...batch]))
+            })
+        }
+        pending.current.set(id, status)
+    }, [])
 
-                            {group.deployments?.map((deployment) => (
-                                <DeploymentRow
-                                    key={deployment.id}
-                                    deployment={deployment}
-                                    onNavigate={(target) => navigate(`/instances/${target.id}/details`, { state: target })}
-                                    refetch={refetch}
-                                />
-                            ))}
-                        </DataTableBody>
-                    ))}
-                </DataTable>
-            )}
+    const all = groups?.flatMap((group) => group.deployments ?? []) ?? []
+    const inScope = all.filter(filters.inScope)
+    const health = (deployment: Deployment) => {
+        const components = statuses.get(deployment.id)?.instances
+        return components ? deploymentHealth(components) : undefined
+    }
+    const shown = groups
+        ?.map((group) => ({
+            key: group.name ?? '',
+            title: group.name ?? '',
+            rows: (group.deployments ?? []).filter((deployment) => filters.matches(deployment, health(deployment))),
+        }))
+        .filter((group) => group.rows.length > 0)
+    const checking = inScope.filter((deployment) => statuses.get(deployment.id)?.loading !== false).length
 
-            {loading && (
-                <Center className={styles.loaderWrap}>
-                    <CircularLoader />
-                </Center>
-            )}
-        </div>
+    return (
+        <Statuses.Provider value={statuses}>
+            {inScope.map((deployment) => (
+                <StatusLoader key={deployment.id} id={deployment.id} onChange={report} />
+            ))}
+            <ListPage
+                title="Instances"
+                actions={
+                    <Button primary icon={<IconAdd24 />} onClick={() => navigate('/instances/new')}>
+                        New instance
+                    </Button>
+                }
+                filters={<InstanceFilterBar state={filters} groupNames={groups?.map((group) => group.name ?? '') ?? []} checking={checking} />}
+                columns={columns}
+                groups={shown}
+                rowKey={(deployment) => deployment.id}
+                rowHref={(deployment) => `/instances/${deployment.id}/details`}
+                renderRowActions={(deployment) => <RowActions deployment={deployment} refetch={refresh} />}
+                loading={loading}
+                error={error ? { title: 'Could not retrieve instances', description: error.message } : undefined}
+                empty={
+                    filters.active && all.length > 0
+                        ? {
+                              title: 'No matching instances',
+                              action: (
+                                  <Button small secondary onClick={filters.clear}>
+                                      Clear filters
+                                  </Button>
+                              ),
+                          }
+                        : { title: 'No instances' }
+                }
+            />
+        </Statuses.Provider>
     )
 }

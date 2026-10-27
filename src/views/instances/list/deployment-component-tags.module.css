@@ -1,10 +1,123 @@
-/* The Status column carries the width (see instances-list.module.css), so the tags simply fill it
- * and wrap. Sizing them here instead either left the column half empty or, with a percentage width,
- * let the intrinsic pass measure every tag on one line and stretch the column. */
-.tags {
+/* One button holding a segment per state, each tinted like the tag of that state would be. */
+.chip {
+    display: inline-flex;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* The chip's size while it loads: one icon and one digit inside the segment's padding and border. */
+.ghost {
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    border-radius: 4px;
+    background-color: var(--colors-grey200);
+    vertical-align: middle;
+    animation: ghost-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ghost-pulse {
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ghost {
+        animation: none;
+    }
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.chip:hover {
+    border-color: var(--colors-grey500);
+}
+
+.chip:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 1px;
+}
+
+.segment {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    padding: 2px var(--spacers-dp8);
+    background-color: var(--tone-background);
+    color: var(--tone-text);
+    font-size: var(--text-md);
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.segment + .segment {
+    border-left: 1px solid var(--colors-grey300);
+}
+
+.popover {
+    min-width: 14rem;
+    font-size: var(--text-md);
+}
+
+/* Each state tints the header and colours the statuses in the same tone as its tag. */
+.positive {
+    --tone-text: var(--colors-green800);
+    --tone-background: var(--colors-green050);
+}
+
+.negative {
+    --tone-text: var(--colors-red800);
+    --tone-background: var(--colors-red050);
+}
+
+.neutral {
+    --tone-text: var(--colors-grey800);
+    --tone-background: var(--colors-grey100);
+}
+
+.popoverTitle {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    width: 100%;
-    white-space: normal;
+    align-items: center;
+    gap: var(--spacers-dp8);
+    padding: var(--spacers-dp8) var(--spacers-dp12);
+    border-bottom: 1px solid var(--colors-grey300);
+    background-color: var(--tone-background);
+    color: var(--tone-text);
+    font-weight: 500;
+}
+
+.popover section + section {
+    border-top: 1px solid var(--colors-grey300);
+}
+
+.list {
+    margin: 0;
+    padding: var(--spacers-dp4) 0;
+    list-style: none;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacers-dp16);
+    padding: var(--spacers-dp4) var(--spacers-dp12);
+    color: var(--colors-grey900);
+}
+
+.itemStatus {
+    color: var(--tone-text);
+    white-space: nowrap;
 }

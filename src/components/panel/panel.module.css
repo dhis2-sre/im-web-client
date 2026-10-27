@@ -21,11 +21,6 @@
     color: var(--colors-grey900);
 }
 
-.count {
-    font-weight: 400;
-    color: var(--colors-grey600);
-}
-
 .actions {
     display: flex;
     flex-wrap: wrap;

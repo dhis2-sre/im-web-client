@@ -1,12 +1,13 @@
 import { Button } from '@dhis2/ui'
 import { FC } from 'react'
 import Moment from 'react-moment'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { KeyValueGrid, MomentExpiresFromNow, NonIdealState, Page, Panel } from '../../../components/index.ts'
 import type { KeyValueItem } from '../../../components/index.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
 import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
+import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
 import { DeploymentComponents } from './deployment-components.tsx'
 import { DeploymentInstancesList } from './deployment-instances-list.tsx'
 
@@ -21,7 +22,12 @@ const overviewItems = (deployment: Deployment): KeyValueItem[] => [
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
+    const { id } = useParams()
     const [{ data: deployment, error, loading }, refetch] = useDeploymentDetails()
+    /* The stack list, the components section and the actions menu share the one query: it asks the
+     * cluster about every component of every instance, and the menu needs it to know whether anything
+     * can be backed up. */
+    const components = useLiveComponents(Number(id))
 
     return (
         <Page
@@ -29,11 +35,20 @@ export const DeploymentDetails: FC = () => {
             title={deployment?.name}
             actions={
                 deployment && (
-                    <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
-                        <Button disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
-                            Edit
-                        </Button>
-                    </span>
+                    <>
+                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                            <Button disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
+                                Edit
+                            </Button>
+                        </span>
+                        <InstanceActionsMenu
+                            deployment={deployment}
+                            components={components.instances}
+                            includeEdit={false}
+                            onChanged={() => void refetch()}
+                            onDeleted={() => navigate('/instances')}
+                        />
+                    </>
                 )
             }
             loading={loading && !deployment}
@@ -45,7 +60,12 @@ export const DeploymentDetails: FC = () => {
                         <KeyValueGrid items={overviewItems(deployment)} />
                     </Panel>
                     {deployment.instances?.length > 0 ? (
-                        <DeploymentStacksAndComponents deployment={deployment} loading={loading} refetch={() => void refetch()} />
+                        <>
+                            <Panel title="Stacks" flush>
+                                <DeploymentInstancesList deployment={deployment} loading={loading} />
+                            </Panel>
+                            <DeploymentComponents deployment={deployment} components={components} />
+                        </>
                     ) : (
                         <Panel title="Stacks">
                             <NonIdealState
@@ -58,22 +78,5 @@ export const DeploymentDetails: FC = () => {
                 </>
             )}
         </Page>
-    )
-}
-
-/* Mounted only once the deployment has loaded, so the components query has an id to ask about. The
- * stack list and the components section share the one query: it asks the cluster about every
- * component of every instance, and the stack list needs it to know whether anything can be backed
- * up. */
-const DeploymentStacksAndComponents: FC<{ deployment: Deployment; loading: boolean; refetch: () => void }> = ({ deployment, loading, refetch }) => {
-    const components = useLiveComponents(deployment.id)
-
-    return (
-        <>
-            <Panel title="Stacks" count={deployment.instances.length} flush>
-                <DeploymentInstancesList deployment={deployment} loading={loading} components={components.instances} refetch={refetch} />
-            </Panel>
-            <DeploymentComponents deployment={deployment} components={components} />
-        </>
     )
 }

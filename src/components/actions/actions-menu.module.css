@@ -1,0 +1,13 @@
+/* The popper measures this span, so it sits tight around the button. */
+.anchor {
+    display: inline-flex;
+}
+
+.unavailable {
+    display: flex;
+    flex-direction: column;
+}
+
+.reason {
+    font-size: var(--text-sm);
+}

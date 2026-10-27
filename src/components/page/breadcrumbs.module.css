@@ -1,0 +1,24 @@
+.list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacers-dp4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-md);
+}
+
+.item + .item::before {
+    content: '/';
+    margin-right: var(--spacers-dp4);
+    color: var(--colors-grey500);
+}
+
+.link {
+    color: var(--colors-blue700);
+}
+
+.current {
+    font-weight: 500;
+    color: var(--colors-grey900);
+}

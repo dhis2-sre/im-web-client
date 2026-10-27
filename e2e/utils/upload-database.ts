@@ -47,7 +47,7 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     await uploadButton.click()
 
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText('Database added successfully')).toBeVisible({ timeout: 30000 })
-    await expect(page.getByRole('cell', { name: fileName, exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: fileName, exact: true })).toBeVisible()
 
     return { fileName }
 }

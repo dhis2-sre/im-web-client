@@ -1,4 +1,4 @@
-import { IconCheckmarkCircle16, IconClock16, IconErrorFilled16, IconSync16, Tag } from '@dhis2/ui'
+import { IconCheckmarkCircle16, IconClock16, IconSync16, IconWarning16, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
 import type { Status, StatusTone } from './statuses.ts'
 
@@ -12,12 +12,16 @@ const TAG_PROPS: Record<StatusTone, { positive?: boolean; negative?: boolean; ne
 /* Each tone has its own shape as well as its own colour, so a status reads without telling colours apart. */
 const ICONS: Record<StatusTone, FC> = {
     positive: IconCheckmarkCircle16,
-    negative: IconErrorFilled16,
+    negative: IconWarning16,
     neutral: IconClock16,
     progress: IconSync16,
 }
 
 export const toneTagProps = (tone: StatusTone) => TAG_PROPS[tone]
+export const ToneIcon: FC<{ tone: StatusTone }> = ({ tone }) => {
+    const Icon = ICONS[tone]
+    return <Icon />
+}
 
 export const StatusIndicator: FC<{ status: Status }> = ({ status }) => {
     const Icon = ICONS[status.tone]
