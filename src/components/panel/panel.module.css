@@ -35,7 +35,13 @@
     overflow-x: auto;
 }
 
-/* The panel already draws the frame, so a table inside it does not need its own. */
-.flushBody table {
+/* The panel already draws the frame, so a table inside it does not need its own. [class] lifts this
+ * past the table's styled-jsx rule, which otherwise ties on specificity and wins by loading later. */
+.flushBody table[class] {
     border: none;
+}
+
+/* Nor does the last row need its bottom border, which would sit on the panel's and double it. */
+.flushBody table[class]:last-of-type tbody tr:last-child > td[class] {
+    border-bottom: none;
 }
