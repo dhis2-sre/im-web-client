@@ -67,3 +67,8 @@
     font-family: var(--font-mono);
     font-size: var(--text-mono);
 }
+
+/* Counts line up by their last digit, the way the lists set figures. */
+.number {
+    font-variant-numeric: tabular-nums;
+}

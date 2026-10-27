@@ -32,7 +32,7 @@ export const ComponentDetailsDrawer: FC<{ stackName: string; component: Instance
                         <DataTableRow>
                             <DataTableColumnHeader>Replica</DataTableColumnHeader>
                             <DataTableColumnHeader>Status</DataTableColumnHeader>
-                            <DataTableColumnHeader>Restarts</DataTableColumnHeader>
+                            <DataTableColumnHeader align="right">Restarts</DataTableColumnHeader>
                             <DataTableColumnHeader>Created</DataTableColumnHeader>
                         </DataTableRow>
                     </DataTableHead>
@@ -45,7 +45,9 @@ export const ComponentDetailsDrawer: FC<{ stackName: string; component: Instance
                                 <DataTableCell staticStyle>
                                     <StatusIndicator status={replicaStatus(replica)} />
                                 </DataTableCell>
-                                <DataTableCell staticStyle>{replica.restarts}</DataTableCell>
+                                <DataTableCell staticStyle align="right" className={styles.number}>
+                                    {replica.restarts}
+                                </DataTableCell>
                                 <DataTableCell staticStyle>
                                     <MomentFromNow date={replica.createdAt} />
                                 </DataTableCell>

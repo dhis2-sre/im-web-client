@@ -35,7 +35,7 @@ export const ComponentParametersTable: FC<{ parameters: ParameterEntry[] }> = ({
                             </span>
                         )}
                         {!parameter.sensitive && parameter.name === 'DATABASE_ID' && <DatabaseLink id={String(parameter.value ?? '')} />}
-                        {!parameter.sensitive && parameter.name !== 'DATABASE_ID' && parameter.value}
+                        {!parameter.sensitive && parameter.name !== 'DATABASE_ID' && (parameter.value.trim() || <span className={styles.muted}>Not set</span>)}
                     </DataTableCell>
                 </DataTableRow>
             ))}

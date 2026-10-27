@@ -47,7 +47,7 @@ export const ComponentsTable: FC<{
                         <DataTableColumnHeader>Component</DataTableColumnHeader>
                         <DataTableColumnHeader>Status</DataTableColumnHeader>
                         <DataTableColumnHeader>Replica</DataTableColumnHeader>
-                        <DataTableColumnHeader>Restarts</DataTableColumnHeader>
+                        <DataTableColumnHeader align="right">Restarts</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader />
                     </DataTableRow>
@@ -74,11 +74,13 @@ export const ComponentsTable: FC<{
                                             component.replicas.length > 1 && <span className={styles.muted}>{component.replicas.length} replicas</span>
                                         )}
                                     </DataTableCell>
-                                    <DataTableCell staticStyle>{only?.restarts}</DataTableCell>
+                                    <DataTableCell staticStyle align="right" className={styles.number}>
+                                        {only?.restarts}
+                                    </DataTableCell>
                                     <DataTableCell staticStyle>{only && <MomentFromNow date={only.createdAt} />}</DataTableCell>
                                     <DataTableCell staticStyle align="right">
                                         <span className={styles.rowActions}>
-                                            <Button small secondary onClick={() => setViewing(component.name)}>
+                                            <Button small secondary aria-label={`View ${component.name}`} onClick={() => setViewing(component.name)}>
                                                 View
                                             </Button>
                                             {operations(component, only)}
@@ -95,7 +97,9 @@ export const ComponentsTable: FC<{
                                             <DataTableCell staticStyle>
                                                 <span className={styles.mono}>{replica.name}</span>
                                             </DataTableCell>
-                                            <DataTableCell staticStyle>{replica.restarts}</DataTableCell>
+                                            <DataTableCell staticStyle align="right" className={styles.number}>
+                                                {replica.restarts}
+                                            </DataTableCell>
                                             <DataTableCell staticStyle>
                                                 <MomentFromNow date={replica.createdAt} />
                                             </DataTableCell>

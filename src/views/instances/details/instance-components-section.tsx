@@ -54,7 +54,7 @@ export const InstanceComponentsSection: FC<{
                                 <span className={styles.muted}>Shared by every component of {instanceComponents.stackName}</span>
                             </DataTableCell>
                             <DataTableCell staticStyle align="right">
-                                <Button small secondary onClick={() => setViewing(true)}>
+                                <Button small secondary aria-label="View parameters" onClick={() => setViewing(true)}>
                                     View
                                 </Button>
                             </DataTableCell>
