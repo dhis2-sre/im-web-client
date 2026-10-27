@@ -1,4 +1,5 @@
-/* Sized like a panel's header, since an item panel stands where a panel would. */
+/* Taller than a panel's header, to set each item apart, but inset like the table cells below it, so
+ * the name starts where the first column does. */
 .header {
     display: flex;
     flex-wrap: wrap;
@@ -6,17 +7,18 @@
     justify-content: space-between;
     gap: var(--spacers-dp8) var(--spacers-dp16);
     min-height: 32px;
-    padding: var(--spacers-dp12) var(--spacers-dp16);
+    padding: var(--spacers-dp16) var(--spacers-dp12);
 }
 
 .header:not(:last-child) {
     border-bottom: 1px solid var(--colors-grey300);
 }
 
+/* The name and its smaller facts share a baseline, so they read as one line of text. */
 .identity {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: baseline;
     gap: var(--spacers-dp4) var(--spacers-dp12);
     min-width: 0;
 }
@@ -28,16 +30,17 @@
     --status-dot-size: 8px;
 }
 
+/* Between a panel's title and the page's, as an item stands between the two. */
 .title {
     margin: 0;
-    font-size: var(--text-lg);
+    font-size: 18px;
     font-weight: 500;
     color: var(--colors-grey900);
     overflow-wrap: anywhere;
 }
 
 .meta {
-    font-size: var(--text-sm);
+    font-size: 13px;
     color: var(--colors-grey700);
     overflow-wrap: anywhere;
 }
