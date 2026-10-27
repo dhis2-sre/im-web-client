@@ -6,6 +6,8 @@ body {
     height: 100%;
     width: 100vw;
     overflow: auto;
+    /* @dhis2/ui layers (modals, menus) portal to <body> with z-index auto, so keep the app's own z-indexes, like the pinned header's, beneath them. */
+    isolation: isolate;
 }
 
 a {

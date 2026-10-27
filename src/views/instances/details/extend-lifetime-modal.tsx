@@ -26,7 +26,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
     return (
         <Form onSubmit={submit} initialValues={{ ttl: deployment.ttl }}>
             {({ handleSubmit, pristine, invalid, submitting, submitError }) => (
-                <Modal onClose={onClose} position="middle">
+                <Modal onClose={onClose}>
                     <ModalTitle>Extend lifetime of {deployment.name}</ModalTitle>
                     <ModalContent>
                         <ExtendTtlSelect deployment={deployment} />
