@@ -1,0 +1,15 @@
+.url {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    max-width: 100%;
+}
+
+.link {
+    min-width: 0;
+    margin-right: var(--spacers-dp4);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--colors-blue700);
+}
