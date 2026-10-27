@@ -8,3 +8,62 @@
     gap: var(--spacers-dp4);
     color: var(--colors-grey600);
 }
+
+.muted {
+    color: var(--colors-grey600);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp8);
+}
+
+.sectionTitle {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.section p {
+    margin: 0;
+}
+
+/* The component's name opens its details, so it reads as a link without the weight of one. */
+.nameLink {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--colors-blue700);
+    cursor: pointer;
+    text-align: left;
+}
+
+.nameLink:hover {
+    text-decoration: underline;
+}
+
+.nameLink:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.rowActions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* The cells are static so a row never looks pressed; the hover stays, to help the eye follow a row across. */
+.instanceComponents tbody tr:hover > td {
+    background-color: var(--colors-grey100);
+}
+
+/* Replica names are generated ids, easier to compare character by character in the system's monospace. */
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 13px;
+}

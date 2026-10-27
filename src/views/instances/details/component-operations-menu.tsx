@@ -12,18 +12,21 @@ export const ComponentOperationsMenu: FC<{
     stackName: string
     component: InstanceComponent
     replica?: InstanceComponentReplica
+    /* For a replica listed under its component: only what acts on that one replica, since the
+     * component's row already offers what acts on all of them. */
+    replicaOnly?: boolean
     namespace?: string
     instanceName?: string
     groupId?: number
     onChanged: () => void
-}> = ({ instanceId, stackName, component, replica, namespace, instanceName, groupId, onChanged }) => {
+}> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, onChanged }) => {
     const [showSaveAs, setShowSaveAs] = useState(false)
     const [showLog, setShowLog] = useState(false)
     const alert = useActionAlert()
     const [, execute] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true, autoCancel: false })
 
     const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
-    const supports = (operation: string) => component.supportedOperations.includes(operation)
+    const supports = (operation: string) => component.supportedOperations.includes(operation) && (!replicaOnly || operation === 'logs')
     const backsUp = supports('databaseSave') || supports('filestoreBackup')
 
     const act = (action: 'restart' | 'reset') => async () => {
@@ -65,7 +68,7 @@ export const ComponentOperationsMenu: FC<{
                     },
                     backsUp && { label: 'Back up', onClick: () => setShowSaveAs(true) },
                     supports('logs') && replica && { label: 'Logs', onClick: () => setShowLog(true) },
-                    grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
+                    !replicaOnly && grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
                 ]}
             />
         </>

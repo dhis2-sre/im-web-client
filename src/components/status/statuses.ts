@@ -1,4 +1,4 @@
-import type { DeploymentInstanceDeployState, InstanceComponentReplica } from '../../types/index.ts'
+import type { DeploymentInstanceDeployState, InstanceComponent, InstanceComponentReplica } from '../../types/index.ts'
 
 export type StatusTone = 'positive' | 'negative' | 'neutral' | 'progress'
 export type Status = { label: string; tone: StatusTone; detail?: string }
@@ -33,4 +33,23 @@ export const replicaStatus = (replica: InstanceComponentReplica): Status => {
         return { label, tone: 'positive' }
     }
     return { label, tone: 'neutral' }
+}
+
+/* A component's health across its replicas. One replica speaks for the component in its own words;
+ * several are counted, and any failed one makes the whole negative, so one bad copy among healthy
+ * siblings is not averaged away. */
+export const componentStatus = ({ replicas }: InstanceComponent): Status => {
+    if (replicas.length === 0) {
+        return { label: 'No replicas', tone: 'neutral' }
+    }
+    if (replicas.length === 1) {
+        return replicaStatus(replicas[0])
+    }
+    const statuses = replicas.map(replicaStatus)
+    const ready = statuses.filter((status) => status.tone === 'positive').length
+    const label = `${ready}/${replicas.length} ready`
+    if (statuses.some((status) => status.tone === 'negative')) {
+        return { label, tone: 'negative' }
+    }
+    return { label, tone: ready === replicas.length ? 'positive' : 'neutral' }
 }

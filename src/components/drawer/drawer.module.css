@@ -1,0 +1,75 @@
+/* A plain sheet against the right edge: white, a hairline on its open side, no rounded corners where
+ * it meets the window. Wide enough for a two-column parameter list, never wider than the screen. */
+.drawer {
+    position: absolute;
+    inset: 0 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: min(520px, 100vw);
+    height: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: var(--colors-white);
+    border-left: 1px solid var(--colors-grey400);
+    box-shadow: -8px 0 24px rgb(33 41 52 / 0.12);
+    animation: slideIn 180ms ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(24px);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .drawer {
+        animation: none;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacers-dp12);
+    padding: var(--spacers-dp16);
+    border-bottom: 1px solid var(--colors-grey300);
+}
+
+.heading {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--spacers-dp4);
+    min-width: 0;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
+    overflow-wrap: anywhere;
+}
+
+.description {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--colors-grey700);
+}
+
+.body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--spacers-dp24);
+    padding: var(--spacers-dp16);
+    overflow-y: auto;
+}
