@@ -2,11 +2,14 @@ import type { FC, ReactNode } from 'react'
 import type { Lock } from '../../types/index.ts'
 import styles from './database-markers.module.css'
 
-/* The instance holding the lock, which is all a menu needs to say why an action is unavailable. */
-export const lockHolder = (lock: Lock) => `Locked by ${lock.instance?.name ?? 'an instance'}`
+/* The instance holding the lock, which is all a menu needs to say why an action is unavailable. A
+ * single database comes without its lock's instance loaded, as an empty one, so a blank name counts
+ * as none. */
+export const lockHolder = (lock: Lock) => `Locked by ${lock.instance?.name || 'an instance'}`
 
 /* The full account, for the column: which instance, in which group, and who locked it. */
-const lockDescription = (lock: Lock) => `${lockHolder(lock)}${lock.instance?.groupName ? ` (${lock.instance.groupName})` : ''}${lock.user?.email ? `, ${lock.user.email}` : ''}`
+export const lockDescription = (lock: Lock) =>
+    `${lockHolder(lock)}${lock.instance?.groupName ? ` (${lock.instance.groupName})` : ''}${lock.user?.email ? `, ${lock.user.email}` : ''}`
 
 /* An icon that says something about the row, spelled out on hover and for screen readers. */
 const Marker: FC<{ label: string; children: ReactNode }> = ({ label, children }) => (
