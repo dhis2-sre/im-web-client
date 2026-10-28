@@ -1,13 +1,10 @@
 import { InputFieldFF, hasValue } from '@dhis2/ui'
 import { FC } from 'react'
 import { Field } from 'react-final-form'
-import { OPTIONAL_FIELDS } from '../parameters.ts'
 import { ParameterFieldProps } from './parameter-field.tsx'
 
-export const isRequired = (name: string) => !OPTIONAL_FIELDS.has(name)
-
-export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text', sensitive, formMode = 'create' }) => {
-    const shouldRequireValue = isRequired(parameterName) && !(sensitive && formMode === 'update')
+export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text', sensitive, required = false, formMode = 'create' }) => {
+    const shouldRequireValue = required && !(sensitive && formMode === 'update')
     const validate = type === 'email' ? (shouldRequireValue ? validateEmailRequired : validateEmailOptional) : shouldRequireValue ? hasValue : undefined
     const placeholder = sensitive && formMode === 'update' ? 'Leave blank to keep current value' : undefined
     return (
