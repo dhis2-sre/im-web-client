@@ -68,16 +68,18 @@ test.describe('new instance', () => {
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
 
-        // Navigate back to the instances list
-        await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
-        await page.getByRole('button', { name: 'Back to list' }).click()
+        // Creating ends on the details page; leaving any sooner would abort the requests still in flight.
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
 
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // A deploy holds the deployment's deploy lock and the backend refuses a delete until it
         // finishes, so the row says so instead of offering a delete that would be turned away.
         const newInstanceRow = page.getByRole('row', { name: randomName })
-        await expect(newInstanceRow.getByRole('button', { name: 'Delete' })).toBeDisabled()
+        await newInstanceRow.getByRole('button', { name: `Actions for ${randomName}` }).click()
+        await expect(page.getByRole('menuitem', { name: 'Delete' })).toHaveAttribute('aria-disabled', 'true')
+        await page.keyboard.press('Escape')
 
         await deleteDeployment(page, randomName)
     })
@@ -121,14 +123,14 @@ test.describe('new instance', () => {
         await page.keyboard.press('Escape')
 
         await page.getByRole('button', { name: 'Create instance' }).click()
-        await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
-        await page.getByRole('button', { name: 'Back to list' }).click()
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // Open details, then the edit form. An edit takes the same deploy lock a deploy holds, so
         // the page offers no edit until the deploy lands.
-        await page.getByRole('row', { name: randomName }).click()
-        await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible()
+        await page.getByRole('link', { name: randomName, exact: true }).click()
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible()
         await expect(page.getByRole('button', { name: 'Edit', exact: true })).toBeEnabled({ timeout: 15 * 60 * 1000 })
         await page.getByRole('button', { name: 'Edit', exact: true }).click()
         await expect(page.getByRole('heading', { name: `Edit ${randomName}` })).toBeVisible()
@@ -152,11 +154,11 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'Save changes' }).click()
 
         // Successful update redirects back to the details view.
-        await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible({ timeout: 30000 })
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 30000 })
         await expect(page.getByText(updatedDescription)).toBeVisible()
 
         // Cleanup.
-        await page.getByRole('button', { name: 'Back to list' }).click()
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await deleteDeployment(page, randomName)
     })
 })

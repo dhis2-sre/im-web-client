@@ -1,0 +1,9 @@
+/* The status select, sized like the shared group select beside it. */
+.select {
+    min-width: 10rem;
+}
+
+.checking {
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
+}

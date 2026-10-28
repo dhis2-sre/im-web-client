@@ -71,15 +71,46 @@
     border-color: var(--colors-teal500);
 }
 
-.toNewDhis2Instance {
-    all: unset;
-    width: 16px;
-    height: 16px;
-    padding: 1px;
-    border-radius: 4px;
-    cursor: pointer;
+.group {
+    margin: var(--spacers-dp16) 0 var(--spacers-dp4);
+    padding: 0 var(--spacers-dp12) 0 var(--spacers-dp16);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--colors-grey500);
 }
 
-.toNewDhis2Instance:hover {
+.navlist .group:first-child {
+    margin-top: 0;
+}
+
+.identity {
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp8);
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--colors-grey300);
+}
+
+.avatar {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     background-color: var(--colors-teal500);
+    color: var(--colors-grey900);
+    font-weight: 600;
+}
+
+.email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

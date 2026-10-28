@@ -1,10 +1,10 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tag } from '@dhis2/ui'
+import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import { Fragment, useState } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
+import { replicaStatus, StatusIndicator } from '../../../components/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
-import { getReplicaTagProps, replicaStatusLabel } from '../../../utils/replica-tag.ts'
 import { ComponentOperationsMenu } from './component-operations-menu.tsx'
 import { ComponentParametersTable } from './component-parameters-table.tsx'
 
@@ -28,13 +28,13 @@ export const ComponentsTable: FC<{
             <DataTableHead>
                 <DataTableRow>
                     {/* Aligns with the expand toggle the parameter carrying rows have. */}
-                    <DataTableColumnHeader></DataTableColumnHeader>
+                    <DataTableColumnHeader />
                     <DataTableColumnHeader>Status</DataTableColumnHeader>
                     <DataTableColumnHeader>Component</DataTableColumnHeader>
                     <DataTableColumnHeader>Replica</DataTableColumnHeader>
                     <DataTableColumnHeader>Restarts</DataTableColumnHeader>
                     <DataTableColumnHeader>Created</DataTableColumnHeader>
-                    <DataTableColumnHeader></DataTableColumnHeader>
+                    <DataTableColumnHeader />
                 </DataTableRow>
             </DataTableHead>
             <DataTableBody>
@@ -69,9 +69,9 @@ export const ComponentsTable: FC<{
                         <Fragment key={component.name}>
                             {component.replicas.map((replica) => (
                                 <DataTableRow key={replica.name} {...rowProps(replica.name)}>
-                                    {parameters.length === 0 && <DataTableCell></DataTableCell>}
+                                    {parameters.length === 0 && <DataTableCell />}
                                     <DataTableCell>
-                                        <Tag {...getReplicaTagProps(replica)}>{replicaStatusLabel(replica)}</Tag>
+                                        <StatusIndicator status={replicaStatus(replica)} />
                                     </DataTableCell>
                                     <DataTableCell>{component.name}</DataTableCell>
                                     <DataTableCell>{replica.name}</DataTableCell>
@@ -84,12 +84,12 @@ export const ComponentsTable: FC<{
                             ))}
                             {component.replicas.length === 0 && (
                                 <DataTableRow {...rowProps(component.name)}>
-                                    {parameters.length === 0 && <DataTableCell></DataTableCell>}
-                                    <DataTableCell></DataTableCell>
+                                    {parameters.length === 0 && <DataTableCell />}
+                                    <DataTableCell />
                                     <DataTableCell>{component.name}</DataTableCell>
                                     <DataTableCell>No replicas</DataTableCell>
-                                    <DataTableCell></DataTableCell>
-                                    <DataTableCell></DataTableCell>
+                                    <DataTableCell />
+                                    <DataTableCell />
                                     <DataTableCell align="right">{operations()}</DataTableCell>
                                 </DataTableRow>
                             )}

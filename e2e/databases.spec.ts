@@ -42,7 +42,7 @@ test.describe('databases', () => {
         await copyButton.dispatchEvent('click')
 
         // Wait for the copy to succeed, then dismiss the modal
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(/copied successfully/)).toBeVisible({ timeout: 10000 })
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Copied to ${newName}`, { exact: true })).toBeVisible({ timeout: 10000 })
         await page.keyboard.press('Escape')
 
         // Delete the copy

@@ -40,7 +40,7 @@ const Error = ({ msg, onRetryClick }: { msg: string; onRetryClick: () => void })
         <div className={classes.error}>
             <div className={classes.errorInnerWrapper}>
                 <span className={classes.loadingErrorLabel}>{msg}</span>
-                <button className={classes.errorRetryButton} type="button" onClick={onRetryClick}>
+                <button type="button" onClick={onRetryClick}>
                     Retry
                 </button>
             </div>

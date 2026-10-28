@@ -1,5 +1,5 @@
 import js from '@eslint/js'
-import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
+import { fixupConfigRules } from '@eslint/compat'
 import tseslint from 'typescript-eslint'
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'

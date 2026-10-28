@@ -2,19 +2,21 @@ import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHe
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/index.ts'
 import { NewGroupButton } from './new-group-button.tsx'
 
 export const GroupsList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<Group[]>('/groups', { useCache: false })
+    const [{ data, loading, error }, refetch] = useAuthAxios<Group[]>('/groups', { useCache: false })
 
     return (
-        <div>
-            <Heading title="Groups">
-                <NewGroupButton onComplete={refetch} />
-            </Heading>
+        <Page
+            title="Groups"
+            actions={<NewGroupButton onComplete={refetch} />}
+            loading={loading && !data}
+            error={error && !data ? { title: 'Could not fetch groups', description: error.message } : undefined}
+        >
             <DataTable>
                 <TableHead>
                     <DataTableRow>
@@ -39,7 +41,7 @@ export const GroupsList: FC = () => {
                             <DataTableCell>{group.hostname}</DataTableCell>
                             <DataTableCell>{group.description}</DataTableCell>
                             <DataTableCell>{group.cluster.name}</DataTableCell>
-                            <DataTableCell>{group.deployable ? <IconCheckmark16 /> : <></>}</DataTableCell>
+                            <DataTableCell>{group.deployable ? <IconCheckmark16 /> : null}</DataTableCell>
                             <DataTableCell>
                                 <Moment date={group.createdAt} fromNow />
                             </DataTableCell>
@@ -50,6 +52,6 @@ export const GroupsList: FC = () => {
                     ))}
                 </TableBody>
             </DataTable>
-        </div>
+        </Page>
     )
 }

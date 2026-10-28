@@ -1,73 +1,82 @@
-import { Button, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
+import { Button } from '@dhis2/ui'
 import { FC } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Heading } from '../../../components/index.ts'
+import Moment from 'react-moment'
+import { useNavigate, useParams } from 'react-router-dom'
+import { KeyValueGrid, MomentExpiresFromNow, NonIdealState, Page, Panel } from '../../../components/index.ts'
+import type { KeyValueItem } from '../../../components/index.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
 import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
+import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
 import { DeploymentComponents } from './deployment-components.tsx'
-import styles from './deployment-details.module.css'
 import { DeploymentInstancesList } from './deployment-instances-list.tsx'
-import { DeploymentSummary } from './deployment-summary.tsx'
+
+const overviewItems = (deployment: Deployment): KeyValueItem[] => [
+    { label: 'Group', value: deployment.groupName },
+    { label: 'Owner', value: deployment.user.email },
+    { label: 'Created', value: <Moment date={deployment.createdAt} fromNow /> },
+    { label: 'Updated', value: <Moment date={deployment.updatedAt} fromNow /> },
+    { label: 'Expires', value: <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} /> },
+    ...(deployment.description ? [{ label: 'Description', value: deployment.description }] : []),
+]
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
+    const { id } = useParams()
     const [{ data: deployment, error, loading }, refetch] = useDeploymentDetails()
-    const title = 'Instance details'
+    /* The stack list, the components section and the actions menu share the one query: it asks the
+     * cluster about every component of every instance, and the menu needs it to know whether anything
+     * can be backed up. */
+    const components = useLiveComponents(Number(id))
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title={title}>
-                {deployment && (
-                    <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
-                        <Button disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
-                            Edit
-                        </Button>
-                    </span>
-                )}
-                <Button onClick={() => navigate('/instances')}>Back to list</Button>
-            </Heading>
-
-            {error && !deployment && (
-                <NoticeBox error title="Could not retrieve instance details">
-                    {error.message}
-                </NoticeBox>
-            )}
-
-            {loading && (
-                <Center className={styles.loaderWrap}>
-                    <CircularLoader />
-                </Center>
-            )}
-
+        <Page
+            parent={{ label: 'Instances', to: '/instances' }}
+            title={deployment?.name}
+            actions={
+                deployment && (
+                    <>
+                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                            <Button disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
+                                Edit
+                            </Button>
+                        </span>
+                        <InstanceActionsMenu
+                            deployment={deployment}
+                            components={components.instances}
+                            includeEdit={false}
+                            onChanged={() => void refetch()}
+                            onDeleted={() => navigate('/instances')}
+                        />
+                    </>
+                )
+            }
+            loading={loading && !deployment}
+            error={error && !deployment ? { title: 'Could not retrieve instance details', description: error.message } : undefined}
+        >
             {deployment && (
                 <>
-                    <div className={styles.cardWrap}>
-                        <Card className={styles.card}>
-                            <DeploymentSummary deployment={deployment} />
-                        </Card>
-                    </div>
-                    {!deployment?.instances?.length && (
-                        <NoticeBox title="No stacks connected to this instance">Currently you can only add components to an instance when creating one.</NoticeBox>
+                    <Panel title="Overview">
+                        <KeyValueGrid items={overviewItems(deployment)} />
+                    </Panel>
+                    {deployment.instances?.length > 0 ? (
+                        <>
+                            <Panel title="Stacks" flush>
+                                <DeploymentInstancesList deployment={deployment} loading={loading} />
+                            </Panel>
+                            <DeploymentComponents deployment={deployment} components={components} />
+                        </>
+                    ) : (
+                        <Panel title="Stacks">
+                            <NonIdealState
+                                variant="empty"
+                                title="No stacks connected to this instance"
+                                description="Currently you can only add components to an instance when creating one."
+                            />
+                        </Panel>
                     )}
-                    {deployment?.instances?.length > 0 && <DeploymentStacksAndComponents deployment={deployment} loading={loading} refetch={() => void refetch()} />}
                 </>
             )}
-        </div>
-    )
-}
-
-/* Mounted only once the deployment has loaded, so the components query has an id to ask about. The
- * stack list and the components section share the one query: it asks the cluster about every
- * component of every instance, and the stack list needs it to know whether anything can be backed
- * up. */
-const DeploymentStacksAndComponents: FC<{ deployment: Deployment; loading: boolean; refetch: () => void }> = ({ deployment, loading, refetch }) => {
-    const components = useLiveComponents(deployment.id)
-
-    return (
-        <>
-            <DeploymentInstancesList deployment={deployment} loading={loading} components={components.instances} refetch={refetch} />
-            <DeploymentComponents deployment={deployment} components={components} />
-        </>
+        </Page>
     )
 }

@@ -1,0 +1,41 @@
+.panel {
+    background-color: var(--colors-white);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 4px;
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacers-dp8) var(--spacers-dp16);
+    padding: var(--spacers-dp12) var(--spacers-dp16);
+    border-bottom: 1px solid var(--colors-grey300);
+}
+
+.title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacers-dp8);
+}
+
+.body {
+    padding: var(--spacers-dp16);
+}
+
+.flushBody {
+    overflow-x: auto;
+}
+
+/* The panel already draws the frame, so a table inside it does not need its own. */
+.flushBody table {
+    border: none;
+}

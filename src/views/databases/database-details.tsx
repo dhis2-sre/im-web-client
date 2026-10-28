@@ -1,17 +1,15 @@
-import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tooltip } from '@dhis2/ui'
+import { Card, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tooltip } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
 import Moment from 'react-moment'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { Link, useParams } from 'react-router-dom'
+import { Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/generated/models/Database.ts'
-import styles from './databases-list.module.css'
 
 export const DatabaseDetails = () => {
-    const navigate = useNavigate()
     const { id } = useParams()
-    const [{ data: database, loading }] = useAuthAxios<Database>(`databases/${id}`)
+    const [{ data: database, loading, error }] = useAuthAxios<Database>(`databases/${id}`)
 
     const [db, setDb] = useState<Database>()
 
@@ -19,11 +17,13 @@ export const DatabaseDetails = () => {
         setDb(database)
     }, [database])
 
-    if (loading || !db) {
+    if (!db) {
         return (
-            <Center className={styles.loaderWrap}>
-                <CircularLoader />
-            </Center>
+            <Page
+                parent={{ label: 'Databases', to: '/databases' }}
+                loading={loading || !error}
+                error={error ? { title: 'Could not fetch the database', description: error.message } : undefined}
+            />
         )
     }
 
@@ -66,12 +66,9 @@ export const DatabaseDetails = () => {
     ].filter((d) => d.value !== undefined && d.value !== null)
 
     return (
-        <>
-            <Heading title="Database details">
-                <Button onClick={() => navigate('/databases')}>Back to list</Button>
-            </Heading>
-            <div className={styles.cardWrap}>
-                <Card className={styles.card}>
+        <Page parent={{ label: 'Databases', to: '/databases' }} title={db.name || 'Database'}>
+            <div>
+                <Card>
                     <DataTable>
                         <DataTableHead>
                             <DataTableRow>
@@ -90,6 +87,6 @@ export const DatabaseDetails = () => {
                     </DataTable>
                 </Card>
             </div>
-        </>
+        </Page>
     )
 }

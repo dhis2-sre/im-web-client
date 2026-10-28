@@ -1,41 +1,19 @@
-.wrapper {
-    width: 100%;
-}
-.tabletoolbar {
-    background-color: var(--colors-white);
-}
-.opendeletewrap {
-    min-width: 180px;
-    display: flex;
-    gap: var(--spacers-dp8);
+.folder {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
 }
 
-.loader {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 1000;
+/* Figures of equal width, so sizes read down the column. */
+.size {
+    font-variant-numeric: tabular-nums;
 }
 
-.actionMorePopover {
-    box-shadow: none !important;
+.unknown {
+    color: var(--colors-grey500);
 }
 
-.clickableRow {
-    cursor: pointer;
-}
-
-.searchInput {
-    min-width: 250px;
-}
-
-.sortableHeader {
-    cursor: pointer;
-    user-select: none;
-}
-
-.groupName {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--colors-blue600) !important;
+.noFile {
+    color: var(--colors-yellow800);
+    font-weight: 500;
 }

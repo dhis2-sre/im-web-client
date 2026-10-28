@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ComponentStatusEventData, DeploymentEventData } from '../types/index.ts'
+import { createEmitter } from './create-emitter.ts'
 import { baseURL, refreshTokens, useAuthAxios } from './use-auth-axios.ts'
 
 export type DatabaseSaveData = {
@@ -22,23 +23,9 @@ export type Notification = {
 
 export type NotificationKind = 'database-save' | 'filestore-backup'
 
-/* Transient component-status events never become notifications; seq makes every event a fresh
- * object so effects fire even when consecutive payloads are identical. */
-export type ComponentStatusEvent = {
-    seq: number
-    data: ComponentStatusEventData
-}
-
 export type SseEvent = {
     kind: NotificationKind
     data: DatabaseSaveData
-}
-
-/* Per-instance deploy progress is transient like component status, so seq makes every event a fresh
- * object and consumers fire on it even when two payloads are identical. */
-export type DeploymentEvent = {
-    seq: number
-    data: DeploymentEventData
 }
 
 const STREAM_RECONNECT_DELAY_MS = 3_000
@@ -46,14 +33,15 @@ const STREAM_RECONNECT_MAX_DELAY_MS = 30_000
 
 export const useNotifications = () => {
     const [notifications, setNotifications] = useState<Notification[]>([])
-    const [lastSseEvent, setLastSseEvent] = useState<SseEvent | null>(null)
-    const [lastComponentStatus, setLastComponentStatus] = useState<ComponentStatusEvent | null>(null)
-    const [lastDeploymentEvent, setLastDeploymentEvent] = useState<DeploymentEvent | null>(null)
-    /* Counts the times the event stream has come up. Consumers watch it to reload what they cannot
-     * have been told about while it was down. */
+    /* Stream events go to subscribers as they arrive rather than into state, where a burst landing
+     * before the next render would keep only its last event. Component status and deploy progress
+     * are transient and never become notifications. */
+    const [sseEvents] = useState(() => createEmitter<SseEvent>())
+    const [componentStatuses] = useState(() => createEmitter<ComponentStatusEventData>())
+    const [deploymentEvents] = useState(() => createEmitter<DeploymentEventData>())
+    /* Counts the times the event stream has come up without picking up where it left off. Consumers
+     * watch it to reload what they cannot have been told about while it was down. */
     const [streamEpoch, setStreamEpoch] = useState(0)
-    const componentStatusSeq = useRef(0)
-    const deploymentEventSeq = useRef(0)
 
     const [, fetchNotifications] = useAuthAxios<Notification[]>('/notifications', { manual: true, autoCatch: true })
     const [, executeMarkRead] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true })
@@ -84,7 +72,7 @@ export const useNotifications = () => {
         const makeHandler = (kind: NotificationKind) => (e: MessageEvent) => {
             try {
                 const data = JSON.parse(e.data) as DatabaseSaveData
-                setLastSseEvent({ kind, data })
+                sseEvents.emit({ kind, data })
                 if (data.status !== 'started') {
                     refreshRef.current()
                 }
@@ -97,8 +85,22 @@ export const useNotifications = () => {
             const es = new EventSource(`${baseURL}/events`, { withCredentials: true })
             source = es
 
+            /* When an established stream drops, the browser dials back in with the id of the last
+             * event it saw and the server replays everything since, so nothing is missed. A new
+             * EventSource, or one that never saw an event, starts from now instead. */
+            let resumable = false
+            const noteId = (e: MessageEvent) => {
+                resumable ||= e.lastEventId !== ''
+            }
+            for (const kind of ['database-save', 'filestore-backup', 'deployment', 'component-status']) {
+                es.addEventListener(kind, noteId)
+            }
+
             es.onopen = () => {
                 delay = STREAM_RECONNECT_DELAY_MS
+                if (resumable) {
+                    return
+                }
                 /* Anything that happened while the stream was down was never pushed, so consumers
                  * reload rather than carry on from a view that stopped being live. */
                 setStreamEpoch((current) => current + 1)
@@ -136,8 +138,7 @@ export const useNotifications = () => {
             es.addEventListener('deployment', (e: MessageEvent) => {
                 try {
                     const data = JSON.parse(e.data) as DeploymentEventData
-                    deploymentEventSeq.current += 1
-                    setLastDeploymentEvent({ seq: deploymentEventSeq.current, data })
+                    deploymentEvents.emit(data)
                     /* Only the deploy's outcome is persisted, and it is the one the bell shows. */
                     if (!data.instanceId) {
                         refreshRef.current()
@@ -149,9 +150,7 @@ export const useNotifications = () => {
 
             es.addEventListener('component-status', (e: MessageEvent) => {
                 try {
-                    const data = JSON.parse(e.data) as ComponentStatusEventData
-                    componentStatusSeq.current += 1
-                    setLastComponentStatus({ seq: componentStatusSeq.current, data })
+                    componentStatuses.emit(JSON.parse(e.data) as ComponentStatusEventData)
                 } catch (err) {
                     console.error('[notifications] failed to parse component-status event', { raw: e.data, err })
                 }
@@ -164,7 +163,7 @@ export const useNotifications = () => {
             clearTimeout(reconnect)
             source?.close()
         }
-    }, [])
+    }, [sseEvents, componentStatuses, deploymentEvents])
 
     const markRead = useCallback(
         async (id: number) => {
@@ -181,5 +180,14 @@ export const useNotifications = () => {
 
     const unreadCount = notifications.filter((n) => !n.read).length
 
-    return { notifications, unreadCount, lastSseEvent, lastComponentStatus, lastDeploymentEvent, streamEpoch, markRead, markAllRead }
+    return {
+        notifications,
+        unreadCount,
+        onSseEvent: sseEvents.subscribe,
+        onComponentStatus: componentStatuses.subscribe,
+        onDeploymentEvent: deploymentEvents.subscribe,
+        streamEpoch,
+        markRead,
+        markAllRead,
+    }
 }
