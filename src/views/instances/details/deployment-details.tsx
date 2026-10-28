@@ -10,6 +10,7 @@ import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
 import { deploymentStatus } from '../list/component-health.ts'
 import { ExpiresCell } from '../list/expires-cell.tsx'
 import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
+import { expiresAt } from '../list/instance-filter-rules.ts'
 import { stackUrl } from '../list/open-button.tsx'
 import { DeploymentStacks } from './deployment-stacks.tsx'
 import { ExtendLifetimeModal } from './extend-lifetime-modal.tsx'
@@ -17,18 +18,19 @@ import { InstanceUrl } from './instance-url.tsx'
 
 /* When it goes away leads, since that is what people check most. DHIS2's address comes last with its
  * buttons, and is left out for a deployment without the stack or a group without a hostname. */
-const detailItems = (deployment: Deployment): ReactNode[] => {
+const detailItems = (deployment: Deployment): Record<string, ReactNode> => {
     const dhis2 = deployment.instances?.find((instance) => instance.stackName === STACK_NAMES.DHIS2)
-    const expired = new Date(deployment.createdAt).getTime() + deployment.ttl * 1000 < Date.now()
-    return [
-        <ExpiresCell key="expires" deployment={deployment} prefix={expired ? 'Expired' : 'Expires'} />,
-        `Owned by ${deployment.user.email}`,
-        <>
-            Updated <MomentFromNow date={deployment.updatedAt} />
-        </>,
-        `Group: ${deployment.groupName}`,
-        ...(dhis2 && deployment.group?.hostname ? [<InstanceUrl key="url" url={stackUrl(deployment.group, dhis2.name)} />] : []),
-    ]
+    return {
+        expires: <ExpiresCell deployment={deployment} prefix={expiresAt(deployment) < Date.now() ? 'Expired' : 'Expires'} />,
+        owner: `Owned by ${deployment.user.email}`,
+        updated: (
+            <>
+                Updated <MomentFromNow date={deployment.updatedAt} />
+            </>
+        ),
+        group: `Group: ${deployment.groupName}`,
+        url: dhis2 && deployment.group?.hostname && <InstanceUrl url={stackUrl(deployment.group, dhis2.name)} />,
+    }
 }
 
 export const DeploymentDetails: FC = () => {

@@ -34,17 +34,21 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
                         key={stack.id}
                         title={stack.stackName}
                         status={deploymentStatus([stack], live && [live]) ?? deployStatus(stack)}
-                        meta={[
-                            <>
-                                Created <MomentFromNow date={stack.createdAt} />
-                            </>,
-                            <>
-                                Updated <MomentFromNow date={stack.updatedAt} />
-                            </>,
-                            ...(VIEWABLE_INSTANCE_TYPES.includes(stack.stackName) && deployment.group?.hostname
-                                ? [<InstanceUrl key="url" url={stackUrl(deployment.group, stack.name, stack.stackName)} />]
-                                : []),
-                        ]}
+                        meta={{
+                            created: (
+                                <>
+                                    Created <MomentFromNow date={stack.createdAt} />
+                                </>
+                            ),
+                            updated: (
+                                <>
+                                    Updated <MomentFromNow date={stack.updatedAt} />
+                                </>
+                            ),
+                            url: VIEWABLE_INSTANCE_TYPES.includes(stack.stackName) && deployment.group?.hostname && (
+                                <InstanceUrl url={stackUrl(deployment.group, stack.name, stack.stackName)} />
+                            ),
+                        }}
                     >
                         {live ? (
                             <InstanceComponentsSection instanceComponents={live} instance={stack} onChanged={refetch} />

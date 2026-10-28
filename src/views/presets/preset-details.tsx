@@ -1,5 +1,5 @@
 import { Button } from '@dhis2/ui'
-import type { FC, ReactNode } from 'react'
+import type { FC } from 'react'
 import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ActionsMenu, ItemPanel, ItemPanelList, MetaLine, MomentFromNow, Page, useActionAlert } from '../../components/index.ts'
@@ -15,7 +15,7 @@ const PresetStack: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
     const { leftover } = useMemo(() => groupParametersByComponent(instance.parameters, stack as StackWithParameterGroups | undefined, []), [instance.parameters, stack])
 
     return (
-        <ItemPanel title={instance.stackName ?? 'Stack'} meta={[`${leftover.length} parameters`]}>
+        <ItemPanel title={instance.stackName ?? 'Stack'} meta={{ parameters: `${leftover.length} ${leftover.length === 1 ? 'parameter' : 'parameters'}` }}>
             {leftover.length > 0 && <ComponentParametersTable parameters={leftover} />}
         </ItemPanel>
     )
@@ -25,25 +25,27 @@ const PresetStack: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
 const PresetFacts: FC<{ preset: Deployment }> = ({ preset }) => {
     const { version, databaseId, storage, companions } = presetSummary(preset)
     const { label: database } = useDatabaseLabel(databaseId)
-    const items: ReactNode[] = [
-        ...(version ? [`DHIS2 ${version}`] : []),
-        ...(databaseId
-            ? [
-                  <>
-                      Database: <Link to={`/databases/${databaseId}`}>{database}</Link>
-                  </>,
-              ]
-            : []),
-        ...(storage ? [`Storage: ${storage}`] : []),
-        ...(companions.length > 0 ? [`With ${companions.join(', ')}`] : []),
-        `Group: ${preset.groupName}`,
-        ...(preset.user?.email ? [`Owned by ${preset.user.email}`] : []),
-        <>
-            Updated <MomentFromNow date={preset.updatedAt} />
-        </>,
-    ]
-
-    return <MetaLine items={items} />
+    return (
+        <MetaLine
+            items={{
+                version: version && `DHIS2 ${version}`,
+                database: databaseId && (
+                    <>
+                        Database: <Link to={`/databases/${databaseId}`}>{database}</Link>
+                    </>
+                ),
+                storage: storage && `Storage: ${storage}`,
+                companions: companions.length > 0 && `With ${companions.join(', ')}`,
+                group: `Group: ${preset.groupName}`,
+                owner: preset.user?.email && `Owned by ${preset.user.email}`,
+                updated: (
+                    <>
+                        Updated <MomentFromNow date={preset.updatedAt} />
+                    </>
+                ),
+            }}
+        />
+    )
 }
 
 const presetError = (preset: Deployment | undefined, error: Error | null): PageError | undefined => {
@@ -87,10 +89,10 @@ export const PresetDetails: FC = () => {
                         </Button>
                         <ActionsMenu
                             label={`Actions for ${preset.name}`}
+                            buttons
                             items={[
                                 {
                                     label: 'Delete',
-                                    button: true,
                                     destructive: true,
                                     confirm: {
                                         title: 'Delete preset',

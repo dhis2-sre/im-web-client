@@ -26,7 +26,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
 
     return (
         <Form onSubmit={submit} initialValues={{ ttl: deployment.ttl }}>
-            {({ handleSubmit, pristine, invalid, submitting, submitError, values }) => (
+            {({ handleSubmit, pristine, invalid, submitting, submitError }) => (
                 <Modal onClose={onClose}>
                     <ModalTitle>Extend lifetime of {deployment.name}</ModalTitle>
                     <ModalContent>
@@ -42,7 +42,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
                             <Button secondary onClick={onClose} disabled={submitting}>
                                 Cancel
                             </Button>
-                            <Button primary onClick={() => void handleSubmit()} disabled={pristine || invalid || values.ttl <= deployment.ttl} loading={submitting}>
+                            <Button primary onClick={() => void handleSubmit()} disabled={pristine || invalid} loading={submitting}>
                                 Extend
                             </Button>
                         </ButtonStrip>

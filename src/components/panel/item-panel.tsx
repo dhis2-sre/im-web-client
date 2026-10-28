@@ -9,10 +9,10 @@ import panelStyles from './panel.module.css'
 /* One of several things of a kind inside a panel, such as a stack of an instance: its name, state,
  * a few facts of its own and what can be done to it on one line, and its contents below. The body is
  * flush, since what goes there is usually a table. */
-export const ItemPanel: FC<{ title: string; status?: Status; meta?: ReactNode[]; actions?: ReactNode; children?: ReactNode }> = ({
+export const ItemPanel: FC<{ title: string; status?: Status; meta?: Record<string, ReactNode>; actions?: ReactNode; children?: ReactNode }> = ({
     title,
     status,
-    meta = [],
+    meta,
     actions,
     children,
 }) => (
@@ -23,7 +23,7 @@ export const ItemPanel: FC<{ title: string; status?: Status; meta?: ReactNode[];
                     <h3 className={styles.title}>{title}</h3>
                     {status && <StatusDot status={status} />}
                 </span>
-                {meta.length > 0 && (
+                {meta && (
                     <span className={styles.meta}>
                         <MetaLine items={meta} />
                     </span>

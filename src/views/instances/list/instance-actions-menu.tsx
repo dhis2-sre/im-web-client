@@ -78,6 +78,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
         <>
             <ActionsMenu
                 label={`Actions for ${name}`}
+                buttons={buttons}
                 dataTest="deployment-actions-menu-button"
                 items={[
                     includeEdit && {
@@ -90,17 +91,15 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                             label: 'Open pgAdmin',
                             onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
                         },
-                    backupTarget && { label: 'Back up…', button: buttons, busy: backupRunning, onClick: () => setSavingAs(true) },
+                    backupTarget && { label: 'Back up…', busy: backupRunning, onClick: () => setSavingAs(true) },
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
                     hasStacks && {
                         label: 'Restart',
-                        button: buttons,
                         confirm: { title: 'Restart instance', message: `Restart every component of "${name}"?`, confirmLabel: 'Restart' },
                         onClick: actOnAll('restart'),
                     },
                     hasStacks && {
                         label: 'Reset',
-                        button: buttons,
                         destructive: true,
                         confirm: {
                             title: 'Reset instance',
@@ -112,7 +111,6 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                     },
                     {
                         label: 'Delete',
-                        button: buttons,
                         destructive: true,
                         unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         confirm: {

@@ -14,8 +14,6 @@ export type ActionItem = {
     destructive?: boolean
     /* Why the item cannot be used right now, shown under its label. The item is disabled while set. */
     unavailable?: string
-    /* Common enough to sit ahead of the menu as a button of its own, as on a details page. */
-    button?: boolean
     /* Busy for a reason the menu cannot see, such as a modal the item opened. */
     busy?: boolean
 }
@@ -25,20 +23,22 @@ type ActionsMenuProps = {
     label: string
     /* Falsy entries are skipped, so an item can be included with a plain condition. */
     items: (ActionItem | false | null | undefined)[]
+    /* Every item as a button of its own rather than in the menu, as on a details page. */
+    buttons?: boolean
     dataTest?: string
 }
 
 /* One kebab menu for every row and page that has more actions than its one visible button. Items
  * are declared rather than rendered, so confirmation, the busy state and closing the menu behave the
- * same everywhere, including for the items a page lifts out as buttons. */
-export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, dataTest }) => {
+ * same everywhere, including where a page shows them as buttons. */
+export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, buttons, dataTest }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
     const [running, setRunning] = useState<string[]>([])
     const { confirm, modal } = useConfirmedAction()
     const visibleItems = items.filter((item): item is ActionItem => Boolean(item))
-    const buttonItems = visibleItems.filter((item) => item.button)
-    const menuItems = visibleItems.filter((item) => !item.button)
+    const buttonItems = buttons ? visibleItems : []
+    const menuItems = buttons ? [] : visibleItems
     const isBusy = (item: ActionItem) => Boolean(item.busy) || running.includes(item.label)
 
     const close = useCallback(() => {
