@@ -42,11 +42,18 @@ const useRowStatus = (id: number) => {
 }
 
 /* Loads one deployment's components, live, and reports them to the list. One per deployment in scope
- * (see inScope), mounted whatever the search and status filters show, so typing never refetches. */
-const LoadStatus: FC<{ id: number }> = ({ id }) => {
+ * (see inScope), mounted whatever the search and status filters show, so typing never refetches.
+ * Eager reloads a stale row straight away rather than once its cell is on screen: under a status
+ * filter a hidden row has no cell, and would keep the health that hides it. */
+const LoadStatus: FC<{ id: number; eager: boolean }> = ({ id, eager }) => {
     const store = useContext(Statuses)
     const { instances, loading, error, stale, refetch } = useLiveComponents(id, { reloadOnReconnect: false })
     useEffect(() => store.set(id, { instances, loading, error, stale, refetch }), [store, id, instances, loading, error, stale, refetch])
+    useEffect(() => {
+        if (stale && eager) {
+            refetch()
+        }
+    }, [stale, eager, refetch])
     return null
 }
 // Memoised so a reload of the list doesn't re-render every loader with it.
@@ -135,7 +142,7 @@ export const InstancesList: FC = () => {
     return (
         <Statuses.Provider value={store}>
             {inScope.map((deployment) => (
-                <StatusLoader key={deployment.id} id={deployment.id} />
+                <StatusLoader key={deployment.id} id={deployment.id} eager={filters.filters.status !== 'all'} />
             ))}
             <ListPage
                 title="Instances"
