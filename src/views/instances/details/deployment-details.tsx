@@ -1,8 +1,8 @@
-import { Button } from '@dhis2/ui'
+import { Button, IconClock16, IconClockHistory16, IconFolder16, IconLink16, IconUser16 } from '@dhis2/ui'
 import { FC, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { MetaLine, MomentFromNow, Page } from '../../../components/index.ts'
+import { MetaFact, MetaLine, MomentFromNow, Page } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment, DeploymentInstanceDeployState } from '../../../types/index.ts'
@@ -21,15 +21,23 @@ import { InstanceUrl } from './instance-url.tsx'
 const detailItems = (deployment: Deployment): Record<string, ReactNode> => {
     const dhis2 = deployment.instances?.find((instance) => instance.stackName === STACK_NAMES.DHIS2)
     return {
-        expires: <ExpiresCell deployment={deployment} prefix={expiresAt(deployment) < Date.now() ? 'Expired' : 'Expires'} />,
-        owner: `Owned by ${deployment.user.email}`,
-        updated: (
-            <>
-                Updated <MomentFromNow date={deployment.updatedAt} />
-            </>
+        expires: (
+            <MetaFact icon={<IconClock16 />}>
+                <ExpiresCell deployment={deployment} prefix={expiresAt(deployment) < Date.now() ? 'Expired' : 'Expires'} />
+            </MetaFact>
         ),
-        group: `Group: ${deployment.groupName}`,
-        url: dhis2 && deployment.group?.hostname && <InstanceUrl url={stackUrl(deployment.group, dhis2.name)} />,
+        owner: <MetaFact icon={<IconUser16 />}>Owned by {deployment.user.email}</MetaFact>,
+        updated: (
+            <MetaFact icon={<IconClockHistory16 />}>
+                Updated <MomentFromNow date={deployment.updatedAt} />
+            </MetaFact>
+        ),
+        group: <MetaFact icon={<IconFolder16 />}>{deployment.groupName}</MetaFact>,
+        url: dhis2 && deployment.group?.hostname && (
+            <MetaFact icon={<IconLink16 />}>
+                <InstanceUrl url={stackUrl(deployment.group, dhis2.name)} />
+            </MetaFact>
+        ),
     }
 }
 
