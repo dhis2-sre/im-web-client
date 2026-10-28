@@ -1,10 +1,11 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
-import { createContext, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, memo, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { FC } from 'react'
 import Moment from 'react-moment'
 import { useNavigate } from 'react-router-dom'
 import { ListPage } from '../../../components/index.ts'
 import type { ListColumn } from '../../../components/index.ts'
+import { createEmitter } from '../../../hooks/create-emitter.ts'
 import { useLiveComponents } from '../../../hooks/index.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
 import type { Deployment } from '../../../types/index.ts'
@@ -16,29 +17,78 @@ import { InstanceFilterBar, useInstanceFilters } from './instance-filters.tsx'
 import { OpenButton } from './open-button.tsx'
 import { useDeployments } from './use-deployments.ts'
 
-type RowStatus = Pick<LiveComponents, 'instances' | 'loading' | 'error'>
+type RowStatus = Pick<LiveComponents, 'instances' | 'loading' | 'error' | 'stale' | 'refetch'>
 
 /* The deployments' components, kept by the list rather than by each row, so the status filter knows
- * the health of rows it is hiding. The status chip and the actions menu read the same entry. */
-const Statuses = createContext<Map<number, RowStatus>>(new Map())
+ * the health of rows it is hiding. The status chip and the actions menu read the same entry. A store
+ * rather than list state, so one deployment's change re-renders its own row and not all of them. */
+const createStatusStore = () => {
+    const statuses = new Map<number, RowStatus>()
+    const changes = createEmitter<number>()
+    return {
+        get: (id: number) => statuses.get(id),
+        set: (id: number, status: RowStatus) => {
+            statuses.set(id, status)
+            changes.emit(id)
+        },
+        subscribe: changes.subscribe,
+    }
+}
+const Statuses = createContext(createStatusStore())
+
+const useRowStatus = (id: number) => {
+    const store = useContext(Statuses)
+    return useSyncExternalStore(store.subscribe, () => store.get(id))
+}
 
 /* Loads one deployment's components, live, and reports them to the list. One per deployment in scope
- * (see inScope), mounted whatever the search and status filters show, so typing never refetches. */
-const LoadStatus: FC<{ id: number; onChange: (id: number, status: RowStatus) => void }> = ({ id, onChange }) => {
-    const { instances, loading, error } = useLiveComponents(id)
-    useEffect(() => onChange(id, { instances, loading, error }), [id, instances, loading, error, onChange])
+ * (see inScope), mounted whatever the search and status filters show, so typing never refetches.
+ * Eager reloads a stale row straight away rather than once its cell is on screen: under a status
+ * filter a hidden row has no cell, and would keep the health that hides it. */
+const LoadStatus: FC<{ id: number; eager: boolean }> = ({ id, eager }) => {
+    const store = useContext(Statuses)
+    const { instances, loading, error, stale, refetch } = useLiveComponents(id, { reloadOnReconnect: false })
+    useEffect(() => store.set(id, { instances, loading, error, stale, refetch }), [store, id, instances, loading, error, stale, refetch])
+    useEffect(() => {
+        if (stale && eager) {
+            refetch()
+        }
+    }, [stale, eager, refetch])
     return null
 }
-// Memoised so a report, which re-renders the list, doesn't re-render every loader with it.
+// Memoised so a reload of the list doesn't re-render every loader with it.
 const StatusLoader = memo(LoadStatus)
 
 const StatusCell: FC<{ id: number }> = ({ id }) => {
-    const status = useContext(Statuses).get(id)
-    return <DeploymentComponentTags instances={status?.instances} loading={status?.loading ?? true} error={status?.error} />
+    const status = useRowStatus(id)
+    const cell = useRef<HTMLDivElement>(null)
+
+    /* After a reconnect that could not resume, a row reloads once it is on screen, so the list doesn't
+     * reload every deployment at once. */
+    useEffect(() => {
+        const element = cell.current
+        if (!status?.stale || !element) {
+            return
+        }
+        const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+                observer.disconnect()
+                status.refetch()
+            }
+        })
+        observer.observe(element)
+        return () => observer.disconnect()
+    }, [status])
+
+    return (
+        <div ref={cell}>
+            <DeploymentComponentTags instances={status?.instances} loading={status?.loading ?? true} error={status?.error} />
+        </div>
+    )
 }
 
 const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deployment, refetch }) => {
-    const status = useContext(Statuses).get(deployment.id)
+    const status = useRowStatus(deployment.id)
 
     return (
         <>
@@ -68,28 +118,18 @@ export const InstancesList: FC = () => {
     const refresh = () => void refetch()
     const filters = useInstanceFilters()
 
-    const [statuses, setStatuses] = useState(() => new Map<number, RowStatus>())
-    /* The loaders report from their effects, hundreds of them as their responses arrive. Each report
-     * setting state there re-rendered the whole list and chained past React's limit on updates from
-     * effects, so reports are collected and applied together once the effects have run. */
-    const pending = useRef(new Map<number, RowStatus>())
-    const report = useCallback((id: number, status: RowStatus) => {
-        if (pending.current.size === 0) {
-            setTimeout(() => {
-                const batch = pending.current
-                pending.current = new Map()
-                setStatuses((current) => new Map([...current, ...batch]))
-            })
-        }
-        pending.current.set(id, status)
-    }, [])
+    const [store] = useState(createStatusStore)
 
     const all = groups?.flatMap((group) => group.deployments ?? []) ?? []
     const inScope = all.filter(filters.inScope)
     const health = (deployment: Deployment) => {
-        const components = statuses.get(deployment.id)?.instances
+        const components = store.get(deployment.id)?.instances
         return components ? deploymentHealth(components) : undefined
     }
+    const countChecking = () => inScope.filter((deployment) => store.get(deployment.id)?.loading !== false).length
+    /* Only a status filter needs the list itself to follow the statuses, to show and hide rows by them;
+     * otherwise a change re-renders just its own row. */
+    useSyncExternalStore(store.subscribe, () => (filters.filters.status === 'all' ? '' : `${countChecking()} ${inScope.map(health).join()}`))
     const shown = groups
         ?.map((group) => ({
             key: group.name ?? '',
@@ -97,12 +137,12 @@ export const InstancesList: FC = () => {
             rows: (group.deployments ?? []).filter((deployment) => filters.matches(deployment, health(deployment))),
         }))
         .filter((group) => group.rows.length > 0)
-    const checking = inScope.filter((deployment) => statuses.get(deployment.id)?.loading !== false).length
+    const checking = countChecking()
 
     return (
-        <Statuses.Provider value={statuses}>
+        <Statuses.Provider value={store}>
             {inScope.map((deployment) => (
-                <StatusLoader key={deployment.id} id={deployment.id} onChange={report} />
+                <StatusLoader key={deployment.id} id={deployment.id} eager={filters.filters.status !== 'all'} />
             ))}
             <ListPage
                 title="Instances"
