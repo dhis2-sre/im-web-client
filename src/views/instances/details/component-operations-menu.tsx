@@ -66,7 +66,7 @@ export const ComponentOperationsMenu: FC<{
                         },
                         onClick: act('reset'),
                     },
-                    backsUp && { label: 'Back up', onClick: () => setShowSaveAs(true) },
+                    backsUp && { label: 'Back up…', onClick: () => setShowSaveAs(true) },
                     supports('logs') && replica && { label: 'Logs', onClick: () => setShowLog(true) },
                     !replicaOnly && grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
                 ]}

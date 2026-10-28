@@ -58,7 +58,7 @@ export const DeploymentDetails: FC = () => {
                         </span>
                         <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
                             <Button small disabled={isDeploying(deployment)} onClick={() => setExtending(true)}>
-                                Extend lifetime
+                                Extend…
                             </Button>
                         </span>
                         <InstanceActionsMenu

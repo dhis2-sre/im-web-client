@@ -90,7 +90,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                             label: 'Open pgAdmin',
                             onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
                         },
-                    backupTarget && { label: 'Back up', button: buttons, busy: backupRunning, onClick: () => setSavingAs(true) },
+                    backupTarget && { label: 'Back up…', button: buttons, busy: backupRunning, onClick: () => setSavingAs(true) },
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
                     hasStacks && {
                         label: 'Restart',
