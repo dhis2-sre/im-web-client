@@ -1,10 +1,10 @@
-import { Button } from '@dhis2/ui'
+import { Button, IconApps16, IconClockHistory16, IconFolder16, IconUser16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useMemo } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ActionsMenu, ItemPanel, ItemPanelList, MetaLine, MomentFromNow, Page, useActionAlert } from '../../components/index.ts'
+import { useNavigate, useParams } from 'react-router-dom'
+import { ActionsMenu, ItemPanel, ItemPanelList, MetaFact, MetaLine, MomentFromNow, Page, useActionAlert } from '../../components/index.ts'
 import type { PageError } from '../../components/index.ts'
-import { useAuthAxios, useDatabaseLabel, useStack } from '../../hooks/index.ts'
+import { useAuthAxios, useStack } from '../../hooks/index.ts'
 import type { Deployment, DeploymentInstance, StackWithParameterGroups } from '../../types/index.ts'
 import { groupParametersByComponent } from '../../utils/component-parameters.ts'
 import { ComponentParametersTable } from '../instances/details/component-parameters-table.tsx'
@@ -14,35 +14,24 @@ const PresetStack: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
     const { stack } = useStack(instance.stackName ?? '')
     const { leftover } = useMemo(() => groupParametersByComponent(instance.parameters, stack as StackWithParameterGroups | undefined, []), [instance.parameters, stack])
 
-    return (
-        <ItemPanel title={instance.stackName ?? 'Stack'} meta={{ parameters: `${leftover.length} ${leftover.length === 1 ? 'parameter' : 'parameters'}` }}>
-            {leftover.length > 0 && <ComponentParametersTable parameters={leftover} />}
-        </ItemPanel>
-    )
+    return <ItemPanel title={instance.stackName ?? 'Stack'}>{leftover.length > 0 && <ComponentParametersTable parameters={leftover} />}</ItemPanel>
 }
 
-/* The settings that tell presets apart come first, then where it lives and who owns it. */
+/* Who owns it, when it last changed and where it lives, in the instance page's order, then the
+ * stacks it deploys beside DHIS2. */
 const PresetFacts: FC<{ preset: Deployment }> = ({ preset }) => {
-    const { version, databaseId, storage, companions } = presetSummary(preset)
-    const { label: database } = useDatabaseLabel(databaseId)
+    const { companions } = presetSummary(preset)
     return (
         <MetaLine
             items={{
-                version: version && `DHIS2 ${version}`,
-                database: databaseId && (
-                    <>
-                        Database: <Link to={`/databases/${databaseId}`}>{database}</Link>
-                    </>
-                ),
-                storage: storage && `Storage: ${storage}`,
-                companions: companions.length > 0 && `With ${companions.join(', ')}`,
-                group: `Group: ${preset.groupName}`,
-                owner: preset.user?.email && `Owned by ${preset.user.email}`,
+                owner: preset.user?.email && <MetaFact icon={<IconUser16 />}>Owned by {preset.user.email}</MetaFact>,
                 updated: (
-                    <>
+                    <MetaFact icon={<IconClockHistory16 />}>
                         Updated <MomentFromNow date={preset.updatedAt} />
-                    </>
+                    </MetaFact>
                 ),
+                group: <MetaFact icon={<IconFolder16 />}>{preset.groupName}</MetaFact>,
+                companions: companions.length > 0 && <MetaFact icon={<IconApps16 />}>With {companions.join(', ')}</MetaFact>,
             }}
         />
     )
