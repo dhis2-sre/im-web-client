@@ -7,8 +7,9 @@ import { Deployment } from '../../../types/index.ts'
 import { refusalMessage } from '../../../utils/deploy-state.ts'
 import { ExtendTtlSelect } from '../fields/extend-ttl-select.tsx'
 
-/* The Lifetime field of the edit form on its own. A PATCH carrying only a ttl touches nothing on the
- * cluster, so this finishes without a redeploy. */
+/* The Lifetime field of the edit form on its own, offering only later ends: its presets count from
+ * now, so a short one would cut an instance with days left short. A PATCH carrying only a ttl touches
+ * nothing on the cluster, so this finishes without a redeploy. */
 export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => void; onExtended: () => void }> = ({ deployment, onClose, onExtended }) => {
     const [, patch] = useAuthAxios({ url: `/deployments/${deployment.id}`, method: 'PATCH' }, { manual: true })
 
@@ -25,11 +26,11 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
 
     return (
         <Form onSubmit={submit} initialValues={{ ttl: deployment.ttl }}>
-            {({ handleSubmit, pristine, invalid, submitting, submitError }) => (
+            {({ handleSubmit, pristine, invalid, submitting, submitError, values }) => (
                 <Modal onClose={onClose}>
                     <ModalTitle>Extend lifetime of {deployment.name}</ModalTitle>
                     <ModalContent>
-                        <ExtendTtlSelect deployment={deployment} />
+                        <ExtendTtlSelect deployment={deployment} extendOnly />
                         {submitError && (
                             <NoticeBox error title="Could not extend the lifetime">
                                 {submitError}
@@ -41,7 +42,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
                             <Button secondary onClick={onClose} disabled={submitting}>
                                 Cancel
                             </Button>
-                            <Button primary onClick={() => void handleSubmit()} disabled={pristine || invalid} loading={submitting}>
+                            <Button primary onClick={() => void handleSubmit()} disabled={pristine || invalid || values.ttl <= deployment.ttl} loading={submitting}>
                                 Extend
                             </Button>
                         </ButtonStrip>

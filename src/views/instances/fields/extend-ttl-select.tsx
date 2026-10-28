@@ -5,9 +5,11 @@ import { useField } from 'react-final-form'
 import { Deployment } from '../../../types/index.ts'
 import { CustomDateCalendar } from './custom-date-calendar.tsx'
 import styles from './fields.module.css'
-import { CUSTOM_LABEL, CUSTOM_VALUE, DATE_FORMAT, DATETIME_FORMAT, TTL_PRESETS } from './ttl-presets.ts'
+import { CUSTOM_LABEL, CUSTOM_VALUE, DATE_FORMAT, DATETIME_FORMAT, extendingPresets, lifetimeError, TTL_PRESETS } from './ttl-presets.ts'
 
-export const ExtendTtlSelect = ({ deployment }: { deployment: Deployment }) => {
+/* The Lifetime field of an existing instance. With extendOnly, as behind an Extend button, it offers
+ * only lifetimes that end later than the current one; the edit form may shorten one as well. */
+export const ExtendTtlSelect = ({ deployment, extendOnly = false }: { deployment: Deployment; extendOnly?: boolean }) => {
     const originalTtl = deployment.ttl ?? 0
     const createdAtMs = new Date(deployment.createdAt!).getTime()
     const currentEndMs = createdAtMs + originalTtl * 1000
@@ -20,7 +22,7 @@ export const ExtendTtlSelect = ({ deployment }: { deployment: Deployment }) => {
 
     const { input, meta } = useField<number>('ttl', {
         subscription: { value: true, error: true },
-        validate: (v) => (typeof v === 'number' && v > 0 && v <= ageSeconds ? `Pick a date in the future.` : undefined),
+        validate: (v) => (typeof v === 'number' ? lifetimeError(v, { ageSeconds, ttlSeconds: originalTtl, extendOnly }) : undefined),
     })
     const value = Number(input.value) || 0
     const extensionSeconds = value - ageSeconds
@@ -28,6 +30,8 @@ export const ExtendTtlSelect = ({ deployment }: { deployment: Deployment }) => {
     const selected = customMode ? CUSTOM_VALUE : matchedPreset ? String(matchedPreset.seconds) : ''
     const calendarDate = customMode && value > 0 ? moment(createdAtMs + value * 1000).format(DATE_FORMAT) : ''
     const remainingLabel = remainingSeconds > 0 ? `${moment.duration(remainingSeconds, 'seconds').humanize()} remaining` : 'expired'
+    const presets = extendOnly ? extendingPresets(ageSeconds, originalTtl) : TTL_PRESETS
+    const minDateMs = extendOnly ? Math.max(nowMs, currentEndMs) : nowMs
 
     const handleSelect = (next: string) => {
         if (next === CUSTOM_VALUE) {
@@ -50,14 +54,14 @@ export const ExtendTtlSelect = ({ deployment }: { deployment: Deployment }) => {
                 onChange={({ selected: next }: { selected: string }) => handleSelect(next)}
                 helpText="How long this instance will run from now until automatic shutdown."
             >
-                {TTL_PRESETS.map((p) => (
+                {presets.map((p) => (
                     <SingleSelectOption key={p.seconds} value={String(p.seconds)} label={p.label} />
                 ))}
                 <SingleSelectOption value={CUSTOM_VALUE} label={CUSTOM_LABEL} />
             </SingleSelectField>
             {customMode && (
                 <>
-                    <CustomDateCalendar date={calendarDate} minDate={moment(nowMs).format(DATE_FORMAT)} onDateSelect={handleDate} />
+                    <CustomDateCalendar date={calendarDate} minDate={moment(minDateMs).format(DATE_FORMAT)} onDateSelect={handleDate} />
                     {meta.error && <div className={styles.dateError}>{meta.error}</div>}
                 </>
             )}
