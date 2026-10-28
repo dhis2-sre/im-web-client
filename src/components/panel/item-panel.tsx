@@ -23,7 +23,7 @@ export const ItemPanel: FC<{ title: string; status?: Status; meta?: Record<strin
                     <h3 className={styles.title}>{title}</h3>
                     {status && <StatusDot status={status} />}
                 </span>
-                {meta && (
+                {meta && Object.values(meta).some(Boolean) && (
                     <span className={styles.meta}>
                         <MetaLine items={meta} />
                     </span>
