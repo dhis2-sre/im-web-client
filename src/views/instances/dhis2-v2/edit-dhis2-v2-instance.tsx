@@ -9,6 +9,7 @@ import { useDeploymentDetails, useDeploymentEdit } from '../../../hooks/index.ts
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { Deployment, StackCompanion } from '../../../types/index.ts'
 import styles from '../styles.module.css'
+import { deploymentHasInstanceOf } from './deployment-instances.ts'
 import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 
 /* A read replaces every sensitive value with a run of stars, which is not a value anyone can submit.
@@ -44,7 +45,7 @@ const initialValuesFor = (deployment: Deployment) => {
 const companionsBeingRemoved = (deployment: Deployment, companions: StackCompanion[], values: AnyObject) => {
     const stackValues: AnyObject = values[STACK_ID] ?? {}
     return companions
-        .filter((companion) => deployment.instances?.some((instance) => instance.stackName === companion.name))
+        .filter((companion) => deploymentHasInstanceOf(deployment, companion.name))
         .filter((companion) => companion.when && stackValues[companion.when.parameter] !== companion.when.equals)
         .map((companion) => companion.name)
 }
