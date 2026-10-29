@@ -1,46 +1,34 @@
 import { IconCheckmark16 } from '@dhis2/ui'
-import { type FC, useState } from 'react'
+import { type FC, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Notification } from '../../hooks/use-notifications.ts'
+import { useAuthAxios } from '../../hooks/use-auth-axios.ts'
+import type { GroupsWithDatabases, GroupWithDeployments } from '../../types/index.ts'
+import type { NotificationEvent } from '../../utils/visible-notifications.ts'
 import { MomentFromNow } from '../moment-from-now.tsx'
 import { StatusDot } from '../status/status-dot.tsx'
-import type { Status as DotStatus } from '../status/statuses.ts'
+import type { Status } from '../status/statuses.ts'
 import styles from './notification-panel.module.css'
 
-type Status = 'started' | 'success' | 'error'
+type EventStatus = NotificationEvent['data']['status']
 
-type NotificationData = {
-    status: Status
-    error?: string
-    databaseId?: number
-    databaseName?: string
-    deploymentId?: number
-    deploymentName?: string
-}
-
-const DOTS: Record<Status, DotStatus> = {
+const DOTS: Record<EventStatus, Status> = {
     started: { label: 'In progress', tone: 'progress' },
     success: { label: 'Succeeded', tone: 'positive' },
     error: { label: 'Failed', tone: 'negative' },
 }
 
 /* Deploy, edit and reset all publish the same "deployment" event, so the wording can only say how it ended. */
-const OUTCOMES: Record<string, Record<Status, string>> = {
+const OUTCOMES: Record<NotificationEvent['kind'], Record<EventStatus, string>> = {
     'database-save': { started: 'Saving database', success: 'Database saved', error: 'Database save failed' },
     'filestore-backup': { started: 'Backing up filestore', success: 'Filestore backed up', error: 'Filestore backup failed' },
     'deployment': { started: 'Deploying', success: 'Deployed', error: 'Deploy failed' },
 }
 
-const summarise = (kind: string, data: NotificationData) => {
-    const outcome = OUTCOMES[kind]?.[data.status] ?? kind
-    if (kind === 'deployment') {
-        return { title: `${outcome}: ${data.deploymentName}`, to: `/instances/${data.deploymentId}/details` }
-    }
-    return {
-        title: `${outcome}: ${data.databaseName}`,
-        to: `/databases/${data.databaseId}`,
-    }
-}
+/* What the event was about, and where it lives while it still exists. */
+const subject = (event: NotificationEvent) =>
+    event.kind === 'deployment'
+        ? { name: event.data.deploymentName, id: event.data.deploymentId, to: `/instances/${event.data.deploymentId}/details` }
+        : { name: event.data.databaseName, id: event.data.databaseId, to: `/databases/${event.data.databaseId}` }
 
 /* @dhis2/ui has no double checkmark, so this is Lucide's check-check (ISC licence). */
 const DoubleCheckmark16: FC = () => (
@@ -50,21 +38,35 @@ const DoubleCheckmark16: FC = () => (
     </svg>
 )
 
+/* The instances and databases the user can still reach, so a row about one that has since been
+ * deleted, or is in a group the user has left, is not a link to an error page. Until a list has
+ * loaded, or if it fails, its rows stay links. */
+const useExists = () => {
+    const [{ data: deploymentGroups }] = useAuthAxios<GroupWithDeployments[]>('/deployments', { useCache: false, autoCatch: true })
+    const [{ data: databaseGroups }] = useAuthAxios<GroupsWithDatabases[]>('/databases', { useCache: false, autoCatch: true })
+
+    return useMemo(() => {
+        const deploymentIds = deploymentGroups && new Set(deploymentGroups.flatMap((group) => group.deployments ?? []).map((deployment) => deployment.id))
+        const databaseIds = databaseGroups && new Set(databaseGroups.flatMap((group) => group.databases ?? []).map((database) => database.id))
+        return (event: NotificationEvent) => {
+            const ids = event.kind === 'deployment' ? deploymentIds : databaseIds
+            return !ids || ids.has(subject(event).id)
+        }
+    }, [deploymentGroups, databaseGroups])
+}
+
 type NotificationItemProps = {
-    notification: Notification
+    event: NotificationEvent
+    linked: boolean
     onMarkRead: (id: number) => void
     onNavigate: () => void
 }
 
-const NotificationItem: FC<NotificationItemProps> = ({ notification, onMarkRead, onNavigate }) => {
+const NotificationItem: FC<NotificationItemProps> = ({ event, linked, onMarkRead, onNavigate }) => {
     const [errorExpanded, setErrorExpanded] = useState(false)
-    let data: NotificationData
-    try {
-        data = JSON.parse(notification.data)
-    } catch {
-        return null
-    }
-    const { title, to } = summarise(notification.kind, data)
+    const { notification, data } = event
+    const { name, to } = subject(event)
+    const title = `${OUTCOMES[event.kind][data.status]}: ${name}`
 
     return (
         <li className={styles.item}>
@@ -73,9 +75,13 @@ const NotificationItem: FC<NotificationItemProps> = ({ notification, onMarkRead,
                 <StatusDot status={DOTS[data.status] ?? { label: data.status, tone: 'neutral' }} />
             </span>
             <div className={styles.content}>
-                <Link className={styles.link} to={to} onClick={onNavigate}>
-                    {title}
-                </Link>
+                {linked ? (
+                    <Link className={styles.link} to={to} onClick={onNavigate}>
+                        {title}
+                    </Link>
+                ) : (
+                    <span className={styles.titleText}>{title}</span>
+                )}
                 {data.error && (
                     <button
                         className={`${styles.error} ${errorExpanded ? styles.errorExpanded : ''}`}
@@ -98,33 +104,37 @@ const NotificationItem: FC<NotificationItemProps> = ({ notification, onMarkRead,
 }
 
 type NotificationPanelProps = {
-    notifications: Notification[]
+    notifications: NotificationEvent[]
     onMarkRead: (id: number) => void
     onMarkAllRead: () => void
     onNavigate: () => void
 }
 
-export const NotificationPanel: FC<NotificationPanelProps> = ({ notifications, onMarkRead, onMarkAllRead, onNavigate }) => (
-    <section className={styles.panel} aria-label="Notifications">
-        {/* The header scrolls with the list, pinned to its top, so it shares the scrollbar's width and its button lines up with the rows'. */}
-        <div className={styles.list}>
-            <div className={styles.header}>
-                <p className={styles.title}>Notifications</p>
-                {notifications.length > 0 && (
-                    <button className={styles.markRead} onClick={onMarkAllRead} aria-label="Mark all as read" title="Mark all as read">
-                        <DoubleCheckmark16 />
-                    </button>
+export const NotificationPanel: FC<NotificationPanelProps> = ({ notifications, onMarkRead, onMarkAllRead, onNavigate }) => {
+    const exists = useExists()
+
+    return (
+        <section className={styles.panel} aria-label="Notifications">
+            {/* The header scrolls with the list, pinned to its top, so it shares the scrollbar's width and its button lines up with the rows'. */}
+            <div className={styles.list}>
+                <div className={styles.header}>
+                    <p className={styles.title}>Notifications</p>
+                    {notifications.length > 0 && (
+                        <button className={styles.markRead} onClick={onMarkAllRead} aria-label="Mark all as read" title="Mark all as read">
+                            <DoubleCheckmark16 />
+                        </button>
+                    )}
+                </div>
+                {notifications.length === 0 ? (
+                    <div className={styles.empty}>No notifications</div>
+                ) : (
+                    <ul className={styles.items}>
+                        {notifications.map((event) => (
+                            <NotificationItem key={event.notification.id} event={event} linked={exists(event)} onMarkRead={onMarkRead} onNavigate={onNavigate} />
+                        ))}
+                    </ul>
                 )}
             </div>
-            {notifications.length === 0 ? (
-                <div className={styles.empty}>No notifications</div>
-            ) : (
-                <ul className={styles.items}>
-                    {notifications.map((n) => (
-                        <NotificationItem key={n.id} notification={n} onMarkRead={onMarkRead} onNavigate={onNavigate} />
-                    ))}
-                </ul>
-            )}
-        </div>
-    </section>
-)
+        </section>
+    )
+}

@@ -1,30 +1,44 @@
-import type { DatabaseSaveData, Notification } from '../hooks/use-notifications.ts'
+import type { DatabaseSaveData, Notification, NotificationKind } from '../hooks/use-notifications.ts'
+import type { DeploymentEventData } from '../types/index.ts'
 
-/* shortcut: the server returns every notification ever, so only the newest are shown; page it server-side once it has a limit. */
-const MAX_NOTIFICATIONS = 50
+/* A notification with its data parsed into the event it carries. */
+export type NotificationEvent =
+    | { notification: Notification; kind: 'deployment'; data: DeploymentEventData }
+    | { notification: Notification; kind: NotificationKind; data: DatabaseSaveData }
+
+/* Kinds the panel does not know are left out, since it could neither word them nor say where they lead. */
+const parse = (notification: Notification): NotificationEvent[] => {
+    let data
+    try {
+        data = JSON.parse(notification.data)
+    } catch {
+        return []
+    }
+    if (notification.kind === 'deployment') {
+        return [{ notification, kind: notification.kind, data }]
+    }
+    if (notification.kind === 'database-save' || notification.kind === 'filestore-backup') {
+        return [{ notification, kind: notification.kind, data }]
+    }
+    return []
+}
 
 /* A save or backup persists its "started" row and then a separate outcome row. Once the outcome has
  * arrived the started row is noise, so drop any started row with a newer row for the same database,
  * even a read one. The panel lists only unread rows, so read ones are dropped too.
  * Expects newest first, as the server sends them. */
-export const visibleNotifications = (notifications: Notification[]): Notification[] => {
+export const visibleNotifications = (notifications: Notification[]): NotificationEvent[] => {
     const settled = new Set<string>()
     return notifications
-        .filter((n) => {
-            let data: Partial<DatabaseSaveData>
-            try {
-                data = JSON.parse(n.data)
-            } catch {
-                return false
-            }
-            if (data.databaseId === undefined) {
+        .flatMap(parse)
+        .filter((event) => {
+            if (event.kind === 'deployment') {
                 return true
             }
-            const key = `${n.kind}:${data.databaseId}`
-            const superseded = data.status === 'started' && settled.has(key)
+            const key = `${event.kind}:${event.data.databaseId}`
+            const superseded = event.data.status === 'started' && settled.has(key)
             settled.add(key)
             return !superseded
         })
-        .filter((n) => !n.read)
-        .slice(0, MAX_NOTIFICATIONS)
+        .filter((event) => !event.notification.read)
 }

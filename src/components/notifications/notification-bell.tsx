@@ -35,6 +35,10 @@ export const NotificationBell: FC = () => {
     const toggle = useCallback(() => setOpen((v) => !v), [])
     const close = useCallback(() => setOpen(false), [])
 
+    /* A failed mark-read puts the row back, so say why rather than leave the click looking ignored. */
+    const handleMarkRead = useCallback((id: number) => markRead(id).catch(() => showError({ message: 'Could not mark the notification as read' })), [markRead, showError])
+    const handleMarkAllRead = useCallback(() => markAllRead().catch(() => showError({ message: 'Could not mark the notifications as read' })), [markAllRead, showError])
+
     return (
         <div className={styles.wrapper}>
             {open && <div className={styles.overlay} onClick={close} />}
@@ -46,7 +50,7 @@ export const NotificationBell: FC = () => {
                 <IconSubscribe16 />
                 {unreadCount > 0 && <span className={styles.badge} />}
             </button>
-            {open && <NotificationPanel notifications={notifications} onMarkRead={markRead} onMarkAllRead={markAllRead} onNavigate={close} />}
+            {open && <NotificationPanel notifications={notifications} onMarkRead={handleMarkRead} onMarkAllRead={handleMarkAllRead} onNavigate={close} />}
         </div>
     )
 }

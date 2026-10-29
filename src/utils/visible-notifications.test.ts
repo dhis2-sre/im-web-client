@@ -19,7 +19,7 @@ describe('visibleNotifications', () => {
             notification(2, 'filestore-backup', { status: 'started', databaseId: 1 }),
             notification(1, 'database-save', { status: 'started', databaseId: 1 }),
         ]
-        expect(visibleNotifications(rows).map((n) => n.id)).toEqual([4, 3, 2])
+        expect(visibleNotifications(rows).map((event) => event.notification.id)).toEqual([4, 3, 2])
     })
 
     it('drops read rows, and keeps a started row hidden once its outcome is read', () => {
@@ -31,8 +31,12 @@ describe('visibleNotifications', () => {
         expect(visibleNotifications(rows)).toEqual([])
     })
 
-    it('keeps deployments and drops rows it cannot parse', () => {
-        const rows = [notification(2, 'deployment', { status: 'success', deploymentId: 7 }), { ...notification(1, 'database-save', {}), data: 'not json' }]
-        expect(visibleNotifications(rows).map((n) => n.id)).toEqual([2])
+    it('keeps deployments and drops rows it cannot parse or does not know', () => {
+        const rows = [
+            notification(3, 'database-copy', { status: 'success', databaseId: 1 }),
+            notification(2, 'deployment', { status: 'success', deploymentId: 7 }),
+            { ...notification(1, 'database-save', {}), data: 'not json' },
+        ]
+        expect(visibleNotifications(rows).map((event) => event.notification.id)).toEqual([2])
     })
 })

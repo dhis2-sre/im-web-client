@@ -1,17 +1,17 @@
 .panel {
     position: absolute;
     /* Opens above the bell, from its left edge (top-start), like the account menu beside it. */
-    bottom: calc(100% + 4px);
+    bottom: calc(100% + var(--spacers-dp4));
     left: 0;
     width: 480px;
     max-height: min(560px, calc(100vh - 80px));
     background-color: var(--colors-white);
     border: 1px solid var(--colors-grey300);
     border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(33, 41, 52, 0.18);
+    box-shadow: var(--elevations-e300);
     display: flex;
     flex-direction: column;
-    z-index: 1000;
+    z-index: var(--layers-popover);
     overflow: hidden;
 }
 
@@ -25,17 +25,17 @@
     align-items: center;
     justify-content: space-between;
     /* The mark-all-as-read button lines up over the rows' mark-as-read buttons. */
-    padding: 10px 16px;
+    padding: var(--spacers-dp8) var(--spacers-dp16);
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: var(--layers-sticky);
     background-color: var(--colors-white);
     border-bottom: 1px solid var(--colors-grey200);
 }
 
 .title {
     font-weight: 600;
-    font-size: 15px;
+    font-size: var(--text-lg);
     color: var(--colors-grey900);
     margin: 0;
 }
@@ -46,10 +46,10 @@
 }
 
 .empty {
-    padding: 32px 16px;
+    padding: var(--spacers-dp32) var(--spacers-dp16);
     text-align: center;
     color: var(--colors-grey600);
-    font-size: 13px;
+    font-size: var(--text-sm);
 }
 
 .items {
@@ -62,8 +62,8 @@
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: var(--spacers-dp8);
+    padding: var(--spacers-dp12) var(--spacers-dp16);
 }
 
 .item + .item {
@@ -79,7 +79,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--spacers-dp4);
 }
 
 .dot {
@@ -87,25 +87,28 @@
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    height: calc(14px * 1.35);
+    height: calc(var(--text-md) * 1.35);
 }
 
-/* When, under what happened and any error. */
+/* When, under what happened and any error. 13px sits between the scale's 12 and 14 on purpose: 12 was
+ * too small to read at a glance, and 14 would match the title it sits under. */
 .meta {
     margin-top: 2px;
     font-size: 13px;
     color: var(--colors-grey600);
 }
 
-/* The link's hit area covers the whole row, so the row is one click target; the buttons sit above it. */
-.link {
-    font-size: 14px;
+/* A row whose instance or database is gone shows its title as plain text instead of a link. */
+.link,
+.titleText {
+    font-size: var(--text-md);
     line-height: 1.35;
     color: var(--colors-grey900);
     text-decoration: none;
     word-break: break-word;
 }
 
+/* The link's hit area covers the whole row, so the row is one click target; the buttons sit above it. */
 .link::after {
     content: '';
     position: absolute;
@@ -116,14 +119,14 @@
     all: unset;
     position: relative;
     z-index: 1;
-    margin: 2px 0 4px;
+    margin: 2px 0 var(--spacers-dp4);
     /* Vertical space as a border, not padding: the line clamp's overflow would show a third line in padding. */
     padding: 0 6px;
     border-block: 4px solid var(--colors-red050);
     border-radius: 3px;
     background-color: var(--colors-red050);
-    font-family: Menlo, Consolas, monospace;
-    font-size: 11px;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
     line-height: 1.45;
     color: var(--colors-red800);
     cursor: pointer;
