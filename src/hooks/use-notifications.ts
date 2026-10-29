@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ComponentStatusEventData, DeploymentEventData } from '../types/index.ts'
+import { visibleNotifications } from '../utils/visible-notifications.ts'
 import { createEmitter } from './create-emitter.ts'
 import { baseURL, refreshTokens, useAuthAxios } from './use-auth-axios.ts'
 
@@ -178,10 +179,11 @@ export const useNotifications = () => {
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
     }, [executeMarkAllRead])
 
-    const unreadCount = notifications.filter((n) => !n.read).length
+    const visible = useMemo(() => visibleNotifications(notifications), [notifications])
+    const unreadCount = visible.length
 
     return {
-        notifications,
+        notifications: visible,
         unreadCount,
         onSseEvent: sseEvents.subscribe,
         onComponentStatus: componentStatuses.subscribe,

@@ -35,17 +35,6 @@ export const NotificationBell: FC = () => {
     const toggle = useCallback(() => setOpen((v) => !v), [])
     const close = useCallback(() => setOpen(false), [])
 
-    const handleMarkRead = useCallback(
-        async (id: number) => {
-            await markRead(id)
-        },
-        [markRead]
-    )
-
-    const handleMarkAllRead = useCallback(async () => {
-        await markAllRead()
-    }, [markAllRead])
-
     return (
         <div className={styles.wrapper}>
             {open && <div className={styles.overlay} onClick={close} />}
@@ -57,7 +46,7 @@ export const NotificationBell: FC = () => {
                 <IconSubscribe16 />
                 {unreadCount > 0 && <span className={styles.badge} />}
             </button>
-            {open && <NotificationPanel notifications={notifications} unreadCount={unreadCount} onMarkRead={handleMarkRead} onMarkAllRead={handleMarkAllRead} />}
+            {open && <NotificationPanel notifications={notifications} onMarkRead={markRead} onMarkAllRead={markAllRead} onNavigate={close} />}
         </div>
     )
 }
