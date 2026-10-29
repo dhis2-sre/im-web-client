@@ -1,0 +1,86 @@
+.wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Padding puts the 16px avatar exactly where the link icons sit and the email where the link labels start. */
+.trigger {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp8);
+    width: 100%;
+    padding: 6px var(--spacers-dp8);
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--colors-grey500);
+    cursor: pointer;
+}
+
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+    color: var(--colors-white);
+    background-color: var(--sidebar-hover);
+}
+
+/* Same 16px as the nav icons; 16px over a 4×4 grid gives each dot a whole 4px cell. */
+.avatar {
+    flex: none;
+    width: 16px;
+    height: 16px;
+}
+
+.email {
+    /* Shrinks but never grows: the chevron follows the email, and a long one ellipses before it. */
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chevron {
+    display: flex;
+    flex: none;
+    color: var(--colors-grey600);
+}
+
+.trigger:hover .chevron,
+.trigger[aria-expanded='true'] .chevron {
+    color: var(--colors-grey500);
+}
+
+.menu {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 4px;
+    border: 1px solid var(--sidebar-active);
+    border-radius: 8px;
+    background-color: var(--colors-grey900);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.item {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--colors-grey300);
+    cursor: pointer;
+}
+
+.item:hover {
+    color: var(--colors-white);
+    background-color: var(--sidebar-active);
+}

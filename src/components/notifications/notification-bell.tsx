@@ -1,5 +1,5 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { IconSubscribe24 } from '@dhis2/ui'
+import { IconSubscribe16 } from '@dhis2/ui'
 import { type FC, useCallback, useEffect, useState } from 'react'
 import { useNotificationsContext } from '../../hooks/use-notifications-context.ts'
 import styles from './notification-bell.module.css'
@@ -49,9 +49,13 @@ export const NotificationBell: FC = () => {
     return (
         <div className={styles.wrapper}>
             {open && <div className={styles.overlay} onClick={close} />}
-            <button className={`${styles.button} ${open ? styles.active : ''}`} onClick={toggle} aria-label="Notifications">
-                <IconSubscribe24 />
-                {unreadCount > 0 && <span className={styles.badge}>{unreadCount > 99 ? '99+' : unreadCount}</span>}
+            <button
+                className={`${styles.button} ${open ? styles.active : ''}`}
+                onClick={toggle}
+                aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+            >
+                <IconSubscribe16 />
+                {unreadCount > 0 && <span className={styles.badge} />}
             </button>
             {open && <NotificationPanel notifications={notifications} unreadCount={unreadCount} onMarkRead={handleMarkRead} onMarkAllRead={handleMarkAllRead} />}
         </div>

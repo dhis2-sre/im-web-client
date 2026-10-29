@@ -10,37 +10,39 @@
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 4px;
-    color: var(--colors-grey400);
+    border-radius: 6px;
+    flex: none;
+    color: var(--colors-grey500);
     position: relative;
 }
 
 .button:hover {
-    background-color: var(--colors-grey800);
+    background-color: var(--sidebar-hover);
     color: var(--colors-white);
 }
 
 .button.active {
-    background-color: var(--colors-grey800);
+    background-color: var(--sidebar-hover);
     color: var(--colors-white);
 }
 
 .badge {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 3px;
-    background-color: var(--colors-red500);
-    color: white;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+    /* Sits on the bell's top-right corner; the 16px icon is centred in the 32px button. */
+    top: 8px;
+    right: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--colors-grey400);
+    /* A ring in the colour behind the bell cuts the dot out of the icon. */
+    box-shadow: 0 0 0 2px var(--sidebar-bg);
+}
+
+/* The button lightens on hover and while open, so the ring follows. */
+.button:hover .badge,
+.button.active .badge {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--sidebar-bg), white 4%);
 }
 
 .overlay {
