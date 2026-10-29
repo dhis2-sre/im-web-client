@@ -72,7 +72,7 @@ const NotificationItem: FC<NotificationItemProps> = ({ event, linked, onMarkRead
         <li className={styles.item}>
             {/* The dot sits in a box one title line tall, so it centres on the first line however the title wraps. */}
             <span className={styles.dot}>
-                <StatusDot status={DOTS[data.status] ?? { label: data.status, tone: 'neutral' }} />
+                <StatusDot status={DOTS[data.status]} />
             </span>
             <div className={styles.content}>
                 {linked ? (

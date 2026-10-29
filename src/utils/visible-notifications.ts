@@ -25,9 +25,10 @@ const parse = (notification: Notification): NotificationEvent[] => {
 
 /* A save or backup persists its "started" row and then a separate outcome row. Once the outcome has
  * arrived the started row is noise, so drop any started row with a newer row for the same database,
- * even a read one. The panel lists only unread rows, so read ones are dropped too.
+ * even a read one. The panel lists only unread rows, so read ones are dropped too, along with the
+ * ones this session has marked read: by id, or up to the newest id "mark all" saw.
  * Expects newest first, as the server sends them. */
-export const visibleNotifications = (notifications: Notification[]): NotificationEvent[] => {
+export const visibleNotifications = (notifications: Notification[], readIds: number[] = [], readUpTo = 0): NotificationEvent[] => {
     const settled = new Set<string>()
     return notifications
         .flatMap(parse)
@@ -40,5 +41,5 @@ export const visibleNotifications = (notifications: Notification[]): Notificatio
             settled.add(key)
             return !superseded
         })
-        .filter((event) => !event.notification.read)
+        .filter(({ notification: n }) => !n.read && n.id > readUpTo && !readIds.includes(n.id))
 }

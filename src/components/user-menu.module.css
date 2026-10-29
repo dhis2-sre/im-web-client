@@ -14,7 +14,7 @@
     width: 100%;
     padding: 6px var(--spacers-dp8);
     border-radius: 6px;
-    font-size: 14px;
+    font-size: var(--text-md);
     line-height: 20px;
     color: var(--colors-grey500);
     cursor: pointer;
@@ -55,11 +55,11 @@
 
 .menu {
     position: absolute;
-    bottom: calc(100% + 4px);
+    bottom: calc(100% + var(--spacers-dp4));
     left: 0;
     right: 0;
-    z-index: 1000;
-    padding: 4px;
+    z-index: var(--layers-popover);
+    padding: var(--spacers-dp4);
     border: 1px solid var(--sidebar-active);
     border-radius: 8px;
     background-color: var(--colors-grey900);
@@ -71,11 +71,11 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacers-dp8);
     width: 100%;
-    padding: 6px 8px;
+    padding: 6px var(--spacers-dp8);
     border-radius: 4px;
-    font-size: 14px;
+    font-size: var(--text-md);
     color: var(--colors-grey300);
     cursor: pointer;
 }

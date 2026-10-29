@@ -31,6 +31,16 @@ describe('visibleNotifications', () => {
         expect(visibleNotifications(rows)).toEqual([])
     })
 
+    it('drops rows marked read in this session even when the server still sends them unread', () => {
+        const rows = [
+            notification(4, 'deployment', { status: 'success', deploymentId: 9 }),
+            notification(3, 'deployment', { status: 'error', deploymentId: 8 }),
+            notification(2, 'deployment', { status: 'success', deploymentId: 7 }),
+            notification(1, 'deployment', { status: 'success', deploymentId: 6 }),
+        ]
+        expect(visibleNotifications(rows, [3], 2).map((event) => event.notification.id)).toEqual([4])
+    })
+
     it('keeps deployments and drops rows it cannot parse or does not know', () => {
         const rows = [
             notification(3, 'database-copy', { status: 'success', databaseId: 1 }),

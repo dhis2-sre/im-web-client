@@ -197,10 +197,7 @@ export const useNotifications = () => {
         }
     }, [notifications, readUpTo, executeMarkAllRead])
 
-    const visible = useMemo(
-        () => visibleNotifications(notifications.map((n) => (!n.read && (n.id <= readUpTo || readIds.includes(n.id)) ? { ...n, read: true } : n))),
-        [notifications, readIds, readUpTo]
-    )
+    const visible = useMemo(() => visibleNotifications(notifications, readIds, readUpTo), [notifications, readIds, readUpTo])
     const unreadCount = visible.length
 
     return {
