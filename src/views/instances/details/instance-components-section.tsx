@@ -1,6 +1,7 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableRow } from '@dhis2/ui'
+import { Button, DataTable, DataTableBody, DataTableCell, DataTableRow } from '@dhis2/ui'
 import { useMemo, useState } from 'react'
 import type { FC } from 'react'
+import { Drawer } from '../../../components/index.ts'
 import { useStack } from '../../../hooks/index.ts'
 import { DeploymentInstance, DeploymentInstanceComponents, StackWithParameterGroups } from '../../../types/index.ts'
 import { groupParametersByComponent } from '../../../utils/component-parameters.ts'
@@ -13,7 +14,7 @@ export const InstanceComponentsSection: FC<{
     instance?: DeploymentInstance
     onChanged: () => void
 }> = ({ instanceComponents, instance, onChanged }) => {
-    const [expanded, setExpanded] = useState(false)
+    const [viewing, setViewing] = useState(false)
     const { stack } = useStack(instanceComponents.stackName)
 
     const { byComponent, leftover } = useMemo(
@@ -39,21 +40,32 @@ export const InstanceComponentsSection: FC<{
                 onChanged={onChanged}
             />
             {/* Stacks that declare no parameter groups have nothing to hang off a component, so their
-             * parameters stay one list for the whole instance. */}
+             * parameters stay one list for the whole stack, opened the way a component's are. */}
             {leftover.length > 0 && (
                 <DataTable dataTest={`parameters-${instanceComponents.instanceId}`}>
                     <DataTableBody>
-                        <DataTableRow
-                            expanded={expanded}
-                            onExpandToggle={() => setExpanded((current) => !current)}
-                            expandableContent={<ComponentParametersTable parameters={leftover} />}
-                        >
+                        <DataTableRow>
                             <DataTableCell staticStyle>
-                                <strong>Parameters</strong>
+                                <button type="button" className={styles.nameLink} onClick={() => setViewing(true)}>
+                                    Parameters
+                                </button>
+                            </DataTableCell>
+                            <DataTableCell staticStyle>
+                                <span className={styles.muted}>Shared by every component of {instanceComponents.stackName}</span>
+                            </DataTableCell>
+                            <DataTableCell staticStyle align="right">
+                                <Button small secondary aria-label="View parameters" onClick={() => setViewing(true)}>
+                                    View
+                                </Button>
                             </DataTableCell>
                         </DataTableRow>
                     </DataTableBody>
                 </DataTable>
+            )}
+            {viewing && (
+                <Drawer title="Parameters" description={`Shared by every component of ${instanceComponents.stackName}`} onClose={() => setViewing(false)}>
+                    <ComponentParametersTable parameters={leftover} />
+                </Drawer>
             )}
         </div>
     )

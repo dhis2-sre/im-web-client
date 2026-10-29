@@ -6,6 +6,8 @@ body {
     height: 100%;
     width: 100vw;
     overflow: auto;
+    /* @dhis2/ui layers (modals, menus) portal to <body> with z-index auto, so keep the app's own z-indexes, like the pinned header's, beneath them. */
+    isolation: isolate;
 }
 
 a {
@@ -16,9 +18,29 @@ a:hover {
     color: var(--colors-blue800);
 }
 
+/* Text for screen readers only: a status a dot shows by colour, a heading the page shows by layout. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 /* @dhis2/ui CalendarInput's internal .calendar-wrapper element renders with
    `background-color: none`, so underlying page content bleeds through.
    Global override (not a CSS module) targeting the upstream class name. */
 .calendar-wrapper {
     background-color: var(--colors-white);
+}
+
+/* @dhis2/ui's DataTableColumnHeader justifies a .label it never renders, so its align prop moves
+ * the cell but leaves the label at its start. A header given one of these as well follows it. */
+th.header-center span.top {
+    justify-content: center;
+}
+
+th.header-end span.top {
+    justify-content: flex-end;
 }

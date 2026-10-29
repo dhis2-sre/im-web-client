@@ -20,7 +20,7 @@ const GroupSelect: FC<{
 }> = ({ groups, selectedGroup, setSelectedGroup, loading }) => {
     const renderOptions = () => {
         if (loading) {
-            return <option disabled>Loading...</option>
+            return <option disabled>Loading…</option>
         }
         if (groups.length === 0) {
             return <option disabled>No groups available</option>

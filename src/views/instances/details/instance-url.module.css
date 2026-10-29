@@ -1,0 +1,62 @@
+/* Sized to sit in a line of text, with no chrome but the icons' hover. It sits on the line's
+ * baseline by its address, the first thing in it, and takes the line's colour, so it reads as one
+ * more fact rather than a control. */
+.url {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    max-width: 100%;
+}
+
+.link {
+    min-width: 0;
+    margin-right: var(--spacers-dp4);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.icon:hover {
+    background: var(--colors-grey200);
+    color: var(--colors-grey900);
+}
+
+.link:focus-visible,
+.icon:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 1px;
+    border-radius: 3px;
+}
+
+/* The icons' own size: they are drawn on a 16px grid, and blur at any other. */
+.icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.copied,
+.copied:hover {
+    color: var(--colors-green700);
+}

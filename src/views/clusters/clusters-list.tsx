@@ -1,8 +1,7 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import { FC } from 'react'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Page } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
 import { NewClusterButton } from './new-cluster-button.tsx'
@@ -37,10 +36,10 @@ export const ClustersList: FC = () => {
                                 <DataTableCell>{cluster.description}</DataTableCell>
                                 <DataTableCell>{cluster.groups?.map((group) => group.name).join(', ')}</DataTableCell>
                                 <DataTableCell>
-                                    <Moment date={cluster.createdAt} fromNow />
+                                    <MomentFromNow date={cluster.createdAt} />
                                 </DataTableCell>
                                 <DataTableCell>
-                                    <Moment date={cluster.updatedAt} fromNow />
+                                    <MomentFromNow date={cluster.updatedAt} />
                                 </DataTableCell>
                             </DataTableRow>
                         )

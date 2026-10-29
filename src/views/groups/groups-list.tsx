@@ -1,8 +1,7 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Page } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/index.ts'
 import { NewGroupButton } from './new-group-button.tsx'
@@ -43,10 +42,10 @@ export const GroupsList: FC = () => {
                             <DataTableCell>{group.cluster.name}</DataTableCell>
                             <DataTableCell>{group.deployable ? <IconCheckmark16 /> : null}</DataTableCell>
                             <DataTableCell>
-                                <Moment date={group.createdAt} fromNow />
+                                <MomentFromNow date={group.createdAt} />
                             </DataTableCell>
                             <DataTableCell>
-                                <Moment date={group.updatedAt} fromNow />
+                                <MomentFromNow date={group.updatedAt} />
                             </DataTableCell>
                         </DataTableRow>
                     ))}

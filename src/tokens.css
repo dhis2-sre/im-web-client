@@ -10,11 +10,17 @@
     --text-lg: 16px;
     --text-xl: 24px;
 
+    /* Monospace, for generated ids and literal values that are compared character by
+     * character. The system's own face, a size under the text it sits in, since at the
+     * same size it reads larger. */
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    --text-mono: 13px;
+
     /* Spacing: the @dhis2/ui scale, set by <CssVariables spacers>.
      * --spacers-dp4, dp8, dp12, dp16, dp24, dp32, dp48, dp64 cover the app's needs. */
 
-    /* Stacking: below the library's own layers (--layers-applicationTop 2000,
-     * --layers-blocking 3000, --layers-alert 9999) so modals and alerts stay on top. */
+    /* Stacking: inside #root, which index.css isolates, so the library's layers
+     * portalled to <body> (modals, menus, alerts) stay on top whatever these are. */
     --layers-sticky: 100;
     --layers-popover: 1000;
 }

@@ -17,10 +17,11 @@ export const Layout: FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.nav}>
-                <h1 className={styles.header}>
+                {/* The product's name, not a heading: each page titles itself with the one h1. */}
+                <div className={styles.header}>
                     <LogoIconWhite className={styles.logo} />
                     Instance Manager
-                </h1>
+                </div>
                 {/* New instance lives on the Instances page as its primary action, not as a button nested inside this link. */}
                 <nav className={styles.navlist} aria-label="Main">
                     {/* A lone heading over the only group labels nothing, so the groups are named only when there are two. */}
