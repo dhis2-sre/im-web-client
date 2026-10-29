@@ -37,6 +37,11 @@
     color: var(--colors-teal500);
 }
 
+/* The sidebar's white focus ring would vanish on this white panel. */
+.panel :focus-visible {
+    outline-color: var(--colors-grey900);
+}
+
 .markAllRead:hover {
     text-decoration: underline;
 }

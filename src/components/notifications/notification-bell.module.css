@@ -39,10 +39,12 @@
     box-shadow: 0 0 0 2px var(--sidebar-bg);
 }
 
-/* The button lightens on hover and while open, so the ring follows. */
+/* The button lightens on hover and while open, so the ring follows: the hover tint stacked on the sidebar. */
 .button:hover .badge,
 .button.active .badge {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--sidebar-bg), white 4%);
+    box-shadow:
+        0 0 0 2px var(--sidebar-hover),
+        0 0 0 2px var(--sidebar-bg);
 }
 
 .overlay {
