@@ -1,4 +1,4 @@
-import { IconAdd16, IconApps16, IconArchive16, IconDuplicate16, IconLayoutRows16, IconTerminalWindow16, IconUser16, IconUserGroup16, LogoIconWhite } from '@dhis2/ui'
+import { IconAdd16, IconApps16, IconDimensionData16, IconLayoutRows16, IconQueue16, IconTerminalWindow16, IconUser16, IconUserGroup16, LogoIconWhite } from '@dhis2/ui'
 import type { FC } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
@@ -34,11 +34,11 @@ export const Layout: FC = () => {
                         </Link>
                     </div>
                     <NavLink to="/presets">
-                        <IconDuplicate16 />
+                        <IconQueue16 />
                         Presets
                     </NavLink>
                     <NavLink to="/databases">
-                        <IconArchive16 />
+                        <IconDimensionData16 />
                         Databases
                     </NavLink>
                     {isAdministrator && (
