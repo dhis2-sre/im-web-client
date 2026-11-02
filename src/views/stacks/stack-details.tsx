@@ -1,13 +1,12 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLink16, IconList16, IconLock16 } from '@dhis2/ui'
+import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLink16, IconList16 } from '@dhis2/ui'
 import { useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ItemPanel, ItemPanelList, MetaFact, MetaLine, Page, Panel } from '../../components/index.ts'
+import { HiddenValue, ItemPanel, ItemPanelList, MetaFact, MetaLine, Page, Panel } from '../../components/index.ts'
 import type { PageError } from '../../components/index.ts'
 import { useStack } from '../../hooks/index.ts'
 import { StackParameterWithGroup, StackWithParameterGroups } from '../../types/index.ts'
 import { groupStackParameters } from '../../utils/stack-parameter-groups.ts'
-import styles from './stack-details.module.css'
 
 /* How much it asks for and which stacks it cannot run without. */
 const stackFacts = (stack: StackWithParameterGroups): Record<string, ReactNode> => ({
@@ -47,14 +46,7 @@ const ParametersTable: FC<{ parameters: StackParameterWithGroup[] }> = ({ parame
                     <DataTableCell>{parameter.displayName}</DataTableCell>
                     <DataTableCell>
                         {/* A sensitive default is often a password, so it stays hidden here as on an instance's page. */}
-                        {parameter.sensitive ? (
-                            <span className={styles.hidden}>
-                                <IconLock16 />
-                                Hidden
-                            </span>
-                        ) : (
-                            parameter.defaultValue
-                        )}
+                        {parameter.sensitive ? <HiddenValue /> : parameter.defaultValue}
                     </DataTableCell>
                     <DataTableCell>{parameter.sensitive ? 'Yes' : 'No'}</DataTableCell>
                     <DataTableCell>{parameter.consumed ? 'Yes' : 'No'}</DataTableCell>

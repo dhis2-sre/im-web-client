@@ -1,4 +1,4 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableRow } from '@dhis2/ui'
+import { DataTable, DataTableBody, DataTableCell, DataTableRow, IconLock16 } from '@dhis2/ui'
 import type { FC, ReactNode } from 'react'
 import styles from './details-table.module.css'
 
@@ -24,3 +24,11 @@ export const DetailsTable: FC<{ rows: Record<string, ReactNode> }> = ({ rows }) 
 
 /* A literal value, such as an id, path or hostname, set in monospace and free to break anywhere. */
 export const Mono: FC<{ children: ReactNode }> = ({ children }) => <span className={styles.mono}>{children}</span>
+
+/* Stands in for a sensitive value, which is often a password, so it is never shown. */
+export const HiddenValue: FC = () => (
+    <span className={styles.hidden}>
+        <IconLock16 />
+        Hidden
+    </span>
+)
