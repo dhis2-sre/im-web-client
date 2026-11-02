@@ -1,12 +1,11 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableRow, IconAttachment16, IconClockHistory16, IconFolder16, IconUser16 } from '@dhis2/ui'
+import { IconAttachment16, IconClockHistory16, IconFolder16, IconUser16 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import type { ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { MetaFact, MetaLine, MomentFromNow, Page, Panel } from '../../components/index.ts'
+import { DetailsTable, MetaFact, MetaLine, MomentFromNow, Mono, Page, Panel } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/generated/models/Database.ts'
 import { DatabaseActionsMenu } from './database-actions-menu.tsx'
-import styles from './database-details.module.css'
 import { lockDescription } from './database-markers.tsx'
 
 /* Who owns it, when it last changed and where it lives, in the instance page's order, then the files
@@ -29,16 +28,16 @@ const databaseFacts = (db: Database): Record<string, ReactNode> => ({
 
 /* Everything else the database record holds, for whoever needs to find or refer to the dump itself.
  * Ids and paths are literal values, so they are set in monospace. */
-const databaseDetails = (db: Database): { name: string; value: ReactNode }[] => [
-    { name: 'Type', value: db.type === 'fs' ? 'Filestore' : 'Database' },
-    { name: 'Size', value: db.size ? prettyBytes(db.size) : 'Unknown' },
-    { name: 'Lock', value: db.lock ? lockDescription(db.lock) : 'Not locked' },
-    { name: 'Created', value: db.createdAt ? <MomentFromNow date={db.createdAt} /> : 'Unknown' },
-    { name: 'Storage path', value: db.url ? <span className={styles.mono}>{db.url}</span> : 'Not saved yet' },
-    { name: 'Slug', value: <span className={styles.mono}>{db.slug}</span> },
-    { name: 'ID', value: <span className={styles.mono}>{db.id}</span> },
-    ...(db.externalDownloads?.length ? [{ name: 'Download links', value: `${db.externalDownloads.length} open` }] : []),
-]
+const databaseDetails = (db: Database): Record<string, ReactNode> => ({
+    'Type': db.type === 'fs' ? 'Filestore' : 'Database',
+    'Size': db.size ? prettyBytes(db.size) : 'Unknown',
+    'Lock': db.lock ? lockDescription(db.lock) : 'Not locked',
+    'Created': db.createdAt ? <MomentFromNow date={db.createdAt} /> : 'Unknown',
+    'Storage path': db.url ? <Mono>{db.url}</Mono> : 'Not saved yet',
+    'Slug': <Mono>{db.slug}</Mono>,
+    'ID': <Mono>{db.id}</Mono>,
+    'Download links': db.externalDownloads?.length ? `${db.externalDownloads.length} open` : undefined,
+})
 
 export const DatabaseDetails = () => {
     const navigate = useNavigate()
@@ -58,18 +57,7 @@ export const DatabaseDetails = () => {
         >
             {db && (
                 <Panel title="Details" flush>
-                    <DataTable>
-                        <DataTableBody>
-                            {databaseDetails(db).map(({ name, value }) => (
-                                <DataTableRow key={name}>
-                                    <DataTableCell staticStyle className={styles.name}>
-                                        {name}
-                                    </DataTableCell>
-                                    <DataTableCell staticStyle>{value}</DataTableCell>
-                                </DataTableRow>
-                            ))}
-                        </DataTableBody>
-                    </DataTable>
+                    <DetailsTable rows={databaseDetails(db)} />
                 </Panel>
             )}
         </Page>
