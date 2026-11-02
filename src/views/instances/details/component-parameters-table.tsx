@@ -1,6 +1,7 @@
-import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, IconLock16 } from '@dhis2/ui'
+import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { HiddenValue } from '../../../components/index.ts'
 import { useDatabaseLabel } from '../../../hooks/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
 import styles from './instance-components.module.css'
@@ -28,12 +29,7 @@ export const ComponentParametersTable: FC<{ parameters: ParameterEntry[] }> = ({
                 <DataTableRow key={parameter.name}>
                     <DataTableCell staticStyle>{parameter.displayName}</DataTableCell>
                     <DataTableCell staticStyle>
-                        {parameter.sensitive && (
-                            <span className={styles.hidden}>
-                                <IconLock16 />
-                                Hidden
-                            </span>
-                        )}
+                        {parameter.sensitive && <HiddenValue />}
                         {!parameter.sensitive && parameter.name === 'DATABASE_ID' && <DatabaseLink id={String(parameter.value ?? '')} />}
                         {!parameter.sensitive && parameter.name !== 'DATABASE_ID' && (parameter.value.trim() || <span className={styles.muted}>Not set</span>)}
                     </DataTableCell>

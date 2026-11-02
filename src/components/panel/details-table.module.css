@@ -9,3 +9,10 @@
     font-size: var(--text-mono);
     overflow-wrap: anywhere;
 }
+
+.hidden {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    color: var(--colors-grey600);
+}
