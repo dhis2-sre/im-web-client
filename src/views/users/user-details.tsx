@@ -37,6 +37,7 @@ const userFacts = (user: User): Record<string, ReactNode> => ({
 const GroupRoleMenu: FC<{ user: User; group: GroupRole; refetch: () => void }> = ({ user, group, refetch }) => {
     const setGroupRole = useSetGroupRole()
     const alert = useActionAlert()
+    const next: Role = group.admin ? 'member' : 'admin'
 
     const change = async (role: Role | null, done: string, failed: string) => {
         try {
@@ -53,15 +54,15 @@ const GroupRoleMenu: FC<{ user: User; group: GroupRole; refetch: () => void }> =
         <ActionsMenu
             label={`Actions for ${group.name}`}
             items={[
-                group.admin
-                    ? {
-                          label: 'Make member instead',
-                          onClick: () => change('member', `${user.email} is now a member of ${group.name}`, `Couldn't change ${user.email}'s role in ${group.name}`),
-                      }
-                    : {
-                          label: 'Make admin',
-                          onClick: () => change('admin', `${user.email} is now an admin of ${group.name}`, `Couldn't change ${user.email}'s role in ${group.name}`),
-                      },
+                {
+                    label: next === 'admin' ? 'Make admin' : 'Make member instead',
+                    onClick: () =>
+                        change(
+                            next,
+                            `${user.email} is now ${next === 'admin' ? 'an admin' : 'a member'} of ${group.name}`,
+                            `Couldn't change ${user.email}'s role in ${group.name}`
+                        ),
+                },
                 {
                     label: 'Remove from group',
                     destructive: true,
@@ -138,7 +139,7 @@ export const UserDetails = () => {
                     )}
                 </Panel>
             )}
-            {adding && user && <AddToGroupModal user={user} joined={groups.map((group) => group.name)} onClose={() => setAdding(false)} onAdded={() => void refetch()} />}
+            {adding && user && <AddToGroupModal user={user} joined={groups.map((group) => group.name)} onClose={() => setAdding(false)} onChanged={() => void refetch()} />}
         </Page>
     )
 }
