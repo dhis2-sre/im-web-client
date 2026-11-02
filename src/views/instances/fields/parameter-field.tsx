@@ -20,6 +20,8 @@ import {
     DHIS2_REGISTER,
     ENABLE_DORIS,
     ENABLE_PGADMIN,
+    ALLOW_SUSPEND,
+    DEPLOY_GLOWROOT,
     Dhis2StackName,
 } from '../parameters.ts'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -82,6 +84,8 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case DHIS2_REGISTER:
         case ENABLE_DORIS:
         case ENABLE_PGADMIN:
+        case ALLOW_SUSPEND:
+        case DEPLOY_GLOWROOT:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
             return (
