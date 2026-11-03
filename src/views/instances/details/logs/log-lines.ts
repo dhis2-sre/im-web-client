@@ -1,0 +1,148 @@
+/*
+ * The caps below exist so a chatty or runaway container can never make the
+ * browser run out of memory: every stage (splitter, list, render) is bounded.
+ */
+export const MAX_LINES = 10000
+export const MAX_HELD_CHARS = 4_000_000
+export const MAX_LINE_CHARS = 5000
+export const RENDER_LINES = 2000
+
+export type LogLevel = 'error' | 'warn' | undefined
+// id is a running number that stays stable while the cap drops older entries, so it works as the React key
+export type LogEntry = { id: number; kind: 'line'; text: string; level: LogLevel } | { id: number; kind: 'divider'; text: string }
+export type LevelFilter = 'all' | 'warn' | 'error'
+
+// Only the start of a line is searched, so "ERROR" typed inside a message does not count.
+const LEVEL_WORD = /\b(ERROR|FATAL|SEVERE|WARN|WARNING|INFO|DEBUG|TRACE)\b/
+const LEVEL_SEARCH_CHARS = 40
+// Stack frames, "Caused by:" and blank lines belong to the entry above them.
+const CONTINUATION = /^(\s|$|Caused by:|Suppressed:|\.\.\. \d+ (more|common))|^[\w.$]+(Exception|Error)\b/
+
+export const levelOf = (text: string, previous: LogLevel): LogLevel => {
+    const word = LEVEL_WORD.exec(text.slice(0, LEVEL_SEARCH_CHARS))?.[1]
+    if (word) {
+        if (word === 'ERROR' || word === 'FATAL' || word === 'SEVERE') {
+            return 'error'
+        }
+        if (word === 'WARN' || word === 'WARNING') {
+            return 'warn'
+        }
+        return undefined
+    }
+    return CONTINUATION.test(text) ? previous : undefined
+}
+
+export const toEntries = (lines: string[], previous: LogLevel, firstId: number): LogEntry[] => {
+    let level = previous
+    return lines.map((text, i) => {
+        level = levelOf(text, level)
+        return { id: firstId + i, kind: 'line', text, level }
+    })
+}
+
+export const createLineSplitter = (maxLineChars = MAX_LINE_CHARS) => {
+    let held = ''
+    // Characters of the unfinished line that were counted but not kept
+    let overflow = 0
+
+    const add = (piece: string) => {
+        const room = maxLineChars - held.length
+        if (piece.length <= room) {
+            held += piece
+        } else {
+            held += piece.slice(0, room)
+            overflow += piece.length - room
+        }
+    }
+
+    const finish = () => {
+        if (overflow === 0 && held.endsWith('\r')) {
+            held = held.slice(0, -1)
+        }
+        const line = overflow > 0 ? `${held}… [${overflow} more characters]` : held
+        held = ''
+        overflow = 0
+        return line
+    }
+
+    return {
+        push: (chunk: string): string[] => {
+            const pieces = chunk.split('\n')
+            const done: string[] = []
+            pieces.forEach((piece, i) => {
+                add(piece)
+                if (i < pieces.length - 1) {
+                    done.push(finish())
+                }
+            })
+            return done
+        },
+        flush: (): string[] => (held === '' && overflow === 0 ? [] : [finish()]),
+    }
+}
+
+export const appendCapped = (entries: LogEntry[], added: LogEntry[], caps: { lines?: number; chars?: number } = {}): { entries: LogEntry[]; dropped: number } => {
+    const maxLines = caps.lines ?? MAX_LINES
+    const maxChars = caps.chars ?? MAX_HELD_CHARS
+    const all = entries.concat(added)
+    // Apply the line cap first so the character sum never walks entries that are dropped anyway
+    let start = Math.max(0, all.length - maxLines)
+    let total = 0
+    for (let i = start; i < all.length; i++) {
+        total += all[i].text.length
+    }
+    while (total > maxChars && start < all.length) {
+        total -= all[start++].text.length
+    }
+    return start === 0 ? { entries: all, dropped: 0 } : { entries: all.slice(start), dropped: start }
+}
+
+const OVERLAP_LINES = 3
+
+// After a reconnect the server may resend lines we already hold. Match the last few held lines (one repeated
+// line would match far too early) and keep only what follows their last occurrence. If the resent window starts
+// partway through that run, accept a shorter run, but only at the very start of the incoming lines.
+export const dropOverlap = (held: LogEntry[], incoming: string[]): { lines: string[]; found: boolean } => {
+    const tail = held.slice(-OVERLAP_LINES).map((entry) => entry.text)
+    const matchesAt = (run: string[], at: number) => at >= 0 && run.every((text, j) => incoming[at + j] === text)
+    for (let i = incoming.length - tail.length; i >= 0 && tail.length > 0; i--) {
+        if (matchesAt(tail, i)) {
+            return { lines: incoming.slice(i + tail.length), found: true }
+        }
+    }
+    for (let k = tail.length - 1; k > 0; k--) {
+        if (matchesAt(tail.slice(-k), 0)) {
+            return { lines: incoming.slice(k), found: true }
+        }
+    }
+    return { lines: incoming, found: false }
+}
+
+export const visibleEntries = (entries: LogEntry[], query: string, level: LevelFilter): LogEntry[] => {
+    if (query === '' && level === 'all') {
+        return entries
+    }
+    const needle = query.toLowerCase()
+    return entries.filter((entry) => {
+        if (entry.kind === 'divider') {
+            return false
+        }
+        if (level === 'error' && entry.level !== 'error') {
+            return false
+        }
+        if (level === 'warn' && entry.level === undefined) {
+            return false
+        }
+        return entry.text.toLowerCase().includes(needle)
+    })
+}
+
+export const reconnectDivider = (before: { replica: string; restarts: number }, after: { replica: string; restarts: number }, at: Date): string | undefined => {
+    if (before.replica !== after.replica) {
+        return `${before.replica} was replaced · now showing ${after.replica}`
+    }
+    if (before.restarts !== after.restarts) {
+        return `Container restarted at ${at.toTimeString().slice(0, 5)}`
+    }
+    return undefined
+}
