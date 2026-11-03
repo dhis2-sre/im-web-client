@@ -29,15 +29,13 @@ skaffold dev
 
 # Release
 
-Releasing is done by creating a new release tag (no `v` prefix).
-
-Example
+From an up to date master, pick the version and run:
 
 ```shell
-git tag --sort=-creatordate | head --lines=1              # Get the latest tag
-git tag 0.35.0                                            # Use whichever tag you want to release
-git push origin 0.35.0
+make release version=0.39.0
 ```
+
+It tags master and pushes the tag, which builds `dhis2/im-web-client:<version>` and deploys it to prod.
 
 # Design
 
