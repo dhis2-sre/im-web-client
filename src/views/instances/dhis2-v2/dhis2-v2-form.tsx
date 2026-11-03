@@ -16,6 +16,7 @@ import { PublicCheckbox } from '../fields/public-checkbox.tsx'
 import { TtlSelect } from '../fields/ttl-select.tsx'
 import styles from '../styles.module.css'
 import { CompanionSection } from './companion-section.tsx'
+import { deploymentHasInstanceOf } from './deployment-instances.ts'
 import { DeploymentProgress } from './deployment-progress.tsx'
 import { GroupFieldset } from './group-fieldset.tsx'
 
@@ -51,6 +52,11 @@ export const Dhis2V2Form: FC<{
         },
     })
     const shouldDisableSubmit = (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
+
+    /* A companion already on the deployment is edited like the rest of it: sensitive fields are
+     * optional and left blank to keep what is stored. A companion opted into during this edit has
+     * nothing stored yet, so it is filled in like a brand new instance instead. */
+    const companionFormMode = (companionName: string): 'create' | 'update' => (isEdit && deploymentHasInstanceOf(deployment, companionName) ? 'update' : 'create')
 
     /* A conditional group nests under the group that owns its enabling parameter, e.g. the MinIO
      * section renders inside DHIS 2 Core because STORAGE_TYPE lives there. */
@@ -118,7 +124,11 @@ export const Dhis2V2Form: FC<{
                 ))}
             {/* Every companion the stack declares, each shown while the condition it was declared
                 with holds. Nothing here names a particular companion. */}
-            {!error && !loading && companions.map((companion) => <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} formMode={formMode} />)}
+            {!error &&
+                !loading &&
+                companions.map((companion) => (
+                    <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} formMode={companionFormMode(companion.name)} />
+                ))}
             {submitError && (
                 <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">
                     {submitError}

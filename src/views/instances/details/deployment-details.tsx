@@ -1,10 +1,12 @@
-import { Button, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
+import { Button, ButtonStrip, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
 import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heading } from '../../../components/index.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
 import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
+import { DeleteButton } from '../list/delete-menu-button.tsx'
+import { DeploymentActionsMenu } from '../list/deployment-actions-menu.tsx'
 import { DeploymentComponents } from './deployment-components.tsx'
 import styles from './deployment-details.module.css'
 import { DeploymentInstancesList } from './deployment-instances-list.tsx'
@@ -62,11 +64,20 @@ export const DeploymentDetails: FC = () => {
  * component of every instance, and the stack list needs it to know whether anything can be backed
  * up. */
 const DeploymentStacksAndComponents: FC<{ deployment: Deployment; loading: boolean; refetch: () => void }> = ({ deployment, loading, refetch }) => {
+    const navigate = useNavigate()
     const components = useLiveComponents(deployment.id)
 
     return (
         <>
-            <DeploymentInstancesList deployment={deployment} loading={loading} components={components.instances} refetch={refetch} />
+            {/* Delete and the restart/reset menu act on the whole deployment, so they render once
+                here rather than in every instance row below. */}
+            <div className={styles.toolbar}>
+                <ButtonStrip end>
+                    <DeleteButton id={deployment.id} displayName={deployment.name} deploying={isDeploying(deployment)} onComplete={() => navigate('/instances')} />
+                    <DeploymentActionsMenu deployment={deployment} components={components.instances} refetch={refetch} />
+                </ButtonStrip>
+            </div>
+            <DeploymentInstancesList deployment={deployment} loading={loading} />
             <DeploymentComponents deployment={deployment} components={components} />
         </>
     )

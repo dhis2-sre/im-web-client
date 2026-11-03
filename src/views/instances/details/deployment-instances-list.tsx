@@ -1,13 +1,9 @@
-import { ButtonStrip, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tag } from '@dhis2/ui'
+import { DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tag } from '@dhis2/ui'
 import type { FC } from 'react'
 import Moment from 'react-moment'
-import { useNavigate } from 'react-router-dom'
 import { MomentExpiresFromNow } from '../../../components/index.ts'
 import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
-import { Deployment, DeploymentInstance, DeploymentInstanceComponents, DeploymentInstanceDeployState } from '../../../types/index.ts'
-import { isDeploying } from '../../../utils/deploy-state.ts'
-import { DeleteButton } from '../list/delete-menu-button.tsx'
-import { DeploymentActionsMenu } from '../list/deployment-actions-menu.tsx'
+import { Deployment, DeploymentInstance, DeploymentInstanceDeployState } from '../../../types/index.ts'
 import { Dhis2StackName } from '../parameters.ts'
 import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
 
@@ -15,9 +11,9 @@ import { ViewInstanceMenuItem } from './view-instance-menu-item.tsx'
  * down to the individual replica, so a single stack-wide status could only repeat it or disagree with
  * it. How the last deploy went is a different question, and one the components table cannot answer,
  * since a stack that failed to deploy has no components to show and no explanation for it. Open
- * resolves the stack's own address, while delete and the actions menu act on the whole deployment,
- * the same three buttons as on the instances list. Expires repeats across the rows because the TTL
- * belongs to the deployment, so every stack in it goes at the same moment. */
+ * resolves the stack's own address; delete and the restart/reset menu act on the whole deployment, so
+ * they render once above this table rather than per row. Expires repeats across the rows because the
+ * TTL belongs to the deployment, so every stack in it goes at the same moment. */
 
 const DeployStatusCell: FC<{ instance: DeploymentInstance & DeploymentInstanceDeployState }> = ({ instance }) => {
     if (instance.deployStatus === 'failed') {
@@ -39,12 +35,7 @@ const DeployStatusCell: FC<{ instance: DeploymentInstance & DeploymentInstanceDe
 export const DeploymentInstancesList: FC<{
     deployment: Deployment
     loading: boolean
-    components?: DeploymentInstanceComponents[]
-    refetch: () => void
-}> = ({ deployment, loading, components, refetch }) => {
-    const navigate = useNavigate()
-    const deploying = isDeploying(deployment)
-
+}> = ({ deployment, loading }) => {
     return (
         <DataTable>
             <DataTableHead>
@@ -75,13 +66,9 @@ export const DeploymentInstancesList: FC<{
                                 <MomentExpiresFromNow createdAt={deployment.createdAt} ttl={deployment.ttl} />
                             </DataTableCell>
                             <DataTableCell staticStyle align="right">
-                                <ButtonStrip>
-                                    {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
-                                        <ViewInstanceMenuItem group={deployment.group} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
-                                    )}
-                                    <DeleteButton id={deployment.id} displayName={deployment.name} deploying={deploying} onComplete={() => navigate('/instances')} />
-                                    <DeploymentActionsMenu deployment={deployment} components={components} refetch={refetch} />
-                                </ButtonStrip>
+                                {VIEWABLE_INSTANCE_TYPES.includes(instance.stackName) && (
+                                    <ViewInstanceMenuItem group={deployment.group} name={instance.name} stackName={instance.stackName as Dhis2StackName} />
+                                )}
                             </DataTableCell>
                         </tr>
                     )
