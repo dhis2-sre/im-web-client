@@ -8,7 +8,13 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
 /* A panel that slides in from the right over the page, for detail that would stretch the page if it
  * opened in place. It closes on Escape, a click outside or its close button, keeps focus inside
  * while open and hands it back to whatever opened it. */
-export const Drawer: FC<{ title: ReactNode; description?: ReactNode; onClose: () => void; children: ReactNode }> = ({ title, description, onClose, children }) => {
+export const Drawer: FC<{ title: ReactNode; description?: ReactNode; size?: 'default' | 'wide'; onClose: () => void; children: ReactNode }> = ({
+    title,
+    description,
+    size = 'default',
+    onClose,
+    children,
+}) => {
     const panel = useRef<HTMLDialogElement | null>(null)
     const titleId = useId()
     const descriptionId = useId()
@@ -53,7 +59,14 @@ export const Drawer: FC<{ title: ReactNode; description?: ReactNode; onClose: ()
 
     return (
         <Layer translucent onBackdropClick={onClose}>
-            <dialog ref={attach} open className={styles.drawer} aria-modal="true" aria-labelledby={titleId} aria-describedby={description ? descriptionId : undefined}>
+            <dialog
+                ref={attach}
+                open
+                className={size === 'wide' ? `${styles.drawer} ${styles.wide}` : styles.drawer}
+                aria-modal="true"
+                aria-labelledby={titleId}
+                aria-describedby={description ? descriptionId : undefined}
+            >
                 <header className={styles.header}>
                     <div className={styles.heading}>
                         <h2 id={titleId} className={styles.title}>

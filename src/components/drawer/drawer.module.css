@@ -19,6 +19,18 @@
     animation: slideIn 180ms ease-out;
 }
 
+/* Wide enough for a log to read without wrapping every line, and still leaves the page visible behind it.
+ * On narrow windows there is no room to leave the page showing, so it takes the whole width. */
+.wide {
+    width: min(1200px, calc(100vw - 64px));
+}
+
+@media (max-width: 640px) {
+    .wide {
+        width: 100vw;
+    }
+}
+
 @keyframes slideIn {
     from {
         transform: translateX(24px);
