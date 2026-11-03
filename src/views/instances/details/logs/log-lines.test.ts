@@ -98,6 +98,16 @@ describe('dropOverlap', () => {
         expect(dropOverlap(lines(['x', 'ok', 'ok']), ['ok', 'ok', 'x', 'ok', 'ok', 'n']).lines).toEqual(['n'])
     })
 
+    it('dropOverlap uses the first occurrence so repeated lines never swallow new ones', () => {
+        const h = ['h', 'h', 'h']
+        expect(dropOverlap(lines(h), [...h, 'ERROR x', ...h, 'y']).lines).toEqual(['ERROR x', 'h', 'h', 'h', 'y'])
+    })
+
+    it('dropOverlap ignores a trailing divider in the held entries', () => {
+        const held: LogEntry[] = [...lines(['a', 'b']), { id: 2, kind: 'divider', text: 'Reconnected' }]
+        expect(dropOverlap(held, ['a', 'b', 'c'])).toEqual({ lines: ['c'], found: true })
+    })
+
     it('dropOverlap reports no match', () => {
         expect(dropOverlap(lines(['a']), ['z'])).toEqual({ lines: ['z'], found: false })
     })

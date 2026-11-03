@@ -40,6 +40,10 @@ export const toEntries = (lines: string[], previous: LogLevel, firstId: number):
     })
 }
 
+// Why: split/slice/concat results are V8 sliced strings that keep their whole source chunk alive, so a few
+// kept lines could pin hundreds of MB. A JSON round trip makes a fresh, flat string that owns only its own text.
+const own = (text: string): string => JSON.parse(JSON.stringify(text))
+
 export const createLineSplitter = (maxLineChars = MAX_LINE_CHARS) => {
     let held = ''
     // Characters of the unfinished line that were counted but not kept
@@ -62,7 +66,7 @@ export const createLineSplitter = (maxLineChars = MAX_LINE_CHARS) => {
         const line = overflow > 0 ? `${held}… [${overflow} more characters]` : held
         held = ''
         overflow = 0
-        return line
+        return own(line)
     }
 
     return {
@@ -75,6 +79,7 @@ export const createLineSplitter = (maxLineChars = MAX_LINE_CHARS) => {
                     done.push(finish())
                 }
             })
+            held = own(held)
             return done
         },
         flush: (): string[] => (held === '' && overflow === 0 ? [] : [finish()]),
@@ -100,12 +105,20 @@ export const appendCapped = (entries: LogEntry[], added: LogEntry[], caps: { lin
 const OVERLAP_LINES = 3
 
 // After a reconnect the server may resend lines we already hold. Match the last few held lines (one repeated
-// line would match far too early) and keep only what follows their last occurrence. If the resent window starts
-// partway through that run, accept a shorter run, but only at the very start of the incoming lines.
+// line would match far too early) and keep only what follows their FIRST occurrence: with repetitive lines such
+// as heartbeats, the last occurrence would silently drop new lines, while the first can only show a duplicate.
+// Dividers are not server lines, so they are skipped. If the resent window starts partway through that run,
+// accept a shorter run, but only at the very start of the incoming lines.
 export const dropOverlap = (held: LogEntry[], incoming: string[]): { lines: string[]; found: boolean } => {
-    const tail = held.slice(-OVERLAP_LINES).map((entry) => entry.text)
-    const matchesAt = (run: string[], at: number) => at >= 0 && run.every((text, j) => incoming[at + j] === text)
-    for (let i = incoming.length - tail.length; i >= 0 && tail.length > 0; i--) {
+    const tail: string[] = []
+    for (let i = held.length - 1; i >= 0 && tail.length < OVERLAP_LINES; i--) {
+        const entry = held[i]
+        if (entry.kind === 'line') {
+            tail.unshift(entry.text)
+        }
+    }
+    const matchesAt = (run: string[], at: number) => run.every((text, j) => incoming[at + j] === text)
+    for (let i = 0; i <= incoming.length - tail.length && tail.length > 0; i++) {
         if (matchesAt(tail, i)) {
             return { lines: incoming.slice(i + tail.length), found: true }
         }
