@@ -37,11 +37,12 @@ export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica
 
         requestLog({
             params: { selector: componentName, replica, container },
-            /* The growing response body is read off the request itself. Some progress events carry
-             * no target, and a cancelled request can still deliver one, so anything but a string
-             * from the current request leaves what is on screen alone. */
+            /* The growing response body is read off the request itself. Axios throttles progress
+             * events and delivers the held back ones after their dispatch, when only the target
+             * still names the request. A cancelled request can still deliver one, so anything but
+             * a string from the current request leaves what is on screen alone. */
             onDownloadProgress: (progressEvent) => {
-                const response = (progressEvent.event?.currentTarget as XMLHttpRequest | undefined)?.response
+                const response = (progressEvent.event?.target as XMLHttpRequest | undefined)?.response
                 if (current && typeof response === 'string') {
                     setLog(response)
                 }
