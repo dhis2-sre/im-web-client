@@ -1,8 +1,9 @@
-import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
+import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
 import { FC, useState } from 'react'
 import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database, UpdateDatabaseRequest } from '../../types/index.ts'
+import { errorMessage } from '../../utils/error-message.ts'
 
 type RenameDatabaseModalProps = {
     onClose: () => void
@@ -12,47 +13,49 @@ type RenameDatabaseModalProps = {
     currentDescription: string
 }
 
+/* Edits the name and the description together, so it is titled and saved as an edit. */
 export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, currentDescription }) => {
     const [newName, setNewName] = useState<string>(currentName)
     const [newDescription, setNewDescription] = useState<string>(currentDescription)
+    const [error, setError] = useState<string>()
     const alert = useActionAlert()
+    const unchanged = newName === currentName && newDescription === currentDescription
 
-    const [{ loading }, renameDatabase] = useAuthAxios<Database>(
-        {
-            url: `/databases/${databaseId}`,
-            method: 'PUT',
-        },
-        { manual: true }
-    )
+    const [{ loading }, renameDatabase] = useAuthAxios<Database>({ url: `/databases/${databaseId}`, method: 'PUT' }, { manual: true })
 
-    const onRename = async () => {
+    const onSave = async () => {
+        setError(undefined)
         try {
-            await renameDatabase({
-                data: { name: newName, description: newDescription } as UpdateDatabaseRequest,
-            })
-            alert.success(`Renamed to ${newName}`)
+            await renameDatabase({ data: { name: newName, description: newDescription } as UpdateDatabaseRequest })
+            alert.success(newName === currentName ? `Saved ${newName}` : `Renamed to ${newName}`)
             onComplete()
             onClose()
-        } catch (error) {
-            alert.error(error.response?.data?.message || `Couldn't rename ${currentName}`)
-            onComplete()
-            onClose()
+        } catch (caught) {
+            console.error(caught)
+            setError(errorMessage(caught))
         }
     }
 
     return (
-        <Modal onClose={onClose}>
-            <ModalTitle>Rename Database</ModalTitle>
+        <Modal onClose={loading ? undefined : onClose}>
+            <ModalTitle>Edit {currentName}</ModalTitle>
             <ModalContent>
-                <InputField label="New Name" value={newName} onChange={({ value }: { value: string }) => setNewName(value)} required disabled={loading} />
-                <InputField label="New Description" value={newDescription} onChange={({ value }: { value: string }) => setNewDescription(value)} required disabled={loading} />
+                <InputField label="Name" value={newName} onChange={({ value }) => setNewName(value ?? '')} required disabled={loading} />
+                <InputField label="Description" value={newDescription} onChange={({ value }) => setNewDescription(value ?? '')} required disabled={loading} />
+                {error && (
+                    <NoticeBox error title={`Couldn't save ${currentName}`}>
+                        {error}
+                    </NoticeBox>
+                )}
             </ModalContent>
             <ModalActions>
-                <ButtonStrip>
-                    <Button onClick={onRename} disabled={loading || (newName === currentName && newDescription === currentDescription)} loading={loading} primary>
-                        Rename
+                <ButtonStrip end>
+                    <Button secondary onClick={onClose} disabled={loading}>
+                        Cancel
                     </Button>
-                    <Button onClick={onClose}>Cancel</Button>
+                    <Button primary onClick={() => void onSave()} disabled={unchanged || !newName.trim()} loading={loading}>
+                        Save
+                    </Button>
                 </ButtonStrip>
             </ModalActions>
         </Modal>

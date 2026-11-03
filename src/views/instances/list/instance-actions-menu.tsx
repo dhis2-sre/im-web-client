@@ -3,15 +3,36 @@ import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ActionsMenu, useActionAlert } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
-import { useAuthAxios } from '../../../hooks/index.ts'
+import { useAuthAxios, useDatabaseLabel } from '../../../hooks/index.ts'
 import type { Deployment, DeploymentInstanceComponents } from '../../../types/index.ts'
 import { isDeploying, refusalMessage } from '../../../utils/deploy-state.ts'
 import { SaveAsModal } from '../details/save-as-modal.tsx'
+import { DATABASE_ID } from '../parameters.ts'
 
 // A backup needs one target, so unlike restart and reset this resolves the one instance that owns
 // the database, and it asks the components what they can do rather than matching on stack name.
 const advertises = (components: DeploymentInstanceComponents[] | undefined, operation: string) =>
     components?.find((instance) => instance.components.some((component) => component.supportedOperations.includes(operation)))
+
+/* Rendered only once the reset dialog opens, so a list of instances doesn't look up every database.
+ * Until the name resolves, or where the list carries no parameters, it reads without one. */
+const ResetMessage: FC<{ deployment: Deployment }> = ({ deployment }) => {
+    const databaseId = deployment.instances?.map((instance) => instance.parameters?.[DATABASE_ID]?.value).find(Boolean)
+    const { label, loading } = useDatabaseLabel(databaseId)
+    const named = !loading && label && label !== databaseId
+
+    return (
+        <>
+            The instance will restore to its deployed state. The database
+            {named && (
+                <>
+                    , <strong>{label}</strong>,
+                </>
+            )}{' '}
+            will be restored to its original state and any changes will be lost. This cannot be undone.
+        </>
+    )
+}
 
 type InstanceActionsMenuProps = {
     deployment: Deployment
@@ -34,7 +55,6 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
     const navigate = useNavigate()
     const alert = useActionAlert()
     const [savingAs, setSavingAs] = useState(false)
-    const [backupRunning, setBackupRunning] = useState(false)
     const [, execute] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true, autoCancel: false })
     const [, executeDelete] = useAuthAxios({ method: 'DELETE', url: `/deployments/${deployment.id}` }, { manual: true, autoCancel: false })
 
@@ -91,20 +111,20 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                             label: 'Open pgAdmin',
                             onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
                         },
-                    backupTarget && { label: 'Back up…', busy: backupRunning, onClick: () => setSavingAs(true) },
+                    backupTarget && { label: 'Back up…', onClick: () => setSavingAs(true) },
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
                     hasStacks && {
                         label: 'Restart',
-                        confirm: { title: 'Restart instance', message: `Restart every component of "${name}"?`, confirmLabel: 'Restart' },
+                        confirm: { title: `Restart ${name}?`, message: 'All instance components will restart.', confirmLabel: 'Restart' },
                         onClick: actOnAll('restart'),
                     },
                     hasStacks && {
                         label: 'Reset',
                         destructive: true,
                         confirm: {
-                            title: 'Reset instance',
-                            message: `Reset every component of "${name}"? Their data is replaced with the database the instance was deployed from, and they are restarted.`,
-                            confirmLabel: 'Reset',
+                            title: `Reset ${name}?`,
+                            message: <ResetMessage deployment={deployment} />,
+                            confirmLabel: 'Reset instance',
                             destructive: true,
                         },
                         onClick: actOnAll('reset'),
@@ -114,13 +134,10 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                         destructive: true,
                         unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         confirm: {
-                            title: 'Delete instance',
-                            message: (
-                                <>
-                                    Delete the instance <strong>{name}</strong>? This cannot be undone.
-                                </>
-                            ),
-                            confirmLabel: 'Delete',
+                            title: `Delete ${name}?`,
+                            message:
+                                "Deletes the instance and everything in it: its database, files and settings. Saved databases and presets aren't affected. This can't be undone.",
+                            confirmLabel: 'Delete instance',
                             destructive: true,
                             /* With one stack the instance is the stack, so listing it would only repeat the name. */
                             typed: { name, consequences: instances.length > 1 ? instances.map((instance) => instance.stackName) : undefined },
@@ -130,17 +147,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                 ]}
             />
             {savingAs && backupTarget && (
-                <SaveAsModal
-                    onClose={() => setSavingAs(false)}
-                    instanceId={backupTarget.instanceId}
-                    stackName={backupTarget.stackName}
-                    savesFilestore={filestore !== undefined}
-                    onStart={() => {
-                        setSavingAs(false)
-                        setBackupRunning(true)
-                    }}
-                    onComplete={() => setBackupRunning(false)}
-                />
+                <SaveAsModal onClose={() => setSavingAs(false)} instanceId={backupTarget.instanceId} instanceName={name} groupName={deployment.groupName} />
             )}
         </>
     )

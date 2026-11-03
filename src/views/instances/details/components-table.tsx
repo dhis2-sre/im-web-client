@@ -20,8 +20,9 @@ export const ComponentsTable: FC<{
     namespace?: string
     instanceName?: string
     groupId?: number
+    groupName?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, components, parametersByComponent, namespace, instanceName, groupId, onChanged }) => {
+}> = ({ instanceId, stackName, components, parametersByComponent, namespace, instanceName, groupId, groupName, onChanged }) => {
     const [viewing, setViewing] = useState<string>()
     const viewed = components.find((component) => component.name === viewing)
 
@@ -35,6 +36,7 @@ export const ComponentsTable: FC<{
             namespace={namespace}
             instanceName={instanceName}
             groupId={groupId}
+            groupName={groupName}
             onChanged={onChanged}
         />
     )

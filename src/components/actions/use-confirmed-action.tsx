@@ -4,10 +4,12 @@ import { ConfirmationModal } from '../confirmation-modal.tsx'
 import { TypedConfirmationModal } from './typed-confirmation-modal.tsx'
 
 export type ConfirmOptions = {
+    /* The question, naming what it acts on: "Delete malaria-demo?" */
     title: string
+    /* What happens and whether it can be undone. */
     message: ReactNode
-    /* The verb on the confirm button. Defaults to Confirm. */
-    confirmLabel?: string
+    /* The action on the confirm button, never a bare Confirm. */
+    confirmLabel: string
     destructive?: boolean
     /* The second tier, for deletes that cannot be undone: the user types the name to confirm, and the
      * dialog lists what goes with it. */
@@ -32,7 +34,7 @@ export const useConfirmedAction = () => {
         return { confirm, modal: null }
     }
 
-    const { title, message, confirmLabel = 'Confirm', destructive, typed } = pending.options
+    const { title, message, confirmLabel, destructive, typed } = pending.options
     const modal = typed ? (
         <TypedConfirmationModal title={title} name={typed.name} consequences={typed.consequences} confirmLabel={confirmLabel} onConfirm={accept} onCancel={cancel}>
             {message}

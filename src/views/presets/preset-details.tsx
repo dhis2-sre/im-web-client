@@ -84,13 +84,13 @@ export const PresetDetails: FC = () => {
                                     label: 'Delete',
                                     destructive: true,
                                     confirm: {
-                                        title: 'Delete preset',
+                                        title: `Delete ${preset.name}?`,
                                         message: (
                                             <>
-                                                Delete the preset <strong>{preset.name}</strong> in <strong>{preset.groupName}</strong>?
+                                                Removes the preset from <strong>{preset.groupName}</strong>. Instances created from it keep running.
                                             </>
                                         ),
-                                        confirmLabel: 'Delete',
+                                        confirmLabel: 'Delete preset',
                                         destructive: true,
                                     },
                                     onClick: () => remove(preset),

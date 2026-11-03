@@ -61,7 +61,7 @@ export const BulkDeployModal: FC<{
                 <div className={styles.bulkFields}>
                     <InputField label="Name prefix" value={prefix} onChange={({ value }) => setPrefix(value ?? '')} required className={styles.bulkPrefix} />
                     <InputField
-                        label="Instances"
+                        label="How many"
                         type="number"
                         min="1"
                         max={String(MAX_BULK_DEPLOYMENTS)}

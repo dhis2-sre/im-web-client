@@ -14,6 +14,9 @@ import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 /* A read replaces every sensitive value with a run of stars, which is not a value anyone can submit.
  * Those fields start empty instead, and the form tells the user that leaving them so keeps what the
  * instance already holds. */
+/* How companions are known to people, by stack name. Others show their stack name. */
+const COMPANION_LABELS: Record<string, string> = { pgadmin: 'pgAdmin', chap: 'CHAP', doris: 'Doris' }
+
 const isMaskedValue = (value: string) => /^[*•]+$/.test(value)
 
 const initialValuesFor = (deployment: Deployment) => {
@@ -107,6 +110,8 @@ export const EditDhis2V2Instance: FC = () => {
         )
     }
 
+    const removing = pendingRemoval?.names.map((name) => COMPANION_LABELS[name] ?? name).join(' and ')
+
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title={`Edit ${deployment.name ?? 'instance'}`}>
             <Card className={styles.container}>
@@ -116,14 +121,16 @@ export const EditDhis2V2Instance: FC = () => {
             </Card>
             {pendingRemoval && (
                 <Modal onClose={pendingRemoval.cancel}>
-                    <ModalTitle>Remove {pendingRemoval.names.join(' and ')}?</ModalTitle>
+                    <ModalTitle>Remove {removing}?</ModalTitle>
                     <ModalContent>
-                        Saving destroys {pendingRemoval.names.length > 1 ? 'these releases' : 'this release'} and everything{' '}
-                        {pendingRemoval.names.length > 1 ? 'they hold' : 'it holds'}. This cannot be undone.
+                        Saving removes {removing} from <strong>{deployment.name}</strong> and deletes everything stored in {pendingRemoval.names.length > 1 ? 'them' : 'it'}. This
+                        can&apos;t be undone.
                     </ModalContent>
                     <ModalActions>
                         <ButtonStrip end>
-                            <Button onClick={pendingRemoval.cancel}>Cancel</Button>
+                            <Button secondary onClick={pendingRemoval.cancel}>
+                                Cancel
+                            </Button>
                             <Button destructive onClick={pendingRemoval.confirm}>
                                 Save and remove
                             </Button>

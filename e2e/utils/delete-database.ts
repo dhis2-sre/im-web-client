@@ -17,7 +17,7 @@ export const deleteTestDatabase = async (page: Page, name: string) => {
     // name to be typed out.
     const confirmDialog = page.locator('[aria-modal="true"]')
     await confirmDialog.getByLabel(`Type ${name} to confirm`).fill(name)
-    await confirmDialog.getByRole('button', { name: 'Delete' }).dispatchEvent('click')
+    await confirmDialog.getByRole('button', { name: 'Delete database' }).dispatchEvent('click')
 
     const expectMessage = page.getByTestId('dhis2-uicore-alertbar').getByText(new RegExp(`^Deleted [^/]+/${name}$`))
     await expect(expectMessage).toBeVisible()

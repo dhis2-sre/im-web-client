@@ -1,97 +1,84 @@
-import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
+import { useActionAlert } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Database } from '../../../types/index.ts'
-import { AsyncActionProps } from './action-types.ts'
+import { errorMessage } from '../../../utils/error-message.ts'
 import styles from './save-as-modal.module.css'
 
-interface SaveAsModalProps extends AsyncActionProps {
+type SaveAsModalProps = {
+    instanceId: number
+    instanceName: string
+    groupName?: string
     onClose: () => void
-    // The file store rides along with the dump whenever a component advertises filestoreBackup, so
-    // the deployment that has one says so rather than leaving the second artifact a surprise.
-    savesFilestore?: boolean
 }
 
 const defaultFormat = 'custom'
 const formats = new Map<string, { label: string; extension: string }>([
-    ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
-    ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
+    ['custom', { label: 'Custom (pgc)', extension: '.pgc' }],
+    ['plain', { label: 'Plain (sql.gz)', extension: '.sql.gz' }],
 ])
 
-export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, stackName, savesFilestore, onClose, onStart, onComplete }) => {
-    const [name, setName] = useState<string>('')
-    const [format, setFormat] = useState<string>(defaultFormat)
-    const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
+/* The request only starts the backup, so the dialog stays open until it is accepted and shows a refusal
+ * in place rather than losing what was typed. */
+export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, groupName, onClose }) => {
+    const [name, setName] = useState(() => `${instanceName}-${new Date().toISOString().slice(0, 10)}`)
+    const [format, setFormat] = useState(defaultFormat)
+    const [error, setError] = useState<string>()
+    const extension = formats.get(format)?.extension ?? ''
+    const alert = useActionAlert()
 
-    const [{ loading }, saveAs] = useAuthAxios<Database>(
-        {
-            url: `/databases/save-as/${instanceId}`,
-            method: 'post',
-            data: {
-                name: name + extension,
-                format,
-            },
-        },
-        { manual: true, autoCancel: false }
-    )
+    const [{ loading }, saveAs] = useAuthAxios<Database>({ url: `/databases/save-as/${instanceId}`, method: 'post' }, { manual: true, autoCancel: false })
 
-    const submit = useCallback(async () => {
+    const submit = async () => {
+        setError(undefined)
         try {
-            onStart()
-            await saveAs()
-            showAlert({
-                message: 'Save as request submitted successfully',
-                isCritical: false,
-            })
+            await saveAs({ data: { name: name.trim() + extension, format } })
+            alert.success(`Backing up ${instanceName} database`)
             onClose()
-            /* No need to refetch the instance list since this
-             * adds a DB not an instance */
-            onComplete(false)
-        } catch (error) {
-            showAlert({
-                message: 'There was a problem submitting the request',
-                isCritical: true,
-            })
-            console.error(error)
-            onComplete(false)
+        } catch (caught) {
+            console.error(caught)
+            setError(errorMessage(caught))
         }
-    }, [saveAs, showAlert, onClose, onStart, onComplete])
-
-    const onSelectChange = useCallback(
-        ({ selected }) => {
-            setFormat(selected)
-            setExtension(formats.get(selected).extension)
-        },
-        [setFormat, setExtension]
-    )
+    }
 
     return (
-        <Modal onClose={onClose}>
-            <ModalTitle>Save &quot;{stackName}&quot; database as</ModalTitle>
+        <Modal onClose={loading ? undefined : onClose}>
+            <ModalTitle>Back up {instanceName}</ModalTitle>
             <ModalContent className={styles.container}>
+                <p className={styles.note}>
+                    Save a copy of the instance database
+                    {groupName && (
+                        <>
+                            , in the <strong>{groupName}</strong> group
+                        </>
+                    )}
+                    .
+                </p>
                 <div className={styles.fileAndExtension}>
-                    <InputField className={styles.field} label="New name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
+                    <InputField className={styles.field} label="Backup name" value={name} onChange={({ value }) => setName(value ?? '')} required disabled={loading} />
                     <span className={styles.extension}>{extension}</span>
                 </div>
-                {savesFilestore && <p className={styles.note}>The file store is saved alongside the database and linked to it, so restoring this entry restores both.</p>}
-                <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
-                    {Array.from(formats.keys()).map((key) => (
-                        <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
+                <SingleSelectField className={styles.field} selected={format} onChange={({ selected }) => setFormat(selected)} label="Format" disabled={loading}>
+                    {Array.from(formats.entries()).map(([key, { label }]) => (
+                        <SingleSelectOption key={key} label={label} value={key} />
                     ))}
                 </SingleSelectField>
+                {error && (
+                    <NoticeBox error title="Couldn't start the backup">
+                        {error}
+                    </NoticeBox>
+                )}
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={submit} disabled={loading}>
-                        Save
+                    <Button secondary onClick={onClose} disabled={loading}>
+                        Cancel
                     </Button>
-                    <Button onClick={onClose}>Cancel</Button>
+                    <Button primary onClick={() => void submit()} disabled={!name.trim()} loading={loading}>
+                        Back up
+                    </Button>
                 </ButtonStrip>
             </ModalActions>
         </Modal>

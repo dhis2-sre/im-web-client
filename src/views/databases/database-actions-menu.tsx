@@ -56,20 +56,20 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void; 
                 buttons={buttons}
                 items={[
                     { label: 'Download', onClick: download },
-                    { label: 'Rename', unavailable: locked, onClick: () => setModal('rename') },
+                    { label: 'Edit', unavailable: locked, onClick: () => setModal('rename') },
                     { label: 'Copy', onClick: () => setModal('copy') },
                     {
                         label: 'Delete',
                         destructive: true,
                         unavailable: locked,
                         confirm: {
-                            title: 'Delete database',
+                            title: `Delete ${database.name}?`,
                             message: (
                                 <>
-                                    Delete <strong>{fullName}</strong>? This cannot be undone.
+                                    Deletes the database and its linked file store from <strong>{database.groupName}</strong>. This can&apos;t be undone.
                                 </>
                             ),
-                            confirmLabel: 'Delete',
+                            confirmLabel: 'Delete database',
                             destructive: true,
                             typed: { name: database.name },
                         },

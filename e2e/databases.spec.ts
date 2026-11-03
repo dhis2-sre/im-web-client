@@ -29,21 +29,24 @@ test.describe('databases', () => {
 
         // Fill in the new name
         const newName = `copy-${fileName}`
-        await copyDialog.getByLabel('New Name').fill(newName, { force: true })
+        await copyDialog.getByLabel('Name of the copy').fill(newName, { force: true })
 
-        // Wait for groups to load, then select the target group
-        const groupSelect = copyDialog.getByLabel(/select group/i)
-        await expect(groupSelect).toBeEnabled()
-        await groupSelect.selectOption(targetGroup)
+        // Pick the target group unless it is already the one selected, since clicking a selected
+        // @dhis2/ui option leaves the layer's backdrop mounted over the dialog.
+        const groupInput = copyDialog.getByTestId('dhis2-uiwidgets-singleselectfield').getByTestId('dhis2-uicore-select-input')
+        await expect(groupInput).not.toHaveText('')
+        if (!(await groupInput.textContent())?.includes(targetGroup)) {
+            await groupInput.click()
+            await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: targetGroup }).click()
+        }
 
         // Click the Copy button in the modal actions
         const copyButton = copyDialog.getByRole('button', { name: 'Copy' })
         await expect(copyButton).toBeEnabled()
         await copyButton.dispatchEvent('click')
 
-        // Wait for the copy to succeed, then dismiss the modal
+        // The dialog closes once the copy succeeds
         await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Copied to ${newName}`, { exact: true })).toBeVisible({ timeout: 10000 })
-        await page.keyboard.press('Escape')
 
         // Delete the copy
         await deleteTestDatabase(page, newName)

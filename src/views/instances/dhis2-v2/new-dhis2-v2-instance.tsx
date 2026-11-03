@@ -142,6 +142,8 @@ export const NewDhis2V2Instance: FC = () => {
             )}
             {presetToReplace && (
                 <ConfirmationModal
+                    title={`Replace ${presetToReplace.name}?`}
+                    confirmLabel="Replace preset"
                     destructive
                     onCancel={() => setPresetToReplace(undefined)}
                     onConfirm={() => {
@@ -149,7 +151,7 @@ export const NewDhis2V2Instance: FC = () => {
                         void storePreset(presetToReplace, true)
                     }}
                 >
-                    A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Replace it?
+                    A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Saving replaces its settings with these.
                 </ConfirmationModal>
             )}
         </Page>
