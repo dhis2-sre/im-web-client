@@ -50,11 +50,11 @@ is not committed.
   description, Escape and click-outside to close, and a focus trap. It is used by the component details
   drawer (`component-details-drawer.tsx`, `instance-components-section.tsx`).
 - `src/views/instances/details/log-modal.tsx` does the following:
-  - It streams through `useAuthAxios` (`manual`, `autoCatch`).
-  - It reads the growing body from `XMLHttpRequest.response` in `onDownloadProgress`.
-  - It cancels on cleanup and follows the tail unless the reader is within 32px of the bottom.
-  - Its comments explain two traps: keep the axios config stable (url only), and ignore progress events
-    from a cancelled request. Both still apply.
+    - It streams through `useAuthAxios` (`manual`, `autoCatch`).
+    - It reads the growing body from `XMLHttpRequest.response` in `onDownloadProgress`.
+    - It cancels on cleanup and follows the tail unless the reader is within 32px of the bottom.
+    - Its comments explain two traps: keep the axios config stable (url only), and ignore progress events
+      from a cancelled request. Both still apply.
 - `component-operations-menu.tsx` renders `LogModal` from inside the row's menu. It passes `replica.name` and
   `replica.containers`. The Grafana item is shown when `grafanaLogsUrl(...)` returns a URL, and only on
   component rows.
@@ -63,10 +63,10 @@ is not committed.
   deployment events, so the replica list updates while the page is open.
 - `src/utils/error-message.ts` → `errorMessage(error)` gives im-manager's plain-text reason.
 - The API is `GET /instances/:id/logs?selector=&replica=&container=&tail=`.
-  - With no `tail`, it sends 1000 lines. `tail=0` sends the whole log.
-  - It follows forever and ends only when the container stops or the request is cancelled.
-  - It returns 409 with "instance is still starting up, logs not available yet" while the pod is
-    being created.
+    - With no `tail`, it sends 1000 lines. `tail=0` sends the whole log.
+    - It follows forever and ends only when the container stops or the request is cancelled.
+    - It returns 409 with "instance is still starting up, logs not available yet" while the pod is
+      being created.
 - Tests use Jest (`*.test.ts` next to the code, e.g. `src/utils/error-message.test.ts`).
 - The mock API (`~/Documents/github/im-mock-api`, :4010) streams 300 lines and then one every 700ms, and
   returns 409 for `pending` instances. It ignores `tail` and never ends the stream.
@@ -76,7 +76,7 @@ is not committed.
 ### Where it lives
 
 - The row's "…" → **Logs** opens a drawer, as now. The **Logs in Grafana** menu item stays as it is, and
-  the link also appears in the drawer header. *(Builder check, my call.)* Logs needs a replica, so a
+  the link also appears in the drawer header. _(Builder check, my call.)_ Logs needs a replica, so a
   component with none running would otherwise lose its only way to Grafana, and that is when its history
   matters most.
 - The drawer is about ¾ of the window wide (`min(1200px, 100vw - 64px)` or similar), so the details page
@@ -104,13 +104,13 @@ is not committed.
   to download and decode all of it even if it keeps only the last lines. That is too much for the
   browser and for the server. The Grafana link covers older history.
 - Changing any of these restarts the stream and clears the view.
-- **When the replica is replaced** *(builder check, my call)*. The drawer stores the component name and
+- **When the replica is replaced** _(builder check, my call)_. The drawer stores the component name and
   the chosen replica name, and every request sends that replica. When the chosen replica disappears from
   `component.replicas` (a pod replaced after a crash):
-  - The drawer switches to the component's current replica (the first one, if there are several).
-  - It keeps the lines on screen.
-  - It adds a divider: "dhis2-7f9c4d-xk2lp was replaced · now showing dhis2-7f9c4d-q8w2m".
-  - It never sends a replica name that is gone, so the server's 404 "pod not found" can't strand it.
+    - The drawer switches to the component's current replica (the first one, if there are several).
+    - It keeps the lines on screen.
+    - It adds a divider: "dhis2-7f9c4d-xk2lp was replaced · now showing dhis2-7f9c4d-q8w2m".
+    - It never sends a replica name that is gone, so the server's 404 "pod not found" can't strand it.
 
 ### Tools row
 
@@ -119,12 +119,12 @@ is not committed.
 - **Level chips**: All / Warnings / Errors. "Warnings" shows WARN and ERROR, and "Errors" shows only ERROR.
   They combine with the filter.
 - On the right:
-  - The status: **Live** (green), **Paused** (amber), **Waiting**, **Ended** or **Not connected** (grey).
-  - **Pause / Resume**.
-  - **Wrap** (a toggle, on by default).
-  - **Copy**, which copies the lines currently shown.
-  - **Download**, which downloads everything loaded, unfiltered, as `<replica>[-<container>].log`.
-  - All buttons have text labels.
+    - The status: **Live** (green), **Paused** (amber), **Waiting**, **Ended** or **Not connected** (grey).
+    - **Pause / Resume**.
+    - **Wrap** (a toggle, on by default).
+    - **Copy**, which copies the lines currently shown.
+    - **Download**, which downloads everything loaded, unfiltered, as `<replica>[-<container>].log`.
+    - All buttons have text labels.
 
 ### The log
 
@@ -132,12 +132,12 @@ is not committed.
   scrolls sideways inside the log area only.
 - ERROR (also FATAL, SEVERE) lines get a light red tint, a 3px red left bar and a bold red level word.
   WARN (also WARNING) lines get the same in amber.
-  - A line's level comes from the first level word near its start. This covers DHIS2 (`* ERROR`), the
-    mock (`ERROR org...`), Postgres (`ERROR:`, `WARNING:`) and logback/log4j styles.
-  - Continuation lines take the level of the line above. These are lines that start with whitespace or
-    `at `, or that look like an exception class (`xxx.yyy.SomeException:`, `Caused by:`). This makes a
-    stack trace stay red with its ERROR.
-  - Lines with no level word are plain. Not every format will be caught, and that's acceptable.
+    - A line's level comes from the first level word near its start. This covers DHIS2 (`* ERROR`), the
+      mock (`ERROR org...`), Postgres (`ERROR:`, `WARNING:`) and logback/log4j styles.
+    - Continuation lines take the level of the line above. These are lines that start with whitespace or
+      `at `, or that look like an exception class (`xxx.yyy.SomeException:`, `Caused by:`). This makes a
+      stack trace stay red with its ERROR.
+    - Lines with no level word are plain. Not every format will be caught, and that's acceptable.
 - Following: the view stays at the bottom as lines arrive. Scrolling up more than about 32px pauses (the
   same threshold as today).
 - While paused, new lines are still received but held back. A floating **↓ N new lines** button at the
@@ -150,25 +150,26 @@ These come from the mockup:
 - **Connecting**: until the first chunk arrives, a quiet "Connecting…" line, not a large spinner.
 - **Waiting** (409): "<component> is still starting up. Logs will appear here as soon as the container
   starts. You don't need to reopen this." It retries on its own while the drawer is open. The waits grow: 4s, 8s, 16s, then every 30s.
-- **Stream ends** (the request finishes without being cancelled). *This changes the mockup's "Stream
-  ended + Reconnect" state, as my call after the builder check.* There are two reasons a stream ends:
-  - The container stopped or restarted.
-  - The connection went quiet. im-manager's ingress has `proxy-read-timeout: 300`
-    (`helm/chart/values.yaml:113`), so a quiet container such as Postgres gets cut after 5 minutes with
-    nothing having restarted.
+- **Stream ends** (the request finishes without being cancelled). _This changes the mockup's "Stream
+  ended + Reconnect" state, as my call after the builder check._ There are two reasons a stream ends:
+    - The container stopped or restarted.
+    - The connection went quiet. im-manager's ingress has `proxy-read-timeout: 300`
+      (`helm/chart/values.yaml:113`), so a quiet container such as Postgres gets cut after 5 minutes with
+      nothing having restarted.
 
-  So the drawer reconnects by itself after about 2 seconds and keeps every line already on screen:
-  - While reconnecting, the status shows **Reconnecting…**.
-  - **If the replica restarted** (its restart count went up) or was replaced: a divider goes in, e.g.
-    "Container restarted at 10:52", and the new container's log follows it. A crash loop then reads as a
-    series of runs separated by dividers. That's the closest thing to "previous container" without a
-    backend change.
-  - **If nothing restarted** (a quiet cut): the new response repeats the last N lines. Drop the first
-    response lines up to and including the last line already held, when it can be found (most lines carry
-    a timestamp). If it can't be found, add a plain "Reconnected" divider and accept the duplicates.
-  - **If reconnecting gets a 409** (crash-loop backoff): show the Waiting state under the kept lines, and
-    keep retrying every 3–5 seconds.
-  - **If reconnecting fails three times in a row**: fall to Not connected.
+    So the drawer reconnects by itself after about 2 seconds and keeps every line already on screen:
+    - While reconnecting, the status shows **Reconnecting…**.
+    - **If the replica restarted** (its restart count went up) or was replaced: a divider goes in, e.g.
+      "Container restarted at 10:52", and the new container's log follows it. A crash loop then reads as a
+      series of runs separated by dividers. That's the closest thing to "previous container" without a
+      backend change.
+    - **If nothing restarted** (a quiet cut): the new response repeats the last N lines. Drop the first
+      response lines up to and including the last line already held, when it can be found (most lines carry
+      a timestamp). If it can't be found, add a plain "Reconnected" divider and accept the duplicates.
+    - **If reconnecting gets a 409** (crash-loop backoff): show the Waiting state under the kept lines, and
+      keep retrying every 3–5 seconds.
+    - **If reconnecting fails three times in a row**: fall to Not connected.
+
 - **Not connected** (any other error): "Couldn't load the log", then the server's reason from
   `errorMessage`, and **Try again**. Any lines already loaded stay above the message.
 - **No matches**: when the filter or chips hide everything, show "No lines match" with a way to clear
@@ -176,44 +177,44 @@ These come from the mockup:
 
 ### Data and speed
 
-- **Read the stream with `fetch` and a stream reader, not axios progress events** *(builder check, my
-  call)*. `XMLHttpRequest.response` holds the whole body for as long as the request is open, so a drawer
+- **Read the stream with `fetch` and a stream reader, not axios progress events** _(builder check, my
+  call)_. `XMLHttpRequest.response` holds the whole body for as long as the request is open, so a drawer
   left open for hours grows memory without limit, whatever the line cap.
-  - `fetch(`${baseURL}/instances/${id}/logs?…`, { credentials: 'include', signal })`. Auth is cookies,
-    as with the axios instance's `withCredentials`.
-  - Decode chunks with `TextDecoder` (`stream: true`).
-  - Abort with an `AbortController` on cleanup and whenever the source changes.
-  - On a 401, call the existing `refreshTokens()` from `use-auth-axios.ts` and retry once. If that fails
-    too, dispatch `UNAUTHORIZED_EVENT` as the axios interceptor does.
-  - The comments in `log-modal.tsx` about a stable axios config no longer apply.
+    - `fetch(`${baseURL}/instances/${id}/logs?…`, { credentials: 'include', signal })`. Auth is cookies,
+      as with the axios instance's `withCredentials`.
+    - Decode chunks with `TextDecoder` (`stream: true`).
+    - Abort with an `AbortController` on cleanup and whenever the source changes.
+    - On a 401, call the existing `refreshTokens()` from `use-auth-axios.ts` and retry once. If that fails
+      too, dispatch `UNAUTHORIZED_EVENT` as the axios interceptor does.
+    - The comments in `log-modal.tsx` about a stable axios config no longer apply.
 - Keep lines as an array, not one string:
-  1. Split each decoded chunk on `\n`.
-  2. Keep the unfinished last piece until the next chunk.
-  3. Classify each line's level once, when it arrives.
+    1. Split each decoded chunk on `\n`.
+    2. Keep the unfinished last piece until the next chunk.
+    3. Classify each line's level once, when it arrives.
 - **Hard limits on what is held** (go cautious). These are all constants in one place:
-  - **At most 10,000 lines** (`MAX_LINES`), dropping the oldest. A stream keeps adding after the first
-    5,000, so the cap is what bounds a drawer left open.
-  - **At most 4,000,000 characters in total** (`MAX_HELD_CHARS`, about 8 MB in memory). Drop the oldest lines
-    until under. This catches logs whose lines are long.
-  - **At most 5,000 characters per line** (`MAX_LINE_CHARS`). Longer lines are cut and end with
-    `… [N more characters]`. A line that never ends (no newline arriving) is cut the same way once its
-    unfinished piece passes the limit, and the rest is thrown away until the next newline. Download contains
-    the cut lines, because the full text isn't kept.
-  - **When anything has been dropped**, show a note at the top: "Showing the most recent lines only.
-    Older lines are in Grafana" (with the link when it is configured).
+    - **At most 10,000 lines** (`MAX_LINES`), dropping the oldest. A stream keeps adding after the first
+      5,000, so the cap is what bounds a drawer left open.
+    - **At most 4,000,000 characters in total** (`MAX_HELD_CHARS`, about 8 MB in memory). Drop the oldest lines
+      until under. This catches logs whose lines are long.
+    - **At most 5,000 characters per line** (`MAX_LINE_CHARS`). Longer lines are cut and end with
+      `… [N more characters]`. A line that never ends (no newline arriving) is cut the same way once its
+      unfinished piece passes the limit, and the rest is thrown away until the next newline. Download contains
+      the cut lines, because the full text isn't kept.
+    - **When anything has been dropped**, show a note at the top: "Showing the most recent lines only.
+      Older lines are in Grafana" (with the link when it is configured).
 - **Hard limits on what is drawn:**
-  - Draw at most the **2,000** most recent matching lines (`RENDER_LINES`). Above them is a "Show 2,000
-    earlier lines" button that adds 2,000 more each time it is pressed, up to what is held. Filter and
-    level chips search all held lines and draw at most the same number of matches.
-  - Apply new lines at most **every 100ms** (`FLUSH_MS`, a timer rather than `requestAnimationFrame`, which
-    stops in a background tab and would let lines pile up). Lines waiting for the next update obey the
-    same caps.
-  - The filter waits **200ms** after typing stops (the existing `useDebouncedState` hook).
+    - Draw at most the **2,000** most recent matching lines (`RENDER_LINES`). Above them is a "Show 2,000
+      earlier lines" button that adds 2,000 more each time it is pressed, up to what is held. Filter and
+      level chips search all held lines and draw at most the same number of matches.
+    - Apply new lines at most **every 100ms** (`FLUSH_MS`, a timer rather than `requestAnimationFrame`, which
+      stops in a background tab and would let lines pile up). Lines waiting for the next update obey the
+      same caps.
+    - The filter waits **200ms** after typing stops (the existing `useDebouncedState` hook).
 - **Hard limits on retrying**, so a broken instance isn't hammered:
-  - A 409 waits 4s, 8s, 16s, then 30s between tries.
-  - A stream that ends reconnects after 2s, and the waits grow the same way if it keeps ending.
-  - After **10 minutes** with no new line, retrying stops. The drawer shows "Stopped trying after 10
-    minutes" with **Try again**.
+    - A 409 waits 4s, 8s, 16s, then 30s between tries.
+    - A stream that ends reconnects after 2s, and the waits grow the same way if it keeps ending.
+    - After **10 minutes** with no new line, retrying stops. The drawer shows "Stopped trying after 10
+      minutes" with **Try again**.
 - Only one log stream is open at a time, because only one drawer can be open. Closing the drawer or
   changing the source aborts the request.
 - No library is added. Joe agreed to cap rather than virtualise.
