@@ -150,6 +150,26 @@ export const visibleEntries = (entries: LogEntry[], query: string, level: LevelF
     })
 }
 
+// A one-letter filter on long lines would otherwise make a node per letter, millions across the drawn rows
+export const MAX_MARKS = 20
+
+/* Text cut around a lower-case needle, the same plain substring visibleEntries matches: even parts are plain
+ * and odd ones matched. After MAX_MARKS matches the rest stays plain. */
+export const splitMatches = (text: string, needle: string): string[] => {
+    if (!needle) {
+        return [text]
+    }
+    const lower = text.toLowerCase()
+    const parts: string[] = []
+    let from = 0
+    for (let at = lower.indexOf(needle); at !== -1 && parts.length < MAX_MARKS * 2; at = lower.indexOf(needle, from)) {
+        parts.push(text.slice(from, at), text.slice(at, at + needle.length))
+        from = at + needle.length
+    }
+    parts.push(text.slice(from))
+    return parts
+}
+
 export const reconnectDivider = (before: { replica: string; restarts: number }, after: { replica: string; restarts: number }, at: Date): string | undefined => {
     if (before.replica !== after.replica) {
         return `${before.replica} was replaced · now showing ${after.replica}`

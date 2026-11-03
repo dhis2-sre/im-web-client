@@ -1,4 +1,4 @@
-import { appendCapped, createLineSplitter, dropOverlap, levelOf, reconnectDivider, toEntries, visibleEntries, type LogEntry } from './log-lines.ts'
+import { appendCapped, MAX_MARKS, createLineSplitter, dropOverlap, levelOf, reconnectDivider, splitMatches, toEntries, visibleEntries, type LogEntry } from './log-lines.ts'
 
 const lines = (texts: string[], firstId = 0): LogEntry[] => texts.map((text, i) => ({ id: firstId + i, kind: 'line', text, level: undefined }))
 
@@ -146,5 +146,21 @@ describe('reconnectDivider', () => {
 
     it('reconnectDivider is quiet when nothing changed', () => {
         expect(reconnectDivider({ replica: 'a', restarts: 3 }, { replica: 'a', restarts: 3 }, new Date())).toBeUndefined()
+    })
+})
+
+describe('splitMatches', () => {
+    it('splitMatches marks every match, case-insensitively', () => {
+        expect(splitMatches('Error: an error', 'error')).toEqual(['', 'Error', ': an ', 'error', ''])
+    })
+
+    it('splitMatches leaves text plain without a needle', () => {
+        expect(splitMatches('abc', '')).toEqual(['abc'])
+    })
+
+    it('splitMatches stops marking after MAX_MARKS, keeping the rest as plain text', () => {
+        const parts = splitMatches('a'.repeat(5000), 'a')
+        expect(parts.length).toBeLessThanOrEqual(MAX_MARKS * 2 + 1)
+        expect(parts.join('')).toBe('a'.repeat(5000))
     })
 })

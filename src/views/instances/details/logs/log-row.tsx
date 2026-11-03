@@ -1,24 +1,11 @@
 import { memo } from 'react'
 import type { FC, ReactNode } from 'react'
 import styles from './log-drawer.module.css'
-import { LEVEL_SEARCH_CHARS, LEVEL_WORD } from './log-lines.ts'
+import { LEVEL_SEARCH_CHARS, LEVEL_WORD, splitMatches } from './log-lines.ts'
 import type { LogEntry } from './log-lines.ts'
 
-// Plain substring, case-insensitive, the same match visibleEntries filters on
-const highlight = (text: string, needle: string): ReactNode => {
-    if (!needle) {
-        return text
-    }
-    const lower = text.toLowerCase()
-    const parts: ReactNode[] = []
-    let from = 0
-    for (let at = lower.indexOf(needle); at !== -1; at = lower.indexOf(needle, from)) {
-        parts.push(text.slice(from, at), <mark key={at}>{text.slice(at, at + needle.length)}</mark>)
-        from = at + needle.length
-    }
-    parts.push(text.slice(from))
-    return parts
-}
+// At most MAX_MARKS per piece, and a row has at most three: before its level word, the word, and after
+const highlight = (text: string, needle: string): ReactNode => splitMatches(text, needle).map((part, i) => (i % 2 ? <mark key={i}>{part}</mark> : part))
 
 /* No handlers, and memoised on the entry object, which the stream never changes once made, so an update
  * renders only the rows it added rather than all 2,000. */
