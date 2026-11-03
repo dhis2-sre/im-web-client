@@ -37,11 +37,11 @@ export const streamLog = async (source: LogSource, onChunk: (text: string) => vo
         }
         if (res.status === 401) {
             dispatchUnauthorizedEvent()
-            throw new LogStreamError(401, (await res.text()) || res.statusText)
+            throw new LogStreamError(401, (await res.text()) || res.statusText || `HTTP ${res.status}`)
         }
     }
     if (!res.ok) {
-        throw new LogStreamError(res.status, (await res.text()) || res.statusText)
+        throw new LogStreamError(res.status, (await res.text()) || res.statusText || `HTTP ${res.status}`)
     }
     if (!res.body) {
         throw new LogStreamError(res.status, 'The response has no body')

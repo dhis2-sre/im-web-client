@@ -1,13 +1,13 @@
-import { Button, InputField, SegmentedControl, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import type { FC } from 'react'
+import { Button, Input, SegmentedControl, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import type { FC, MouseEvent } from 'react'
 import { componentStatus, Drawer, MomentFromNow, StatusDot } from '../../../../components/index.ts'
 import { useDebouncedState } from '../../../../hooks/use-debounce-state.ts'
 import type { InstanceComponent } from '../../../../types/index.ts'
 import { grafanaLogsUrl } from '../../../../utils/grafana-logs.ts'
 import styles from './log-drawer.module.css'
 import { RENDER_LINES, visibleEntries } from './log-lines.ts'
-import type { LevelFilter } from './log-lines.ts'
+import type { LevelFilter, LogEntry } from './log-lines.ts'
 import { LogRow } from './log-row.tsx'
 import { useLogStream } from './use-log-stream.ts'
 import type { StreamStatus } from './use-log-stream.ts'
@@ -52,7 +52,7 @@ export const LogDrawer: FC<{
     const filter = useDebouncedState({ initialValue: '' })
     const [level, setLevel] = useState<LevelFilter>('all')
     const [wrap, setWrap] = useState(true)
-    const [paused, setPaused] = useState<{ total: number; lastId: number }>()
+    const [paused, setPaused] = useState<{ total: number; entries: LogEntry[] }>()
     const [shown, setShown] = useState(RENDER_LINES)
     const [copyLabel, setCopyLabel] = useState('Copy')
 
@@ -72,23 +72,17 @@ export const LogDrawer: FC<{
     )
     const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
 
-    /* While paused, only what had arrived by then. By id rather than by count, since a divider that arrives
-     * meanwhile is an entry but not a line. */
-    const held = useMemo(() => {
-        if (!paused) {
-            return entries
-        }
-        let end = entries.length
-        while (end > 0 && entries[end - 1].id > paused.lastId) {
-            end--
-        }
-        return entries.slice(0, end)
-    }, [entries, paused])
+    /* While paused, what had arrived by then, as it was, so the cap dropping old lines can't empty the view.
+     * Holding on to the array is safe since appendCapped always makes a new one rather than changing it. */
+    const held = paused ? paused.entries : entries
     const visible = useMemo(() => visibleEntries(held, filter.debouncedValue, level), [held, filter.debouncedValue, level])
     const drawn = useMemo(() => (visible.length > shown ? visible.slice(visible.length - shown) : visible), [visible, shown])
     const needle = filter.debouncedValue.toLowerCase()
 
     const box = useRef<HTMLDivElement>(null)
+    const controls = useRef<HTMLDivElement>(null)
+    // Where this code last put the view, so any move up from there is the reader's
+    const placedTop = useRef(0)
     // How far the view was from the end before earlier lines went in above it
     const fromEnd = useRef<number | undefined>(undefined)
 
@@ -105,17 +99,37 @@ export const LogDrawer: FC<{
         } else if (!paused) {
             element.scrollTop = element.scrollHeight
         }
+        placedTop.current = element.scrollTop
     }, [drawn, paused, wrap, status])
 
-    const pause = () => setPaused({ total, lastId: entries[entries.length - 1]?.id ?? -1 })
+    /* Try again, Show earlier and the new-lines pill go away once used, and focus would fall out of the
+     * drawer's trap to the page behind, so it moves to Pause or Resume instead. */
+    const used = useRef<HTMLElement>(undefined)
+    useEffect(() => {
+        if (used.current && !used.current.isConnected) {
+            controls.current?.querySelector<HTMLElement>('button[name="follow"]')?.focus()
+        }
+        used.current = undefined
+    })
+    const leaving = (event: MouseEvent<HTMLElement>) => {
+        used.current = event.currentTarget
+    }
+
+    const pause = () => setPaused({ total, entries })
     const follow = () => {
         setPaused(undefined)
         setShown(RENDER_LINES)
     }
 
+    /* Any move up pauses, however slow. Clamping to the end, as when the box grows, isn't one, and the
+     * slack only decides whether a view moved some other way is still at the end. */
     const onScroll = () => {
         const element = box.current
-        if (element && !paused && element.scrollHeight - element.scrollTop - element.clientHeight > FOLLOW_SLACK_PX) {
+        if (!element || paused) {
+            return
+        }
+        const below = element.scrollHeight - element.scrollTop - element.clientHeight
+        if (below > FOLLOW_SLACK_PX || (below > 1 && element.scrollTop < placedTop.current - 1)) {
             pause()
         }
     }
@@ -159,6 +173,8 @@ export const LogDrawer: FC<{
         setTimeout(() => URL.revokeObjectURL(url))
     }
 
+    // Input rather than InputField, which drops the accessible name; its types leave ariaLabel out
+    const untyped: Record<string, unknown> = { ariaLabel: 'Filter lines' }
     const label = paused && (status === 'live' || status === 'reconnecting') ? 'Paused' : STATUS_LABELS[status]
     const tone = label === 'Paused' ? styles.paused : status === 'live' ? styles.live : ''
     const empty = entries.length === 0
@@ -171,7 +187,14 @@ export const LogDrawer: FC<{
         ) : status === 'error' ? (
             <>
                 <b>Couldn&apos;t load the log</b> {error}
-                <Button small secondary onClick={retry}>
+                <Button
+                    small
+                    secondary
+                    onClick={(_, event) => {
+                        leaving(event)
+                        retry()
+                    }}
+                >
                     Try again
                 </Button>
             </>
@@ -252,8 +275,18 @@ export const LogDrawer: FC<{
                         ))}
                     </SingleSelectField>
                 </div>
-                <div className={styles.bar}>
-                    <InputField dense clearable placeholder="Filter lines" inputWidth="260px" value={filter.liveValue} onChange={({ value }) => setQuery(value ?? '')} />
+                <div ref={controls} className={styles.bar}>
+                    {/* Focus starts here rather than on Open in Grafana, where Enter would open another tab */}
+                    <Input
+                        dense
+                        clearable
+                        initialFocus
+                        {...untyped}
+                        placeholder="Filter lines"
+                        width="260px"
+                        value={filter.liveValue}
+                        onChange={({ value }) => setQuery(value ?? '')}
+                    />
                     {filter.debouncedValue && (
                         <span className={styles.count}>
                             {visible.length.toLocaleString('en')} of {count(held.filter(({ kind }) => kind === 'line').length, 'line', 'lines')}
@@ -268,13 +301,13 @@ export const LogDrawer: FC<{
                         }}
                     />
                     <span className={styles.spacer} />
-                    <span className={`${styles.state} ${tone}`}>{label}</span>
+                    <output className={`${styles.state} ${tone}`}>{label}</output>
                     {paused ? (
-                        <Button small secondary onClick={follow}>
+                        <Button small secondary name="follow" onClick={follow}>
                             Resume
                         </Button>
                     ) : (
-                        <Button small secondary onClick={pause}>
+                        <Button small secondary name="follow" onClick={pause}>
                             Pause
                         </Button>
                     )}
@@ -304,7 +337,14 @@ export const LogDrawer: FC<{
                         )}
                         {earlier > 0 && (
                             <div className={styles.earlier}>
-                                <Button small secondary onClick={showEarlier}>
+                                <Button
+                                    small
+                                    secondary
+                                    onClick={(_, event) => {
+                                        leaving(event)
+                                        showEarlier()
+                                    }}
+                                >
                                     Show {count(earlier, 'earlier line', 'earlier lines')}
                                 </Button>
                             </div>
@@ -314,7 +354,7 @@ export const LogDrawer: FC<{
                                 <LogRow key={entry.id} entry={entry} needle={needle} />
                             ))}
                         </div>
-                        {empty && status === 'connecting' && <p className={styles.quiet}>Connecting…</p>}
+                        {empty && (status === 'connecting' || status === 'reconnecting') && <p className={styles.quiet}>{STATUS_LABELS[status]}</p>}
                         {empty && message && <div className={styles.empty}>{message}</div>}
                         {visible.length === 0 && held.length > 0 && (
                             <div className={styles.empty}>
@@ -327,7 +367,14 @@ export const LogDrawer: FC<{
                     </div>
                     {paused && total > paused.total && (
                         <div className={styles.pill}>
-                            <Button small primary onClick={follow}>
+                            <Button
+                                small
+                                primary
+                                onClick={(_, event) => {
+                                    leaving(event)
+                                    follow()
+                                }}
+                            >
                                 ↓ {count(total - paused.total, 'new line', 'new lines')}
                             </Button>
                         </div>

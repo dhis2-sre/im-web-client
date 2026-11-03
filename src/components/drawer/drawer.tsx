@@ -27,9 +27,10 @@ export const Drawer: FC<{
     }, [])
 
     /* The layer mounts its contents a render after the drawer, so focus moves in once the panel is
-     * actually there rather than from the drawer's own mount. */
+     * actually there rather than from the drawer's own mount. Contents that already took it, mounting
+     * first, keep it. */
     const attach = useCallback((node: HTMLDialogElement | null) => {
-        if (node && !panel.current) {
+        if (node && !panel.current && !node.contains(document.activeElement)) {
             node.querySelector<HTMLElement>(FOCUSABLE)?.focus()
         }
         panel.current = node
