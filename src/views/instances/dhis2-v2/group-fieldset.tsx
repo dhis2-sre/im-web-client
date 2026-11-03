@@ -55,6 +55,7 @@ export const GroupFieldset: FC<{
             parameterName={parameter.parameterName ?? ''}
             displayName={parameter.displayName ?? parameter.parameterName ?? ''}
             sensitive={sensitiveParameters[parameter.parameterName ?? '']}
+            required={parameter.required}
             formMode={formMode}
             immutableReason={formMode === 'update' ? immutableReasons[parameter.parameterName ?? ''] : undefined}
         />
