@@ -7,6 +7,7 @@ import { ParameterEntry } from '../../../utils/component-parameters.ts'
 import { ComponentDetailsDrawer } from './component-details-drawer.tsx'
 import { ComponentOperationsMenu } from './component-operations-menu.tsx'
 import styles from './instance-components.module.css'
+import { LogDrawer } from './logs/log-drawer.tsx'
 
 /* One row per component, since that is what parameters and most operations belong to. A component
  * almost always runs a single replica, which folds into the component's own row. Several are listed
@@ -25,6 +26,10 @@ export const ComponentsTable: FC<{
 }> = ({ instanceId, stackName, components, parametersByComponent, namespace, instanceName, groupId, groupName, onChanged }) => {
     const [viewing, setViewing] = useState<string>()
     const viewed = components.find((component) => component.name === viewing)
+    /* Held here rather than in the row's menu, which goes away with its replica's row when the pod is
+     * replaced, while the log should carry on. The component is looked up by name so it stays live. */
+    const [logs, setLogs] = useState<{ component: string; replica: string }>()
+    const logged = components.find((component) => component.name === logs?.component)
 
     const operations = (component: InstanceComponent, replica?: InstanceComponentReplica, replicaOnly?: boolean) => (
         <ComponentOperationsMenu
@@ -38,6 +43,7 @@ export const ComponentsTable: FC<{
             groupId={groupId}
             groupName={groupName}
             onChanged={onChanged}
+            onShowLogs={(shown) => setLogs({ component: component.name, replica: shown.name })}
         />
     )
 
@@ -119,6 +125,17 @@ export const ComponentsTable: FC<{
             </DataTable>
             {viewed && (
                 <ComponentDetailsDrawer stackName={stackName} component={viewed} parameters={parametersByComponent[viewed.name] ?? []} onClose={() => setViewing(undefined)} />
+            )}
+            {logs && logged && (
+                <LogDrawer
+                    instanceId={instanceId}
+                    component={logged}
+                    initialReplica={logs.replica}
+                    namespace={namespace}
+                    instanceName={instanceName}
+                    groupId={groupId}
+                    onClose={() => setLogs(undefined)}
+                />
             )}
         </>
     )

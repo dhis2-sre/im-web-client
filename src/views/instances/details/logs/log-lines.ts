@@ -13,8 +13,8 @@ export type LogEntry = { id: number; kind: 'line'; text: string; level: LogLevel
 export type LevelFilter = 'all' | 'warn' | 'error'
 
 // Only the start of a line is searched, so "ERROR" typed inside a message does not count.
-const LEVEL_WORD = /\b(ERROR|FATAL|SEVERE|WARN|WARNING|INFO|DEBUG|TRACE)\b/
-const LEVEL_SEARCH_CHARS = 40
+export const LEVEL_WORD = /\b(ERROR|FATAL|SEVERE|WARN|WARNING|INFO|DEBUG|TRACE)\b/
+export const LEVEL_SEARCH_CHARS = 40
 // Stack frames, "Caused by:" and blank lines belong to the entry above them.
 const CONTINUATION = /^(\s|$|Caused by:|Suppressed:|\.\.\. \d+ (more|common))|^[\w.$]+(Exception|Error)\b/
 

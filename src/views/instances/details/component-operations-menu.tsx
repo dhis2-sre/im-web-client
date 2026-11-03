@@ -4,7 +4,6 @@ import { ActionsMenu, useActionAlert } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { grafanaLogsUrl } from '../../../utils/grafana-logs.ts'
-import { LogModal } from './log-modal.tsx'
 import { SaveAsModal } from './save-as-modal.tsx'
 
 export const ComponentOperationsMenu: FC<{
@@ -20,9 +19,9 @@ export const ComponentOperationsMenu: FC<{
     groupId?: number
     groupName?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, groupName, onChanged }) => {
+    onShowLogs?: (replica: InstanceComponentReplica) => void
+}> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, groupName, onChanged, onShowLogs }) => {
     const [showSaveAs, setShowSaveAs] = useState(false)
-    const [showLog, setShowLog] = useState(false)
     const alert = useActionAlert()
     const [, execute] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true, autoCancel: false })
 
@@ -43,9 +42,6 @@ export const ComponentOperationsMenu: FC<{
 
     return (
         <>
-            {showLog && replica && (
-                <LogModal instanceId={instanceId} componentName={component.name} replica={replica.name} containers={replica.containers ?? []} onClose={() => setShowLog(false)} />
-            )}
             {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} instanceName={instanceName ?? stackName} groupName={groupName} />}
             <ActionsMenu
                 label={`Actions for ${replica?.name ?? component.name}`}
@@ -65,7 +61,7 @@ export const ComponentOperationsMenu: FC<{
                         onClick: act('reset'),
                     },
                     backsUp && { label: 'Back up…', onClick: () => setShowSaveAs(true) },
-                    supports('logs') && replica && { label: 'Logs', onClick: () => setShowLog(true) },
+                    supports('logs') && replica && onShowLogs && { label: 'Logs', onClick: () => onShowLogs(replica) },
                     !replicaOnly && grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
                 ]}
             />

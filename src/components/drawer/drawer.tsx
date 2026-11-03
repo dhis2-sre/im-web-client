@@ -8,13 +8,15 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
 /* A panel that slides in from the right over the page, for detail that would stretch the page if it
  * opened in place. It closes on Escape, a click outside or its close button, keeps focus inside
  * while open and hands it back to whatever opened it. */
-export const Drawer: FC<{ title: ReactNode; description?: ReactNode; size?: 'default' | 'wide'; onClose: () => void; children: ReactNode }> = ({
-    title,
-    description,
-    size = 'default',
-    onClose,
-    children,
-}) => {
+export const Drawer: FC<{
+    title: ReactNode
+    description?: ReactNode
+    // Shown in the header beside Close, for what acts on the whole drawer rather than a part of it
+    actions?: ReactNode
+    size?: 'default' | 'wide'
+    onClose: () => void
+    children: ReactNode
+}> = ({ title, description, actions, size = 'default', onClose, children }) => {
     const panel = useRef<HTMLDialogElement | null>(null)
     const titleId = useId()
     const descriptionId = useId()
@@ -78,6 +80,7 @@ export const Drawer: FC<{ title: ReactNode; description?: ReactNode; size?: 'def
                             </p>
                         )}
                     </div>
+                    {actions}
                     <Button small secondary icon={<IconCross24 />} aria-label="Close" title="Close" onClick={onClose} />
                 </header>
                 <div className={styles.body}>{children}</div>
