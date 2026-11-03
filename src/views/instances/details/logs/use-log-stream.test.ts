@@ -129,6 +129,9 @@ describe('createLogConnection', () => {
     it('gives up on the third failure in a row, and retry starts again', async () => {
         const connection = setup()
         last().reject(new TypeError('Failed to fetch'))
+        await settle()
+        // No line has ever arrived, so this is still the first connect
+        expect(view.status).toBe('connecting')
         await settle(4000)
         last().reject(new TypeError('Failed to fetch'))
         await settle(8000)
@@ -141,6 +144,39 @@ describe('createLogConnection', () => {
         connection.retry()
         expect(view.status).toBe('connecting')
         expect(calls).toHaveLength(4)
+    })
+
+    it('does not retry a 401, since streamLog already tried a refresh', async () => {
+        setup()
+        last().reject(new LogStreamError(401, 'Unauthorized'))
+        await settle(60000)
+        expect(view).toMatchObject({ status: 'error', error: 'Unauthorized' })
+        expect(calls).toHaveLength(1)
+    })
+
+    it('shows reconnecting while a quiet reconnect holds lines, even after retry', async () => {
+        const connection = setup()
+        last().onChunk('a\nb\nc\n')
+        connection.retry()
+        expect(view.status).toBe('connecting')
+        last().onChunk('x\n')
+        expect(view.status).toBe('reconnecting')
+        await settle(1000)
+        expect(view.status).toBe('live')
+    })
+
+    it('releases the hold early once it reaches MAX_HELD_CHARS', async () => {
+        const connection = setup()
+        last().onChunk('a\n')
+        connection.stop()
+        connection.start({ ...source, tail: 5000 }, 'key')
+        // 800 lines of 5000 characters: far below tail, but 4,000,000 characters
+        last().onChunk(`${'y'.repeat(5000)}\n`.repeat(800))
+        expect(view.status).toBe('live')
+        await settle(FLUSH_MS)
+        // The held cap then drops 'a' and the 'Reconnected' divider to stay at 4,000,000 characters
+        expect(view).toMatchObject({ total: 801, dropped: 2 })
+        expect(view.entries).toHaveLength(800)
     })
 
     it('stops trying after 10 minutes without a new line', async () => {

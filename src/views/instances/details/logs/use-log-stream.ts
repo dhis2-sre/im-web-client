@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { appendCapped, createLineSplitter, dropOverlap, reconnectDivider, toEntries } from './log-lines.ts'
+import { appendCapped, createLineSplitter, dropOverlap, MAX_HELD_CHARS, reconnectDivider, toEntries } from './log-lines.ts'
 import type { LogEntry, LogLevel } from './log-lines.ts'
 import { LogStreamError, streamLog } from './log-stream.ts'
 import type { LogSource } from './log-stream.ts'
@@ -47,8 +47,10 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
     let nextId = 0
     let level: LogLevel
 
-    // Lines of a quiet reconnect, set aside until they can be matched against what is held; bounded by tail
+    /* Lines of a quiet reconnect, set aside until they can be matched against what is held. Released at tail
+     * lines or MAX_HELD_CHARS, whichever comes first, so they obey the same caps as everything else. */
     let holding: string[] | undefined
+    let holdingChars = 0
     let attempt = 0
     let failures = 0
     let lastLineAt = 0
@@ -100,6 +102,7 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
     const take = (lines: string[]) => {
         if (holding) {
             holding = holding.concat(lines)
+            holdingChars += lines.reduce((sum, line) => sum + line.length, 0)
         } else {
             addLines(lines)
         }
@@ -110,6 +113,7 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
         holdTimer = undefined
         const lines = holding
         holding = undefined
+        holdingChars = 0
         if (!lines || lines.length === 0) {
             return
         }
@@ -168,6 +172,7 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
                 first = false
                 failures = 0
                 if (holding) {
+                    setStatus('reconnecting')
                     holdTimer = setTimeout(() => {
                         releaseHeld()
                         setStatus('live')
@@ -177,7 +182,7 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
                 }
             }
             take(splitter.push(chunk))
-            if (holding && holding.length >= from.tail) {
+            if (holding && (holding.length >= from.tail || holdingChars >= MAX_HELD_CHARS)) {
                 releaseHeld()
                 setStatus('live')
             }
@@ -205,11 +210,12 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
                 return
             }
             failures++
-            if (failures >= MAX_FAILURES) {
+            // streamLog has already tried a token refresh and signalled the expired session, so don't repeat that
+            if (failures >= MAX_FAILURES || (error instanceof LogStreamError && error.status === 401)) {
                 fail(error instanceof Error ? error.message : String(error))
                 return
             }
-            later('reconnecting', backoffMs(attempt++))
+            later(total === 0 ? 'connecting' : 'reconnecting', backoffMs(attempt++))
         }
 
         streamLog(from, onChunk, ctl.signal).then(ended, failed)
