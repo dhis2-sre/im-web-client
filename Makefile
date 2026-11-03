@@ -6,7 +6,6 @@ SHELL := /bin/bash
 export COMPOSE_FILE ?= docker-compose.yml:docker-compose.dev.yml
 
 tag ?= latest
-version ?= $(shell yq e '.version' helm/chart/Chart.yaml)
 clean-cmd = docker compose down --remove-orphans --volumes
 
 dev:
@@ -48,4 +47,10 @@ keys:
 smoke-test:
 	IMAGE_TAG=$(tag) docker compose up -d web
 
-.PHONY: init check keys smoke-test
+release:
+	@test -n "$(version)" || (echo "usage: make release version=<version>" && exit 1)
+	@test "$$(git branch --show-current)" = master || (echo "check out master first" && exit 1)
+	git tag $(version)
+	git push origin $(version)
+
+.PHONY: init check keys smoke-test release
