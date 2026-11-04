@@ -1,4 +1,4 @@
-import { baseURL, dispatchUnauthorizedEvent, refreshTokens } from '../../../../hooks/use-auth-axios.ts'
+import { authFetch } from '../../../../hooks/use-auth-axios.ts'
 
 export class LogStreamError extends Error {
     constructor(
@@ -20,26 +20,8 @@ export const streamLog = async (source: LogSource, onChunk: (text: string) => vo
     if (source.container) {
         params.set('container', source.container)
     }
-    const url = `${baseURL}/instances/${source.instanceId}/logs?${params}`
-    const request = () => fetch(url, { credentials: 'include', signal })
-
-    let res = await request()
-    if (res.status === 401) {
-        /* Same as the axios interceptor: refresh once, and give up on the session if that fails or
-         * the retry is refused again. An abort is not a failed refresh, so it goes on to the caller. */
-        try {
-            await refreshTokens()
-            res = await request()
-        } catch (error) {
-            if (signal.aborted) {
-                throw error
-            }
-        }
-        if (res.status === 401) {
-            dispatchUnauthorizedEvent()
-            throw new LogStreamError(401, (await res.text()) || res.statusText || `HTTP ${res.status}`)
-        }
-    }
+    // authFetch has already refreshed on a 401 and ended the session if that didn't help
+    const res = await authFetch(`/instances/${source.instanceId}/logs?${params}`, { signal })
     if (!res.ok) {
         throw new LogStreamError(res.status, (await res.text()) || res.statusText || `HTTP ${res.status}`)
     }

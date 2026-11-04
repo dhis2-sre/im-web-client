@@ -131,12 +131,15 @@ export const dropOverlap = (held: LogEntry[], incoming: string[]): { lines: stri
     return { lines: incoming, found: false }
 }
 
-export const visibleEntries = (entries: LogEntry[], query: string, level: LevelFilter): LogEntry[] => {
+/* Entries never change once made, so each one's verdict for a filter is worked out once rather than on every
+ * flush, which would lower-case every held line ten times a second. Undefined when nothing is filtered. */
+export const createMatcher = (query: string, level: LevelFilter): ((entry: LogEntry) => boolean) | undefined => {
     if (query === '' && level === 'all') {
-        return entries
+        return undefined
     }
     const needle = query.toLowerCase()
-    return entries.filter((entry) => {
+    const verdicts = new WeakMap<LogEntry, boolean>()
+    const matches = (entry: LogEntry) => {
         if (entry.kind === 'divider') {
             return false
         }
@@ -147,8 +150,28 @@ export const visibleEntries = (entries: LogEntry[], query: string, level: LevelF
             return false
         }
         return entry.text.toLowerCase().includes(needle)
-    })
+    }
+    return (entry) => {
+        let verdict = verdicts.get(entry)
+        if (verdict === undefined) {
+            verdict = matches(entry)
+            verdicts.set(entry, verdict)
+        }
+        return verdict
+    }
 }
+
+export const visibleEntries = (entries: LogEntry[], query: string, level: LevelFilter): LogEntry[] => {
+    const matcher = createMatcher(query, level)
+    return matcher ? entries.filter(matcher) : entries
+}
+
+// The log's own lines, for taking out: dividers are this page's notes, not something the container wrote
+export const linesText = (entries: LogEntry[]): string =>
+    entries
+        .filter((entry) => entry.kind === 'line')
+        .map(({ text }) => text)
+        .join('\n')
 
 // A one-letter filter on long lines would otherwise make a node per letter, millions across the drawn rows
 export const MAX_MARKS = 20
@@ -160,6 +183,10 @@ export const splitMatches = (text: string, needle: string): string[] => {
         return [text]
     }
     const lower = text.toLowerCase()
+    // A few characters lower-case to more than one ('İ'), and then positions in lower are off in text
+    if (lower.length !== text.length) {
+        return [text]
+    }
     const parts: string[] = []
     let from = 0
     for (let at = lower.indexOf(needle); at !== -1 && parts.length < MAX_MARKS * 2; at = lower.indexOf(needle, from)) {

@@ -15,6 +15,8 @@ const GIVE_UP_MS = 10 * 60 * 1000
 const MAX_FAILURES = 3
 // How long a quiet reconnect waits for the resent tail before matching it against the held lines
 const OVERLAP_WAIT_MS = 1000
+// Long enough for a stream still on the old container to end first, so connect() marks the restart instead
+const RESTART_SETTLE_MS = 1000
 // A non-OK body can be a whole HTML page
 const MAX_ERROR_CHARS = 300
 
@@ -38,6 +40,7 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
     let retryTimer: ReturnType<typeof setTimeout> | undefined
     let flushTimer: ReturnType<typeof setTimeout> | undefined
     let holdTimer: ReturnType<typeof setTimeout> | undefined
+    let restartTimer: ReturnType<typeof setTimeout> | undefined
 
     let entries: LogEntry[] = []
     // Waiting for the next flush; capped like entries, so it can't grow either
@@ -205,7 +208,9 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
             }
             controller = undefined
             releaseHeld()
-            if (error instanceof LogStreamError && error.status === 409) {
+            /* 409: the container hasn't started. 404: the pod is gone and its replacement isn't listed yet, and once
+             * it is the panel switches to it, so both wait rather than count towards giving up. */
+            if (error instanceof LogStreamError && (error.status === 409 || error.status === 404)) {
                 later('waiting', backoffMs(attempt++))
                 return
             }
@@ -221,6 +226,31 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
         streamLog(from, onChunk, ctl.signal).then(ended, failed)
     }
 
+    /* The restart count comes from the cluster's events, which can land after the stream has already reconnected to
+     * the new container, so connect() saw no change. Still on that same stream a moment later means it is the new
+     * container's: mark the restart then, once, rather than at whatever reconnect comes next. Lines set aside for a
+     * quiet reconnect are the new container's too, so they follow the divider unmatched. */
+    const markLateRestart = (my: number) => {
+        if (my !== gen || !controller || !started || restarts === started.restarts || entries.length + pending.length === 0) {
+            return
+        }
+        const text = reconnectDivider(started, { ...started, restarts }, new Date())
+        started = { ...started, restarts }
+        const lines = holding ?? []
+        const wasHolding = holdTimer !== undefined
+        clearTimeout(holdTimer)
+        holdTimer = undefined
+        holding = undefined
+        holdingChars = 0
+        if (text) {
+            addDivider(text)
+        }
+        addLines(lines)
+        if (wasHolding) {
+            setStatus('live')
+        }
+    }
+
     const stop = () => {
         gen++
         controller?.abort()
@@ -229,8 +259,10 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
         releaseHeld()
         clearTimeout(retryTimer)
         clearTimeout(flushTimer)
+        clearTimeout(restartTimer)
         retryTimer = undefined
         flushTimer = undefined
+        restartTimer = undefined
     }
 
     const begin = () => {
@@ -244,6 +276,17 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
     return {
         setRestarts: (value: number) => {
             restarts = value
+            clearTimeout(restartTimer)
+            const my = gen
+            // Holding lines means this stream opened after the last one ended, so it is already the new container's
+            if (holding) {
+                markLateRestart(my)
+                return
+            }
+            restartTimer = setTimeout(() => {
+                restartTimer = undefined
+                markLateRestart(my)
+            }, RESTART_SETTLE_MS)
         },
         // A new resetKey starts over; any other change keeps the lines and reconnects
         start: (next: LogSource, key: string) => {

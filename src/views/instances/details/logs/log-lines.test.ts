@@ -1,4 +1,16 @@
-import { appendCapped, MAX_MARKS, createLineSplitter, dropOverlap, levelOf, reconnectDivider, splitMatches, toEntries, visibleEntries, type LogEntry } from './log-lines.ts'
+import {
+    appendCapped,
+    MAX_MARKS,
+    createLineSplitter,
+    dropOverlap,
+    levelOf,
+    linesText,
+    reconnectDivider,
+    splitMatches,
+    toEntries,
+    visibleEntries,
+    type LogEntry,
+} from './log-lines.ts'
 
 const lines = (texts: string[], firstId = 0): LogEntry[] => texts.map((text, i) => ({ id: firstId + i, kind: 'line', text, level: undefined }))
 
@@ -162,5 +174,22 @@ describe('splitMatches', () => {
         const parts = splitMatches('a'.repeat(5000), 'a')
         expect(parts.length).toBeLessThanOrEqual(MAX_MARKS * 2 + 1)
         expect(parts.join('')).toBe('a'.repeat(5000))
+    })
+})
+
+describe('splitMatches with lower-casing that changes length', () => {
+    it('leaves the line unmarked rather than marking the wrong characters', () => {
+        expect(splitMatches('İstanbul error', 'error')).toEqual(['İstanbul error'])
+    })
+})
+
+describe('linesText', () => {
+    it('leaves dividers out', () => {
+        const entries: LogEntry[] = [
+            { id: 0, kind: 'line', text: 'a', level: undefined },
+            { id: 1, kind: 'divider', text: 'Reconnected' },
+            { id: 2, kind: 'line', text: 'b', level: undefined },
+        ]
+        expect(linesText(entries)).toBe('a\nb')
     })
 })

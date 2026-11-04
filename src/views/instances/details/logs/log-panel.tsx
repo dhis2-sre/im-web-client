@@ -4,7 +4,7 @@ import type { FC, MouseEvent } from 'react'
 import { MomentFromNow } from '../../../../components/index.ts'
 import { useDebouncedState } from '../../../../hooks/use-debounce-state.ts'
 import type { InstanceComponent } from '../../../../types/index.ts'
-import { RENDER_LINES, visibleEntries } from './log-lines.ts'
+import { createMatcher, linesText, RENDER_LINES } from './log-lines.ts'
 import type { LevelFilter, LogEntry } from './log-lines.ts'
 import styles from './log-panel.module.css'
 import { LogRow } from './log-row.tsx'
@@ -94,7 +94,9 @@ export const LogPanel: FC<{
     /* While paused, what had arrived by then, as it was, so the cap dropping old lines can't empty the view.
      * Holding on to the array is safe since appendCapped always makes a new one rather than changing it. */
     const held = paused ? paused.entries : entries
-    const visible = useMemo(() => visibleEntries(held, filter.debouncedValue, level), [held, filter.debouncedValue, level])
+    const matcher = useMemo(() => createMatcher(filter.debouncedValue, level), [filter.debouncedValue, level])
+    const visible = useMemo(() => (matcher ? held.filter(matcher) : held), [held, matcher])
+    const lineCount = useMemo(() => held.reduce((sum, { kind }) => (kind === 'line' ? sum + 1 : sum), 0), [held])
     const drawn = useMemo(() => (visible.length > shown ? visible.slice(visible.length - shown) : visible), [visible, shown])
     const needle = filter.debouncedValue.toLowerCase()
 
@@ -173,7 +175,7 @@ export const LogPanel: FC<{
     const copy = () =>
         // Inside the promise, since navigator.clipboard is missing altogether outside a secure context
         Promise.resolve()
-            .then(() => navigator.clipboard.writeText(visible.map(({ text }) => text).join('\n')))
+            .then(() => navigator.clipboard.writeText(linesText(visible)))
             .then(
                 () => 'Copied',
                 () => 'Copy failed'
@@ -184,7 +186,7 @@ export const LogPanel: FC<{
             })
 
     const download = () => {
-        const url = URL.createObjectURL(new Blob([entries.map(({ text }) => text).join('\n')], { type: 'text/plain' }))
+        const url = URL.createObjectURL(new Blob([linesText(entries)], { type: 'text/plain' }))
         const link = document.createElement('a')
         link.href = url
         link.download = container ? `${replica}-${container}.log` : `${replica}.log`
@@ -278,19 +280,21 @@ export const LogPanel: FC<{
             </div>
             <div ref={controls} className={styles.bar}>
                 {/* Focus starts here rather than on Open in Grafana, where Enter would open another tab */}
-                <Input
-                    dense
-                    clearable
-                    initialFocus={focusFilter}
-                    {...untyped}
-                    placeholder="Filter lines"
-                    width="260px"
-                    value={filter.liveValue}
-                    onChange={({ value }) => setQuery(value ?? '')}
-                />
+                <div className={styles.filter}>
+                    <Input
+                        dense
+                        clearable
+                        initialFocus={focusFilter}
+                        {...untyped}
+                        placeholder="Filter lines"
+                        width="100%"
+                        value={filter.liveValue}
+                        onChange={({ value }) => setQuery(value ?? '')}
+                    />
+                </div>
                 {filter.debouncedValue && (
                     <span className={styles.count}>
-                        {visible.length.toLocaleString('en')} of {count(held.filter(({ kind }) => kind === 'line').length, 'line', 'lines')}
+                        {visible.length.toLocaleString('en')} of {count(lineCount, 'line', 'lines')}
                     </span>
                 )}
                 <SegmentedControl

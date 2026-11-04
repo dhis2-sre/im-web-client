@@ -19,7 +19,7 @@ export const ComponentOperationsMenu: FC<{
     groupId?: number
     groupName?: string
     onChanged: () => void
-    onShowLogs?: (replica: InstanceComponentReplica) => void
+    onShowLogs: (replica: InstanceComponentReplica) => void
 }> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, groupName, onChanged, onShowLogs }) => {
     const [showSaveAs, setShowSaveAs] = useState(false)
     const alert = useActionAlert()
@@ -62,7 +62,7 @@ export const ComponentOperationsMenu: FC<{
                         onClick: act('reset'),
                     },
                     backsUp && { label: 'Back up…', onClick: () => setShowSaveAs(true) },
-                    supports('logs') && replica && onShowLogs && { label: 'Logs', onClick: () => onShowLogs(replica) },
+                    supports('logs') && replica && { label: 'Logs', onClick: () => onShowLogs(replica) },
                     !replicaOnly && grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
                 ]}
             />

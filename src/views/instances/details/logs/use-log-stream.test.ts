@@ -102,6 +102,48 @@ describe('createLogConnection', () => {
         expect(texts()[2]).toBe('b')
     })
 
+    it('marks a restart reported after the stream already reconnected, and only once', async () => {
+        const connection = setup()
+        last().onChunk('a\nb\nc\n')
+        last().resolve()
+        await settle(2000)
+        last().onChunk('x\n')
+        connection.setRestarts(1)
+        await settle(1000)
+        expect(view.status).toBe('live')
+        await settle(FLUSH_MS)
+        expect(texts()).toHaveLength(5)
+        expect(texts()[3]).toMatch(/^Container restarted at/)
+        expect(texts()[4]).toBe('x')
+        last().resolve()
+        await settle(2000)
+        last().onChunk('x\n')
+        await settle(FLUSH_MS)
+        expect(texts().filter((text) => text.startsWith('Container restarted'))).toHaveLength(1)
+    })
+
+    it('marks a restart late when the open stream outlives the settle wait', async () => {
+        const connection = setup()
+        last().onChunk('a\n')
+        connection.setRestarts(1)
+        await settle(999)
+        expect(texts()).toEqual(['a'])
+        await settle(1 + FLUSH_MS)
+        expect(texts()[1]).toMatch(/^Container restarted at/)
+    })
+
+    it('waits on a 404, as when the pod is gone before its replacement is listed', async () => {
+        setup()
+        last().onChunk('a\n')
+        last().resolve()
+        for (const wait of [2000, 4000, 8000, 16000]) {
+            await settle(wait)
+            last().reject(new LogStreamError(404, 'pod not found'))
+            await settle()
+            expect(view.status).toBe('waiting')
+        }
+    })
+
     it('drops the resent tail after a quiet cut', async () => {
         setup()
         last().onChunk('a\nb\nc\n')

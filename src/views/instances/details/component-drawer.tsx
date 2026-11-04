@@ -31,7 +31,11 @@ export const ComponentDrawer: FC<{
     const [logsOpened, setLogsOpened] = useState(initialTab === 'logs')
     // A replica's Logs button starts a fresh log for it, even when it is the one already showing
     const [logReplica, setLogReplica] = useState({ name: initialReplica, picks: 0 })
-    // Without a pick, the first replica, including one that only turns up while the drawer is open
+    /* Without a pick, the first replica, including one that only turns up while the drawer is open. Held once
+     * the log opens: following a replacement is the panel's job, and a new name here would start it over. */
+    if (logsOpened && !logReplica.name && component.replicas.length > 0) {
+        setLogReplica({ ...logReplica, name: component.replicas[0].name })
+    }
     const replicaName = logReplica.name ?? component.replicas[0]?.name
     const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
 
@@ -145,7 +149,7 @@ export const ComponentDrawer: FC<{
             {tab === 'logs' && !replicaName && <p className={styles.muted}>No replicas are running.</p>}
             {logsOpened && replicaName && (
                 <LogPanel
-                    key={`${replicaName}|${logReplica.picks}`}
+                    key={logReplica.picks}
                     instanceId={instanceId}
                     component={component}
                     initialReplica={replicaName}

@@ -43,7 +43,7 @@ Prettier and the linters enforce most of this. Follow it while writing so the fi
 - Give list items a stable `key` from the data, not the array index.
 - Don't define components inside other components.
 - Use real interactive elements: a `<button>` or `<Link>`, not a `<div onClick>`. Don't nest interactive elements (a button inside a clickable row, a link inside a button). The list pages break this today (see the oxlint warnings); don't add more.
-- Talk to the API through `useAuthAxios` (`src/hooks/use-auth-axios.ts`), which adds auth and token refresh. Don't create axios instances.
+- Talk to the API through `useAuthAxios` (`src/hooks/use-auth-axios.ts`), which adds auth and token refresh. Don't create axios instances. For a response read while it streams in, which axios can't do, use `authFetch` from the same file rather than `fetch`.
 - Types for API payloads come from `src/types/generated`. Never edit that folder; run `yarn generate-types`.
 
 ## Styling

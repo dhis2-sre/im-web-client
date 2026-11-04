@@ -21,6 +21,13 @@
     border-bottom: 1px solid var(--colors-grey200);
 }
 
+/* Grows to 260px, but gives width up to the match count rather than pushing the tools onto a second row.
+ * A wrapping row wraps before it shrinks anything, so it starts small and grows. */
+.filter {
+    flex: 99 1 160px; /* ahead of the spacer, so it reaches 260px first */
+    max-width: 260px;
+}
+
 .count {
     font-size: 13px;
     color: var(--colors-grey600);
@@ -85,7 +92,7 @@
     overflow: auto;
     padding: 6px 0;
     background: var(--colors-grey050);
-    font: 13px/20px var(--font-mono);
+    font: var(--text-mono)/20px var(--font-mono);
     color: var(--colors-grey900);
 }
 
@@ -149,7 +156,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacers-dp12);
-    padding: 4px var(--spacers-dp16);
+    padding: var(--spacers-dp4) var(--spacers-dp16);
     font-family: inherit;
     font-size: var(--text-sm);
     color: var(--colors-grey600);
@@ -165,14 +172,14 @@
 .note,
 .quiet {
     margin: 0;
-    padding: 4px var(--spacers-dp16) 8px;
+    padding: var(--spacers-dp4) var(--spacers-dp16) var(--spacers-dp8);
     font-family: Roboto, sans-serif;
     font-size: 13px;
     color: var(--colors-grey700);
 }
 
 .earlier {
-    padding: 0 var(--spacers-dp16) 8px;
+    padding: 0 var(--spacers-dp16) var(--spacers-dp8);
 }
 
 .empty {
@@ -218,7 +225,7 @@
     bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 4px 8px;
+    padding: var(--spacers-dp4) var(--spacers-dp8);
     border: 0;
     border-radius: 3px;
     font: inherit;
@@ -226,7 +233,7 @@
     line-height: 17px;
     color: var(--colors-white);
     background: var(--colors-grey900);
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+    box-shadow: var(--elevations-e200);
     cursor: pointer;
 }
 
