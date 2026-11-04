@@ -1,8 +1,8 @@
 import { memo } from 'react'
 import type { FC, ReactNode } from 'react'
-import styles from './log-drawer.module.css'
 import { LEVEL_SEARCH_CHARS, LEVEL_WORD, splitMatches } from './log-lines.ts'
 import type { LogEntry } from './log-lines.ts'
+import styles from './log-panel.module.css'
 
 // At most MAX_MARKS per piece, and a row has at most three: before its level word, the word, and after
 const highlight = (text: string, needle: string): ReactNode => splitMatches(text, needle).map((part, i) => (i % 2 ? <mark key={i}>{part}</mark> : part))

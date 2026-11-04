@@ -1,4 +1,4 @@
-import { Button, IconCross24, Layer } from '@dhis2/ui'
+import { Button, IconCross16, Layer } from '@dhis2/ui'
 import { useCallback, useEffect, useId, useRef } from 'react'
 import type { FC, ReactNode } from 'react'
 import styles from './drawer.module.css'
@@ -13,10 +13,12 @@ export const Drawer: FC<{
     description?: ReactNode
     // Shown in the header beside Close, for what acts on the whole drawer rather than a part of it
     actions?: ReactNode
+    // Under the header and outside the scrolling body, so they stay put
+    tabs?: ReactNode
     size?: 'default' | 'wide'
     onClose: () => void
     children: ReactNode
-}> = ({ title, description, actions, size = 'default', onClose, children }) => {
+}> = ({ title, description, actions, tabs, size = 'default', onClose, children }) => {
     const panel = useRef<HTMLDialogElement | null>(null)
     const titleId = useId()
     const descriptionId = useId()
@@ -82,8 +84,9 @@ export const Drawer: FC<{
                         )}
                     </div>
                     {actions}
-                    <Button small secondary icon={<IconCross24 />} aria-label="Close" title="Close" onClick={onClose} />
+                    <Button small secondary icon={<IconCross16 />} aria-label="Close" title="Close" onClick={onClose} />
                 </header>
+                {tabs && <div className={styles.tabs}>{tabs}</div>}
                 <div className={styles.body}>{children}</div>
             </dialog>
         </Layer>

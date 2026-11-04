@@ -4,10 +4,10 @@ import type { FC } from 'react'
 import { componentStatus, MomentFromNow, replicaStatus, StatusIndicator } from '../../../components/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { ParameterEntry } from '../../../utils/component-parameters.ts'
-import { ComponentDetailsDrawer } from './component-details-drawer.tsx'
+import { ComponentDrawer } from './component-drawer.tsx'
+import type { ComponentTab } from './component-drawer.tsx'
 import { ComponentOperationsMenu } from './component-operations-menu.tsx'
 import styles from './instance-components.module.css'
-import { LogDrawer } from './logs/log-drawer.tsx'
 
 /* One row per component, since that is what parameters and most operations belong to. A component
  * almost always runs a single replica, which folds into the component's own row. Several are listed
@@ -24,12 +24,11 @@ export const ComponentsTable: FC<{
     groupName?: string
     onChanged: () => void
 }> = ({ instanceId, stackName, components, parametersByComponent, namespace, instanceName, groupId, groupName, onChanged }) => {
-    const [viewing, setViewing] = useState<string>()
-    const viewed = components.find((component) => component.name === viewing)
     /* Held here rather than in the row's menu, which goes away with its replica's row when the pod is
      * replaced, while the log should carry on. The component is looked up by name so it stays live. */
-    const [logs, setLogs] = useState<{ component: string; replica: string }>()
-    const logged = components.find((component) => component.name === logs?.component)
+    const [open, setOpen] = useState<{ component: string; tab: ComponentTab; replica?: string }>()
+    const opened = components.find((component) => component.name === open?.component)
+    const view = (component: InstanceComponent) => setOpen({ component: component.name, tab: 'details' })
 
     const operations = (component: InstanceComponent, replica?: InstanceComponentReplica, replicaOnly?: boolean) => (
         <ComponentOperationsMenu
@@ -43,7 +42,7 @@ export const ComponentsTable: FC<{
             groupId={groupId}
             groupName={groupName}
             onChanged={onChanged}
-            onShowLogs={(shown) => setLogs({ component: component.name, replica: shown.name })}
+            onShowLogs={(shown) => setOpen({ component: component.name, tab: 'logs', replica: shown.name })}
         />
     )
 
@@ -70,7 +69,7 @@ export const ComponentsTable: FC<{
                             <Fragment key={component.name}>
                                 <DataTableRow>
                                     <DataTableCell staticStyle>
-                                        <button type="button" className={styles.nameLink} onClick={() => setViewing(component.name)}>
+                                        <button type="button" className={styles.nameLink} onClick={() => view(component)}>
                                             {component.name}
                                         </button>
                                     </DataTableCell>
@@ -90,7 +89,7 @@ export const ComponentsTable: FC<{
                                     <DataTableCell staticStyle>{only && <MomentFromNow date={only.createdAt} />}</DataTableCell>
                                     <DataTableCell staticStyle align="right">
                                         <span className={styles.rowActions}>
-                                            <Button small secondary aria-label={`View ${component.name}`} onClick={() => setViewing(component.name)}>
+                                            <Button small secondary aria-label={`View ${component.name}`} onClick={() => view(component)}>
                                                 View
                                             </Button>
                                             {operations(component, only)}
@@ -123,18 +122,18 @@ export const ComponentsTable: FC<{
                     })}
                 </DataTableBody>
             </DataTable>
-            {viewed && (
-                <ComponentDetailsDrawer stackName={stackName} component={viewed} parameters={parametersByComponent[viewed.name] ?? []} onClose={() => setViewing(undefined)} />
-            )}
-            {logs && logged && (
-                <LogDrawer
+            {open && opened && (
+                <ComponentDrawer
                     instanceId={instanceId}
-                    component={logged}
-                    initialReplica={logs.replica}
+                    stackName={stackName}
+                    component={opened}
+                    parameters={parametersByComponent[opened.name] ?? []}
+                    initialTab={open.tab}
+                    initialReplica={open.replica}
                     namespace={namespace}
                     instanceName={instanceName}
                     groupId={groupId}
-                    onClose={() => setLogs(undefined)}
+                    onClose={() => setOpen(undefined)}
                 />
             )}
         </>

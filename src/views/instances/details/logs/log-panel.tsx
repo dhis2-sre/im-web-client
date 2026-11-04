@@ -1,13 +1,12 @@
-import { Button, Input, SegmentedControl, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { Button, Checkbox, Input, SegmentedControl, SingleSelect, SingleSelectOption } from '@dhis2/ui'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { FC, MouseEvent } from 'react'
-import { componentStatus, Drawer, MomentFromNow, StatusDot } from '../../../../components/index.ts'
+import { MomentFromNow } from '../../../../components/index.ts'
 import { useDebouncedState } from '../../../../hooks/use-debounce-state.ts'
 import type { InstanceComponent } from '../../../../types/index.ts'
-import { grafanaLogsUrl } from '../../../../utils/grafana-logs.ts'
-import styles from './log-drawer.module.css'
 import { RENDER_LINES, visibleEntries } from './log-lines.ts'
 import type { LevelFilter, LogEntry } from './log-lines.ts'
+import styles from './log-panel.module.css'
 import { LogRow } from './log-row.tsx'
 import { useLogStream } from './use-log-stream.ts'
 import type { StreamStatus } from './use-log-stream.ts'
@@ -29,20 +28,22 @@ const STATUS_LABELS: Record<StreamStatus, string> = {
 // Further than this from the end counts as reading back, which pauses following
 const FOLLOW_SLACK_PX = 32
 const COPIED_MS = 2000
+// Long enough to switch tabs while something starts up and come back to all of it
+const HIDDEN_GRACE_MS = 10 * 60_000
 
 const count = (n: number, one: string, many: string) => `${n.toLocaleString('en')} ${n === 1 ? one : many}`
 
-/* An instance's log, followed live. It lives in the components table rather than the row's menu, so it
- * stays open when the row goes away because its pod was replaced. */
-export const LogDrawer: FC<{
+/* A component's log, followed live: the Logs tab of the component drawer. It stays mounted while another
+ * tab is showing, so the reader's choices survive, but streams only while it is the one in sight. */
+export const LogPanel: FC<{
     instanceId: number
     component: InstanceComponent
     initialReplica: string
-    namespace?: string
-    instanceName?: string
-    groupId?: number
-    onClose: () => void
-}> = ({ instanceId, component, initialReplica, namespace, instanceName, groupId, onClose }) => {
+    grafanaUrl?: string
+    active: boolean
+    // When the drawer opened on this tab or a replica's Logs button did; from the tab bar, focus stays there
+    focusFilter: boolean
+}> = ({ instanceId, component, initialReplica, grafanaUrl, active, focusFilter }) => {
     // The replica the reader chose, and the one actually streamed, which differ once the chosen one is replaced
     const [picked, setPicked] = useState(initialReplica)
     const [replica, setReplica] = useState(initialReplica)
@@ -65,12 +66,30 @@ export const LogDrawer: FC<{
 
     const selected = component.replicas.find(({ name }) => name === replica)
     const containers = selected?.containers ?? []
+    // A log left open in a background browser tab would otherwise stream for hours with nobody reading it
+    const [away, setAway] = useState(false)
+    useEffect(() => {
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const onChange = () => {
+            clearTimeout(timer)
+            if (document.hidden) {
+                timer = setTimeout(() => setAway(true), HIDDEN_GRACE_MS)
+            } else {
+                setAway(false)
+            }
+        }
+        onChange()
+        document.addEventListener('visibilitychange', onChange)
+        return () => {
+            clearTimeout(timer)
+            document.removeEventListener('visibilitychange', onChange)
+        }
+    }, [])
     const { entries, total, dropped, status, error, retry } = useLogStream(
         { instanceId, selector: component.name, replica, container: container || undefined, tail },
         selected?.restarts ?? 0,
-        `${picked}|${container}|${tail}`
+        { resetKey: `${picked}|${container}|${tail}`, active: active && !away }
     )
-    const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
 
     /* While paused, what had arrived by then, as it was, so the cap dropping old lines can't empty the view.
      * Holding on to the array is safe since appendCapped always makes a new one rather than changing it. */
@@ -182,7 +201,7 @@ export const LogDrawer: FC<{
     const message =
         status === 'waiting' ? (
             <>
-                <b>{component.name} is still starting up</b> Logs will appear here as soon as the container starts. You don&apos;t need to reopen this.
+                <b>{component.name} is still starting up.</b> Logs will appear here when the container starts.
             </>
         ) : status === 'error' ? (
             <>
@@ -201,187 +220,167 @@ export const LogDrawer: FC<{
         ) : undefined
 
     return (
-        <Drawer
-            size="wide"
-            title={
-                <>
-                    Logs: {component.name} <StatusDot status={componentStatus(component)} />
-                </>
-            }
-            description={
-                selected && (
-                    <>
-                        started <MomentFromNow date={selected.createdAt} /> · {count(selected.restarts, 'restart', 'restarts')}
-                    </>
-                )
-            }
-            actions={
-                grafanaUrl && (
-                    <Button small secondary onClick={() => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer')}>
-                        Open in Grafana ↗
-                    </Button>
-                )
-            }
-            onClose={onClose}
-        >
-            <div className={styles.root}>
-                <div className={styles.bar}>
-                    {component.replicas.length > 1 && (
-                        <SingleSelectField
-                            dense
-                            className={styles.field}
-                            label="Replica"
-                            selected={replica}
-                            onChange={({ selected: name }) => {
-                                setPicked(name)
-                                setReplica(name)
-                                setContainer('')
-                                follow()
-                            }}
-                        >
-                            {component.replicas.map(({ name }) => (
-                                <SingleSelectOption key={name} label={name} value={name} />
-                            ))}
-                        </SingleSelectField>
-                    )}
-                    {containers.length > 1 && (
-                        <SingleSelectField
-                            dense
-                            className={styles.field}
-                            label="Container"
-                            selected={container || containers[0]}
-                            onChange={({ selected: name }) => {
-                                setContainer(name)
-                                follow()
-                            }}
-                        >
-                            {containers.map((name) => (
-                                <SingleSelectOption key={name} label={name} value={name} />
-                            ))}
-                        </SingleSelectField>
-                    )}
-                    <SingleSelectField
+        <div className={styles.root} hidden={!active}>
+            <div className={styles.bar}>
+                {component.replicas.length > 1 && (
+                    <SingleSelect
                         dense
-                        className={styles.field}
-                        label="Lines"
-                        selected={String(tail)}
-                        onChange={({ selected: lines }) => {
-                            setTail(Number(lines))
+                        prefix="Replica"
+                        selected={replica}
+                        onChange={({ selected: name }) => {
+                            setPicked(name)
+                            setReplica(name)
+                            setContainer('')
                             follow()
                         }}
                     >
-                        {TAILS.map((lines) => (
-                            <SingleSelectOption key={lines} label={lines.toLocaleString('en')} value={String(lines)} />
+                        {component.replicas.map(({ name }) => (
+                            <SingleSelectOption key={name} label={name} value={name} />
                         ))}
-                    </SingleSelectField>
-                </div>
-                <div ref={controls} className={styles.bar}>
-                    {/* Focus starts here rather than on Open in Grafana, where Enter would open another tab */}
-                    <Input
+                    </SingleSelect>
+                )}
+                {containers.length > 1 && (
+                    <SingleSelect
                         dense
-                        clearable
-                        initialFocus
-                        {...untyped}
-                        placeholder="Filter lines"
-                        width="260px"
-                        value={filter.liveValue}
-                        onChange={({ value }) => setQuery(value ?? '')}
-                    />
-                    {filter.debouncedValue && (
-                        <span className={styles.count}>
-                            {visible.length.toLocaleString('en')} of {count(held.filter(({ kind }) => kind === 'line').length, 'line', 'lines')}
-                        </span>
-                    )}
-                    <SegmentedControl
-                        options={LEVELS}
-                        selected={level}
-                        onChange={({ value }) => {
-                            setLevel(value as LevelFilter)
-                            setShown(RENDER_LINES)
+                        prefix="Container"
+                        selected={container || containers[0]}
+                        onChange={({ selected: name }) => {
+                            setContainer(name)
+                            follow()
                         }}
-                    />
-                    <span className={styles.spacer} />
-                    <output className={`${styles.state} ${tone}`}>{label}</output>
-                    {paused ? (
-                        <Button small secondary name="follow" onClick={follow}>
-                            Resume
-                        </Button>
-                    ) : (
-                        <Button small secondary name="follow" onClick={pause}>
-                            Pause
-                        </Button>
-                    )}
-                    <Button small secondary toggled={wrap} aria-pressed={wrap} onClick={() => setWrap(!wrap)}>
-                        Wrap
+                    >
+                        {containers.map((name) => (
+                            <SingleSelectOption key={name} label={name} value={name} />
+                        ))}
+                    </SingleSelect>
+                )}
+                <SingleSelect
+                    dense
+                    prefix="Lines"
+                    selected={String(tail)}
+                    onChange={({ selected: lines }) => {
+                        setTail(Number(lines))
+                        follow()
+                    }}
+                >
+                    {TAILS.map((lines) => (
+                        <SingleSelectOption key={lines} label={lines.toLocaleString('en')} value={String(lines)} />
+                    ))}
+                </SingleSelect>
+                {selected && (
+                    <>
+                        <span className={styles.spacer} />
+                        <span className={styles.count}>
+                            Started <MomentFromNow date={selected.createdAt} /> · {count(selected.restarts, 'restart', 'restarts')}
+                        </span>
+                    </>
+                )}
+            </div>
+            <div ref={controls} className={styles.bar}>
+                {/* Focus starts here rather than on Open in Grafana, where Enter would open another tab */}
+                <Input
+                    dense
+                    clearable
+                    initialFocus={focusFilter}
+                    {...untyped}
+                    placeholder="Filter lines"
+                    width="260px"
+                    value={filter.liveValue}
+                    onChange={({ value }) => setQuery(value ?? '')}
+                />
+                {filter.debouncedValue && (
+                    <span className={styles.count}>
+                        {visible.length.toLocaleString('en')} of {count(held.filter(({ kind }) => kind === 'line').length, 'line', 'lines')}
+                    </span>
+                )}
+                <SegmentedControl
+                    options={LEVELS}
+                    selected={level}
+                    onChange={({ value }) => {
+                        setLevel(value as LevelFilter)
+                        setShown(RENDER_LINES)
+                    }}
+                />
+                <span className={styles.spacer} />
+                <output className={`${styles.state} ${tone}`}>{label}</output>
+                {paused ? (
+                    <Button small secondary name="follow" onClick={follow}>
+                        Resume
                     </Button>
+                ) : (
+                    <Button small secondary name="follow" onClick={pause}>
+                        Pause
+                    </Button>
+                )}
+                <Checkbox dense label="Wrap" checked={wrap} onChange={({ checked }) => setWrap(checked)} />
+                <span className={styles.pair}>
                     <Button small secondary onClick={copy}>
                         {copyLabel}
                     </Button>
                     <Button small secondary onClick={download}>
                         Download
                     </Button>
-                </div>
-                <div className={styles.frame}>
-                    <div ref={box} className={wrap ? `${styles.log} ${styles.wrap}` : styles.log} onScroll={onScroll}>
-                        {dropped > 0 && (
-                            <p className={styles.note}>
-                                Showing the most recent lines only.{' '}
-                                {grafanaUrl ? (
-                                    <a href={grafanaUrl} target="_blank" rel="noopener noreferrer">
-                                        Older lines are in Grafana
-                                    </a>
-                                ) : (
-                                    'Older lines are in Grafana'
-                                )}
-                            </p>
-                        )}
-                        {earlier > 0 && (
-                            <div className={styles.earlier}>
-                                <Button
-                                    small
-                                    secondary
-                                    onClick={(_, event) => {
-                                        leaving(event)
-                                        showEarlier()
-                                    }}
-                                >
-                                    Show {count(earlier, 'earlier line', 'earlier lines')}
-                                </Button>
-                            </div>
-                        )}
-                        <div className={styles.rows}>
-                            {drawn.map((entry) => (
-                                <LogRow key={entry.id} entry={entry} needle={needle} />
-                            ))}
-                        </div>
-                        {empty && (status === 'connecting' || status === 'reconnecting') && <p className={styles.quiet}>{STATUS_LABELS[status]}</p>}
-                        {empty && message && <div className={styles.empty}>{message}</div>}
-                        {visible.length === 0 && held.length > 0 && (
-                            <div className={styles.empty}>
-                                <b>No lines match</b>
-                                <Button small secondary onClick={clearFilter}>
-                                    Clear filter
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                    {paused && total > paused.total && (
-                        <div className={styles.pill}>
+                </span>
+            </div>
+            <div className={styles.frame}>
+                <div ref={box} className={wrap ? `${styles.log} ${styles.wrap}` : styles.log} onScroll={onScroll}>
+                    {dropped > 0 && (
+                        <p className={styles.note}>
+                            Showing the most recent lines only.{' '}
+                            {grafanaUrl ? (
+                                <a href={grafanaUrl} target="_blank" rel="noopener noreferrer">
+                                    Older lines are in Grafana
+                                </a>
+                            ) : (
+                                'Older lines are in Grafana'
+                            )}
+                        </p>
+                    )}
+                    {earlier > 0 && (
+                        <div className={styles.earlier}>
                             <Button
                                 small
-                                primary
+                                secondary
                                 onClick={(_, event) => {
                                     leaving(event)
-                                    follow()
+                                    showEarlier()
                                 }}
                             >
-                                ↓ {count(total - paused.total, 'new line', 'new lines')}
+                                Show {count(earlier, 'earlier line', 'earlier lines')}
+                            </Button>
+                        </div>
+                    )}
+                    <div className={styles.rows}>
+                        {drawn.map((entry) => (
+                            <LogRow key={entry.id} entry={entry} needle={needle} />
+                        ))}
+                    </div>
+                    {empty && (status === 'connecting' || status === 'reconnecting') && <p className={styles.quiet}>{STATUS_LABELS[status]}</p>}
+                    {empty && message && <div className={styles.empty}>{message}</div>}
+                    {visible.length === 0 && held.length > 0 && (
+                        <div className={styles.empty}>
+                            <b>No lines match</b>
+                            <Button small secondary onClick={clearFilter}>
+                                Clear filter
                             </Button>
                         </div>
                     )}
                 </div>
-                {!empty && message && <div className={styles.endbar}>{message}</div>}
+                {paused && total > paused.total && (
+                    // A plain button rather than a ui one: a quiet note over the log that also resumes, not an action to compete with the bar
+                    <button
+                        type="button"
+                        className={styles.pill}
+                        onClick={(event) => {
+                            leaving(event)
+                            follow()
+                        }}
+                    >
+                        ↓ {count(total - paused.total, 'new line', 'new lines')}
+                    </button>
+                )}
             </div>
-        </Drawer>
+            {!empty && message && <div className={styles.endbar}>{message}</div>}
+        </div>
     )
 }

@@ -148,8 +148,7 @@ is not committed.
 These come from the mockup:
 
 - **Connecting**: until the first chunk arrives, a quiet "Connecting…" line, not a large spinner.
-- **Waiting** (409): "<component> is still starting up. Logs will appear here as soon as the container
-  starts. You don't need to reopen this." It retries on its own while the drawer is open. The waits grow: 4s, 8s, 16s, then every 30s.
+- **Waiting** (409): "<component> is still starting up. Logs will appear here when the container starts." It retries on its own while the drawer is open. The waits grow: 4s, 8s, 16s, then every 30s.
 - **Stream ends** (the request finishes without being cancelled). _This changes the mockup's "Stream
   ended + Reconnect" state, as my call after the builder check._ There are two reasons a stream ends:
     - The container stopped or restarted.
@@ -231,6 +230,23 @@ Make the mock good enough to try every state. It lives in Joe's own repo `~/Docu
 - Have some way to return a 409 after a stream ends, to imitate a crash-loop backoff.
 - Have a flood mode for testing the limits: one component sends lines as fast as it can, including a
   single 1 MB line with no newline for a while.
+
+## Changes after the first build (2026-11-04)
+
+Polishing it in the browser changed some of the design above. Where they differ, this section wins.
+
+- **One drawer, two tabs.** The component details drawer and the log drawer are now one drawer,
+  `component-drawer.tsx`. It has **Details** and **Logs** tabs, is 960px wide (`min(960px, 100vw - 64px)`),
+  and its title is the component name with its status dot. "View" opens it on Details. "…" → Logs, and the
+  Logs button on each replica row, open it on Logs. The log is the `LogPanel` inside the Logs tab. It loads
+  only when that tab is first opened, and it stops streaming while Details is showing. It keeps its filter
+  and place across tab switches.
+- **Header.** "Open in Grafana" uses the launch icon instead of "↗". The started time and restarts move
+  from the description to the right end of the source row.
+- **Hidden browser tab.** Streaming stops after the browser tab has been hidden for 10 minutes and
+  reconnects when it is shown again. A shorter visit to another tab doesn't interrupt the stream.
+- **Controls.** Replica, Container and Lines are selects with the label as a `prefix`. Wrap is a
+  checkbox. The new-lines button is a small dark pill styled like a tooltip, not a primary button.
 
 ## Left to the builder
 

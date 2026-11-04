@@ -8,6 +8,10 @@
     margin: calc(-1 * var(--spacers-dp16));
 }
 
+.root[hidden] {
+    display: none;
+}
+
 .bar {
     display: flex;
     flex-wrap: wrap;
@@ -17,19 +21,6 @@
     border-bottom: 1px solid var(--colors-grey200);
 }
 
-/* Labels beside their selects rather than above, to keep the source row to one line. */
-.field {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.field label {
-    padding: 0;
-    font-size: 13px;
-    color: var(--colors-grey700);
-}
-
 .count {
     font-size: 13px;
     color: var(--colors-grey600);
@@ -37,6 +28,12 @@
 
 .spacer {
     flex: 1;
+}
+
+/* Copy and Download both take the lines out, so they sit together. */
+.pair {
+    display: flex;
+    gap: var(--spacers-dp4);
 }
 
 .state {
@@ -215,11 +212,29 @@
     color: var(--colors-grey900);
 }
 
+/* Styled like the ui tooltip: dark, small and square-ish, so it reads as a note rather than a button. */
 .pill {
     position: absolute;
     bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
-    border-radius: 4px;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 13px;
+    line-height: 17px;
+    color: var(--colors-white);
+    background: var(--colors-grey900);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+    cursor: pointer;
+}
+
+.pill:hover {
+    background: var(--colors-grey800);
+}
+
+.pill:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 2px;
 }

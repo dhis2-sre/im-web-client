@@ -1,5 +1,8 @@
 # Log Drawer Implementation Plan
 
+> **Note (2026-11-04):** this plan built a separate log drawer. It has since become the Logs tab of the
+> component drawer. See "Changes after the first build" in the spec.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the instance log modal with a wide drawer. The drawer has replica, container and line-count
@@ -375,8 +378,7 @@ export const LogDrawer: FC<{
         - That button and Resume clear the pause and scroll to the end.
     - **States in the box:**
         - Connecting with no entries: "Connecting…".
-        - Waiting with no entries: "**{component} is still starting up** Logs will appear here as soon as the
-          container starts. You don't need to reopen this."
+        - Waiting with no entries: "**{component} is still starting up.** Logs will appear here when the container starts."
         - Waiting with entries: the same sentence as a bar under the lines.
         - Error: "**Couldn't load the log** {error}" plus `Try again` (which calls `retry`), under any lines
           already loaded.

@@ -273,7 +273,8 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
 export const useLogStream = (
     source: LogSource,
     restarts: number,
-    resetKey: string
+    // Off while the log is out of sight: the stream stops, and starting again keeps what was held
+    { resetKey, active = true }: { resetKey: string; active?: boolean }
 ): {
     entries: LogEntry[]
     total: number
@@ -292,9 +293,12 @@ export const useLogStream = (
 
     // The drawer rebuilds source every render, so its fields are the dependencies, not the object
     useEffect(() => {
+        if (!active) {
+            return
+        }
         connection.start({ instanceId, selector, replica, container, tail }, resetKey)
         return connection.stop
-    }, [connection, resetKey, instanceId, selector, replica, container, tail])
+    }, [connection, active, resetKey, instanceId, selector, replica, container, tail])
 
     return { ...view, retry: connection.retry }
 }
