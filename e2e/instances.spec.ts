@@ -27,7 +27,7 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await expect(page.getByRole('group', { name: 'Basic information' })).toBeVisible()
-        await expect(page.getByRole('group', { name: 'DHIS2 core' })).toBeVisible()
+        await expect(page.getByRole('group', { name: /^DHIS ?2 core$/i })).toBeVisible()
         await expect(page.getByRole('group', { name: 'PostgreSQL' })).toBeVisible()
 
         const randomName = 'e2e-test-' + Math.random().toString().substring(8)
@@ -46,8 +46,8 @@ test.describe('new instance', () => {
 
         // Select the DHIS2 core image tag
         const imageTagSelect = page
-            .getByRole('group', { name: 'DHIS2 core' })
-            .locator('div', { hasText: /^Image tag/ })
+            .getByRole('group', { name: /^DHIS ?2 core$/i })
+            .locator('div', { hasText: /^Image tag/i })
             .getByTestId('dhis2-uicore-select-input')
         await imageTagSelect.click()
         await page.getByPlaceholder('Filter options').fill(dhis2CoreImageTag)
@@ -107,8 +107,8 @@ test.describe('new instance', () => {
         await page.keyboard.press('Escape')
 
         const imageTagSelect = page
-            .getByRole('group', { name: 'DHIS2 core' })
-            .locator('div', { hasText: /^Image tag/ })
+            .getByRole('group', { name: /^DHIS ?2 core$/i })
+            .locator('div', { hasText: /^Image tag/i })
             .getByTestId('dhis2-uicore-select-input')
         await imageTagSelect.click()
         await page.getByPlaceholder('Filter options').fill(dhis2CoreImageTag)
@@ -158,8 +158,8 @@ test.describe('new instance', () => {
         // Update the image tag, which is what makes the edit imply a redeploy.
         if (dhis2CoreUpdateImageTag !== dhis2CoreImageTag) {
             const editImageTagSelect = page
-                .getByRole('group', { name: 'DHIS2 core' })
-                .locator('div', { hasText: /^Image tag/ })
+                .getByRole('group', { name: /^DHIS ?2 core$/i })
+                .locator('div', { hasText: /^Image tag/i })
                 .getByTestId('dhis2-uicore-select-input')
             await editImageTagSelect.click()
             await page.getByPlaceholder('Filter options').fill(dhis2CoreUpdateImageTag)
