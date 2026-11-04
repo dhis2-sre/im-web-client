@@ -20,7 +20,7 @@ test.describe('databases', () => {
         // Open the action menu for the uploaded database and copy it
         const row = page.getByRole('row', { name: fileName })
         await row.getByRole('button', { name: `Actions for ${fileName}` }).click()
-        await page.getByRole('menuitem', { name: 'Copy' }).dispatchEvent('click')
+        await page.getByRole('menuitem', { name: 'Copy…' }).dispatchEvent('click')
 
         // Scope all further interactions to the copy dialog.
         // @dhis2/ui's Modal sets aria-modal="true" but not role="dialog" (see upstream issue),

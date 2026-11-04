@@ -150,7 +150,7 @@ export const InstancesList: FC = () => {
                 rowHref={(deployment) => `/instances/${deployment.id}/details`}
                 renderRowActions={(deployment) => <RowActions deployment={deployment} refetch={refresh} />}
                 loading={loading}
-                error={error ? { title: 'Could not retrieve instances', description: error.message } : undefined}
+                error={error ? { title: "Couldn't load instances", description: error.message } : undefined}
                 empty={
                     filters.active && all.length > 0
                         ? {

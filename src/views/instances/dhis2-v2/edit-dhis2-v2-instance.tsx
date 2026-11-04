@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Page } from '../../../components/index.ts'
+import { COMPANION_LABELS } from '../../../constants.ts'
 import { useDeploymentDetails, useDeploymentEdit } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { Deployment, StackCompanion } from '../../../types/index.ts'
@@ -14,9 +15,6 @@ import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 /* A read replaces every sensitive value with a run of stars, which is not a value anyone can submit.
  * Those fields start empty instead, and the form tells the user that leaving them so keeps what the
  * instance already holds. */
-/* How companions are known to people, by stack name. Others show their stack name. */
-const COMPANION_LABELS: Record<string, string> = { pgadmin: 'pgAdmin', chap: 'CHAP', doris: 'Doris' }
-
 const isMaskedValue = (value: string) => /^[*•]+$/.test(value)
 
 const initialValuesFor = (deployment: Deployment) => {
@@ -106,7 +104,11 @@ export const EditDhis2V2Instance: FC = () => {
      * not yet loading. Anything other than an outright failure waits rather than reporting one. */
     if (!deployment) {
         return (
-            <Page parent={{ label: 'Instances', to: '/instances' }} loading={!error} error={error ? { title: 'Could not load instance', description: error.message } : undefined} />
+            <Page
+                parent={{ label: 'Instances', to: '/instances' }}
+                loading={!error}
+                error={error ? { title: "Couldn't load the instance", description: error.message } : undefined}
+            />
         )
     }
 

@@ -10,17 +10,19 @@ type CopyDatabaseModalProps = {
     onComplete: () => void
     databaseId: number
     currentName: string
+    currentGroup: string
 }
 
 /* "-copy" goes before the extension, so the copy keeps the format the name says it has. */
 const copyName = (name: string) => name.replace(/(\.sql\.gz|\.pgc)?$/, (extension) => `-copy${extension}`)
 
-export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName }) => {
+export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, currentGroup }) => {
     const [newName, setNewName] = useState(copyName(currentName))
-    const [group, setGroup] = useState('')
+    const [group, setGroup] = useState(currentGroup)
     const [error, setError] = useState<string>()
     const alert = useActionAlert()
-    const sameName = newName.trim() === currentName
+    /* Names only need to be unique within a group. */
+    const sameName = newName.trim() === currentName && group === currentGroup
 
     const [{ data: groups, loading: groupsLoading }] = useAuthAxios<Group[]>({ method: 'GET', url: '/groups' })
     const [{ loading }, copyDatabase] = useAuthAxios({ url: `/databases/${databaseId}/copy`, method: 'POST' }, { manual: true })
@@ -35,7 +37,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
         setError(undefined)
         try {
             await copyDatabase({ data: { group, name: newName.trim() } })
-            alert.success(`Copied to ${newName.trim()}`)
+            alert.success(`Copied to ${group}/${newName.trim()}`)
             onComplete()
             onClose()
         } catch (caught) {
@@ -56,7 +58,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
                     required
                     disabled={loading}
                     error={sameName}
-                    validationText={sameName ? 'Choose a name different from the original.' : undefined}
+                    validationText={sameName ? 'The original is already in this group. Choose another name or group.' : undefined}
                 />
                 <SingleSelectField
                     label="Copy to group"

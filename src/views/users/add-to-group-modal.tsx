@@ -33,7 +33,7 @@ export const AddToGroupModal: FC<{ user: User; joined: string[]; onClose: () => 
             console.error(error)
             /* Adding an admin takes two calls, and the first may have gone through. */
             onChanged()
-            return { [FORM_ERROR]: `Could not add ${user.email} to ${group}` }
+            return { [FORM_ERROR]: `Couldn't add ${user.email} to ${group}` }
         }
     }
 
@@ -44,7 +44,7 @@ export const AddToGroupModal: FC<{ user: User; joined: string[]; onClose: () => 
                     <ModalTitle>Add to group</ModalTitle>
                     <ModalContent className={styles.container}>
                         {groupsError && (
-                            <NoticeBox error title="Could not load the groups">
+                            <NoticeBox error title="Couldn't load the groups">
                                 {groupsError.message}
                             </NoticeBox>
                         )}
@@ -72,7 +72,7 @@ export const AddToGroupModal: FC<{ user: User; joined: string[]; onClose: () => 
                                 Cancel
                             </Button>
                             <Button primary onClick={() => void handleSubmit()} disabled={invalid} loading={submitting}>
-                                Add
+                                Add to group
                             </Button>
                         </ButtonStrip>
                     </ModalActions>

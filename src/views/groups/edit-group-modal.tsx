@@ -2,6 +2,7 @@ import type { BaseButtonProps } from '@dhis2/ui'
 import { Button, ButtonStrip, CheckboxField, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/generated/models/Cluster.ts'
 import { Group } from '../../types/generated/models/Group.ts'
@@ -14,6 +15,7 @@ type EditGroupModalProps = {
 }
 
 export const EditGroupModal: FC<EditGroupModalProps> = ({ group, onComplete, onCancel }) => {
+    const alert = useActionAlert()
     const [namespace, setNamespace] = useState(group.namespace ?? '')
     const [hostname, setHostname] = useState(group.hostname ?? '')
     const [description, setDescription] = useState(group.description ?? '')
@@ -38,12 +40,13 @@ export const EditGroupModal: FC<EditGroupModalProps> = ({ group, onComplete, onC
                 clusterId: clusterId != null ? Number(clusterId) : null,
             }
             await updateGroup({ data })
+            alert.success(`Saved ${group.name}`)
             onComplete()
         } catch (caught) {
             console.error(caught)
             setError(errorMessage(caught))
         }
-    }, [namespace, hostname, description, deployable, clusterId, updateGroup, onComplete])
+    }, [namespace, hostname, description, deployable, clusterId, updateGroup, onComplete, alert, group.name])
 
     const incomplete = !namespace.trim() || !hostname.trim() || !description.trim()
 

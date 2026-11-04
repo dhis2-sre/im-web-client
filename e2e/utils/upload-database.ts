@@ -11,8 +11,8 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     const fileName = `${dbName}${dbExtension}`
 
     await page.getByRole('link', { name: 'Databases' }).click()
-    await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
-    await page.getByRole('button', { name: 'Upload database' }).click()
+    await expect(page.getByRole('button', { name: 'Upload database…' })).toBeVisible()
+    await page.getByRole('button', { name: 'Upload database…' }).click()
 
     await expect(page.getByRole('button', { name: 'Choose file' })).toBeVisible()
 

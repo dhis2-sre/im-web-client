@@ -2,6 +2,7 @@ import { CircularLoader, NoticeBox } from '@dhis2/ui'
 import { useEffect } from 'react'
 import type { FC } from 'react'
 import { useForm } from 'react-final-form'
+import { COMPANION_LABELS } from '../../../constants.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
 import { StackCompanion } from '../../../types/index.ts'
@@ -45,7 +46,7 @@ export const CompanionSection: FC<{ offeringStackId: string; companion: StackCom
     }
     if (error) {
         return (
-            <NoticeBox error title={`Could not load the ${companion.name} fields`}>
+            <NoticeBox error title={`Couldn't load the ${COMPANION_LABELS[companion.name] ?? companion.name} fields`}>
                 {error.message}
             </NoticeBox>
         )

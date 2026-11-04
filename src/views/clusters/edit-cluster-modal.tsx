@@ -2,6 +2,7 @@ import type { BaseButtonProps } from '@dhis2/ui'
 import { Button, ButtonStrip, FileInputField, FileListItem, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
 import { errorMessage } from '../../utils/error-message.ts'
@@ -14,6 +15,7 @@ type EditClusterModalProps = {
 }
 
 export const EditClusterModal: FC<EditClusterModalProps> = ({ cluster, onComplete, onCancel }) => {
+    const alert = useActionAlert()
     const [name, setName] = useState(cluster.name ?? '')
     const [description, setDescription] = useState(cluster.description ?? '')
     const [kubernetesConfiguration, setKubernetesConfiguration] = useState<File | null>(null)
@@ -36,12 +38,13 @@ export const EditClusterModal: FC<EditClusterModalProps> = ({ cluster, onComplet
                 formData.append('kubernetesConfiguration', kubernetesConfiguration)
             }
             await updateCluster({ data: formData })
+            alert.success(`Saved ${name}`)
             onComplete()
         } catch (caught) {
             console.error(caught)
             setError(errorMessage(caught))
         }
-    }, [name, description, kubernetesConfiguration, updateCluster, onComplete])
+    }, [name, description, kubernetesConfiguration, updateCluster, onComplete, alert])
 
     return (
         <Modal onClose={loading ? undefined : () => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
@@ -54,7 +57,7 @@ export const EditClusterModal: FC<EditClusterModalProps> = ({ cluster, onComplet
                     label="Kubeconfig file"
                     buttonLabel="Replace file"
                     placeholder="No new file chosen"
-                    helpText="Leave empty to keep the current one."
+                    helpText="Leave empty to keep the current file."
                     onChange={onFileSelect}
                     disabled={loading}
                 >

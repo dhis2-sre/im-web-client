@@ -63,7 +63,7 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         setUploadError(undefined)
         if (!file || !match) {
             setDatabaseFile(undefined)
-            setFileError(file ? 'Only .pgc and .sql.gz files can be uploaded.' : undefined)
+            setFileError(file ? 'Choose a .pgc or .sql.gz file.' : undefined)
             return
         }
         setFileError(undefined)
@@ -139,7 +139,6 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
                     inputWidth="280px"
                     value={description}
                     onChange={({ value }) => setDescription(value ?? '')}
-                    required
                     disabled={loading}
                 />
                 {loading && (

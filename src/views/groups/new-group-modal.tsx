@@ -2,6 +2,7 @@ import type { BaseButtonProps } from '@dhis2/ui'
 import { Button, ButtonStrip, CheckboxField, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/generated/models/Cluster.ts'
 import { Group } from '../../types/generated/models/Group.ts'
@@ -13,6 +14,7 @@ type NewGroupModalProps = {
 }
 
 export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) => {
+    const alert = useActionAlert()
     const [name, setName] = useState('')
     const [namespace, setNamespace] = useState('')
     const [hostname, setHostname] = useState('')
@@ -33,12 +35,13 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
         try {
             const data = { name, namespace, hostname, description, deployable, ...(clusterId ? { clusterId: Number(clusterId) } : {}) }
             await createGroup({ data })
+            alert.success(`Created ${name}`)
             onComplete()
         } catch (caught) {
             console.error(caught)
             setError(errorMessage(caught))
         }
-    }, [name, namespace, hostname, description, deployable, clusterId, createGroup, onComplete])
+    }, [name, namespace, hostname, description, deployable, clusterId, createGroup, onComplete, alert])
 
     const incomplete = !name.trim() || !namespace.trim() || !hostname.trim() || !description.trim()
 

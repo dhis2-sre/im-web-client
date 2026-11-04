@@ -20,7 +20,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
             onClose()
             return undefined
         } catch (error) {
-            return { [FORM_ERROR]: refusalMessage(error, 'Could not extend the lifetime') }
+            return { [FORM_ERROR]: refusalMessage(error, "The server didn't accept the change. Try again.") }
         }
     }
 
@@ -32,7 +32,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
                     <ModalContent>
                         <ExtendTtlSelect deployment={deployment} extendOnly />
                         {submitError && (
-                            <NoticeBox error title="Could not extend the lifetime">
+                            <NoticeBox error title="Couldn't extend the lifetime">
                                 {submitError}
                             </NoticeBox>
                         )}

@@ -118,7 +118,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                     setSteps([])
                 }
                 return {
-                    [FORM_ERROR]: serverMessage ?? (error instanceof Error ? error.message : `Could not ${preset ? 'save the preset' : 'create the deployment'}`),
+                    [FORM_ERROR]: serverMessage ?? (error instanceof Error ? error.message : `Couldn't ${preset ? 'save the preset' : 'create the instance'}`),
                     ...(preset && { taken }),
                 }
             }
@@ -148,7 +148,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 const status = isAxiosError(error) ? error.response?.status : undefined
                 return {
                     error: {
-                        message: serverMessage ?? (error instanceof Error ? error.message : 'Could not start the bulk deploy'),
+                        message: serverMessage ?? (error instanceof Error ? error.message : "Couldn't start the bulk deploy"),
                         refused: !!status && status >= 400 && status < 500,
                     },
                 }

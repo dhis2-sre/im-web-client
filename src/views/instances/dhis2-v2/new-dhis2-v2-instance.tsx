@@ -50,7 +50,7 @@ export const NewDhis2V2Instance: FC = () => {
 
     const [presetToReplace, setPresetToReplace] = useState<AnyObject>()
     const [bulkValues, setBulkValues] = useState<AnyObject>()
-    const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} instances`, SUCCESS_OPTIONS)
+    const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} ${count === 1 ? 'instance' : 'instances'}…`, SUCCESS_OPTIONS)
 
     /* The name isn't used by a bulk deploy, which names the deployments from a prefix, so its errors don't stop one. Any other error is shown by submitting, which final-form refuses while there are errors. */
     const openBulkDeploy = useCallback((form: FormApi) => {
@@ -89,7 +89,7 @@ export const NewDhis2V2Instance: FC = () => {
                 return
             }
             if (result) {
-                showSaveFailed({ message: result[FORM_ERROR] ?? 'Could not save the preset' })
+                showSaveFailed({ message: result[FORM_ERROR] ?? "Couldn't save the preset" })
                 return
             }
 
