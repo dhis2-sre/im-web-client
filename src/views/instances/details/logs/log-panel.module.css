@@ -1,0 +1,247 @@
+/* Fills the drawer body edge to edge, so the bars' hairlines run the full width and only the log scrolls,
+ * never the body around it. The negative margin undoes the body's padding. */
+.root {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    margin: calc(-1 * var(--spacers-dp16));
+}
+
+.root[hidden] {
+    display: none;
+}
+
+.bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8) var(--spacers-dp12);
+    padding: 10px var(--spacers-dp16);
+    border-bottom: 1px solid var(--colors-grey200);
+}
+
+/* Grows to 260px, but gives width up to the match count rather than pushing the tools onto a second row.
+ * A wrapping row wraps before it shrinks anything, so it starts small and grows. */
+.filter {
+    flex: 99 1 160px; /* ahead of the spacer, so it reaches 260px first */
+    max-width: 260px;
+}
+
+.count {
+    font-size: 13px;
+    color: var(--colors-grey600);
+}
+
+.spacer {
+    flex: 1;
+}
+
+/* Copy and Download both take the lines out, so they sit together. */
+.pair {
+    display: flex;
+    gap: var(--spacers-dp4);
+}
+
+.state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--colors-grey700);
+}
+
+.state::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--colors-grey500);
+}
+
+.live {
+    color: var(--colors-green800);
+}
+
+.live::before {
+    background: var(--colors-green600);
+    box-shadow: 0 0 0 3px var(--colors-green100);
+}
+
+.paused {
+    color: var(--colors-yellow800);
+}
+
+.paused::before {
+    background: var(--colors-yellow500);
+    box-shadow: 0 0 0 3px var(--colors-yellow100);
+}
+
+/* Positions the "new lines" button over the bottom of the log without scrolling along with it. */
+.frame {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.log {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    padding: 6px 0;
+    background: var(--colors-grey050);
+    font: var(--text-mono)/20px var(--font-mono);
+    color: var(--colors-grey900);
+}
+
+/* Unwrapped, every row is as wide as the longest, so a tint reaches the end of a line scrolled sideways. */
+.rows {
+    width: max-content;
+    min-width: 100%;
+}
+
+.wrap .rows {
+    width: auto;
+}
+
+/* The app's reset gives every element Roboto, so the level word and highlights need the face set on them too. */
+.line,
+.line * {
+    font-family: var(--font-mono);
+}
+
+.line {
+    padding: 0 var(--spacers-dp16) 0 14px;
+    border-left: 3px solid transparent;
+    white-space: pre;
+}
+
+.wrap .line {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.err {
+    background: var(--colors-red050);
+    border-left-color: var(--colors-red600);
+}
+
+.warn {
+    background: var(--colors-yellow050);
+    border-left-color: var(--colors-yellow500);
+}
+
+.word {
+    font-weight: 600;
+}
+
+.err .word {
+    color: var(--colors-red700);
+}
+
+.warn .word {
+    color: var(--colors-yellow800);
+}
+
+.line mark {
+    border-radius: 2px;
+    background: var(--colors-yellow200);
+    color: inherit;
+}
+
+/* A break in the log rather than a line of it: centred grey text on a hairline. */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp12);
+    padding: var(--spacers-dp4) var(--spacers-dp16);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    color: var(--colors-grey600);
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--colors-grey300);
+}
+
+.note,
+.quiet {
+    margin: 0;
+    padding: var(--spacers-dp4) var(--spacers-dp16) var(--spacers-dp8);
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    color: var(--colors-grey700);
+}
+
+.earlier {
+    padding: 0 var(--spacers-dp16) var(--spacers-dp8);
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 100%;
+    padding: 0 var(--spacers-dp24);
+    font-family: Roboto, sans-serif;
+    font-size: var(--text-md);
+    line-height: 1.4;
+    color: var(--colors-grey700);
+    text-align: center;
+}
+
+.empty b {
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.endbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px var(--spacers-dp8);
+    padding: 6px var(--spacers-dp16);
+    border-top: 1px solid var(--colors-grey300);
+    background: var(--colors-grey200);
+    font-size: 13px;
+    color: var(--colors-grey700);
+}
+
+.endbar b {
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+/* Styled like the ui tooltip: dark, small and square-ish, so it reads as a note rather than a button. */
+.pill {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacers-dp4) var(--spacers-dp8);
+    border: 0;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 13px;
+    line-height: 17px;
+    color: var(--colors-white);
+    background: var(--colors-grey900);
+    box-shadow: var(--elevations-e200);
+    cursor: pointer;
+}
+
+.pill:hover {
+    background: var(--colors-grey800);
+}
+
+.pill:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 2px;
+}

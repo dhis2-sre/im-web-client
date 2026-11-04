@@ -19,6 +19,18 @@
     animation: slideIn 180ms ease-out;
 }
 
+/* Room for a log line and for long parameter values, and still leaves the page visible behind it.
+ * On narrow windows there is no room to leave the page showing, so it takes the whole width. */
+.wide {
+    width: min(960px, calc(100vw - 64px));
+}
+
+@media (max-width: 640px) {
+    .wide {
+        width: 100vw;
+    }
+}
+
 @keyframes slideIn {
     from {
         transform: translateX(24px);
@@ -35,9 +47,9 @@
 .header {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacers-dp12);
+    gap: var(--spacers-dp8);
     padding: var(--spacers-dp16);
-    border-bottom: 1px solid var(--colors-grey300);
+    border-bottom: 1px solid var(--colors-grey400);
 }
 
 .heading {
@@ -63,6 +75,10 @@
     margin: 0;
     font-size: var(--text-sm);
     color: var(--colors-grey700);
+}
+
+.tabs {
+    flex-shrink: 0;
 }
 
 .body {
