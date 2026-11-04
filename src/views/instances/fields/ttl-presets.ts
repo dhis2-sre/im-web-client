@@ -36,7 +36,7 @@ export const lifetimeError = (ttlSeconds: number, { ageSeconds, ttlSeconds: curr
         return undefined
     }
     if (ttlSeconds <= ageSeconds) {
-        return 'Pick a date in the future.'
+        return 'Pick a date in the future'
     }
-    return extendOnly && ttlSeconds <= currentTtlSeconds ? 'Pick a date after it currently expires.' : undefined
+    return extendOnly && ttlSeconds <= currentTtlSeconds ? 'Pick a date after the current end date' : undefined
 }

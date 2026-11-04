@@ -24,7 +24,7 @@ const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
 
     return (
         <Button small secondary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-            Load
+            Use preset
         </Button>
     )
 }
@@ -71,7 +71,7 @@ export const PresetsList: FC = () => {
             rowHref={(preset) => `/presets/${preset.id}`}
             renderRowActions={(preset) => <LoadButton preset={preset} />}
             loading={loading}
-            error={error ? { title: 'Could not fetch the presets', description: error.message } : undefined}
+            error={error ? { title: "Couldn't load presets", description: error.message } : undefined}
             empty={
                 (onlyMine || term || group) && presets?.length
                     ? {

@@ -23,13 +23,13 @@ const ResetMessage: FC<{ deployment: Deployment }> = ({ deployment }) => {
 
     return (
         <>
-            The instance will restore to its deployed state. The database
+            Restores the instance to how it was deployed. The database
             {named && (
                 <>
                     , <strong>{label}</strong>,
                 </>
             )}{' '}
-            will be restored to its original state and any changes will be lost. This cannot be undone.
+            goes back to its original state and any changes since are lost. This can&apos;t be undone.
         </>
     )
 }
@@ -75,7 +75,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
             for (const instance of instances) {
                 await execute({ url: `/instances/${instance.id}/${action}` })
             }
-            alert.success(`${action === 'restart' ? 'Restart' : 'Reset'} requested for ${name}`)
+            alert.success(`${action === 'restart' ? 'Restarting' : 'Resetting'} ${name}…`)
             onChanged()
         } catch (error) {
             console.error(error)
@@ -115,7 +115,11 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
                     hasStacks && {
                         label: 'Restart',
-                        confirm: { title: `Restart ${name}?`, message: 'All instance components will restart.', confirmLabel: 'Restart' },
+                        confirm: {
+                            title: `Restart ${name}?`,
+                            message: 'Every component restarts, so the instance is unavailable until they are back up.',
+                            confirmLabel: 'Restart instance',
+                        },
                         onClick: actOnAll('restart'),
                     },
                     hasStacks && {

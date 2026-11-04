@@ -18,7 +18,7 @@ const predefinedOptions = new Map<string, CustomOption>([
         {
             value: 'core',
             primaryText: 'Stable',
-            secondaryText: 'Reliable, tested versions for production',
+            secondaryText: 'Released, tested versions',
         },
     ],
     [
@@ -34,7 +34,7 @@ const predefinedOptions = new Map<string, CustomOption>([
         {
             value: 'core-dev',
             primaryText: 'Development',
-            secondaryText: 'Cutting-edge updates',
+            secondaryText: 'Latest unreleased builds',
         },
     ],
     [
@@ -42,7 +42,7 @@ const predefinedOptions = new Map<string, CustomOption>([
         {
             value: 'core-pr',
             primaryText: 'PR',
-            secondaryText: 'Test specific code changes',
+            secondaryText: 'Builds of open pull requests',
         },
     ],
 ])

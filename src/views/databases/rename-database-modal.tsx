@@ -41,7 +41,7 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
             <ModalTitle>Edit {currentName}</ModalTitle>
             <ModalContent>
                 <InputField label="Name" value={newName} onChange={({ value }) => setNewName(value ?? '')} required disabled={loading} />
-                <InputField label="Description" value={newDescription} onChange={({ value }) => setNewDescription(value ?? '')} required disabled={loading} />
+                <InputField label="Description" value={newDescription} onChange={({ value }) => setNewDescription(value ?? '')} disabled={loading} />
                 {error && (
                     <NoticeBox error title={`Couldn't save ${currentName}`}>
                         {error}

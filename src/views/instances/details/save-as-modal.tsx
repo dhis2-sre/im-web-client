@@ -16,8 +16,8 @@ type SaveAsModalProps = {
 
 const defaultFormat = 'custom'
 const formats = new Map<string, { label: string; extension: string }>([
-    ['custom', { label: 'Custom (pgc)', extension: '.pgc' }],
-    ['plain', { label: 'Plain (sql.gz)', extension: '.sql.gz' }],
+    ['custom', { label: 'Custom format (.pgc)', extension: '.pgc' }],
+    ['plain', { label: 'Plain SQL (.sql.gz)', extension: '.sql.gz' }],
 ])
 
 /* The request only starts the backup, so the dialog stays open until it is accepted and shows a refusal
@@ -35,7 +35,7 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, gr
         setError(undefined)
         try {
             await saveAs({ data: { name: name.trim() + extension, format } })
-            alert.success(`Backing up ${instanceName} database`)
+            alert.success(`Backing up ${instanceName}…`)
             onClose()
         } catch (caught) {
             console.error(caught)
@@ -48,10 +48,11 @@ export const SaveAsModal: FC<SaveAsModalProps> = ({ instanceId, instanceName, gr
             <ModalTitle>Back up {instanceName}</ModalTitle>
             <ModalContent className={styles.container}>
                 <p className={styles.note}>
-                    Save a copy of the instance database
+                    Saves a copy of the instance&apos;s database and files
                     {groupName && (
                         <>
-                            , in the <strong>{groupName}</strong> group
+                            {' '}
+                            to the <strong>{groupName}</strong> group
                         </>
                     )}
                     .

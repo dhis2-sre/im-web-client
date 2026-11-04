@@ -18,12 +18,12 @@ export const useGroupSelectHelpText = (groupName: string): string => {
     }, [loadResources, groupName])
 
     if (error) {
-        return `Error fetching cluster resources: ${error.message}`
+        return `Couldn't load cluster resources: ${error.message}`
     }
 
     if (loading) {
         return 'Loading…'
     }
 
-    return `CPU ${resources.CPU}, Memory ${resources.Memory}${resources.Autoscaled ? ', autoscaled' : ''}`
+    return `CPU ${resources.CPU}, memory ${resources.Memory}${resources.Autoscaled ? ', autoscaled' : ''}`
 }

@@ -14,7 +14,7 @@ export const GroupsList: FC = () => {
             title="Groups"
             actions={<NewGroupButton onComplete={refetch} />}
             loading={loading && !data}
-            error={error && !data ? { title: 'Could not fetch groups', description: error.message } : undefined}
+            error={error && !data ? { title: "Couldn't load groups", description: error.message } : undefined}
         >
             <DataTable>
                 <TableHead>
@@ -24,7 +24,7 @@ export const GroupsList: FC = () => {
                         <DataTableColumnHeader>Hostname</DataTableColumnHeader>
                         <DataTableColumnHeader>Description</DataTableColumnHeader>
                         <DataTableColumnHeader>Cluster</DataTableColumnHeader>
-                        <DataTableColumnHeader>Deployable</DataTableColumnHeader>
+                        <DataTableColumnHeader>Can create instances</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
                     </DataTableRow>

@@ -31,13 +31,13 @@ export const RequestPasswordReset = () => {
             event.preventDefault()
 
             if (!email) {
-                setErrorMessage('Please provide a valid email address')
+                setErrorMessage('Enter an email address')
                 return
             }
 
             try {
                 await postRequestPasswordReset({ data: { email } })
-                showAlert({ message: `Password reset link sent to "${email}"`, isCritical: false })
+                showAlert({ message: `Password reset link sent to ${email}`, isCritical: false })
                 navigate('/')
             } catch (error) {
                 console.error(error)
@@ -56,7 +56,7 @@ export const RequestPasswordReset = () => {
                 </h2>
                 <InputField disabled={loading} name="email" label="Email" type="email" value={email} onChange={onInputChange} />
                 {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Request password reset" disabled={!email}>
+                <Button primary type="submit" value="Send reset link" disabled={!email}>
                     Request password reset
                 </Button>
             </Card>

@@ -33,7 +33,7 @@ export const ComponentOperationsMenu: FC<{
     const act = (action: 'restart' | 'reset') => async () => {
         try {
             await execute({ url: `/instances/${instanceId}/${action}`, params: { selector: component.name } })
-            alert.success(`${action === 'restart' ? 'Restart' : 'Reset'} requested for ${component.name}`)
+            alert.success(`${action === 'restart' ? 'Restarting' : 'Resetting'} ${component.name}…`)
             onChanged()
         } catch (error) {
             console.error(error)
@@ -58,7 +58,8 @@ export const ComponentOperationsMenu: FC<{
                         destructive: true,
                         confirm: {
                             title: `Reset ${component.name}?`,
-                            message: 'Data is replaced with the originally deployed database, any changes made since are lost. Components that read the database restart too.',
+                            message:
+                                "Replaces its data with the database it was deployed with, so any changes since are lost. Components that read the database restart too. This can't be undone.",
                             confirmLabel: `Reset ${component.name}`,
                             destructive: true,
                         },

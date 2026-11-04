@@ -14,14 +14,14 @@ export const ClustersList: FC = () => {
             title="Clusters"
             actions={<NewClusterButton onComplete={refetch} />}
             loading={loading && !data}
-            error={error && !data ? { title: 'Could not fetch clusters', description: error.message } : undefined}
+            error={error && !data ? { title: "Couldn't load clusters", description: error.message } : undefined}
         >
             <DataTable>
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
                         <DataTableColumnHeader>Description</DataTableColumnHeader>
-                        <DataTableColumnHeader>Group(s)</DataTableColumnHeader>
+                        <DataTableColumnHeader>Groups</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
                     </DataTableRow>

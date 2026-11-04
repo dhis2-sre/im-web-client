@@ -83,7 +83,7 @@ export const DeploymentDetails: FC = () => {
                 )
             }
             loading={loading && !deployment}
-            error={error && !deployment ? { title: 'Could not retrieve instance details', description: error.message } : undefined}
+            error={error && !deployment ? { title: "Couldn't load the instance", description: error.message } : undefined}
             summary={deployment && <MetaLine items={detailItems(deployment)} />}
         >
             {deployment && <DeploymentStacks deployment={deployment} components={components} />}

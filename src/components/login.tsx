@@ -26,7 +26,7 @@ export const Login = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance Manager login
+                    Log in to Instance Manager
                 </h2>
                 <InputField
                     name="email"
@@ -51,7 +51,7 @@ export const Login = () => {
                 />
                 <CheckboxField
                     name="rememberMe"
-                    label="Remember me?"
+                    label="Remember me"
                     checked={rememberMe}
                     onChange={({ checked }) => {
                         setRememberMe(checked)
@@ -59,11 +59,11 @@ export const Login = () => {
                 />
                 {authenticationErrorMessage && <Help error>{authenticationErrorMessage}</Help>}
                 <Button primary type="submit" value="login" loading={isAuthenticating}>
-                    Login
+                    Log in
                 </Button>
                 <div className={styles.divider}>or</div>
                 <Button type="button" onClick={onGoogleLogin} disabled={isAuthenticating}>
-                    Sign in with Google
+                    Log in with Google
                 </Button>
                 <div className={styles.linkContainer}>
                     <Link to={'/sign-up'}>Sign up</Link>
