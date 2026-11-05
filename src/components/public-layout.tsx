@@ -13,10 +13,11 @@ export const PublicLayout: FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.nav}>
-                <h1 className={styles.header}>
+                {/* The product's name, not a heading: each page titles itself with the one h1. */}
+                <div className={styles.header}>
                     <LogoIcon className={styles.logo} />
                     DHIS2 Playground
-                </h1>
+                </div>
             </div>
             <div className={styles.mainArea}>
                 <Outlet />

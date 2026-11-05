@@ -1,6 +1,6 @@
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import type { DatabaseSaveData, Notification } from '../../hooks/use-notifications.ts'
+import { MomentFromNow } from '../moment-from-now.tsx'
 import styles from './notification-panel.module.css'
 
 const formatMessage = (kind: string, data: DatabaseSaveData): string => {
@@ -51,7 +51,7 @@ const NotificationItem: FC<NotificationItemProps> = ({ notification, onMarkRead 
             <div className={styles.content}>
                 <div className={styles.message}>{formatMessage(notification.kind, data)}</div>
                 <div className={styles.time}>
-                    <Moment fromNow>{notification.createdAt}</Moment>
+                    <MomentFromNow date={notification.createdAt} />
                 </div>
             </div>
         </div>

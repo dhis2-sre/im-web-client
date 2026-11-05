@@ -8,7 +8,14 @@ import { CopyDatabaseModal } from './copy-database-modal.tsx'
 import { lockHolder } from './database-markers.tsx'
 import { RenameDatabaseModal } from './rename-database-modal.tsx'
 
-export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void }> = ({ database, refetch }) => {
+/* A database's actions: in a row's menu on the list, or as buttons in its details page's header, where
+ * a delete leaves the page rather than refreshing it. */
+export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void; buttons?: boolean; onDeleted?: () => void }> = ({
+    database,
+    refetch,
+    buttons,
+    onDeleted = refetch,
+}) => {
     const [modal, setModal] = useState<'rename' | 'copy' | null>(null)
     const alert = useActionAlert()
     const fullName = `${database.groupName}/${database.name}`
@@ -35,7 +42,7 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void }
         try {
             await deleteDatabase()
             alert.success(`Deleted ${fullName}`)
-            refetch()
+            onDeleted()
         } catch (error) {
             console.error('Error deleting database:', error)
             alert.error(`Couldn't delete ${fullName}`)
@@ -46,6 +53,7 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void }
         <>
             <ActionsMenu
                 label={`Actions for ${database.name}`}
+                buttons={buttons}
                 items={[
                     { label: 'Download', onClick: download },
                     { label: 'Rename', unavailable: locked, onClick: () => setModal('rename') },

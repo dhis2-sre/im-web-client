@@ -2,8 +2,7 @@ import { Button, Checkbox, IconFolder16 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
 import { useState } from 'react'
 import type { FC } from 'react'
-import Moment from 'react-moment'
-import { Breadcrumbs, FilterFields, GroupFilter, ListPage, OnlyMineFilter, SearchFilter } from '../../components/index.ts'
+import { Breadcrumbs, FilterFields, GroupFilter, ListPage, MomentFromNow, OnlyMineFilter, SearchFilter } from '../../components/index.ts'
 import type { Crumb, ListColumn } from '../../components/index.ts'
 import type { Database, GroupsWithDatabases } from '../../types/index.ts'
 import { DatabaseActionsMenu } from './database-actions-menu.tsx'
@@ -96,14 +95,7 @@ const columns: ListColumn<DatabaseRow>[] = [
     {
         key: 'updated',
         label: 'Updated',
-        render: fromDatabase(
-            (db) => (
-                <span title={db.updatedAt}>
-                    <Moment date={db.updatedAt} fromNow />
-                </span>
-            ),
-            null
-        ),
+        render: fromDatabase((db) => <MomentFromNow date={db.updatedAt} />, null),
         sortValue: fromDatabase((db) => db.updatedAt ?? '', ''),
         nowrap: true,
     },

@@ -14,6 +14,8 @@ export type ActionItem = {
     destructive?: boolean
     /* Why the item cannot be used right now, shown under its label. The item is disabled while set. */
     unavailable?: string
+    /* Busy for a reason the menu cannot see, such as a modal the item opened. */
+    busy?: boolean
 }
 
 type ActionsMenuProps = {
@@ -21,20 +23,23 @@ type ActionsMenuProps = {
     label: string
     /* Falsy entries are skipped, so an item can be included with a plain condition. */
     items: (ActionItem | false | null | undefined)[]
-    /* Busy for a reason the menu cannot see, such as a modal one of its items opened. */
-    busy?: boolean
+    /* Every item as a button of its own rather than in the menu, as on a details page. */
+    buttons?: boolean
     dataTest?: string
 }
 
 /* One kebab menu for every row and page that has more actions than its one visible button. Items
  * are declared rather than rendered, so confirmation, the busy state and closing the menu behave the
- * same everywhere. */
-export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, busy, dataTest }) => {
+ * same everywhere, including where a page shows them as buttons. */
+export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, buttons, dataTest }) => {
     const anchor = useRef<HTMLSpanElement>(null)
     const [open, setOpen] = useState(false)
-    const [running, setRunning] = useState(0)
+    const [running, setRunning] = useState<string[]>([])
     const { confirm, modal } = useConfirmedAction()
     const visibleItems = items.filter((item): item is ActionItem => Boolean(item))
+    const buttonItems = buttons ? visibleItems : []
+    const menuItems = buttons ? [] : visibleItems
+    const isBusy = (item: ActionItem) => Boolean(item.busy) || running.includes(item.label)
 
     const close = useCallback(() => {
         setOpen(false)
@@ -57,14 +62,14 @@ export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, busy, dataTest
     }, [open, close])
 
     const run = useCallback(async (item: ActionItem) => {
-        setRunning((count) => count + 1)
+        setRunning((labels) => [...labels, item.label])
         try {
             await item.onClick()
         } catch (error) {
             // Items report their own failures; this only keeps a missed one from going unnoticed.
             console.error(error)
         } finally {
-            setRunning((count) => count - 1)
+            setRunning((labels) => labels.filter((running) => running !== item.label))
         }
     }, [])
 
@@ -77,34 +82,46 @@ export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, busy, dataTest
         void run(item)
     }
 
-    if (visibleItems.length === 0) {
-        return null
-    }
-
     return (
         <>
-            <span ref={anchor} className={styles.anchor}>
-                <Button
-                    small
-                    secondary
-                    icon={<IconMore16 />}
-                    aria-label={label}
-                    aria-haspopup="menu"
-                    aria-expanded={open}
-                    title={label}
-                    loading={busy || running > 0}
-                    onClick={() => setOpen((current) => !current)}
-                    dataTest={dataTest}
-                />
-            </span>
+            {buttonItems.map((item, index) => (
+                <span key={item.label} title={item.unavailable} className={item.destructive && index > 0 && !buttonItems[index - 1].destructive ? styles.apart : undefined}>
+                    <Button
+                        small
+                        secondary={item.destructive}
+                        destructive={item.destructive}
+                        disabled={Boolean(item.unavailable)}
+                        loading={isBusy(item)}
+                        onClick={() => select(item)}
+                    >
+                        {item.label}
+                    </Button>
+                </span>
+            ))}
+            {menuItems.length > 0 && (
+                <span ref={anchor} className={styles.anchor}>
+                    <Button
+                        small
+                        secondary
+                        icon={<IconMore16 />}
+                        aria-label={label}
+                        aria-haspopup="menu"
+                        aria-expanded={open}
+                        title={label}
+                        loading={menuItems.some(isBusy)}
+                        onClick={() => setOpen((current) => !current)}
+                        dataTest={dataTest}
+                    />
+                </span>
+            )}
             {open && (
                 <Layer onBackdropClick={() => setOpen(false)}>
                     <Popper reference={anchor} placement="bottom-end">
                         <FlyoutMenu dense closeMenu={close}>
                             {/* A divider sets the destructive actions apart from the ones before them. */}
-                            {visibleItems.map((item, index) => (
+                            {menuItems.map((item, index) => (
                                 <Fragment key={item.label}>
-                                    {item.destructive && index > 0 && !visibleItems[index - 1].destructive && <MenuDivider dense />}
+                                    {item.destructive && index > 0 && !menuItems[index - 1].destructive && <MenuDivider dense />}
                                     <MenuItem
                                         dense
                                         label={
