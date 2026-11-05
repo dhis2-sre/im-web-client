@@ -31,7 +31,7 @@ const databaseFacts = (db: Database): Record<string, ReactNode> => ({
  * Ids and paths are literal values, so they are set in monospace. */
 const databaseDetails = (db: Database): { name: string; value: ReactNode }[] => [
     { name: 'Type', value: db.type === 'fs' ? 'Filestore' : 'Database' },
-    { name: 'Size', value: db.size ? prettyBytes(db.size) : 'Unknown' },
+    { name: 'Size', value: db.size ? <span title={`${db.size.toLocaleString()} bytes`}>{prettyBytes(db.size)}</span> : 'Unknown' },
     { name: 'Lock', value: db.lock ? lockDescription(db.lock) : 'Not locked' },
     { name: 'Created', value: db.createdAt ? <MomentFromNow date={db.createdAt} /> : 'Unknown' },
     { name: 'Storage path', value: db.url ? <span className={styles.mono}>{db.url}</span> : 'Not saved yet' },
