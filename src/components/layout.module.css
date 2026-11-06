@@ -9,9 +9,14 @@
     max-height: 100vh;
     overflow: auto;
 }
+/* The sidebar's own colours, shared with the user menu and the bell so they stay in step. */
 .nav {
-    background-color: var(--colors-grey900);
-    min-width: 200px;
+    --sidebar-bg: color-mix(in srgb, var(--colors-grey900), black 35%);
+    --sidebar-hover: rgba(255, 255, 255, 0.04);
+    --sidebar-active: rgba(255, 255, 255, 0.08);
+    background-color: var(--sidebar-bg);
+    width: 240px;
+    flex: none;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -19,98 +24,106 @@
 
 .navFooter {
     margin-top: auto;
-    padding: 12px 10px;
+    padding: var(--spacers-dp8);
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: center;
+    gap: var(--spacers-dp4);
 }
 
 .header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    background-color: #0c0f13;
+    /* Centres the 20px logo over the 16px link icons and starts the title where the link labels start. */
+    gap: 6px;
     margin: 0;
     color: white;
     font-size: 14px;
     line-height: 16px;
-    font-weight: 500;
-    padding: 15px;
+    font-weight: 400;
+    padding: 16px 14px;
 }
 .logo {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
 }
 .navlist {
     display: flex;
     flex-direction: column;
-    margin-top: var(--spacers-dp16);
+    gap: 2px;
+    margin-top: var(--spacers-dp4);
 }
 
-.navlist :global(a) {
+.navlist :global(a):not(.navAction) {
     font-weight: 400;
-    font-size: 15px;
+    font-size: 14px;
     line-height: 18px;
-    padding: 9px 8px 9px 12px;
-    color: var(--colors-white);
+    /* Inset pill: the 8px margin plus 8px padding lines the icons up with the logo and the divider. */
+    margin: 0 var(--spacers-dp8);
+    padding: 9px 8px;
+    border-radius: 6px;
+    color: var(--colors-grey500);
     text-decoration: none;
-    border-left: 4px solid transparent;
-    transition: background-color 150ms ease-in-out;
     display: inline-flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacers-dp8);
 }
 
-.navlist :global(a):hover {
+.navlist :global(a) svg {
+    flex: none;
+}
+
+.navlist :global(a):hover,
+/* Keeps the row lit while the pointer is on its +, which is a sibling of the link. */
+.navRow:has(.navAction:hover) > :global(a:not(.active)) {
     color: var(--colors-white);
-    background-color: var(--colors-grey800);
+    background-color: var(--sidebar-hover);
 }
 
 .navlist :global(a.active) {
-    background-color: #040506;
-    border-color: var(--colors-teal500);
+    color: var(--colors-white);
+    background-color: var(--sidebar-active);
 }
 
-.group {
-    margin: var(--spacers-dp16) 0 var(--spacers-dp4);
-    padding: 0 var(--spacers-dp12) 0 var(--spacers-dp16);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--colors-grey500);
+/* One ring for everything in the sidebar: the browser's default is near-black and disappears on it. */
+.nav :focus-visible {
+    outline: 2px solid var(--colors-white);
+    outline-offset: -2px;
 }
 
-.navlist .group:first-child {
-    margin-top: 0;
-}
-
-.identity {
+.navRow {
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: var(--spacers-dp8);
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-    font-size: var(--text-sm);
-    color: var(--colors-grey300);
+    flex-direction: column;
 }
 
-.avatar {
-    display: inline-flex;
-    flex: none;
+.navAction {
+    position: absolute;
+    top: 50%;
+    right: var(--spacers-dp12);
+    transform: translateY(-50%);
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
-    background-color: var(--colors-teal500);
-    color: var(--colors-grey900);
-    font-weight: 600;
+    border-radius: 4px;
+    color: var(--colors-grey500);
+    /* Hidden with opacity so Tab can still land on it (a visibility-hidden + loses focus as Instances blurs),
+     * and without pointer events so taps on the end of the Instances row reach Instances. */
+    opacity: 0;
+    pointer-events: none;
 }
 
-.email {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* Shown while the row is hovered or keyboard-focused; :focus-visible skips the focus a mouse click leaves behind. */
+.navRow:hover .navAction,
+.navRow:has(:focus-visible) .navAction {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Sets the admin links apart from the workspace ones; it only renders for admins. */
+.divider {
+    margin: var(--spacers-dp12) var(--spacers-dp16);
+    border: 0;
+    border-top: 1px solid var(--sidebar-active);
 }

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ComponentStatusEventData, DeploymentEventData } from '../types/index.ts'
+import { visibleNotifications } from '../utils/visible-notifications.ts'
 import { createEmitter } from './create-emitter.ts'
 import { baseURL, refreshTokens, useAuthAxios } from './use-auth-axios.ts'
 
@@ -165,23 +166,42 @@ export const useNotifications = () => {
         }
     }, [sseEvents, componentStatuses, deploymentEvents])
 
+    /* What this session has marked read, laid over every list the server sends. A refresh that left
+     * before a mark-read landed answers with the row still unread, and would otherwise bring it back.
+     * Rows marked one at a time are kept by id; "mark all" covers every id up to the newest it saw.
+     * Both take effect before the server answers and are undone if it fails. */
+    const [readIds, setReadIds] = useState<number[]>([])
+    const [readUpTo, setReadUpTo] = useState(0)
+
     const markRead = useCallback(
         async (id: number) => {
-            await executeMarkRead({ url: `/notifications/${id}/read` })
-            setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+            setReadIds((prev) => [...prev, id])
+            try {
+                await executeMarkRead({ url: `/notifications/${id}/read` })
+            } catch (err) {
+                setReadIds((prev) => prev.filter((readId) => readId !== id))
+                throw err
+            }
         },
         [executeMarkRead]
     )
 
     const markAllRead = useCallback(async () => {
-        await executeMarkAllRead()
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-    }, [executeMarkAllRead])
+        const previous = readUpTo
+        setReadUpTo(notifications.reduce((newest, n) => Math.max(newest, n.id), previous))
+        try {
+            await executeMarkAllRead()
+        } catch (err) {
+            setReadUpTo(previous)
+            throw err
+        }
+    }, [notifications, readUpTo, executeMarkAllRead])
 
-    const unreadCount = notifications.filter((n) => !n.read).length
+    const visible = useMemo(() => visibleNotifications(notifications, readIds, readUpTo), [notifications, readIds, readUpTo])
+    const unreadCount = visible.length
 
     return {
-        notifications,
+        notifications: visible,
         unreadCount,
         onSseEvent: sseEvents.subscribe,
         onComponentStatus: componentStatuses.subscribe,
