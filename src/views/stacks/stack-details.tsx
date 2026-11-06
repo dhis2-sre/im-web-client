@@ -37,7 +37,7 @@ const ParametersTable: FC<{ parameters: StackParameterWithGroup[] }> = ({ parame
                 <DataTableColumnHeader>Name</DataTableColumnHeader>
                 <DataTableColumnHeader>Default value</DataTableColumnHeader>
                 <DataTableColumnHeader>Sensitive</DataTableColumnHeader>
-                <DataTableColumnHeader>Consumed</DataTableColumnHeader>
+                <DataTableColumnHeader>From required stack</DataTableColumnHeader>
             </DataTableRow>
         </DataTableHead>
         <DataTableBody>
@@ -63,7 +63,7 @@ export const StackDetails = () => {
 
     let pageError: PageError | undefined
     if (error) {
-        pageError = { title: 'Could not fetch stack details', description: error.message }
+        pageError = { title: "Couldn't load the stack", description: error.message }
     } else if (!stack) {
         pageError = { title: 'Stack not found', description: `No stack named "${name}" exists.` }
     }

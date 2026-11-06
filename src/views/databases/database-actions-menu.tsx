@@ -34,7 +34,7 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void; 
             link.remove()
         } catch (error) {
             console.error(error)
-            alert.error(`Couldn't start the download of ${fullName}`)
+            alert.error(`Couldn't download ${fullName}`)
         }
     }
 
@@ -56,20 +56,21 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void; 
                 buttons={buttons}
                 items={[
                     { label: 'Download', onClick: download },
-                    { label: 'Rename', unavailable: locked, onClick: () => setModal('rename') },
-                    { label: 'Copy', onClick: () => setModal('copy') },
+                    { label: 'Edit…', unavailable: locked, onClick: () => setModal('rename') },
+                    { label: 'Copy…', onClick: () => setModal('copy') },
                     {
                         label: 'Delete',
                         destructive: true,
                         unavailable: locked,
                         confirm: {
-                            title: 'Delete database',
+                            title: `Delete ${database.name}?`,
                             message: (
                                 <>
-                                    Delete <strong>{fullName}</strong>? This cannot be undone.
+                                    Deletes the database{database.filestoreId ? ' and its linked filestore' : ''} from <strong>{database.groupName}</strong>. This can&apos;t be
+                                    undone.
                                 </>
                             ),
-                            confirmLabel: 'Delete',
+                            confirmLabel: 'Delete database',
                             destructive: true,
                             typed: { name: database.name },
                         },
@@ -86,7 +87,15 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void; 
                     currentDescription={database.description}
                 />
             )}
-            {modal === 'copy' && <CopyDatabaseModal onClose={() => setModal(null)} onComplete={refetch} databaseId={database.id} currentName={database.name} />}
+            {modal === 'copy' && (
+                <CopyDatabaseModal
+                    onClose={() => setModal(null)}
+                    onComplete={refetch}
+                    databaseId={database.id}
+                    currentName={database.name}
+                    currentGroup={database.groupName ?? ''}
+                />
+            )}
         </>
     )
 }

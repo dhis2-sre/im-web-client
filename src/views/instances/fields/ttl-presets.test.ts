@@ -23,7 +23,7 @@ describe('lifetimeError', () => {
     const instance = { ageSeconds: DAY_IN_SECONDS, ttlSeconds: 6 * DAY_IN_SECONDS }
 
     it('refuses an end in the past', () => {
-        expect(lifetimeError(DAY_IN_SECONDS - 1, { ...instance, extendOnly: false })).toBe('Pick a date in the future.')
+        expect(lifetimeError(DAY_IN_SECONDS - 1, { ...instance, extendOnly: false })).toBe('Pick a date in the future')
     })
 
     it('lets the edit form shorten a lifetime', () => {
@@ -31,8 +31,8 @@ describe('lifetimeError', () => {
     })
 
     it('refuses an end that is not later when extending', () => {
-        expect(lifetimeError(2 * DAY_IN_SECONDS, { ...instance, extendOnly: true })).toBe('Pick a date after it currently expires.')
-        expect(lifetimeError(6 * DAY_IN_SECONDS, { ...instance, extendOnly: true })).toBe('Pick a date after it currently expires.')
+        expect(lifetimeError(2 * DAY_IN_SECONDS, { ...instance, extendOnly: true })).toBe('Pick a date after the current end date')
+        expect(lifetimeError(6 * DAY_IN_SECONDS, { ...instance, extendOnly: true })).toBe('Pick a date after the current end date')
     })
 
     it('accepts a later end when extending', () => {

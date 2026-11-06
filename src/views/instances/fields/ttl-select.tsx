@@ -36,7 +36,7 @@ export const TtlSelect = () => {
                 label="Lifetime"
                 selected={selected}
                 onChange={({ selected: next }: { selected: string }) => handleSelectChange(next)}
-                helpText="How long this instance will run for until automatic shutdown."
+                helpText="How long until this instance is deleted automatically."
             >
                 {TTL_PRESETS.map((p) => (
                     <SingleSelectOption key={p.seconds} label={p.label} value={String(p.seconds)} />

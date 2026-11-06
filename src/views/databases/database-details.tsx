@@ -33,7 +33,7 @@ const databaseDetails = (db: Database): Record<string, ReactNode> => ({
     'Size': db.size ? prettyBytes(db.size) : 'Unknown',
     'Lock': db.lock ? lockDescription(db.lock) : 'Not locked',
     'Created': db.createdAt ? <MomentFromNow date={db.createdAt} /> : 'Unknown',
-    'Storage path': db.url ? <Mono>{db.url}</Mono> : 'Not saved yet',
+    'Storage path': db.url ? <Mono>{db.url}</Mono> : 'No file',
     'Slug': <Mono>{db.slug}</Mono>,
     'ID': <Mono>{db.id}</Mono>,
     'Download links': db.externalDownloads?.length ? `${db.externalDownloads.length} open` : undefined,
@@ -52,7 +52,7 @@ export const DatabaseDetails = () => {
             band
             actions={db && <DatabaseActionsMenu database={db} buttons refetch={() => void refetch()} onDeleted={() => navigate('/databases')} />}
             loading={loading && !db}
-            error={error && !db ? { title: 'Could not fetch the database', description: error.message } : undefined}
+            error={error && !db ? { title: "Couldn't load the database", description: error.message } : undefined}
             summary={db && <MetaLine items={databaseFacts(db)} />}
         >
             {db && (

@@ -58,10 +58,10 @@ export const InstancesTable = () => {
         )
     }
     if (error) {
-        return <NoticeBox title="Error loading instances">{error.message}</NoticeBox>
+        return <NoticeBox title="Couldn't load instances">{error.message}</NoticeBox>
     }
     if (!groupsWithCategories || groupsWithCategories.length === 0) {
-        return <NoticeBox title="No instances available">There are no instances to display.</NoticeBox>
+        return <NoticeBox title="No instances" />
     }
 
     return (

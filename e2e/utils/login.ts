@@ -8,7 +8,7 @@ export const login = async (page: Page) => {
     await page.getByLabel('email').fill(username)
     await page.getByLabel('password').click()
     await page.getByLabel('password').fill(password)
-    await page.getByRole('button', { name: 'Login' }).click()
+    await page.getByRole('button', { name: 'Log in', exact: true }).click()
 
     await expect(page.getByRole('button', { name: username })).toBeVisible()
 }

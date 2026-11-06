@@ -15,10 +15,10 @@ export const ErrorView: FC = () => {
 
     return (
         <div className={styles.container}>
-            <NoticeBox className={styles.noticebox} error title="Sorry, an unexpected error has occurred">
+            <NoticeBox className={styles.noticebox} error title="Couldn't show this page">
                 {error.statusText || error.message}
             </NoticeBox>
-            <Button onClick={() => navigate('/')}>Go home</Button>
+            <Button onClick={() => navigate('/')}>Go to instances</Button>
         </div>
     )
 }

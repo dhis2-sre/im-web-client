@@ -28,7 +28,7 @@ export const createDeploymentNameValidator = (fetchAvailability: FetchAvailabili
             }
             try {
                 const { available, reason } = await fetchAvailability(group, name)
-                const error = available ? undefined : (reason ?? 'Name is not available')
+                const error = available ? undefined : (reason ?? "Name isn't available. Choose another.")
                 answers.set(key, error)
                 return error
             } catch {

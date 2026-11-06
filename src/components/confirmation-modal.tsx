@@ -4,15 +4,16 @@ import type { FC } from 'react'
 
 type ConfirmationModalProps = {
     children: React.ReactNode
-    title?: string
-    /* The verb on the confirm button, such as Delete or Restart, so it says what clicking it does. */
-    confirmLabel?: string
+    /* The question being asked, naming what it acts on, such as "Delete malaria-demo?". */
+    title: string
+    /* The action on the confirm button, such as Delete instance or Restart, so it says what clicking it does. */
+    confirmLabel: string
     destructive?: boolean
     onConfirm: BaseButtonProps['onClick']
     onCancel: BaseButtonProps['onClick']
 }
 
-export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title, confirmLabel = 'Confirm', destructive, onConfirm, onCancel }) => {
+export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title, confirmLabel, destructive, onConfirm, onCancel }) => {
     // Modal's onClose is called with no args on Escape, and with ({}, event) on backdrop click.
     // Wrap to provide the (_, event) shape that onCancel expects.
     const handleClose = () => {
@@ -22,7 +23,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title,
 
     return (
         <Modal small onClose={handleClose}>
-            {title && <ModalTitle>{title}</ModalTitle>}
+            <ModalTitle>{title}</ModalTitle>
             <ModalContent>{children}</ModalContent>
             <ModalActions>
                 <ButtonStrip end>

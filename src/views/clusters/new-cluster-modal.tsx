@@ -1,10 +1,11 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import type { BaseButtonProps } from '@dhis2/ui'
-import { Button, ButtonStrip, FileInput, InputField, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
+import { Button, ButtonStrip, FileInputField, FileListItem, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
+import { errorMessage } from '../../utils/error-message.ts'
 import styles from './new-cluster-modal.module.css'
 
 type NewClusterModalProps = {
@@ -15,74 +16,65 @@ type NewClusterModalProps = {
 export const NewClusterModal: FC<NewClusterModalProps> = ({ onComplete, onCancel }) => {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    const [kubernetesConfiguration, setKubernetesConfiguration] = useState<File>(new Blob() as File)
+    const [kubernetesConfiguration, setKubernetesConfiguration] = useState<File | null>(null)
+    const [error, setError] = useState<string>()
+    const alert = useActionAlert()
 
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
-
-    const [{ loading }, createCluster] = useAuthAxios<Cluster>(
-        {
-            url: '/clusters',
-            method: 'POST',
-        },
-        { manual: true }
-    )
+    const [{ loading }, createCluster] = useAuthAxios<Cluster>({ url: '/clusters', method: 'POST' }, { manual: true })
 
     const onFileSelect = useCallback(({ files }) => {
-        const uploadedFile = files[0]
-        setKubernetesConfiguration(uploadedFile)
+        setKubernetesConfiguration(files[0] ?? null)
     }, [])
 
     const onCreate = useCallback(async () => {
-        if (kubernetesConfiguration.size === 0) {
-            showAlert({
-                message: 'No Kubernetes configuration file selected',
-                isCritical: true,
-            })
+        if (!kubernetesConfiguration) {
             return
         }
-
+        setError(undefined)
         try {
             const formData = new FormData()
             formData.append('name', name)
             formData.append('description', description)
             formData.append('kubernetesConfiguration', kubernetesConfiguration)
-
-            await createCluster({
-                data: formData,
-            })
-
-            showAlert({
-                message: 'Cluster created successfully',
-                isCritical: false,
-            })
+            await createCluster({ data: formData })
+            alert.success(`Created ${name}`)
             onComplete()
-        } catch (error) {
-            showAlert({
-                message: 'There was an error when creating the cluster',
-                isCritical: true,
-            })
-            console.error(error)
+        } catch (caught) {
+            console.error(caught)
+            setError(errorMessage(caught))
         }
-    }, [name, description, kubernetesConfiguration, createCluster, onComplete, showAlert])
+    }, [name, description, kubernetesConfiguration, createCluster, onComplete, alert])
 
     return (
-        <Modal onClose={() => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
+        <Modal onClose={loading ? undefined : () => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>New cluster</ModalTitle>
             <ModalContent className={styles.container}>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
                 <InputField className={styles.field} label="Description" value={description} onChange={({ value }) => setDescription(value)} required disabled={loading} />
-                <FileInput buttonLabel="Select Kubernetes configuration" onChange={onFileSelect} disabled={loading} />
+                <FileInputField
+                    className={styles.field}
+                    label="Kubeconfig file"
+                    buttonLabel="Choose file"
+                    placeholder="No file chosen"
+                    onChange={onFileSelect}
+                    required
+                    disabled={loading}
+                >
+                    {kubernetesConfiguration && <FileListItem label={kubernetesConfiguration.name} onRemove={() => setKubernetesConfiguration(null)} removeText="Remove" />}
+                </FileInputField>
+                {error && (
+                    <NoticeBox error title="Couldn't create the cluster">
+                        {error}
+                    </NoticeBox>
+                )}
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={onCreate} disabled={loading || kubernetesConfiguration.size === 0}>
-                        Create
+                    <Button secondary onClick={onCancel} disabled={loading}>
+                        Cancel
                     </Button>
-                    <Button onClick={onCancel} disabled={loading}>
-                        Close
+                    <Button primary onClick={onCreate} disabled={!name.trim() || !description.trim() || !kubernetesConfiguration} loading={loading}>
+                        Create cluster
                     </Button>
                 </ButtonStrip>
             </ModalActions>

@@ -55,20 +55,20 @@ export const BulkDeployModal: FC<{
             <ModalTitle>Bulk deploy</ModalTitle>
             <ModalContent>
                 <p className={styles.bulkIntro}>
-                    Creates and deploys this configuration under numbered names in <strong>{group}</strong>. They deploy a few at a time, and the instance list shows their
-                    progress.
+                    Creates instances with these settings in <strong>{group}</strong>, numbered from the prefix. They deploy a few at a time and show their progress in the instance
+                    list.
                 </p>
                 <div className={styles.bulkFields}>
                     <InputField label="Name prefix" value={prefix} onChange={({ value }) => setPrefix(value ?? '')} required className={styles.bulkPrefix} />
                     <InputField
-                        label="Instances"
+                        label="How many"
                         type="number"
                         min="1"
                         max={String(MAX_BULK_DEPLOYMENTS)}
                         value={countInput}
                         onChange={({ value }) => setCountInput(value ?? '')}
                         error={!count}
-                        validationText={count ? undefined : `Between 1 and ${MAX_BULK_DEPLOYMENTS}`}
+                        validationText={count ? undefined : `Enter a number from 1 to ${MAX_BULK_DEPLOYMENTS}`}
                         required
                         inputWidth="100px"
                     />
@@ -85,15 +85,15 @@ export const BulkDeployModal: FC<{
                         </div>
                         {taken.size > 0 && (
                             <NoticeBox warning title="Some names are taken">
-                                {[...taken].join(', ')} already exist in {group}. Choose another prefix.
+                                {[...taken].join(', ')} {taken.size === 1 ? 'already exists' : 'already exist'} in {group}. Choose another prefix.
                             </NoticeBox>
                         )}
                     </>
                 )}
-                {error && !loading && <NoticeBox error>Could not check the names: {error.message}</NoticeBox>}
+                {error && !loading && <NoticeBox error>Couldn&apos;t check the names: {error.message}</NoticeBox>}
                 {deployError && (
                     <NoticeBox error title={deployError.refused ? 'Nothing was deployed' : 'The bulk deploy may have started'}>
-                        {deployError.refused ? deployError.message : `${deployError.message}. Check the instance list before trying again.`}
+                        {deployError.refused ? deployError.message : `${deployError.message} Check the instance list before you try again.`}
                     </NoticeBox>
                 )}
             </ModalContent>

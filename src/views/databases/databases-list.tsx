@@ -40,7 +40,7 @@ const treeHref = (query: string, group?: string, path?: string) => {
 const DatabaseSize: FC<{ database: Database }> = ({ database }) => {
     if (!database.url) {
         return (
-            <span className={styles.noFile} title="No file: the save is still running or never finished, so there is nothing to deploy or download">
+            <span className={styles.noFile} title="The save is still running or never finished, so there's nothing to deploy or download.">
                 No file
             </span>
         )
@@ -191,7 +191,7 @@ export const DatabasesList: FC = () => {
             renderRowActions={(row) => row.database && <DatabaseActionsMenu database={row.database} refetch={refresh} />}
             pinned={(row) => !row.database}
             loading={loading}
-            error={error ? { title: 'Could not retrieve databases', description: error.message } : undefined}
+            error={error ? { title: "Couldn't load databases", description: error.message } : undefined}
             empty={
                 filtered && total > 0
                     ? {

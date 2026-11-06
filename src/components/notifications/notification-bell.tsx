@@ -22,11 +22,11 @@ export const NotificationBell: FC = () => {
     useEffect(
         () =>
             onSseEvent(({ kind, data }) => {
-                const label = kind === 'filestore-backup' ? 'Filestore backup' : 'Database save'
+                const filestore = kind === 'filestore-backup'
                 if (data.status === 'success') {
-                    showSuccess({ message: `${label} for "${data.databaseName}" succeeded` })
+                    showSuccess({ message: `${filestore ? 'Filestore backed up' : 'Database saved'}: ${data.databaseName}` })
                 } else if (data.status === 'error') {
-                    showError({ message: `${label} for "${data.databaseName}" failed` })
+                    showError({ message: `Couldn't ${filestore ? 'back up filestore' : 'save database'} ${data.databaseName}` })
                 }
             }),
         [onSseEvent, showSuccess, showError]
@@ -36,8 +36,8 @@ export const NotificationBell: FC = () => {
     const close = useCallback(() => setOpen(false), [])
 
     /* A failed mark-read puts the row back, so say why rather than leave the click looking ignored. */
-    const handleMarkRead = useCallback((id: number) => markRead(id).catch(() => showError({ message: 'Could not mark the notification as read' })), [markRead, showError])
-    const handleMarkAllRead = useCallback(() => markAllRead().catch(() => showError({ message: 'Could not mark the notifications as read' })), [markAllRead, showError])
+    const handleMarkRead = useCallback((id: number) => markRead(id).catch(() => showError({ message: "Couldn't mark notification as read" })), [markRead, showError])
+    const handleMarkAllRead = useCallback(() => markAllRead().catch(() => showError({ message: "Couldn't mark notifications as read" })), [markAllRead, showError])
 
     return (
         <div className={styles.wrapper}>

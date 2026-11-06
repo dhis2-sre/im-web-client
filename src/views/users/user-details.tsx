@@ -55,7 +55,7 @@ const GroupRoleMenu: FC<{ user: User; group: GroupRole; refetch: () => void }> =
             label={`Actions for ${group.name}`}
             items={[
                 {
-                    label: next === 'admin' ? 'Make admin' : 'Make member instead',
+                    label: next === 'admin' ? 'Make admin' : 'Make member',
                     onClick: () =>
                         change(
                             next,
@@ -73,7 +73,7 @@ const GroupRoleMenu: FC<{ user: User; group: GroupRole; refetch: () => void }> =
                                 Remove <strong>{user.email}</strong> from <strong>{group.name}</strong>?
                             </>
                         ),
-                        confirmLabel: 'Remove',
+                        confirmLabel: 'Remove from group',
                         destructive: true,
                     },
                     onClick: () => change(null, `Removed ${user.email} from ${group.name}`, `Couldn't remove ${user.email} from ${group.name}`),
@@ -96,7 +96,7 @@ export const UserDetails = () => {
             title={user?.email}
             band
             loading={loading && !user}
-            error={error && !user ? { title: 'Could not fetch the user', description: error.message } : undefined}
+            error={error && !user ? { title: "Couldn't load the user", description: error.message } : undefined}
             summary={user && <MetaLine items={userFacts(user)} />}
         >
             {user && (

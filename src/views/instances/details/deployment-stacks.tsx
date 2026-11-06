@@ -20,7 +20,7 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
     if (stacks.length === 0) {
         return (
             <Panel title="Stacks">
-                <NonIdealState variant="empty" title="No stacks connected to this instance" description="Currently you can only add components to an instance when creating one." />
+                <NonIdealState variant="empty" title="No stacks" description="Stacks can only be added when you create an instance." />
             </Panel>
         )
     }
@@ -45,9 +45,9 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
                         ) : loading && !instances ? (
                             /* The listing queries the cluster for every component of every
                              * instance, so it is slow by nature; show that something is happening. */
-                            <NonIdealState variant="loading" title="Fetching components from the cluster…" dataTest="deployment-components-loading" />
+                            <NonIdealState variant="loading" title="Loading components from the cluster…" dataTest="deployment-components-loading" />
                         ) : error && !loading ? (
-                            <NonIdealState variant="error" title="Could not load components" description="Is the backend up to date?" />
+                            <NonIdealState variant="error" title="Couldn't load components" description="The server may be older than this app and not report components yet." />
                         ) : null}
                     </ItemPanel>
                 )

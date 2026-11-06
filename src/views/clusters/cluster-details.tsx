@@ -42,9 +42,9 @@ export const ClusterDetails: FC = () => {
             title={cluster?.name}
             description={cluster?.description || undefined}
             band
-            actions={cluster && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
+            actions={cluster && <Button onClick={() => setShowEditModal(true)}>Edit…</Button>}
             loading={loading && !cluster}
-            error={error && !cluster ? { title: 'Could not fetch the cluster', description: error.message } : undefined}
+            error={error && !cluster ? { title: "Couldn't load the cluster", description: error.message } : undefined}
             summary={cluster && <MetaLine items={clusterFacts(cluster)} />}
         >
             {cluster && (

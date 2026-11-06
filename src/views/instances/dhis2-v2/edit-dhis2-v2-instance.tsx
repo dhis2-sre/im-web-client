@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Page } from '../../../components/index.ts'
+import { COMPANION_LABELS } from '../../../constants.ts'
 import { useDeploymentDetails, useDeploymentEdit } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { Deployment, StackCompanion } from '../../../types/index.ts'
@@ -103,9 +104,15 @@ export const EditDhis2V2Instance: FC = () => {
      * not yet loading. Anything other than an outright failure waits rather than reporting one. */
     if (!deployment) {
         return (
-            <Page parent={{ label: 'Instances', to: '/instances' }} loading={!error} error={error ? { title: 'Could not load instance', description: error.message } : undefined} />
+            <Page
+                parent={{ label: 'Instances', to: '/instances' }}
+                loading={!error}
+                error={error ? { title: "Couldn't load the instance", description: error.message } : undefined}
+            />
         )
     }
+
+    const removing = pendingRemoval?.names.map((name) => COMPANION_LABELS[name] ?? name).join(' and ')
 
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title={`Edit ${deployment.name ?? 'instance'}`}>
@@ -116,14 +123,16 @@ export const EditDhis2V2Instance: FC = () => {
             </Card>
             {pendingRemoval && (
                 <Modal onClose={pendingRemoval.cancel}>
-                    <ModalTitle>Remove {pendingRemoval.names.join(' and ')}?</ModalTitle>
+                    <ModalTitle>Remove {removing}?</ModalTitle>
                     <ModalContent>
-                        Saving destroys {pendingRemoval.names.length > 1 ? 'these releases' : 'this release'} and everything{' '}
-                        {pendingRemoval.names.length > 1 ? 'they hold' : 'it holds'}. This cannot be undone.
+                        Saving removes {removing} from <strong>{deployment.name}</strong> and deletes everything stored in {pendingRemoval.names.length > 1 ? 'them' : 'it'}. This
+                        can&apos;t be undone.
                     </ModalContent>
                     <ModalActions>
                         <ButtonStrip end>
-                            <Button onClick={pendingRemoval.cancel}>Cancel</Button>
+                            <Button secondary onClick={pendingRemoval.cancel}>
+                                Cancel
+                            </Button>
                             <Button destructive onClick={pendingRemoval.confirm}>
                                 Save and remove
                             </Button>

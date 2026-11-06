@@ -7,7 +7,7 @@ export const StacksList = () => {
     const { stacks, loading, error } = useStacks()
 
     return (
-        <Page title="Stacks" loading={loading} error={error ? { title: 'Could not fetch list of stacks', description: error.message } : undefined}>
+        <Page title="Stacks" loading={loading} error={error ? { title: "Couldn't load stacks", description: error.message } : undefined}>
             <DataTable>
                 <DataTableHead>
                     <DataTableRow>

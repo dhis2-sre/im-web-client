@@ -84,7 +84,7 @@ export const DeploymentComponentTags: FC<{ instances?: DeploymentInstanceCompone
          * different question, and showing it first would flash a signal the chip then replaces. */
         return (
             <span className={styles.ghost}>
-                <span className="visually-hidden">Loading status</span>
+                <span className="visually-hidden">Loading status…</span>
             </span>
         )
     }

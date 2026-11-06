@@ -22,7 +22,7 @@ export const deleteDeployment = async (page: Page, name: string, deployTimeout =
     // instance asks for its name to be typed out.
     const confirmDialog = page.locator('[aria-modal="true"]')
     await confirmDialog.getByLabel(`Type ${name} to confirm`).fill(name)
-    await confirmDialog.getByRole('button', { name: 'Delete' }).dispatchEvent('click')
+    await confirmDialog.getByRole('button', { name: 'Delete instance' }).dispatchEvent('click')
 
     await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Deleted ${name}`, { exact: true })).toBeVisible({ timeout: 90000 })
 }

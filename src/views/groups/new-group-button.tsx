@@ -20,7 +20,7 @@ export const NewGroupButton: FC<NewGroupButtonProps> = ({ onComplete }) => {
     return (
         <>
             <Button icon={<IconAdd24 />} onClick={() => setShowModal(true)}>
-                New group
+                New group…
             </Button>
             {showModal && <NewGroupModal onCancel={closeModal} onComplete={closeModalAndFetchList} />}
         </>

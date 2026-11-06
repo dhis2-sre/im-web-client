@@ -238,7 +238,7 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
                 onFilterChange={filterOptions}
             />
             {error && <div className={fieldClasses.validationError}>{error}</div>}
-            {isPrivateRepository && <Help>Tags of private images are not listed, type the exact tag</Help>}
+            {isPrivateRepository && <Help>Private image tags aren&apos;t listed. Type the exact tag.</Help>}
         </div>
     )
 }
