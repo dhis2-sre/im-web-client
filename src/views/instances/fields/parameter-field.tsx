@@ -19,6 +19,8 @@ import {
     DHIS2_REGISTER,
     ENABLE_DORIS,
     ENABLE_PGADMIN,
+    ALLOW_SUSPEND,
+    DEPLOY_GLOWROOT,
     Dhis2StackName,
 } from '../parameters.ts'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
@@ -39,12 +41,13 @@ export type ParameterFieldProps = {
     // eslint-disable-next-line react/no-unused-prop-types
     type?: string
     sensitive?: boolean
+    required?: boolean
     formMode?: 'create' | 'update'
     /* Set while editing a deployed instance whose stack says this parameter can no longer change. */
     immutableReason?: string
 }
 
-export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, formMode, immutableReason }) => {
+export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, parameterName, sensitive, required, formMode, immutableReason }) => {
     if (immutableReason) {
         if (parameterName === DATABASE_ID) {
             return <ImmutableDatabaseField stackId={stackId} parameterName={parameterName} displayName={displayName} reason={immutableReason} />
@@ -79,14 +82,36 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         case DHIS2_REGISTER:
         case ENABLE_DORIS:
         case ENABLE_PGADMIN:
+        case ALLOW_SUSPEND:
+        case DEPLOY_GLOWROOT:
             return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={'pgAdmin Login email'} type="email" sensitive={sensitive} formMode={formMode} />
+            return (
+                <TextParameterInput
+                    stackId={stackId}
+                    parameterName={parameterName}
+                    displayName={'pgAdmin Login email'}
+                    type="email"
+                    sensitive={sensitive}
+                    required={required}
+                    formMode={formMode}
+                />
+            )
         case PGADMIN_PASSWORD:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} type="password" sensitive={sensitive} formMode={formMode} />
+            return (
+                <TextParameterInput
+                    stackId={stackId}
+                    parameterName={parameterName}
+                    displayName={displayName}
+                    type="password"
+                    sensitive={sensitive}
+                    required={required}
+                    formMode={formMode}
+                />
+            )
         case CUSTOM_DHIS2_CONFIG:
             return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} />
         default:
-            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} formMode={formMode} />
+            return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} required={required} formMode={formMode} />
     }
 }
