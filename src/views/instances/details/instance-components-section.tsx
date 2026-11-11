@@ -37,6 +37,7 @@ export const InstanceComponentsSection: FC<{
                 namespace={instance?.group?.namespace}
                 instanceName={instanceComponents.instanceName}
                 groupId={instance?.group?.id}
+                groupName={instance?.group?.name}
                 onChanged={onChanged}
             />
             {/* Stacks that declare no parameter groups have nothing to hang off a component, so their

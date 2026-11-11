@@ -11,7 +11,7 @@ export const logout = async (page: Page) => {
     // If we're already logged out (e.g. due to a failed test), skip
     // Logging out lives in the account menu, opened from the row showing the user's email
     const accountButton = page.getByRole('button', { name: username })
-    const loginButton = page.getByRole('button', { name: 'Login' })
+    const loginButton = page.getByRole('button', { name: 'Log in', exact: true })
     const visibleButton = await Promise.race([accountButton.waitFor({ timeout: 5000 }).then(() => 'logout'), loginButton.waitFor({ timeout: 5000 }).then(() => 'login')])
 
     if (visibleButton === 'logout') {

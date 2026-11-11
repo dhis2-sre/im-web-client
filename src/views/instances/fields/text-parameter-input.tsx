@@ -25,7 +25,7 @@ export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameter
 
 const validateEmailRequired = (value: string) => {
     if (!value) {
-        return 'Required'
+        return 'Enter an email address'
     }
     return validateEmailFormat(value)
 }
@@ -40,7 +40,7 @@ const validateEmailOptional = (value: string) => {
 const validateEmailFormat = (value: string) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailPattern.test(value)) {
-        return 'Invalid email address'
+        return 'Enter a valid email address'
     }
     return undefined
 }

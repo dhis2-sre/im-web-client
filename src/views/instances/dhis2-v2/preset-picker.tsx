@@ -4,6 +4,7 @@ import cx from 'classnames'
 import type { FC, MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-final-form'
+import { ConfirmationModal } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { usePresetSummary } from '../../presets/preset-summary.ts'
@@ -60,7 +61,7 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; on
                 const { data: preset } = await fetchPreset({ url: `/deployments/${selected}` })
                 form.restart(presetFormValues(preset, mainStackName, form.getState().initialValues ?? {}))
             } catch (error) {
-                showError({ message: `Could not load the preset: ${error instanceof Error ? error.message : error}` })
+                showError({ message: `Couldn't load the preset: ${error instanceof Error ? error.message : error}` })
             }
         },
         [fetchPreset, form, mainStackName, presets, showError]
@@ -76,13 +77,15 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; on
         void loadPreset({ selected: initialPresetId })
     }, [initialPresetId, presets, loadPreset])
 
+    const [confirmingDelete, setConfirmingDelete] = useState(false)
     const removePreset = useCallback(async () => {
+        setConfirmingDelete(false)
         try {
             await deletePreset({ url: `/deployments/${selectedId}` })
             setSelectedKey(undefined)
             onDeleted()
         } catch (error) {
-            showError({ message: `Could not delete the preset: ${error instanceof Error ? error.message : error}` })
+            showError({ message: `Couldn't delete the preset: ${error instanceof Error ? error.message : error}` })
         }
     }, [deletePreset, selectedId, onDeleted, showError])
 
@@ -99,7 +102,7 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; on
                         className={fieldStyles.field}
                         label="Start from a preset"
                         placeholder="Choose a preset"
-                        helpText="Fills the form with the preset's settings. Passwords and other sensitive values are not filled in."
+                        helpText="Fills the form with the preset's settings. Passwords and other sensitive values aren't filled in."
                         selected={selectedId}
                         onChange={loadPreset}
                         loading={loadingPreset}
@@ -111,13 +114,18 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; on
                         ))}
                     </SingleSelectField>
                     {selectedId && (
-                        <Button small destructive secondary loading={deleting} onClick={removePreset}>
+                        <Button small destructive secondary loading={deleting} onClick={() => setConfirmingDelete(true)}>
                             Delete preset
                         </Button>
                     )}
                 </div>
             </fieldset>
             <hr className={styles.hr} />
+            {confirmingDelete && selected && (
+                <ConfirmationModal title={`Delete ${selected.name}?`} confirmLabel="Delete preset" destructive onConfirm={removePreset} onCancel={() => setConfirmingDelete(false)}>
+                    Deletes the preset from <strong>{selected.groupName}</strong>. Instances created from it keep running. This can&apos;t be undone.
+                </ConfirmationModal>
+            )}
         </>
     )
 }

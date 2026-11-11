@@ -1,3 +1,4 @@
+import { useAlert } from '@dhis2/app-service-alerts'
 import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -6,13 +7,13 @@ import styles from './sign-up.module.css'
 
 const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
     if (!email) {
-        return 'Please provide an email address'
+        return 'Enter an email address'
     } else if (!password) {
-        return 'Please provide a password'
+        return 'Enter a password'
     } else if (!confirmPassword) {
-        return 'Please confirm your password'
+        return 'Enter the password again'
     } else if (password !== confirmPassword) {
-        return 'Passwords do not match'
+        return "Passwords don't match"
     } else {
         return ''
     }
@@ -26,6 +27,7 @@ export const SignUp = () => {
         confirmPassword: '',
     })
     const [errorMessage, setErrorMessage] = useState('')
+    const { show: showSignedUp } = useAlert('Account created. Check your email for a link to verify it.', { success: true })
     const onInputChange = useCallback(({ value, name }) => {
         // Always clear the error when user starts typing again
         setErrorMessage('')
@@ -50,6 +52,7 @@ export const SignUp = () => {
                 try {
                     const { email, password } = inputs
                     await postSignUp({ data: { email, password } })
+                    showSignedUp()
                     navigate('/')
                 } catch (error) {
                     console.error(error)
@@ -64,7 +67,7 @@ export const SignUp = () => {
                 setErrorMessage(getInputsErrorMessage(inputs))
             }
         },
-        [inputs, postSignUp, navigate]
+        [inputs, postSignUp, navigate, showSignedUp]
     )
 
     return (
@@ -72,7 +75,7 @@ export const SignUp = () => {
             <Card className={styles.box}>
                 <h2 className={styles.header}>
                     <LogoIcon className={styles.logo} />
-                    Instance Manager sign up
+                    Sign up for Instance Manager
                 </h2>
                 <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
                 <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />

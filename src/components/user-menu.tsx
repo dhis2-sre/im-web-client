@@ -17,7 +17,7 @@ const Identicon: FC<{ email: string }> = ({ email }) => {
 }
 
 /* useAlert memoises show on these arguments, so they keep their identity across renders. */
-const logoutErrorMessage = ({ message }: { message: string }) => `Could not log out: ${message}`
+const logoutErrorMessage = ({ message }: { message: string }) => `Couldn't log out: ${message}`
 const CRITICAL_OPTIONS = { critical: true }
 
 /* A user is only an email and a login here, so the account row holds nothing but the way out. */
@@ -60,7 +60,7 @@ export const UserMenu: FC<{ email: string }> = ({ email }) => {
             await logout()
         } catch (error) {
             console.error(error)
-            const message = error?.response?.data ?? error?.message ?? 'Logout error: could not log out'
+            const message = error?.response?.data ?? error?.message ?? 'no response from the server'
             showError({ message })
         }
     }, [logout, showError])

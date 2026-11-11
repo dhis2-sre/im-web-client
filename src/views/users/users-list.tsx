@@ -11,16 +11,16 @@ export const UsersList: FC = () => {
     })
 
     return (
-        <Page title="Users" loading={loading} error={error ? { title: 'Could not fetch users', description: error.message } : undefined}>
+        <Page title="Users" loading={loading} error={error ? { title: "Couldn't load users", description: error.message } : undefined}>
             <DataTable>
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Email</DataTableColumnHeader>
-                        <DataTableColumnHeader>Validated</DataTableColumnHeader>
-                        <DataTableColumnHeader>Created</DataTableColumnHeader>
+                        <DataTableColumnHeader>Email confirmed</DataTableColumnHeader>
+                        <DataTableColumnHeader>Joined</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                        <DataTableColumnHeader>Groups</DataTableColumnHeader>
-                        <DataTableColumnHeader>Groups Admin</DataTableColumnHeader>
+                        <DataTableColumnHeader>Member of</DataTableColumnHeader>
+                        <DataTableColumnHeader>Admin of</DataTableColumnHeader>
                     </DataTableRow>
                 </TableHead>
 
@@ -30,7 +30,7 @@ export const UsersList: FC = () => {
                             <DataTableCell>
                                 <Link to={`/users/${user.id}`}>{user.email}</Link>
                             </DataTableCell>
-                            <DataTableCell>{user.validated ? 'true' : 'false'}</DataTableCell>
+                            <DataTableCell>{user.validated ? 'Yes' : 'No'}</DataTableCell>
                             <DataTableCell>
                                 <MomentFromNow date={user.createdAt} />
                             </DataTableCell>

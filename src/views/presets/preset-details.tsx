@@ -39,10 +39,10 @@ const PresetFacts: FC<{ preset: Deployment }> = ({ preset }) => {
 
 const presetError = (preset: Deployment | undefined, error: Error | null): PageError | undefined => {
     if (error || !preset) {
-        return { title: 'Could not fetch the preset', description: error?.message }
+        return { title: "Couldn't load the preset", description: error?.message }
     }
     if (!preset.preset) {
-        return { title: 'Not a preset', description: `${preset.name} is a deployment, not a preset.` }
+        return { title: 'Not a preset', description: `${preset.name} is an instance, not a preset.` }
     }
     return undefined
 }
@@ -74,7 +74,7 @@ export const PresetDetails: FC = () => {
                 preset?.preset && (
                     <>
                         <Button small primary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-                            Load
+                            Use preset
                         </Button>
                         <ActionsMenu
                             label={`Actions for ${preset.name}`}
@@ -84,13 +84,13 @@ export const PresetDetails: FC = () => {
                                     label: 'Delete',
                                     destructive: true,
                                     confirm: {
-                                        title: 'Delete preset',
+                                        title: `Delete ${preset.name}?`,
                                         message: (
                                             <>
-                                                Delete the preset <strong>{preset.name}</strong> in <strong>{preset.groupName}</strong>?
+                                                Deletes the preset from <strong>{preset.groupName}</strong>. Instances created from it keep running. This can&apos;t be undone.
                                             </>
                                         ),
-                                        confirmLabel: 'Delete',
+                                        confirmLabel: 'Delete preset',
                                         destructive: true,
                                     },
                                     onClick: () => remove(preset),

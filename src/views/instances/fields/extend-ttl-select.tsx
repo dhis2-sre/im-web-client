@@ -50,9 +50,9 @@ export const ExtendTtlSelect = ({ deployment, extendOnly = false }: { deployment
                 className={styles.field}
                 label={`Lifetime (${remainingLabel})`}
                 selected={selected}
-                placeholder="Pick a new lifetime…"
+                placeholder="Choose a new lifetime"
                 onChange={({ selected: next }: { selected: string }) => handleSelect(next)}
-                helpText="How long this instance will run from now until automatic shutdown."
+                helpText="How long from now until this instance is deleted automatically."
             >
                 {presets.map((p) => (
                     <SingleSelectOption key={p.seconds} value={String(p.seconds)} label={p.label} />
@@ -66,7 +66,7 @@ export const ExtendTtlSelect = ({ deployment, extendOnly = false }: { deployment
                 </>
             )}
             {value > 0 && value !== originalTtl && !meta.error && (
-                <div className={styles.willExpire}>Will expire on {moment(createdAtMs + value * 1000).format(DATETIME_FORMAT)}</div>
+                <div className={styles.willExpire}>Will be deleted on {moment(createdAtMs + value * 1000).format(DATETIME_FORMAT)}</div>
             )}
         </div>
     )

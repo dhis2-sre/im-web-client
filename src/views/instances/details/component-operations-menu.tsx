@@ -18,8 +18,9 @@ export const ComponentOperationsMenu: FC<{
     namespace?: string
     instanceName?: string
     groupId?: number
+    groupName?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, onChanged }) => {
+}> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, groupName, onChanged }) => {
     const [showSaveAs, setShowSaveAs] = useState(false)
     const [showLog, setShowLog] = useState(false)
     const alert = useActionAlert()
@@ -32,7 +33,7 @@ export const ComponentOperationsMenu: FC<{
     const act = (action: 'restart' | 'reset') => async () => {
         try {
             await execute({ url: `/instances/${instanceId}/${action}`, params: { selector: component.name } })
-            alert.success(`${action === 'restart' ? 'Restart' : 'Reset'} requested for ${component.name}`)
+            alert.success(`${action === 'restart' ? 'Restarting' : 'Resetting'} ${component.name}…`)
             onChanged()
         } catch (error) {
             console.error(error)
@@ -45,23 +46,21 @@ export const ComponentOperationsMenu: FC<{
             {showLog && replica && (
                 <LogModal instanceId={instanceId} componentName={component.name} replica={replica.name} containers={replica.containers ?? []} onClose={() => setShowLog(false)} />
             )}
-            {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
+            {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} instanceName={instanceName ?? stackName} groupName={groupName} />}
             <ActionsMenu
                 label={`Actions for ${replica?.name ?? component.name}`}
                 dataTest={`component-operations-${component.name}`}
                 items={[
-                    supports('restart') && {
-                        label: 'Restart',
-                        confirm: { title: 'Restart component', message: `Restart component "${component.name}"?`, confirmLabel: 'Restart' },
-                        onClick: act('restart'),
-                    },
+                    /* Only restarting the whole instance asks first: one component restarting takes nothing down for anyone else. */
+                    supports('restart') && { label: 'Restart', onClick: act('restart') },
                     supports('reset') && {
                         label: 'Reset',
                         destructive: true,
                         confirm: {
-                            title: 'Reset component',
-                            message: `Reset component "${component.name}"? Its data is replaced with the database the instance was deployed from, and the components reading it are restarted.`,
-                            confirmLabel: 'Reset',
+                            title: `Reset ${component.name}?`,
+                            message:
+                                "Replaces its data with the database it was deployed with, so any changes since are lost. Components that read the database restart too. This can't be undone.",
+                            confirmLabel: `Reset ${component.name}`,
                             destructive: true,
                         },
                         onClick: act('reset'),

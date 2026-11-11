@@ -7,15 +7,6 @@
     overflow: hidden;
 }
 
-.error {
-    display: flex;
-    justify-content: center;
-    font-size: 14px;
-    background-color: var(--colors-red100);
-    padding: var(--spacers-dp12) 16px;
-    color: var(--theme-error);
-}
-
 .checkButton {
     border: none;
     color: var(--colors-grey900);
@@ -23,16 +14,6 @@
     background-color: var(--colors-grey400);
     cursor: pointer;
 }
-.errorInnerWrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.loadingErrorLabel {
-    color: var(--theme-error);
-}
-
 .searchField {
     width: 100%;
     display: flex;

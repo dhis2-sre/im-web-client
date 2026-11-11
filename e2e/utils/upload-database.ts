@@ -11,14 +11,14 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     const fileName = `${dbName}${dbExtension}`
 
     await page.getByRole('link', { name: 'Databases' }).click()
-    await expect(page.getByRole('button', { name: 'Upload database' })).toBeVisible()
-    await page.getByRole('button', { name: 'Upload database' }).click()
+    await expect(page.getByRole('button', { name: 'Upload database…' })).toBeVisible()
+    await page.getByRole('button', { name: 'Upload database…' }).click()
 
-    await expect(page.getByRole('button', { name: 'Select database' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Choose file' })).toBeVisible()
 
     // The group defaults to the e2e user's group; only open the dropdown to change it, since
     // clicking an already-selected @dhis2/ui option is a no-op that leaves the layer's backdrop
-    // mounted, which then intercepts the "Select database" click.
+    // mounted, which then intercepts the "Choose file" click.
     const groupInput = page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Group' }).getByTestId('dhis2-uicore-select-input')
     const currentGroup = await groupInput.textContent()
     if (!currentGroup?.includes(targetGroup)) {
@@ -28,7 +28,7 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     await expect(page.getByTestId('dhis2-uicore-singleselectoption')).toHaveCount(0)
 
     const fileChooserPromise = page.waitForEvent('filechooser')
-    await page.getByRole('button', { name: 'Select database' }).click()
+    await page.getByRole('button', { name: 'Choose file' }).click()
     const fileChooser = await fileChooserPromise
     await fileChooser.setFiles(dbFixturePath)
 
@@ -40,13 +40,11 @@ export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     await uploadDialog.getByLabel('Name').fill(dbName)
     await uploadDialog.getByTestId('upload-database-description').locator('textarea').fill(`e2e test upload ${dbName}`)
 
-    await expect(page.getByText(`Selected database file: ${fileName}`)).toBeVisible()
-
     const uploadButton = uploadDialog.getByRole('button', { name: 'Upload' })
     await expect(uploadButton).toBeEnabled()
     await uploadButton.click()
 
-    await expect(page.getByTestId('dhis2-uicore-alertbar').getByText('Database added successfully')).toBeVisible({ timeout: 30000 })
+    await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Uploaded ${fileName} to ${targetGroup}`)).toBeVisible({ timeout: 30000 })
     await expect(page.getByRole('link', { name: fileName, exact: true })).toBeVisible()
 
     return { fileName }

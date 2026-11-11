@@ -98,7 +98,7 @@ export const LogModal: FC<LogModalProps> = ({ instanceId, componentName, replica
                         </Center>
                     )}
                     {error && (
-                        <NoticeBox error title="Could not fetch the log">
+                        <NoticeBox error title="Couldn't load the log">
                             {error.message}
                         </NoticeBox>
                     )}
