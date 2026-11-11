@@ -1,58 +1,83 @@
-import { Modal, ModalContent, ModalTitle, Transfer } from '@dhis2/ui'
-import type { BaseButtonProps } from '@dhis2/ui'
+import { Button, ButtonStrip, FieldSet, hasValue, Legend, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, RadioFieldFF, SingleSelectFieldFF } from '@dhis2/ui'
+import { FORM_ERROR } from 'final-form'
 import type { FC } from 'react'
 import { useState } from 'react'
+import { Field, Form } from 'react-final-form'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group, User } from '../../types/index.ts'
 import styles from './add-to-group-modal.module.css'
-import { useAddGroups } from './use-add-groups.tsx'
+import type { Role } from './group-roles.ts'
+import { useSetGroupRole } from './use-set-group-role.ts'
 
-type AddToGroupModalProps = {
-    user: User
-    onClose: BaseButtonProps['onClick']
-    onComplete: () => void
-}
+type Values = { group: string; role: Role }
 
-export const AddToGroupModal: FC<AddToGroupModalProps> = ({ user, onClose, onComplete }) => {
-    const [{ data: groups }] = useAuthAxios<Group[]>({
-        method: 'GET',
-        url: '/groups',
-    })
+/* Adds the user to one group, as a member or an admin. Groups they are already in are left out. */
+export const AddToGroupModal: FC<{ user: User; joined: string[]; onClose: () => void; onChanged: () => void }> = ({ user, joined, onClose, onChanged }) => {
+    const [{ data: groups, loading, error: groupsError }] = useAuthAxios<Group[]>('/groups')
+    const setGroupRole = useSetGroupRole()
+    const alert = useActionAlert()
+    /* Taken when the modal opens, so a failed add that refreshes the page doesn't pull the picked group
+     * out of the options under the error. */
+    const [skip] = useState(joined)
+    const options = (groups ?? []).filter(({ name }) => name && !skip.includes(name)).map(({ name }) => ({ label: name, value: name }))
 
-    const { addGroups, addGroupLoading } = useAddGroups()
-
-    const [selectedGroups, setSelectedGroups] = useState<string[]>([])
-
-    const filteredGroups = groups?.filter((group) => !user?.groups.some((userGroup) => userGroup.name === group.name))
-
-    const groupOptions =
-        filteredGroups?.map((group) => ({
-            label: group.name,
-            value: group.name,
-        })) || []
-
-    const onChange = async ({ selected }: { selected: string[] }) => {
-        setSelectedGroups(selected)
-        await addGroups(selected, user.id)
-        onComplete()
-        onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)
+    const submit = async ({ group, role }: Values) => {
+        try {
+            await setGroupRole(user.id, { name: group, member: false, admin: false }, role)
+            alert.success(`Added ${user.email} to ${group}`)
+            onChanged()
+            onClose()
+            return undefined
+        } catch (error) {
+            console.error(error)
+            /* Adding an admin takes two calls, and the first may have gone through. */
+            onChanged()
+            return { [FORM_ERROR]: `Could not add ${user.email} to ${group}` }
+        }
     }
 
     return (
-        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
-            <ModalTitle>Add user to group</ModalTitle>
-            <ModalContent className={styles.container}>
-                <Transfer
-                    maxSelections={1}
-                    loading={addGroupLoading}
-                    options={groupOptions}
-                    selected={selectedGroups}
-                    leftHeader={<p>Available Groups</p>}
-                    rightHeader={<p>Selected Groups</p>}
-                    onChange={onChange}
-                    disabled={addGroupLoading}
-                />
-            </ModalContent>
-        </Modal>
+        <Form<Values> onSubmit={submit} initialValues={{ role: 'member' }}>
+            {({ handleSubmit, invalid, submitting, submitError, dirtySinceLastSubmit }) => (
+                <Modal onClose={submitting ? undefined : onClose}>
+                    <ModalTitle>Add to group</ModalTitle>
+                    <ModalContent className={styles.container}>
+                        {groupsError && (
+                            <NoticeBox error title="Could not load the groups">
+                                {groupsError.message}
+                            </NoticeBox>
+                        )}
+                        <Field
+                            name="group"
+                            label="Group"
+                            placeholder="Choose a group"
+                            filterable
+                            noMatchText="No groups match"
+                            loading={loading}
+                            component={SingleSelectFieldFF}
+                            options={options}
+                            validate={hasValue}
+                        />
+                        <FieldSet>
+                            <Legend>Role</Legend>
+                            <Field type="radio" name="role" value="member" label="Member" component={RadioFieldFF} />
+                            <Field type="radio" name="role" value="admin" label="Admin" component={RadioFieldFF} />
+                        </FieldSet>
+                        {submitError && !dirtySinceLastSubmit && <NoticeBox error title={submitError} />}
+                    </ModalContent>
+                    <ModalActions>
+                        <ButtonStrip end>
+                            <Button secondary onClick={onClose} disabled={submitting}>
+                                Cancel
+                            </Button>
+                            <Button primary onClick={() => void handleSubmit()} disabled={invalid} loading={submitting}>
+                                Add
+                            </Button>
+                        </ButtonStrip>
+                    </ModalActions>
+                </Modal>
+            )}
+        </Form>
     )
 }

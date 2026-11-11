@@ -1,11 +1,34 @@
-import { Button, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
-import type { FC } from 'react'
+import { Button, IconBlock16, IconCheckmark16, IconClockHistory16 } from '@dhis2/ui'
+import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { MomentFromNow, Page } from '../../components/index.ts'
+import { DetailsTable, MetaFact, MetaLine, MomentFromNow, Mono, Page, Panel } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
 import { EditClusterModal } from './edit-cluster-modal.tsx'
+
+/* When it last changed and whether it scales itself, in the database page's order. */
+const clusterFacts = (cluster: Cluster): Record<string, ReactNode> => ({
+    updated: cluster.updatedAt && (
+        <MetaFact icon={<IconClockHistory16 />}>
+            Updated <MomentFromNow date={cluster.updatedAt} />
+        </MetaFact>
+    ),
+    autoscaled: cluster.autoscaled ? <MetaFact icon={<IconCheckmark16 />}>Autoscaled</MetaFact> : <MetaFact icon={<IconBlock16 />}>Not autoscaled</MetaFact>,
+})
+
+const clusterDetails = (cluster: Cluster): Record<string, ReactNode> => ({
+    Groups: cluster.groups?.length
+        ? cluster.groups.map((group, i) => (
+              <span key={group.name}>
+                  {i > 0 && ', '}
+                  <Link to={`/groups/${group.name}`}>{group.name}</Link>
+              </span>
+          ))
+        : 'None',
+    Created: cluster.createdAt ? <MomentFromNow date={cluster.createdAt} /> : 'Unknown',
+    ID: <Mono>{cluster.id}</Mono>,
+})
 
 export const ClusterDetails: FC = () => {
     const { id } = useParams<{ id: string }>()
@@ -17,43 +40,18 @@ export const ClusterDetails: FC = () => {
         <Page
             parent={{ label: 'Clusters', to: '/clusters' }}
             title={cluster?.name}
+            description={cluster?.description || undefined}
+            band
             actions={cluster && <Button onClick={() => setShowEditModal(true)}>Edit</Button>}
             loading={loading && !cluster}
-            error={error ? { title: 'Could not fetch cluster details', description: error.message } : undefined}
+            error={error && !cluster ? { title: 'Could not fetch the cluster', description: error.message } : undefined}
+            summary={cluster && <MetaLine items={clusterFacts(cluster)} />}
         >
-            <DataTable>
-                <TableHead>
-                    <DataTableRow>
-                        <DataTableColumnHeader>Field</DataTableColumnHeader>
-                        <DataTableColumnHeader>Value</DataTableColumnHeader>
-                    </DataTableRow>
-                </TableHead>
-                <TableBody>
-                    <DataTableRow>
-                        <DataTableCell>Description</DataTableCell>
-                        <DataTableCell>{cluster?.description}</DataTableCell>
-                    </DataTableRow>
-                    <DataTableRow>
-                        <DataTableCell>Groups</DataTableCell>
-                        <DataTableCell>
-                            {cluster?.groups?.map((group, i) => (
-                                <span key={group.name}>
-                                    {i > 0 && ', '}
-                                    <Link to={`/groups/${group.name}`}>{group.name}</Link>
-                                </span>
-                            ))}
-                        </DataTableCell>
-                    </DataTableRow>
-                    <DataTableRow>
-                        <DataTableCell>Created</DataTableCell>
-                        <DataTableCell>{cluster?.createdAt && <MomentFromNow date={cluster.createdAt} />}</DataTableCell>
-                    </DataTableRow>
-                    <DataTableRow>
-                        <DataTableCell>Updated</DataTableCell>
-                        <DataTableCell>{cluster?.updatedAt && <MomentFromNow date={cluster.updatedAt} />}</DataTableCell>
-                    </DataTableRow>
-                </TableBody>
-            </DataTable>
+            {cluster && (
+                <Panel title="Details" flush>
+                    <DetailsTable rows={clusterDetails(cluster)} />
+                </Panel>
+            )}
 
             {showEditModal && cluster && (
                 <EditClusterModal
