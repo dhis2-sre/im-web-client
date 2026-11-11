@@ -70,6 +70,31 @@ const dispatchUnauthorizedEvent = () => {
     window.dispatchEvent(event)
 }
 
+/* fetch with the interceptor's session handling, for what axios can't do, such as reading a response while it
+ * streams in. A 401 refreshes once and retries; a failed refresh, or a retry refused again, ends the session and
+ * hands back the 401. An abort or a network error on the retry goes to the caller as is, not as an expired session. */
+export const authFetch = async (path: string, init: RequestInit = {}): Promise<Response> => {
+    const request = () => fetch(`${baseURL}${path}`, { ...init, credentials: 'include' })
+    const res = await request()
+    if (res.status !== 401) {
+        return res
+    }
+    try {
+        await refreshTokens()
+    } catch (error) {
+        if (init.signal?.aborted) {
+            throw error
+        }
+        dispatchUnauthorizedEvent()
+        return res
+    }
+    const retried = await request()
+    if (retried.status === 401) {
+        dispatchUnauthorizedEvent()
+    }
+    return retried
+}
+
 /* Produce a custom version of the `useAxios` hook
  * which uses the axios instance we've just created */
 const useAxiosWithJwt = makeUseAxios({

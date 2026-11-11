@@ -1,4 +1,4 @@
-import { Button, IconCross24, Layer } from '@dhis2/ui'
+import { Button, IconCross16, Layer } from '@dhis2/ui'
 import { useCallback, useEffect, useId, useRef } from 'react'
 import type { FC, ReactNode } from 'react'
 import styles from './drawer.module.css'
@@ -8,7 +8,17 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), selec
 /* A panel that slides in from the right over the page, for detail that would stretch the page if it
  * opened in place. It closes on Escape, a click outside or its close button, keeps focus inside
  * while open and hands it back to whatever opened it. */
-export const Drawer: FC<{ title: ReactNode; description?: ReactNode; onClose: () => void; children: ReactNode }> = ({ title, description, onClose, children }) => {
+export const Drawer: FC<{
+    title: ReactNode
+    description?: ReactNode
+    // Shown in the header beside Close, for what acts on the whole drawer rather than a part of it
+    actions?: ReactNode
+    // Under the header and outside the scrolling body, so they stay put
+    tabs?: ReactNode
+    size?: 'default' | 'wide'
+    onClose: () => void
+    children: ReactNode
+}> = ({ title, description, actions, tabs, size = 'default', onClose, children }) => {
     const panel = useRef<HTMLDialogElement | null>(null)
     const titleId = useId()
     const descriptionId = useId()
@@ -19,9 +29,10 @@ export const Drawer: FC<{ title: ReactNode; description?: ReactNode; onClose: ()
     }, [])
 
     /* The layer mounts its contents a render after the drawer, so focus moves in once the panel is
-     * actually there rather than from the drawer's own mount. */
+     * actually there rather than from the drawer's own mount. Contents that already took it, mounting
+     * first, keep it. */
     const attach = useCallback((node: HTMLDialogElement | null) => {
-        if (node && !panel.current) {
+        if (node && !panel.current && !node.contains(document.activeElement)) {
             node.querySelector<HTMLElement>(FOCUSABLE)?.focus()
         }
         panel.current = node
@@ -53,7 +64,14 @@ export const Drawer: FC<{ title: ReactNode; description?: ReactNode; onClose: ()
 
     return (
         <Layer translucent onBackdropClick={onClose}>
-            <dialog ref={attach} open className={styles.drawer} aria-modal="true" aria-labelledby={titleId} aria-describedby={description ? descriptionId : undefined}>
+            <dialog
+                ref={attach}
+                open
+                className={size === 'wide' ? `${styles.drawer} ${styles.wide}` : styles.drawer}
+                aria-modal="true"
+                aria-labelledby={titleId}
+                aria-describedby={description ? descriptionId : undefined}
+            >
                 <header className={styles.header}>
                     <div className={styles.heading}>
                         <h2 id={titleId} className={styles.title}>
@@ -65,8 +83,10 @@ export const Drawer: FC<{ title: ReactNode; description?: ReactNode; onClose: ()
                             </p>
                         )}
                     </div>
-                    <Button small secondary icon={<IconCross24 />} aria-label="Close" title="Close" onClick={onClose} />
+                    {actions}
+                    <Button small secondary icon={<IconCross16 />} aria-label="Close" title="Close" onClick={onClose} />
                 </header>
+                {tabs && <div className={styles.tabs}>{tabs}</div>}
                 <div className={styles.body}>{children}</div>
             </dialog>
         </Layer>
