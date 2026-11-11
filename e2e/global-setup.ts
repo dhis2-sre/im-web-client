@@ -25,7 +25,9 @@ export default async function deleteStaleTestDatabases() {
 
         for (const database of stale) {
             const deleted = await api.delete(`/databases/${database.id}`)
-            if (!deleted.ok()) {
+            if (deleted.ok()) {
+                console.log(`Deleted stale test database ${targetGroup}/${database.name}`)
+            } else {
                 console.warn(`Could not delete stale test database ${targetGroup}/${database.name}: ${deleted.status()}`)
             }
         }
