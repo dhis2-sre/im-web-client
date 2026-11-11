@@ -34,12 +34,10 @@
 }
 
 .parent {
-    display: inline-flex;
-    flex: none;
-    align-items: baseline;
-    gap: var(--spacers-dp8);
-    white-space: nowrap;
-    font-weight: 400;
+    display: flex;
+    gap: var(--spacers-dp4);
+    font-size: var(--text-md);
+    line-height: 1.4;
     color: var(--colors-grey600);
 }
 
@@ -70,6 +68,12 @@
     overflow-wrap: anywhere;
 }
 
+.titleDot {
+    display: inline-flex;
+    margin-left: 2px;
+    vertical-align: middle;
+}
+
 .arrival {
     animation: fadeIn 150ms ease-out;
 }
@@ -90,5 +94,118 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--spacers-dp8);
+    gap: 6px;
+}
+
+.description {
+    max-width: 72ch;
+    margin: 0;
+    font-size: var(--text-md);
+    line-height: 1.5;
+    color: var(--colors-grey700);
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp16);
+}
+
+/* The band's strips meet without a gap, and the body keeps its distance from the band instead. The
+ * scope lets the pinned row follow the facts strip's timeline though they are siblings. */
+.banded {
+    gap: 0;
+    padding-top: 0;
+    timeline-scope: --facts;
+    /* The pinned row's height is its title line plus its padding, and the facts' fade measures from
+     * its lower edge, so both read these. */
+    --bar-line: 32px;
+    --bar-padding: 6px;
+}
+
+.banded > .body {
+    padding-top: var(--spacers-dp16);
+}
+
+/* The header's strips are laid out as the page's own children, so the pinned row sticks for the
+ * whole page rather than only while the header is in view. */
+.bandHeader {
+    display: contents;
+}
+
+/* Each strip runs edge to edge of the main area, out past the gutter it pads its pages with. */
+.strip {
+    margin-inline: calc(var(--spacers-dp16) * -1);
+    padding-inline: var(--spacers-dp16);
+    background: var(--colors-white);
+}
+
+.stripTop {
+    padding-top: var(--spacers-dp16);
+}
+
+.pinned {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding-block: var(--bar-padding);
+}
+
+.stripBottom {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* 20px under the title row, less the pinned row's own bottom padding. */
+    padding-top: calc(20px - var(--bar-padding));
+    padding-bottom: var(--spacers-dp16);
+    border-bottom: 1px solid var(--colors-grey400);
+}
+
+.summary {
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--colors-grey700);
+}
+
+/* Where the browser can tie animation to scrolling, the pinned row follows the facts as they slide
+ * under it: it gains an edge once they are gone and the page runs under it instead. The inset is the
+ * pinned row's height, so the timeline tracks the row's lower edge rather than the top of the main
+ * area. */
+@supports (animation-timeline: view()) {
+    .stripBottom {
+        view-timeline: --facts block;
+        view-timeline-inset: calc(var(--bar-line) + 2 * var(--bar-padding)) 0;
+    }
+
+    .pinned {
+        animation: edge linear both;
+        animation-timeline: --facts;
+        animation-range: exit 70% exit 100%;
+    }
+
+    /* The name steps down to a bar-sized title over the first stretch after the row sticks. Its line
+     * keeps one height throughout, so the bar does not shrink under the scroll that drives it. */
+    .pinned .heading {
+        line-height: var(--bar-line);
+        animation: shrink ease-out both;
+        animation-timeline: --facts;
+        animation-range: exit 0% exit 50%;
+    }
+}
+
+@keyframes shrink {
+    to {
+        font-size: 18px;
+    }
+}
+
+@keyframes edge {
+    from {
+        box-shadow: 0 1px 0 transparent;
+    }
+    to {
+        box-shadow:
+            0 1px 0 var(--colors-grey400),
+            0 2px 8px rgb(0 0 0 / 0.06);
+    }
 }

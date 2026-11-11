@@ -1,9 +1,8 @@
 import { Button, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import Moment from 'react-moment'
 import { Link, useParams } from 'react-router-dom'
-import { Page } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
 import { EditClusterModal } from './edit-cluster-modal.tsx'
@@ -47,11 +46,11 @@ export const ClusterDetails: FC = () => {
                     </DataTableRow>
                     <DataTableRow>
                         <DataTableCell>Created</DataTableCell>
-                        <DataTableCell>{cluster?.createdAt && <Moment date={cluster.createdAt} fromNow />}</DataTableCell>
+                        <DataTableCell>{cluster?.createdAt && <MomentFromNow date={cluster.createdAt} />}</DataTableCell>
                     </DataTableRow>
                     <DataTableRow>
                         <DataTableCell>Updated</DataTableCell>
-                        <DataTableCell>{cluster?.updatedAt && <Moment date={cluster.updatedAt} fromNow />}</DataTableCell>
+                        <DataTableCell>{cluster?.updatedAt && <MomentFromNow date={cluster.updatedAt} />}</DataTableCell>
                     </DataTableRow>
                 </TableBody>
             </DataTable>

@@ -1,9 +1,8 @@
 import { Button, DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, IconCheckmark16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useState } from 'react'
-import Moment from 'react-moment'
 import { useParams } from 'react-router-dom'
-import { Page } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/generated/models/Group.ts'
 import { EditGroupModal } from './edit-group-modal.tsx'
@@ -52,11 +51,11 @@ export const GroupDetails: FC = () => {
                     </DataTableRow>
                     <DataTableRow>
                         <DataTableCell>Created</DataTableCell>
-                        <DataTableCell>{group?.createdAt && <Moment date={group.createdAt} fromNow />}</DataTableCell>
+                        <DataTableCell>{group?.createdAt && <MomentFromNow date={group.createdAt} />}</DataTableCell>
                     </DataTableRow>
                     <DataTableRow>
                         <DataTableCell>Updated</DataTableCell>
-                        <DataTableCell>{group?.updatedAt && <Moment date={group.updatedAt} fromNow />}</DataTableCell>
+                        <DataTableCell>{group?.updatedAt && <MomentFromNow date={group.updatedAt} />}</DataTableCell>
                     </DataTableRow>
                 </TableBody>
             </DataTable>

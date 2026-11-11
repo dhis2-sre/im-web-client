@@ -11,3 +11,8 @@
 .reason {
     font-size: var(--text-sm);
 }
+
+/* Sets the first destructive button apart from the ones before it, as the divider does in the menu. */
+.apart {
+    margin-left: 6px;
+}

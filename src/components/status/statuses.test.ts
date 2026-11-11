@@ -1,5 +1,5 @@
 import type { InstanceComponentReplica } from '../../types/index.ts'
-import { deployStatus, replicaStatus } from './statuses.ts'
+import { componentStatus, deployStatus, replicaStatus } from './statuses.ts'
 
 const replica = (phase: string, ready: boolean): InstanceComponentReplica => ({ name: 'r', phase, ready, restarts: 0, createdAt: '', containers: [] })
 
@@ -29,10 +29,31 @@ describe('replicaStatus', () => {
     })
 
     it('is negative for a failed replica', () => {
-        expect(replicaStatus(replica('Failed', false)).tone).toBe('negative')
+        expect(replicaStatus(replica('Failed', false))).toEqual({ label: 'Failed', tone: 'negative' })
     })
 
-    it('is neutral while pending', () => {
-        expect(replicaStatus(replica('Pending', false))).toEqual({ label: 'Pending (not ready)', tone: 'neutral' })
+    it('is neutral while pending, which says on its own that it is not ready', () => {
+        expect(replicaStatus(replica('Pending', false))).toEqual({ label: 'Pending', tone: 'neutral' })
+    })
+})
+
+describe('componentStatus', () => {
+    const component = (...replicas: InstanceComponentReplica[]) => ({ name: 'c', supportedOperations: [], replicas })
+
+    it('speaks for a single replica in its own words', () => {
+        expect(componentStatus(component(replica('Running', false)))).toEqual({ label: 'Running (not ready)', tone: 'neutral' })
+    })
+
+    it('counts ready replicas when there are several', () => {
+        expect(componentStatus(component(replica('Running', true), replica('Running', true)))).toEqual({ label: '2/2 ready', tone: 'positive' })
+        expect(componentStatus(component(replica('Running', true), replica('Pending', false)))).toEqual({ label: '1/2 ready', tone: 'neutral' })
+    })
+
+    it('is negative when any replica failed', () => {
+        expect(componentStatus(component(replica('Running', true), replica('Failed', false), replica('Running', true)))).toEqual({ label: '2/3 ready', tone: 'negative' })
+    })
+
+    it('says so when there are no replicas', () => {
+        expect(componentStatus(component())).toEqual({ label: 'No replicas', tone: 'neutral' })
     })
 })

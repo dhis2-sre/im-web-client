@@ -101,8 +101,9 @@ test.describe('new instance', () => {
         await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: targetGroup }).dispatchEvent('click')
         await page.keyboard.press('Escape')
 
+        // Six hours rather than one, so the Extend check below has a shorter lifetime to leave out.
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Lifetime' }).getByTestId('dhis2-uicore-select-input').click()
-        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="3600"]').dispatchEvent('click')
+        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="21600"]').dispatchEvent('click')
         await page.keyboard.press('Escape')
 
         const imageTagSelect = page
@@ -132,6 +133,21 @@ test.describe('new instance', () => {
         await page.getByRole('link', { name: randomName, exact: true }).click()
         await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible()
         await expect(page.getByRole('button', { name: 'Edit', exact: true })).toBeEnabled({ timeout: 15 * 60 * 1000 })
+
+        // Extending offers only lifetimes that end later than this one does now. The presets count from
+        // now, so with nearly six hours left, an hour would cut it short and is not on offer, and the
+        // Extend button stays off until something later is picked.
+        await page.getByRole('button', { name: 'Extend…', exact: true }).click()
+        const extendModal = page.getByTestId('dhis2-uicore-modal')
+        await expect(extendModal.getByRole('button', { name: 'Extend', exact: true })).toBeDisabled()
+        await extendModal.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Lifetime' }).getByTestId('dhis2-uicore-select-input').click()
+        await expect(page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="21600"]')).toBeVisible()
+        await expect(page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="3600"]')).toHaveCount(0)
+        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="21600"]').dispatchEvent('click')
+        await expect(extendModal.getByRole('button', { name: 'Extend', exact: true })).toBeEnabled()
+        await extendModal.getByRole('button', { name: 'Cancel' }).click()
+        await expect(extendModal).toBeHidden()
+
         await page.getByRole('button', { name: 'Edit', exact: true }).click()
         await expect(page.getByRole('heading', { name: `Edit ${randomName}` })).toBeVisible()
 
