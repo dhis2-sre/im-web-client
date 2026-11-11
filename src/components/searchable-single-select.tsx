@@ -86,8 +86,6 @@ export const SearchableSingleSelect = ({
             {options.map(({ value, label }) => (
                 <SingleSelectOption key={value} value={value} label={label} />
             ))}
-
-            {hasSelectedInOptionList && selected && <SingleSelectOption className={classes.invisibleOption} value={selected} label="" />}
         </SingleSelect>
     )
 }
