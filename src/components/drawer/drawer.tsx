@@ -1,25 +1,40 @@
 import { Button, IconCross16, Layer } from '@dhis2/ui'
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import type { CSSProperties, FC, KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
+import type { FC, KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import styles from './drawer.module.css'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 type Size = 'default' | 'wide'
 
-// Matches the widths in drawer.module.css, which stay the source of truth until someone resizes
+// Default is wide enough for a two-column parameter list; wide leaves room for a log line and long parameter values
 const DEFAULT_WIDTH: Record<Size, number> = { default: 520, wide: 960 }
 // Never narrower than a drawer opens at, so the default 520px drawer isn't forced wider
 const MIN_WIDTH = 540
-const minWidth = (size: Size) => Math.min(MIN_WIDTH, DEFAULT_WIDTH[size])
 // Always leave a strip of the page showing, so a click outside can still close the drawer
 const PAGE_GUTTER = 64
+// Below this there is no room to leave the page showing: a drawer opens at its default width or the whole window, and can't be resized
+const NARROW = 640
 const STEP = 16
 const BIG_STEP = 80
 
 const storageKey = (size: Size) => `drawerWidth.${size}`
-const maxWidth = (size: Size) => Math.max(minWidth(size), window.innerWidth - PAGE_GUTTER)
-const clamp = (size: Size, width: number) => Math.round(Math.min(maxWidth(size), Math.max(minWidth(size), width)))
+
+const limits = (size: Size, viewport: number) => {
+    const min = Math.min(MIN_WIDTH, DEFAULT_WIDTH[size])
+    return { min, max: Math.max(min, viewport - PAGE_GUTTER) }
+}
+
+const clamp = (size: Size, width: number, viewport: number) => {
+    const { min, max } = limits(size, viewport)
+    return Math.round(Math.min(max, Math.max(min, width)))
+}
+
+const subscribeToResize = (onChange: () => void) => {
+    window.addEventListener('resize', onChange)
+    return () => window.removeEventListener('resize', onChange)
+}
+const viewportWidth = () => window.innerWidth
 
 const readWidth = (size: Size) => {
     try {
@@ -59,26 +74,35 @@ export const Drawer: FC<{
     const panel = useRef<HTMLDialogElement | null>(null)
     const titleId = useId()
     const descriptionId = useId()
-    // null is the default width from the stylesheet; a number is one the user dragged or keyed to
+    // null is the default width; a number is one the user dragged or keyed to
     const [width, setWidth] = useState(() => readWidth(size))
     const [dragging, setDragging] = useState(false)
+    const viewport = useSyncExternalStore(subscribeToResize, viewportWidth)
+    const resizable = viewport > NARROW
+    const { min, max } = limits(size, viewport)
+    // A saved width is held within the current window, however it was stored
+    const shown = resizable ? clamp(size, width ?? DEFAULT_WIDTH[size], viewport) : Math.min(DEFAULT_WIDTH[size], viewport)
 
-    useEffect(() => {
-        if (!dragging) {
-            storeWidth(size, width)
-        }
-    }, [size, width, dragging])
+    // Saved as it changes, so a drawer closed mid-drag still keeps the width it reached
+    const resize = (next: number | null) => {
+        setWidth(next)
+        storeWidth(size, next)
+    }
 
     // The left edge is the one that moves, so dragging left makes the drawer wider
     const startDrag = (event: ReactPointerEvent<HTMLHRElement>) => {
-        if (event.button !== 0 || !panel.current) {
+        if (event.button !== 0) {
             return
         }
         event.preventDefault()
         const handle = event.currentTarget
         const startX = event.clientX
-        const startWidth = panel.current.offsetWidth
-        const onMove = (move: PointerEvent) => setWidth(clamp(size, startWidth + startX - move.clientX))
+        let frame = 0
+        // At most one resize a frame, however often the pointer reports
+        const onMove = (move: PointerEvent) => {
+            cancelAnimationFrame(frame)
+            frame = requestAnimationFrame(() => resize(clamp(size, shown + startX - move.clientX, window.innerWidth)))
+        }
         const onEnd = () => {
             handle.removeEventListener('pointermove', onMove)
             setDragging(false)
@@ -89,16 +113,15 @@ export const Drawer: FC<{
         setDragging(true)
     }
 
-    const current = clamp(size, width ?? DEFAULT_WIDTH[size])
     const resizeByKey = (event: ReactKeyboardEvent<HTMLHRElement>) => {
         const step = event.shiftKey ? BIG_STEP : STEP
-        const next = { ArrowLeft: current + step, ArrowRight: current - step, Home: minWidth(size), End: maxWidth(size) }[event.key]
+        const next = { ArrowLeft: shown + step, ArrowRight: shown - step, Home: min, End: max }[event.key]
         if (next !== undefined) {
             event.preventDefault()
-            setWidth(clamp(size, next))
+            resize(clamp(size, next, viewport))
         } else if (event.key === 'Enter') {
             event.preventDefault()
-            setWidth(null)
+            resize(null)
         }
     }
 
@@ -146,8 +169,8 @@ export const Drawer: FC<{
             <dialog
                 ref={attach}
                 open
-                className={[styles.drawer, size === 'wide' && styles.wide, width !== null && styles.resized].filter(Boolean).join(' ')}
-                style={width === null ? undefined : ({ '--drawer-width': `${width}px` } as CSSProperties)}
+                className={styles.drawer}
+                style={{ width: shown }}
                 data-dragging={dragging || undefined}
                 aria-modal="true"
                 aria-labelledby={titleId}
@@ -169,22 +192,26 @@ export const Drawer: FC<{
                 </header>
                 {tabs && <div className={styles.tabs}>{tabs}</div>}
                 <div className={styles.body}>{children}</div>
-                {/* Last in the tab order, after the drawer's own controls, though it sits on the left edge */}
-                <hr
-                    aria-orientation="vertical"
-                    aria-label="Resize drawer"
-                    aria-valuemin={minWidth(size)}
-                    aria-valuemax={maxWidth(size)}
-                    aria-valuenow={current}
-                    aria-valuetext={`${current} pixels wide`}
-                    title="Drag to resize, double-click to reset"
-                    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a focusable separator is a window splitter, which is interactive
-                    tabIndex={0}
-                    className={styles.resizer}
-                    onPointerDown={startDrag}
-                    onDoubleClick={() => setWidth(null)}
-                    onKeyDown={resizeByKey}
-                />
+                {/* Last in the tab order, after the drawer's own controls, though it sits on the left edge.
+                 * A focusable separator is a window splitter, which is interactive, though the linter can't tell. */}
+                {resizable && (
+                    // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                    <hr
+                        aria-orientation="vertical"
+                        aria-label="Resize drawer"
+                        aria-valuemin={min}
+                        aria-valuemax={max}
+                        aria-valuenow={shown}
+                        aria-valuetext={`${shown} pixels wide`}
+                        title="Drag to resize, double-click to reset"
+                        // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+                        tabIndex={0}
+                        className={styles.resizer}
+                        onPointerDown={startDrag}
+                        onDoubleClick={() => resize(null)}
+                        onKeyDown={resizeByKey}
+                    />
+                )}
             </dialog>
         </Layer>
     )

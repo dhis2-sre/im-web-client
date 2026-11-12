@@ -1,11 +1,10 @@
 /* A plain sheet against the right edge: white, a hairline on its open side, no rounded corners where
- * it meets the window. Wide enough for a two-column parameter list, never wider than the screen. */
+ * it meets the window. Its width is set by the component, which also lets it be resized. */
 .drawer {
     position: absolute;
     inset: 0 0 0 auto;
     display: flex;
     flex-direction: column;
-    width: min(520px, 100vw);
     height: auto;
     max-width: none;
     max-height: none;
@@ -17,28 +16,6 @@
     border-left: 1px solid var(--colors-grey400);
     box-shadow: -8px 0 24px rgb(33 41 52 / 0.12);
     animation: slideIn 180ms ease-out;
-}
-
-/* Room for a log line and for long parameter values, and still leaves the page visible behind it.
- * On narrow windows there is no room to leave the page showing, so it takes the whole width. */
-.wide {
-    width: min(960px, calc(100vw - 64px));
-}
-
-/* A width the user chose, held back from the page edge if the window has since shrunk */
-.resized {
-    width: min(var(--drawer-width), calc(100vw - 64px));
-}
-
-@media (max-width: 640px) {
-    .wide,
-    .resized {
-        width: 100vw;
-    }
-
-    .resizer {
-        display: none;
-    }
 }
 
 /* A 12px grab strip straddling the left edge, so it is easy to hit without being visible at rest.
