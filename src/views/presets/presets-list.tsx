@@ -1,10 +1,11 @@
-import { Button } from '@dhis2/ui'
+import { Button, IconAdd24 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FilterFields, GroupFilter, ListPage, MomentFromNow, OnlyMineFilter, SearchFilter, useOnlyMine, useSavedSearchParams } from '../../components/index.ts'
 import type { ListColumn } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
+import { PresetActions } from './preset-actions.tsx'
 import { presetMainInstance, presetSummary } from './preset-summary.ts'
 
 const PresetDatabase: FC<{ preset: Deployment }> = ({ preset }) => <>{useDatabaseLabel(presetSummary(preset).databaseId).label}</>
@@ -30,7 +31,8 @@ const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
 }
 
 export const PresetsList: FC = () => {
-    const [{ data: presets, loading, error }] = useAuthAxios<Deployment[]>('/deployments/presets', { useCache: false })
+    const navigate = useNavigate()
+    const [{ data: presets, loading, error }, refetch] = useAuthAxios<Deployment[]>('/presets', { useCache: false })
     const { onlyMine, setOnlyMine, isShown } = useOnlyMine('showOnlyMyPresets')
     const { params, setParams, setParam } = useSavedSearchParams('presetFilters')
     const searchTerm = params.get('q') ?? ''
@@ -56,6 +58,11 @@ export const PresetsList: FC = () => {
     return (
         <ListPage
             title="Presets"
+            actions={
+                <Button primary icon={<IconAdd24 />} onClick={() => navigate('/presets/new')}>
+                    New preset
+                </Button>
+            }
             filters={
                 <>
                     <FilterFields>
@@ -69,7 +76,12 @@ export const PresetsList: FC = () => {
             groups={groups}
             rowKey={(preset) => preset.id}
             rowHref={(preset) => `/presets/${preset.id}`}
-            renderRowActions={(preset) => <LoadButton preset={preset} />}
+            renderRowActions={(preset) => (
+                <>
+                    <LoadButton preset={preset} />
+                    <PresetActions preset={preset} onDeleted={() => void refetch()} />
+                </>
+            )}
             loading={loading}
             error={error ? { title: "Couldn't load presets", description: error.message } : undefined}
             empty={
@@ -82,7 +94,7 @@ export const PresetsList: FC = () => {
                               </Button>
                           ),
                       }
-                    : { title: 'No presets', description: 'Presets are saved from the new instance form.' }
+                    : { title: 'No presets', description: 'Create one with New preset, or save one from an instance.' }
             }
         />
     )
