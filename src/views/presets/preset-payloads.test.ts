@@ -4,6 +4,7 @@ import {
     buildFromPresetRequest,
     canWritePreset,
     changedFromPreset,
+    creationParameters,
     describeChanges,
     missingUncopyable,
     uncopyableParameters,
@@ -97,5 +98,15 @@ describe('preset payloads', () => {
         expect(canWritePreset(preset, { id: 1, groups: [group] }, false)).toBe(true)
         expect(canWritePreset(preset, { id: 1, groups: [] }, false)).toBe(false)
         expect(canWritePreset(preset, { id: 2, groups: [group] }, false)).toBe(false)
+    })
+    it('creates an instance only with the declared parameters the server accepts', () => {
+        const pgadmin = {
+            name: 'pgadmin',
+            parameters: [{ parameterName: 'PGADMIN_USERNAME' }, { parameterName: 'CHART_VERSION' }, { parameterName: 'DATABASE_HOSTNAME', consumed: true }],
+        }
+        const values = { PGADMIN_USERNAME: 'a@b.org', PGADMIN_CONFIRM_PASSWORD: 'x', CHART_VERSION: '', DATABASE_HOSTNAME: 'db.svc', UNKNOWN: 'u' }
+        expect(creationParameters(values, pgadmin)).toEqual({ PGADMIN_USERNAME: { value: 'a@b.org' } })
+        expect(creationParameters({ ...values, CHART_VERSION: '1.3' }, pgadmin, (name) => name !== 'PGADMIN_USERNAME')).toEqual({ CHART_VERSION: { value: '1.3' } })
+        expect(creationParameters(values, undefined)).toEqual({})
     })
 })

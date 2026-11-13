@@ -4,8 +4,9 @@ import type { AnyObject } from 'final-form'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Deployment, SaveDeploymentRequest, SaveInstanceRequest, SavePresetRequest, StackCompanion } from '../types/index.ts'
-import { buildEditPresetRequest, buildFromPresetRequest } from '../views/presets/preset-payloads.ts'
+import { buildEditPresetRequest, buildFromPresetRequest, creationParameters } from '../views/presets/preset-payloads.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
+import { useStacks } from './use-stacks.ts'
 
 export type DeploymentStepStatus = 'pending' | 'running' | 'success' | 'error'
 export type DeploymentStep = { stackName: string; status: DeploymentStepStatus }
@@ -23,11 +24,12 @@ const SETTLED_PAUSE_MS = 800
  * deploys it. Only the listed parameters are sent for the main stack, so values entered in sections
  * that a visibility condition later hid never reach the backend. A companion is included while the
  * condition the stack gates it on holds, since that condition is the opt-in, and a companion
- * declared without one is always included, the same reading the form renders by. Confirm-password
- * helper fields are never sent. Saving a preset stores the same instances under /presets, and a
+ * declared without one is always included, the same reading the form renders by. Only parameters
+ * the stack declares are sent, never its consumed ones (see creationParameters). Saving a preset stores the same instances under /presets, and a
  * bulk deploy sends the same instances to be created and deployed under many names. */
 export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[], companions: StackCompanion[] = []) => {
     const navigate = useNavigate()
+    const { stacks } = useStacks()
     const [steps, setSteps] = useState<DeploymentStep[]>([])
     const [, executePost] = useAuthAxios(
         {
@@ -50,28 +52,14 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
     const buildInstances = useCallback(
         (values: AnyObject): SaveInstanceRequest[] => {
             const included = new Set(getIncludedParameters(values))
-            const stackValues: AnyObject = values[stackName] ?? {}
-            const parameters = Object.entries(stackValues).reduce<Record<string, { value: string }>>((payload, [parameterName, value]) => {
-                if (value && included.has(parameterName)) {
-                    payload[parameterName] = { value: String(value) }
-                }
-                return payload
-            }, {})
-
-            const companionInstances = includedCompanionsOf(values).map((companion): SaveInstanceRequest => {
-                const companionValues: AnyObject = values[companion.name] ?? {}
-                const companionParameters = Object.entries(companionValues).reduce<Record<string, { value: string }>>((payload, [parameterName, value]) => {
-                    if (value && !parameterName.endsWith('CONFIRM_PASSWORD')) {
-                        payload[parameterName] = { value: String(value) }
-                    }
-                    return payload
-                }, {})
-                return { stackName: companion.name, parameters: companionParameters }
-            })
-
+            const stackOf = (name: string) => stacks.find((stack) => stack.name === name)
+            const parameters = creationParameters(values[stackName] ?? {}, stackOf(stackName), (parameterName) => included.has(parameterName))
+            const companionInstances = includedCompanionsOf(values).map(
+                (companion): SaveInstanceRequest => ({ stackName: companion.name, parameters: creationParameters(values[companion.name] ?? {}, stackOf(companion.name)) })
+            )
             return [{ stackName, parameters, public: values.public }, ...companionInstances]
         },
-        [stackName, getIncludedParameters, includedCompanionsOf]
+        [stackName, getIncludedParameters, includedCompanionsOf, stacks]
     )
 
     const setStatus = useCallback((names: string[], status: DeploymentStepStatus) => {
