@@ -10,15 +10,15 @@ It is production code, not a prototype: the prototype is a reference for behavio
 
 ## Backend (im-manager [#1828](https://github.com/dhis2-sre/im-manager/pull/1828), merged 2026-11-12)
 
-| Call | Use |
-| --- | --- |
-| `GET /presets` | list, in the groups the user belongs to |
-| `POST /presets` | save a preset with all its instances in one call (`SavePresetRequest`: name, group, description, ttl, instances[]); 409 if the name is taken |
-| `GET /presets/availability?group&name` | is a preset name free in a group (same response shape as the deployment name check) |
-| `GET /presets/:id` | one preset; sensitive values come back masked |
-| `PATCH /presets/:id` | edit in place (`EditPresetRequest`: the deployment edit body plus `name` and `group`); left-out values stay, so masked values survive |
-| `DELETE /presets/:id` | delete, 204 |
-| `POST /presets/:id/deployments` | create (not deploy) one deployment from the preset, with decrypted sensitive values; body: name, optional group, description, ttl and `instances` overrides in the edit format |
+| Call                                   | Use                                                                                                                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /presets`                         | list, in the groups the user belongs to                                                                                                                                        |
+| `POST /presets`                        | save a preset with all its instances in one call (`SavePresetRequest`: name, group, description, ttl, instances[]); 409 if the name is taken                                   |
+| `GET /presets/availability?group&name` | is a preset name free in a group (same response shape as the deployment name check)                                                                                            |
+| `GET /presets/:id`                     | one preset; sensitive values come back masked                                                                                                                                  |
+| `PATCH /presets/:id`                   | edit in place (`EditPresetRequest`: the deployment edit body plus `name` and `group`); left-out values stay, so masked values survive                                          |
+| `DELETE /presets/:id`                  | delete, 204                                                                                                                                                                    |
+| `POST /presets/:id/deployments`        | create (not deploy) one deployment from the preset, with decrypted sensitive values; body: name, optional group, description, ttl and `instances` overrides in the edit format |
 
 Breaking: `GET /deployments/presets`, `preset`/`overwrite` on `POST /deployments`, and `preset=true` on `/deployments/availability` are gone, and `/deployments/:id` no longer returns presets. The client must ship with (or after) this backend release; there is no compatibility path.
 
@@ -59,8 +59,8 @@ Mockups for each screen were reviewed with Joe; the descriptions below are what 
 - Both read from `/presets` and `/presets/:id`. The preset page's "Not a preset" error state goes, since `/presets/:id` only returns presets.
 - List: a primary **New preset** button in the page header, placed as **New instance** is on the instances list. It goes to `/presets/new`.
 - Each row keeps **Use preset** (to `/instances/new?preset=:id`) and gains a ··· `ActionsMenu`: **Create several instances…**, **Edit**, **Duplicate**, **Delete**. The preset page's existing ··· menu (today only Delete) gets the same four, beside its primary **Use preset**.
-  - Create several opens the dialog from screen 4 for that preset. Edit goes to `/presets/:id/edit`. Duplicate goes to `/presets/new?from=:id`. Delete keeps today's confirm dialog and copy.
-  - Use preset and Create several are disabled for a preset with no dhis2-v2 instance, as Use preset is today.
+    - Create several opens the dialog from screen 4 for that preset. Edit goes to `/presets/:id/edit`. Duplicate goes to `/presets/new?from=:id`. Delete keeps today's confirm dialog and copy.
+    - Use preset and Create several are disabled for a preset with no dhis2-v2 instance, as Use preset is today.
 - Empty state description: "Create one with New preset, or save one from an instance."
 - Unchanged: grouping by group, search, group filter, Only mine, the columns, the facts line, the Stacks panels.
 
@@ -74,10 +74,10 @@ One page component, three routes: `/presets/new`, `/presets/:id/edit`, `/presets
 - Name: checked as you type with `GET /presets/availability`; on Edit, the preset's own name in its own group counts as free. A 409 on save is shown on the form.
 - Lifetime label: "Lifetime of instances created from it".
 - Save:
-  - New, duplicate, from an instance: `POST /presets` with the full configuration, built as the new instance form builds it (same included parameters, companions, no confirm-password fields). Button "Save preset".
-  - Edit: `PATCH /presets/:id` with only what changed, built like the instance edit payload (`buildEditPayload`), plus `name`/`group` when changed. Button "Save". Disabled while nothing has changed.
-  - Sensitive fields on Edit behave as on the instance edit form: blank with "Leave blank to keep current value", not required. Unlike the instance edit form, nothing is immutable on a preset (no `immutableReasons`).
-  - On success: alert "Saved preset {name}" and go to `/presets/:id`.
+    - New, duplicate, from an instance: `POST /presets` with the full configuration, built as the new instance form builds it (same included parameters, companions, no confirm-password fields). Button "Save preset".
+    - Edit: `PATCH /presets/:id` with only what changed, built like the instance edit payload (`buildEditPayload`), plus `name`/`group` when changed. Button "Save". Disabled while nothing has changed.
+    - Sensitive fields on Edit behave as on the instance edit form: blank with "Leave blank to keep current value", not required. Unlike the instance edit form, nothing is immutable on a preset (no `immutableReasons`).
+    - On success: alert "Saved preset {name}" and go to `/presets/:id`.
 - Cancel returns to where the page came from.
 - Edit: switching a companion off asks first, with the same confirm the instance edit form uses, since it drops that companion's saved login. (My call.)
 - Duplicate pre-fills Name with `{name}-copy`. Duplicate and from-an-instance show the copy notice.
@@ -85,6 +85,7 @@ One page component, three routes: `/presets/new`, `/presets/:id/edit`, `/presets
 ### 3. New instance form (`/instances/new`)
 
 **Preset bar** (replaces today's "Presets" fieldset and its Delete preset button):
+
 - A "Start from a preset" select at the top of the form, with a **Blank (no preset)** option first, then presets as today (name, group and the summary line in each option). It shows only when there are dhis2-v2 presets.
 - Picking a preset fills the form from `/presets/:id`, replacing everything. Once filled, a line under the select: "Filled from **{name}**", with **View preset** (link to `/presets/:id`) and **Reset to preset** (fill again).
 - Picking another preset or Blank after the user changed something asks first: dialog "Replace your changes?", body "Filling the form from **{name}** replaces everything you've changed." (or "Starting from a blank form clears everything you've changed."), buttons Keep editing / Replace. "Changed" means a field that differs from the loaded preset; on a blank form, a field the user actually touched.
@@ -93,17 +94,19 @@ One page component, three routes: `/presets/new`, `/presets/:id/edit`, `/presets
 - `?preset=:id` (from Use preset) loads that preset once on open, as today.
 
 **Creating from a preset:**
+
 - Filled from a preset, Create instance calls `POST /presets/:id/deployments` with name, group, description, ttl and `instances` holding only what differs from the preset (edit format, so turning a companion on or off is a change). Then `POST /deployments/:id/deploy` and go to the details page, as today.
 - Sensitive fields show blank with a placeholder meaning "from the preset" and aren't required; typing one overrides it.
 - A blank form creates as today (`POST /deployments`, instances, deploy).
 - The deploy progress panel still shows; when creating from a preset, the instances are registered in one call, so the steps settle together.
 
 **Preset section** (Joe chose to keep it), the last section before the buttons:
+
 - Blank form: checkbox "Save this configuration as a preset"; when ticked, a Preset name field (checked with `/presets/availability`), defaulting to the instance name.
 - Filled from a preset: hidden until something differs from the preset. Then three radios:
-  - "Don't save as a preset" (default).
-  - "Update "{name}" with these changes", with help text listing what differs ("2 settings differ: Version, pgAdmin", first four then "and N more"). Disabled for users who can't write the preset, with help text "Only {owner} or an admin can change this preset". If the user undoes their changes, a chosen Update falls back to Don't save.
-  - "Save as a new preset", with a Preset name field and the copy notice.
+    - "Don't save as a preset" (default).
+    - "Update "{name}" with these changes", with help text listing what differs ("2 settings differ: Version, pgAdmin", first four then "and N more"). Disabled for users who can't write the preset, with help text "Only {owner} or an admin can change this preset". If the user undoes their changes, a chosen Update falls back to Don't save.
+    - "Save as a new preset", with a Preset name field and the copy notice.
 - What counts as a difference excludes the instance's own name, lifetime, group and description: those are per instance, and Update never renames or moves the shared preset. (My call, from the builder check: otherwise deploying into another group and choosing Update would move the preset out of everyone else's group.)
 - "Save as a new preset" saves into the group chosen in the form.
 - On submit, the preset is saved first (`POST /presets` or `PATCH /presets/:id` with only the changes). If that fails, nothing is created and the error shows on the form ("Couldn't save the preset: …" / "Couldn't update the preset: …"). On success, alert "Saved preset {name}", then create the instance.
@@ -130,6 +133,7 @@ Today's Bulk deploy dialog (`BulkDeployModal`), renamed and extended. Opened fro
 ### Copy notice
 
 One component, used wherever the browser copies settings:
+
 - Title "Passwords and keys aren't copied". Body: "Passwords, keys and the custom dhis.conf of {source} can't be copied, so {the preset starts | these instances get} the stack defaults. Enter any you need below." (the last sentence only on forms).
 - Shown on: Duplicate, New preset from an instance, "Save as a new preset" in the new instance form when filled from a preset, Create several when the values came from a preset.
 - Not shown on: Create instance from a preset, Edit preset, Update preset (none of these copy).
@@ -138,6 +142,7 @@ One component, used wherever the browser copies settings:
 ### Required values a copy can't carry
 
 Some sensitive parameters are required and have no default (today the pgAdmin login). A copy that drops them is refused by the server with a 400, so wherever the client copies, those fields are required again (Joe's choice, over looping the single preset endpoint):
+
 - Duplicate and New preset from an instance: already required, since those forms are in create mode.
 - New instance form filled from a preset: while "Save as a new preset" is chosen, or when Create several is opened, those fields become required and blank; the form shows the usual required error on them. Creating a single instance from the preset doesn't need them (the server carries them).
 - Create several from a preset's ··· menu: the dialog asks for them (screen 4).
