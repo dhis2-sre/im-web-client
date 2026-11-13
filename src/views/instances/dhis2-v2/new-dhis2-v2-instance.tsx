@@ -2,7 +2,7 @@ import { useAlert } from '@dhis2/app-service-alerts'
 import { Card } from '@dhis2/ui'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Page } from '../../../components/index.ts'
@@ -11,14 +11,12 @@ import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-para
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
-import { validateDnsLabel } from '../fields/validate-dns-label.ts'
 import styles from '../styles.module.css'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
 import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 import { PresetPicker } from './preset-picker.tsx'
 
 const SUCCESS_OPTIONS = { success: true }
-const CRITICAL_OPTIONS = { critical: true }
 const PRESETS_ENABLED = true
 
 export const NewDhis2V2Instance: FC = () => {
@@ -38,14 +36,10 @@ export const NewDhis2V2Instance: FC = () => {
         },
         [groups]
     )
-    const { createDeployment, savePreset, bulkDeploy, steps } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
+    const { createDeployment, bulkDeploy, steps } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
 
     const [{ data: allPresets }, refetchPresets] = useAuthAxios<Deployment[]>('/deployments/presets', { autoCancel: false, manual: !PRESETS_ENABLED })
     const presets = useMemo(() => (allPresets ?? []).filter((preset) => preset.instances?.some((instance) => instance.stackName === STACK_ID)), [allPresets])
-    const { show: showSaved } = useAlert(({ name }) => `Saved preset ${name}`, SUCCESS_OPTIONS)
-
-    const { show: showSaveFailed } = useAlert(({ message }) => message, CRITICAL_OPTIONS)
-    const savingPreset = useRef(false)
 
     const [bulkValues, setBulkValues] = useState<AnyObject>()
     const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} ${count === 1 ? 'instance' : 'instances'}…`, SUCCESS_OPTIONS)
@@ -76,40 +70,6 @@ export const NewDhis2V2Instance: FC = () => {
         [bulkValues, bulkDeploy, showBulkStarted, navigate]
     )
 
-    const storePreset = useCallback(
-        async (values: AnyObject) => {
-            savingPreset.current = true
-            const { error } = await savePreset(values).finally(() => {
-                savingPreset.current = false
-            })
-            if (error) {
-                showSaveFailed({ message: error })
-                return
-            }
-
-            showSaved({ name: values.name })
-            void refetchPresets()
-        },
-        [savePreset, showSaved, showSaveFailed, refetchPresets]
-    )
-
-    /* A preset may share its name with a deployment, so the name field's availability error, which is about deployments, is the one error that doesn't stop it; the backend refuses a name another preset has. */
-    const saveAsPreset = useCallback(
-        async (form: FormApi) => {
-            if (savingPreset.current) {
-                return
-            }
-            const { values, errors = {} } = form.getState()
-            if (Object.keys(errors).some((field) => field !== 'name') || validateDnsLabel(values.name ?? '')) {
-                void form.submit()
-                return
-            }
-
-            await storePreset(values)
-        },
-        [storePreset]
-    )
-
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title="New instance">
             <Card className={styles.container}>
@@ -124,8 +84,8 @@ export const NewDhis2V2Instance: FC = () => {
                                 handleSubmit={handleSubmit}
                                 name={values.name}
                                 steps={steps}
-                                onSavePreset={PRESETS_ENABLED ? () => void saveAsPreset(form) : undefined}
-                                onBulkDeploy={() => openBulkDeploy(form)}
+                                mode="create"
+                                onCreateSeveral={() => openBulkDeploy(form)}
                             />
                         </>
                     )}

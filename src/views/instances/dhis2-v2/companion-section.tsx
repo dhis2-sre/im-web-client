@@ -12,10 +12,11 @@ import { GroupFieldset } from './group-fieldset.tsx'
 /* A companion stack's own parameters, shown while the condition the offering stack declared holds.
  * Turning the enabling parameter on is the opt-in, so the choice is stored on the host instance
  * rather than living in form state, and the same declaration decides what the submit sends. */
-export const CompanionSection: FC<{ offeringStackId: string; companion: StackCompanion; formMode?: 'create' | 'update' }> = ({
+export const CompanionSection: FC<{ offeringStackId: string; companion: StackCompanion; formMode?: 'create' | 'update'; showImmutable?: boolean }> = ({
     offeringStackId,
     companion,
     formMode = 'create',
+    showImmutable = true,
 }) => {
     const { groups, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(companion.name)
     const form = useForm()
@@ -61,7 +62,7 @@ export const CompanionSection: FC<{ offeringStackId: string; companion: StackCom
                     group={group}
                     parameters={parameters}
                     sensitiveParameters={sensitiveParameters}
-                    immutableReasons={immutableReasons}
+                    immutableReasons={showImmutable ? immutableReasons : undefined}
                     formMode={formMode}
                 />
             ))}

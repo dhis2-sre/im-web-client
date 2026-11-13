@@ -5,7 +5,7 @@ import { CustomDateCalendar } from './custom-date-calendar.tsx'
 import styles from './fields.module.css'
 import { CUSTOM_LABEL, CUSTOM_VALUE, TTL_PRESETS } from './ttl-presets.ts'
 
-export const TtlSelect = () => {
+export const TtlSelect = ({ label = 'Lifetime' }: { label?: string }) => {
     const { input } = useField<number>('ttl', { subscription: { value: true } })
     const [customMode, setCustomMode] = useState(false)
     const [calendarDate, setCalendarDate] = useState('')
@@ -33,7 +33,7 @@ export const TtlSelect = () => {
         <div>
             <SingleSelectField
                 className={styles.field}
-                label="Lifetime"
+                label={label}
                 selected={selected}
                 onChange={({ selected: next }: { selected: string }) => handleSelectChange(next)}
                 helpText="How long until this instance is deleted automatically."
