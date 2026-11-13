@@ -7,11 +7,13 @@ import { allowOwnName, createDeploymentNameValidator } from './validate-deployme
 import type { DeploymentNameAvailability } from './validate-deployment-name.ts'
 
 export const NameInput = ({
+    fieldName = 'name',
     availabilityUrl = '/deployments/availability',
     label = 'Name',
     helpText = 'Shown in the instance URL',
     own,
 }: {
+    fieldName?: string
     availabilityUrl?: string
     label?: string
     helpText?: string
@@ -24,7 +26,7 @@ export const NameInput = ({
     }, [fetchAvailability, own])
 
     return (
-        <Field name="name" validate={validate}>
+        <Field name={fieldName} validate={validate}>
             {({ input, meta }) => {
                 const settled = !meta.validating && !!input.value
                 return (

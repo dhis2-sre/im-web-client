@@ -1,23 +1,25 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import { Card } from '@dhis2/ui'
-import type { AnyObject, FormApi } from 'final-form'
+import { setIn } from 'final-form'
+import type { AnyObject } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Page } from '../../../components/index.ts'
-import { useAuthAxios } from '../../../hooks/index.ts'
+import { COMPANION_LABELS } from '../../../constants.ts'
+import { useAuthAxios, useStacks, useUncopyable } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
+import { askForUncopyable, missingUncopyable } from '../../presets/preset-payloads.ts'
+import { KEEP_CURRENT_VALUE, KeepValuePlaceholder } from '../fields/keep-value-placeholder.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
 import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 import { PresetPicker } from './preset-picker.tsx'
-
-const SUCCESS_OPTIONS = { success: true }
-const PRESETS_ENABLED = true
+import { PresetSection } from './preset-section.tsx'
+import { useNewInstanceSubmit } from './use-new-instance-submit.ts'
 
 export const NewDhis2V2Instance: FC = () => {
     const navigate = useNavigate()
@@ -26,7 +28,8 @@ export const NewDhis2V2Instance: FC = () => {
         navigate('/instances')
     }, [navigate])
 
-    const { groups, companions } = useGroupedStackParameters(STACK_ID)
+    const { stacks } = useStacks()
+    const { groups, companions, initialParameterValues } = useGroupedStackParameters(STACK_ID)
     const getIncludedParameters = useCallback(
         (values: AnyObject) => {
             const stackValues: AnyObject = values[STACK_ID] ?? {}
@@ -36,68 +39,88 @@ export const NewDhis2V2Instance: FC = () => {
         },
         [groups]
     )
-    const { createDeployment, bulkDeploy, steps } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
+    const creation = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
+    const { activeStacks, steps } = creation
+    const uncopyable = useUncopyable([STACK_ID, ...companions.map((companion) => companion.name)])
 
-    const [{ data: allPresets }, refetchPresets] = useAuthAxios<Deployment[]>('/deployments/presets', { autoCancel: false, manual: !PRESETS_ENABLED })
+    const [{ data: allPresets }, refetchPresets] = useAuthAxios<Deployment[]>('/presets', { autoCancel: false })
     const presets = useMemo(() => (allPresets ?? []).filter((preset) => preset.instances?.some((instance) => instance.stackName === STACK_ID)), [allPresets])
+    const [sourcePreset, setSourcePreset] = useState<Deployment>()
+    const { submit, bulk, openBulk, closeBulk, startBulk } = useNewInstanceSubmit(creation, sourcePreset, refetchPresets)
 
-    const [bulkValues, setBulkValues] = useState<AnyObject>()
-    const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} ${count === 1 ? 'instance' : 'instances'}…`, SUCCESS_OPTIONS)
+    const blankValues = useMemo(() => ({ ttl: DEFAULT_TTL_SECONDS, presetChoice: 'none', [STACK_ID]: initialParameterValues }), [initialParameterValues])
 
-    /* The name isn't used by a bulk deploy, which names the deployments from a prefix, so its errors don't stop one. Any other error is shown by submitting, which final-form refuses while there are errors. */
-    const openBulkDeploy = useCallback((form: FormApi) => {
-        const { values, errors = {} } = form.getState()
-        if (Object.keys(errors).some((field) => field !== 'name')) {
-            void form.submit()
-            return
+    /* Names for the settings the Preset section lists as differing. A companion's switch is named after the companion when the stack gives it no name of its own. */
+    const displayNames = useMemo(() => {
+        const names: Record<string, string> = {}
+        for (const stack of stacks.filter(({ name }) => name === STACK_ID || companions.some((companion) => companion.name === name))) {
+            for (const { parameterName, displayName } of stack.parameters ?? []) {
+                if (parameterName && displayName) {
+                    names[`${stack.name}.${parameterName}`] = displayName
+                }
+            }
         }
-        setBulkValues(values)
-    }, [])
+        for (const { name, when } of companions) {
+            if (when) {
+                names[`${STACK_ID}.${when.parameter}`] ??= COMPANION_LABELS[name] ?? name
+            }
+        }
+        return names
+    }, [stacks, companions])
 
-    const startBulkDeploy = useCallback(
-        async (prefix: string, count: number) => {
-            if (!bulkValues) {
-                return undefined
-            }
-            const { deployments, error } = await bulkDeploy(bulkValues, prefix, count)
-            if (error) {
-                return error
-            }
-            showBulkStarted({ count: deployments?.length ?? count })
-            navigate('/instances')
-            return undefined
-        },
-        [bulkValues, bulkDeploy, showBulkStarted, navigate]
+    /* Saving a new preset copies the form, which can't carry the preset's required logins, so they are asked for again. Creating from the preset carries them. */
+    const validate = useCallback(
+        (values: AnyObject) =>
+            sourcePreset && values.presetChoice === 'new'
+                ? Object.entries(missingUncopyable(values, uncopyable, activeStacks(values))).reduce((errors, [field, message]) => setIn(errors, field, message), {})
+                : {},
+        [sourcePreset, uncopyable, activeStacks]
+    )
+
+    const askFor = useMemo(
+        () => (bulk ? askForUncopyable({ values: bulk.values, activeStacks: activeStacks(bulk.values), uncopyable, stacks }) : []),
+        [bulk, activeStacks, uncopyable, stacks]
     )
 
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title="New instance">
             <Card className={styles.container}>
-                <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
+                <Form onSubmit={submit} validate={validate} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS, presetChoice: 'none' }}>
                     {({ handleSubmit, values, form }) => (
                         <>
-                            {PRESETS_ENABLED && (
-                                <PresetPicker presets={presets} mainStackName={STACK_ID} onDeleted={refetchPresets} initialPresetId={searchParams.get('preset') ?? undefined} />
-                            )}
-                            <Dhis2V2Form
-                                handleCancel={navigateToInstanceList}
-                                handleSubmit={handleSubmit}
-                                name={values.name}
-                                steps={steps}
-                                mode="create"
-                                onCreateSeveral={() => openBulkDeploy(form)}
+                            <PresetPicker
+                                presets={presets}
+                                mainStackName={STACK_ID}
+                                initialPresetId={searchParams.get('preset') ?? undefined}
+                                blankValues={blankValues}
+                                onLoaded={setSourcePreset}
                             />
+                            {/* Blank sensitive fields stand for the preset's values when filled from one. */}
+                            <KeepValuePlaceholder.Provider value={sourcePreset ? "Leave blank to keep the preset's value" : KEEP_CURRENT_VALUE}>
+                                <Dhis2V2Form
+                                    handleCancel={navigateToInstanceList}
+                                    handleSubmit={handleSubmit}
+                                    name={values.name}
+                                    steps={steps}
+                                    mode="create"
+                                    deployment={sourcePreset}
+                                    footer={<PresetSection sourcePreset={sourcePreset} displayNames={displayNames} />}
+                                    onCreateSeveral={() => openBulk(form)}
+                                />
+                            </KeepValuePlaceholder.Provider>
                         </>
                     )}
                 </Form>
             </Card>
-            {bulkValues && (
+            {bulk && (
                 <BulkDeployModal
-                    group={bulkValues.groupName}
-                    values={bulkValues}
-                    initialPrefix={bulkValues.name ?? ''}
-                    onCancel={() => setBulkValues(undefined)}
-                    onDeploy={startBulkDeploy}
+                    group={bulk.values.groupName}
+                    values={bulk.values}
+                    initialPrefix={bulk.values.name ?? ''}
+                    copiedFrom={sourcePreset?.name}
+                    askFor={askFor}
+                    onCancel={closeBulk}
+                    onDeploy={startBulk}
                 />
             )}
         </Page>

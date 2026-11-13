@@ -1,4 +1,14 @@
-import { buildEditPresetRequest, buildFromPresetRequest, changedFromPreset, describeChanges, missingUncopyable, uncopyableParameters } from './preset-payloads.ts'
+import {
+    askForUncopyable,
+    buildEditPresetRequest,
+    buildFromPresetRequest,
+    canWritePreset,
+    changedFromPreset,
+    describeChanges,
+    missingUncopyable,
+    uncopyableParameters,
+    withAsked,
+} from './preset-payloads.ts'
 
 describe('preset payloads', () => {
     it('ignores per-instance fields when comparing with the preset', () => {
@@ -57,5 +67,35 @@ describe('preset payloads', () => {
             'pgadmin.PGADMIN_PASSWORD': 'Enter a value',
         })
         expect(missingUncopyable({}, uncopyable, [])).toEqual({})
+    })
+    it('asks only for the uncopyable values still missing, labelling a companion', () => {
+        const stacks = [
+            {
+                name: 'pgadmin',
+                parameters: [
+                    { parameterName: 'PGADMIN_USERNAME', displayName: 'Login' },
+                    { parameterName: 'PGADMIN_PASSWORD', displayName: 'Password' },
+                ],
+            },
+        ]
+        const askFor = askForUncopyable({
+            values: { pgadmin: { PGADMIN_USERNAME: 'dba@example.org' } },
+            activeStacks: ['dhis2-v2', 'pgadmin'],
+            uncopyable: { pgadmin: ['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'] },
+            stacks,
+        })
+        expect(askFor).toEqual([{ stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin: Password', type: 'password' }])
+    })
+    it('lays asked values into their stacks', () => {
+        expect(withAsked({ name: 'a', pgadmin: { X: '1' } }, { pgadmin: { Y: '2' } })).toEqual({ name: 'a', pgadmin: { X: '1', Y: '2' } })
+    })
+    it('lets administrators, group admins and owners in the group write a preset', () => {
+        const preset = { userId: 1, groupName: 'design' }
+        const group = { name: 'design' }
+        expect(canWritePreset(preset, null, true)).toBe(true)
+        expect(canWritePreset(preset, { id: 2, adminGroups: [group] }, false)).toBe(true)
+        expect(canWritePreset(preset, { id: 1, groups: [group] }, false)).toBe(true)
+        expect(canWritePreset(preset, { id: 1, groups: [] }, false)).toBe(false)
+        expect(canWritePreset(preset, { id: 2, groups: [group] }, false)).toBe(false)
     })
 })

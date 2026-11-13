@@ -3,15 +3,15 @@ import { useCallback, useEffect, useMemo } from 'react'
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useActionAlert } from '../../components/index.ts'
-import { COMPANION_LABELS } from '../../constants.ts'
 import { useAuthAxios, useStacks, useUncopyable } from '../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../types/index.ts'
-import { BulkDeployModal, type BulkAskFor } from '../instances/dhis2-v2/bulk-deploy-modal.tsx'
+import { BulkDeployModal } from '../instances/dhis2-v2/bulk-deploy-modal.tsx'
 import { STACK_ID } from '../instances/dhis2-v2/dhis2-v2-form.tsx'
 import { presetFormValues } from '../instances/dhis2-v2/preset-values.ts'
 import { DEFAULT_TTL_SECONDS } from '../instances/fields/ttl-presets.ts'
+import { askForUncopyable, withAsked } from './preset-payloads.ts'
 
 /* Creates several instances from a preset without passing through the form. The list rows may be stale, so the preset is read again. */
 export const CreateSeveralFromPreset: FC<{ preset: Deployment; onClose: () => void }> = ({ preset, onClose }) => {
@@ -41,24 +41,7 @@ export const CreateSeveralFromPreset: FC<{ preset: Deployment; onClose: () => vo
 
     const values = useMemo(() => fresh && presetFormValues(fresh, STACK_ID, { ttl: DEFAULT_TTL_SECONDS, [STACK_ID]: initialParameterValues }), [fresh, initialParameterValues])
 
-    const askFor = useMemo<BulkAskFor[]>(() => {
-        if (!values) {
-            return []
-        }
-        return activeStacks(values).flatMap((stackName) => {
-            const stack = stacks.find((candidate) => candidate.name === stackName)
-            const prefix = stackName === STACK_ID ? '' : `${COMPANION_LABELS[stackName] ?? stackName}: `
-            return (uncopyable[stackName] ?? []).map((parameterName) => {
-                const parameter = stack?.parameters?.find((candidate) => candidate.parameterName === parameterName)
-                return {
-                    stackName,
-                    parameterName,
-                    displayName: `${prefix}${parameter?.displayName ?? parameterName}`,
-                    type: parameterName.includes('PASSWORD') ? 'password' : 'text',
-                }
-            })
-        })
-    }, [values, activeStacks, stacks, uncopyable])
+    const askFor = useMemo(() => (values ? askForUncopyable({ values, activeStacks: activeStacks(values), uncopyable, stacks }) : []), [values, activeStacks, stacks, uncopyable])
 
     if (!values) {
         return null
@@ -73,8 +56,7 @@ export const CreateSeveralFromPreset: FC<{ preset: Deployment; onClose: () => vo
             askFor={askFor}
             onCancel={onClose}
             onDeploy={async (prefix, count, extra) => {
-                const merged = Object.fromEntries(Object.entries({ ...values, ...extra }).map(([key, value]) => [key, extra[key] ? { ...values[key], ...extra[key] } : value]))
-                const { deployments, error: deployError } = await bulkDeploy(merged, prefix, count)
+                const { deployments, error: deployError } = await bulkDeploy(withAsked(values, extra), prefix, count)
                 if (deployError) {
                     return deployError
                 }

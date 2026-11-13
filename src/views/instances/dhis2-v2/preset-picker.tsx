@@ -1,10 +1,11 @@
-import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, SingleSelectField } from '@dhis2/ui'
+import { Button, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import cx from 'classnames'
+import type { AnyObject, FormApi } from 'final-form'
 import type { FC, MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-final-form'
-import { ConfirmationModal } from '../../../components/index.ts'
+import { Link } from 'react-router-dom'
+import { ConfirmationModal, useActionAlert } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { usePresetSummary } from '../../presets/preset-summary.ts'
@@ -12,9 +13,8 @@ import fieldStyles from '../fields/fields.module.css'
 import styles from '../styles.module.css'
 import { presetFormValues } from './preset-values.ts'
 
-const ERROR_OPTIONS = { critical: true }
-
-const presetKey = (preset: Deployment) => `${preset.groupName}/${preset.name}`
+const BLANK = 'blank'
+const FIELDS_OWN_TO_THE_SECTION = ['presetChoice', 'presetName', 'saveAsPreset']
 
 type PresetOptionProps = {
     label: string
@@ -38,92 +38,146 @@ const PresetOption: FC<PresetOptionProps> = ({ label, value, preset, mainStackNa
     )
 }
 
-export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; onDeleted: () => void; initialPresetId?: string }> = ({
+/* The form keeps dirty fields when it is reinitialised, which would let a value changed before the preset loaded survive filling from it. Filling replaces everything. */
+const restart = (form: FormApi, values: AnyObject) => {
+    form.setConfig('keepDirtyOnReinitialize', false)
+    form.restart(values)
+    form.setConfig('keepDirtyOnReinitialize', true)
+}
+
+/* Picking a preset fills the form from it, so its values become the form's initial values and final-form's dirty fields are exactly what differs from it. */
+export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; initialPresetId?: string; blankValues: AnyObject; onLoaded: (preset?: Deployment) => void }> = ({
     presets,
     mainStackName,
-    onDeleted,
     initialPresetId,
+    blankValues,
+    onLoaded,
 }) => {
     const form = useForm()
-    /* Kept by group and name rather than id, since replacing a preset gives it a new id. */
-    const [selectedKey, setSelectedKey] = useState<string>()
-    const selected = presets.find((preset) => presetKey(preset) === selectedKey)
-    const selectedId = selected ? String(selected.id) : undefined
-    const { show: showError } = useAlert(({ message }) => message, ERROR_OPTIONS)
-    const [{ loading: loadingPreset }, fetchPreset] = useAuthAxios<Deployment>({ method: 'GET' }, { manual: true, autoCancel: false })
-    const [{ loading: deleting }, deletePreset] = useAuthAxios({ method: 'DELETE' }, { manual: true, autoCancel: false })
+    const alert = useActionAlert()
+    const [loaded, setLoaded] = useState<Deployment>()
+    const [pending, setPending] = useState<string>()
+    const [{ loading }, fetchPreset] = useAuthAxios<Deployment>({ method: 'GET' }, { manual: true, autoCancel: false })
+    const [, fetchAvailability] = useAuthAxios<{ names: string[]; taken: string[] }>({ method: 'GET', url: '/deployments/bulk/availability' }, { manual: true, autoCancel: false })
 
-    const loadPreset = useCallback(
-        async ({ selected }: { selected: string }) => {
-            const preset = presets.find(({ id }) => String(id) === selected)
-            setSelectedKey(preset && presetKey(preset))
+    /* The preset's name numbered from 1, skipping numbers the group's instances already use. If the check fails, the name field's own check flags a taken name. */
+    const firstFreeName = useCallback(
+        async ({ name, groupName }: Deployment) => {
             try {
-                const { data: preset } = await fetchPreset({ url: `/deployments/${selected}` })
-                form.restart(presetFormValues(preset, mainStackName, form.getState().initialValues ?? {}))
-            } catch (error) {
-                showError({ message: `Couldn't load the preset: ${error instanceof Error ? error.message : error}` })
+                const { data } = await fetchAvailability({ params: { group: groupName, prefix: name, count: 50 } })
+                const taken = new Set(data.taken)
+                return data.names.find((candidate) => !taken.has(candidate)) ?? `${name}-1`
+            } catch {
+                return `${name}-1`
             }
         },
-        [fetchPreset, form, mainStackName, presets, showError]
+        [fetchAvailability]
     )
 
-    /* The presets list's Load opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
+    const loadPreset = useCallback(
+        async (id: string) => {
+            try {
+                const { data: preset } = await fetchPreset({ url: `/presets/${id}` })
+                restart(form, { ...presetFormValues(preset, mainStackName, blankValues, { blankMasked: true }), name: await firstFreeName(preset) })
+                setLoaded(preset)
+                onLoaded(preset)
+            } catch (error) {
+                alert.error(`Couldn't load the preset: ${error instanceof Error ? error.message : error}`)
+            }
+        },
+        [fetchPreset, form, mainStackName, blankValues, firstFreeName, onLoaded, alert]
+    )
+
+    /* Use preset opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
     const appliedInitial = useRef(false)
     useEffect(() => {
         if (appliedInitial.current || !initialPresetId || !presets.some(({ id }) => String(id) === initialPresetId)) {
             return
         }
         appliedInitial.current = true
-        void loadPreset({ selected: initialPresetId })
+        void loadPreset(initialPresetId)
     }, [initialPresetId, presets, loadPreset])
 
-    const [confirmingDelete, setConfirmingDelete] = useState(false)
-    const removePreset = useCallback(async () => {
-        setConfirmingDelete(false)
-        try {
-            await deletePreset({ url: `/deployments/${selectedId}` })
-            setSelectedKey(undefined)
-            onDeleted()
-        } catch (error) {
-            showError({ message: `Couldn't delete the preset: ${error instanceof Error ? error.message : error}` })
-        }
-    }, [deletePreset, selectedId, onDeleted, showError])
+    /* Blank is the form as it opens, keeping the chosen group. */
+    const apply = useCallback(
+        (selected: string) => {
+            if (selected !== BLANK) {
+                void loadPreset(selected)
+                return
+            }
+            restart(form, { ...blankValues, groupName: form.getState().values.groupName })
+            setLoaded(undefined)
+            onLoaded(undefined)
+        },
+        [form, blankValues, loadPreset, onLoaded]
+    )
+
+    /* With a preset loaded a change is anything that differs from it; on a blank form it is a field someone touched, since some fields fill themselves in. */
+    const choose = useCallback(
+        (selected: string) => {
+            const { dirtyFields, touched = {} } = form.getState()
+            const changed = Object.keys(dirtyFields).some((field) => dirtyFields[field] && !FIELDS_OWN_TO_THE_SECTION.includes(field) && (loaded || touched[field]))
+            if (changed) {
+                setPending(selected)
+            } else {
+                apply(selected)
+            }
+        },
+        [form, loaded, apply]
+    )
 
     if (presets.length === 0) {
         return null
     }
 
+    const pendingName = presets.find(({ id }) => String(id) === pending)?.name
+
     return (
         <>
-            <fieldset className={cx(styles.fieldset, styles.main)}>
-                <legend className={styles.legend}>Presets</legend>
-                <div className={styles.presetRow}>
-                    <SingleSelectField
-                        className={fieldStyles.field}
-                        label="Start from a preset"
-                        placeholder="Choose a preset"
-                        helpText="Fills the form with the preset's settings. Passwords and other sensitive values aren't filled in."
-                        selected={selectedId}
-                        onChange={loadPreset}
-                        loading={loadingPreset}
-                        filterable
-                        noMatchText="No preset matches"
-                    >
-                        {presets.map((preset) => (
-                            <PresetOption key={preset.id} value={String(preset.id)} label={`${preset.name} (${preset.groupName})`} preset={preset} mainStackName={mainStackName} />
-                        ))}
-                    </SingleSelectField>
-                    {selectedId && (
-                        <Button small destructive secondary loading={deleting} onClick={() => setConfirmingDelete(true)}>
-                            Delete preset
+            <div className={styles.presetBar}>
+                <SingleSelectField
+                    className={fieldStyles.field}
+                    label="Start from a preset"
+                    selected={loaded ? String(loaded.id) : BLANK}
+                    onChange={({ selected }) => selected !== (loaded ? String(loaded.id) : BLANK) && choose(selected)}
+                    loading={loading}
+                    filterable
+                    noMatchText="No preset matches"
+                >
+                    <SingleSelectOption value={BLANK} label="Blank (no preset)" />
+                    {presets.map((preset) => (
+                        <PresetOption key={preset.id} value={String(preset.id)} label={`${preset.name} (${preset.groupName})`} preset={preset} mainStackName={mainStackName} />
+                    ))}
+                </SingleSelectField>
+                {loaded && (
+                    <p className={styles.presetNote}>
+                        Filled from <strong>{loaded.name}</strong>
+                        <Link to={`/presets/${loaded.id}`}>View preset</Link>
+                        <Button small secondary onClick={() => void loadPreset(String(loaded.id))}>
+                            Reset to preset
                         </Button>
-                    )}
-                </div>
-            </fieldset>
+                    </p>
+                )}
+            </div>
             <hr className={styles.hr} />
-            {confirmingDelete && selected && (
-                <ConfirmationModal title={`Delete ${selected.name}?`} confirmLabel="Delete preset" destructive onConfirm={removePreset} onCancel={() => setConfirmingDelete(false)}>
-                    Deletes the preset from <strong>{selected.groupName}</strong>. Instances created from it keep running. This can&apos;t be undone.
+            {pending && (
+                <ConfirmationModal
+                    title="Replace your changes?"
+                    confirmLabel="Replace"
+                    cancelLabel="Keep editing"
+                    onCancel={() => setPending(undefined)}
+                    onConfirm={() => {
+                        setPending(undefined)
+                        apply(pending)
+                    }}
+                >
+                    {pending === BLANK ? (
+                        "Starting from a blank form clears everything you've changed."
+                    ) : (
+                        <>
+                            Filling the form from <strong>{pendingName}</strong> replaces everything you&apos;ve changed.
+                        </>
+                    )}
                 </ConfirmationModal>
             )}
         </>

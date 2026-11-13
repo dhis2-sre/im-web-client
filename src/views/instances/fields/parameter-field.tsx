@@ -110,7 +110,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
                 />
             )
         case CUSTOM_DHIS2_CONFIG:
-            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} />
+            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} formMode={formMode} />
         default:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} required={required} formMode={formMode} />
     }

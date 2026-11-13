@@ -1,6 +1,8 @@
 import type { AnyObject } from 'final-form'
+import { COMPANION_LABELS } from '../../constants.ts'
 import { buildEditPayload, type EditPayloadInput } from '../../hooks/build-edit-payload.ts'
-import type { CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, StackParameterWithGroup } from '../../types/index.ts'
+import type { CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, Group, StackParameterWithGroup, User } from '../../types/index.ts'
+import type { BulkAskFor } from '../instances/dhis2-v2/bulk-deploy-modal.tsx'
 
 /* Fields that belong to the new instance or the preset itself, so they are not a difference from the preset. */
 export const PRESET_ONLY_FIELDS = ['name', 'ttl', 'groupName', 'description', 'presetChoice', 'presetName', 'saveAsPreset']
@@ -48,4 +50,42 @@ export const missingUncopyable = (values: AnyObject, uncopyable: Record<string, 
         }
     }
     return errors
+}
+
+type StackParameters = { name?: string; parameters?: { parameterName?: string; displayName?: string }[] }
+
+/* The required values a copy can't carry that the values don't hold yet, for the Create several dialog to ask for. A companion's are labelled with its name. */
+export const askForUncopyable = ({
+    values,
+    activeStacks,
+    uncopyable,
+    stacks,
+}: {
+    values: AnyObject
+    /* The main stack first, then the companions, as useStackDeploymentCreation's activeStacks lists them. */
+    activeStacks: string[]
+    uncopyable: Record<string, string[]>
+    stacks: StackParameters[]
+}): BulkAskFor[] =>
+    activeStacks.flatMap((stackName, index) => {
+        const stack = stacks.find((candidate) => candidate.name === stackName)
+        const prefix = index === 0 ? '' : `${COMPANION_LABELS[stackName] ?? stackName}: `
+        return (uncopyable[stackName] ?? [])
+            .filter((parameterName) => !values[stackName]?.[parameterName])
+            .map((parameterName) => ({
+                stackName,
+                parameterName,
+                displayName: `${prefix}${stack?.parameters?.find((candidate) => candidate.parameterName === parameterName)?.displayName ?? parameterName}`,
+                type: parameterName.includes('PASSWORD') ? 'password' : 'text',
+            }))
+    })
+
+/* What the dialog asked for, laid into each stack's values. */
+export const withAsked = (values: AnyObject, asked: AnyObject): AnyObject =>
+    Object.fromEntries(Object.entries({ ...values, ...asked }).map(([key, value]) => [key, asked[key] ? { ...values[key], ...asked[key] } : value]))
+
+/* As the server decides it: an administrator, an admin of the preset's group, or its owner while still in that group. */
+export const canWritePreset = (preset: Deployment, user: User | null, isAdministrator: boolean) => {
+    const inGroup = (groups: Group[] = []) => groups.some((group) => group.name === preset.groupName)
+    return isAdministrator || inGroup(user?.adminGroups) || (!!user && preset.userId === user.id && inGroup(user.groups))
 }

@@ -1,12 +1,14 @@
 import { InputFieldFF, hasValue } from '@dhis2/ui'
-import { FC } from 'react'
+import { FC, useContext } from 'react'
 import { Field } from 'react-final-form'
+import { KeepValuePlaceholder } from './keep-value-placeholder.ts'
 import { ParameterFieldProps } from './parameter-field.tsx'
 
 export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text', sensitive, required = false, formMode = 'create' }) => {
     const shouldRequireValue = required && !(sensitive && formMode === 'update')
     const validate = type === 'email' ? (shouldRequireValue ? validateEmailRequired : validateEmailOptional) : shouldRequireValue ? hasValue : undefined
-    const placeholder = sensitive && formMode === 'update' ? 'Leave blank to keep current value' : undefined
+    const keepValue = useContext(KeepValuePlaceholder)
+    const placeholder = sensitive && formMode === 'update' ? keepValue : undefined
     return (
         <Field
             required={shouldRequireValue}
