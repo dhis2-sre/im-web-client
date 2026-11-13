@@ -3,7 +3,8 @@ import { FORM_ERROR } from 'final-form'
 import type { AnyObject } from 'final-form'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SaveDeploymentRequest, SaveInstanceRequest, StackCompanion } from '../types/index.ts'
+import type { Deployment, SaveDeploymentRequest, SaveInstanceRequest, SavePresetRequest, StackCompanion } from '../types/index.ts'
+import { buildEditPresetRequest, buildFromPresetRequest } from '../views/presets/preset-payloads.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 
 export type DeploymentStepStatus = 'pending' | 'running' | 'success' | 'error'
@@ -23,7 +24,7 @@ const SETTLED_PAUSE_MS = 800
  * that a visibility condition later hid never reach the backend. A companion is included while the
  * condition the stack gates it on holds, since that condition is the opt-in, and a companion
  * declared without one is always included, the same reading the form renders by. Confirm-password
- * helper fields are never sent. Saving a preset stores the same deployment with nothing deployed, and a
+ * helper fields are never sent. Saving a preset stores the same instances under /presets, and a
  * bulk deploy sends the same instances to be created and deployed under many names. */
 export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[], companions: StackCompanion[] = []) => {
     const navigate = useNavigate()
@@ -43,6 +44,8 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         },
         [stackName, companions]
     )
+
+    const activeStacks = useCallback((values: AnyObject) => [stackName, ...includedCompanionsOf(values).map((companion) => companion.name)], [stackName, includedCompanionsOf])
 
     const buildInstances = useCallback(
         (values: AnyObject): SaveInstanceRequest[] => {
@@ -75,20 +78,28 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         setSteps((current) => current.map((step) => (names.includes(step.stackName) ? { ...step, status } : step)))
     }, [])
 
-    const saveDeployment = useCallback(
-        async (values: AnyObject, preset: boolean, overwrite = false) => {
+    const errorMessage = (error: unknown, fallback: string) =>
+        isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : error instanceof Error ? error.message : fallback
+
+    /* Deploying is accepted rather than performed, so this returns long before anything runs in the
+     * cluster. The details page is where the deploy is watched. */
+    const deployAndOpen = useCallback(
+        async (id: number) => {
+            await executePost({ url: `/deployments/${id}/deploy` })
+            /* Long enough for the check marks to be seen before the details page replaces them. */
+            await new Promise((resolve) => setTimeout(resolve, SETTLED_PAUSE_MS))
+            navigate(`/instances/${id}/details`)
+        },
+        [executePost, navigate]
+    )
+
+    const createDeployment = useCallback(
+        async (values: AnyObject) => {
             const instances = buildInstances(values)
             setSteps(instances.map((instance) => ({ stackName: instance.stackName ?? '', status: 'pending' })))
 
             try {
-                const deploymentPayload: SaveDeploymentRequest = {
-                    name: values.name,
-                    group: values.groupName,
-                    description: values.description,
-                    ttl: values.ttl,
-                    preset,
-                    overwrite,
-                }
+                const deploymentPayload: SaveDeploymentRequest = { name: values.name, group: values.groupName, description: values.description, ttl: values.ttl }
                 const { data: deployment } = await executePost({ data: deploymentPayload })
 
                 for (const instance of instances) {
@@ -97,37 +108,64 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                     setStatus([instance.stackName ?? ''], 'success')
                 }
 
-                if (preset) {
-                    setSteps([])
-                    return undefined
-                }
-
-                /* Deploying is accepted rather than performed, so this returns long before anything
-                 * runs in the cluster. The details page is where the deploy is watched. */
-                await executePost({ url: `/deployments/${deployment.id}/deploy` })
-                /* Long enough for the check marks to be seen before the details page replaces them. */
-                await new Promise((resolve) => setTimeout(resolve, SETTLED_PAUSE_MS))
-                navigate(`/instances/${deployment.id}/details`)
+                await deployAndOpen(deployment.id)
                 return undefined
             } catch (error) {
                 console.error(error)
                 setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                const serverMessage = isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : undefined
-                const taken = isAxiosError(error) && error.response?.status === 409
-                if (taken) {
-                    setSteps([])
-                }
-                return {
-                    [FORM_ERROR]: serverMessage ?? (error instanceof Error ? error.message : `Couldn't ${preset ? 'save the preset' : 'create the instance'}`),
-                    ...(preset && { taken }),
-                }
+                return { [FORM_ERROR]: errorMessage(error, "Couldn't create the instance") }
             }
         },
-        [executePost, navigate, buildInstances, setStatus]
+        [executePost, buildInstances, setStatus, deployAndOpen]
     )
 
-    const createDeployment = useCallback((values: AnyObject) => saveDeployment(values, false), [saveDeployment])
-    const savePreset = useCallback((values: AnyObject, overwrite = false) => saveDeployment(values, true, overwrite), [saveDeployment])
+    const createFromPreset = useCallback(
+        async (presetId: number, values: AnyObject, dirtyFields: Record<string, boolean>) => {
+            const names = activeStacks(values)
+            setSteps(names.map((name) => ({ stackName: name, status: 'pending' })))
+            try {
+                setStatus(names, 'running')
+                const data = buildFromPresetRequest({ values, dirtyFields, includedParameters: new Set(getIncludedParameters(values)), stackName })
+                const { data: deployment } = await executePost({ url: `/presets/${presetId}/deployments`, data })
+                setStatus(names, 'success')
+                await deployAndOpen(deployment.id)
+                return undefined
+            } catch (error) {
+                console.error(error)
+                setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
+                return { [FORM_ERROR]: errorMessage(error, "Couldn't create the instance") }
+            }
+        },
+        [executePost, activeStacks, setStatus, getIncludedParameters, stackName, deployAndOpen]
+    )
+
+    const savePreset = useCallback(
+        async (values: AnyObject): Promise<{ id?: number; error?: string }> => {
+            const data: SavePresetRequest = { name: values.name, group: values.groupName, description: values.description, ttl: values.ttl, instances: buildInstances(values) }
+            try {
+                const { data: preset } = await executePost({ url: '/presets', data })
+                return { id: preset.id }
+            } catch (error) {
+                console.error(error)
+                return { error: errorMessage(error, "Couldn't save the preset") }
+            }
+        },
+        [executePost, buildInstances]
+    )
+
+    const updatePreset = useCallback(
+        async (source: Deployment, values: AnyObject, dirtyFields: Record<string, boolean>): Promise<{ id?: number; error?: string }> => {
+            const data = buildEditPresetRequest({ values, dirtyFields, includedParameters: new Set(getIncludedParameters(values)), stackName, source })
+            try {
+                await executePost({ url: `/presets/${source.id}`, method: 'PATCH', data })
+                return { id: source.id }
+            } catch (error) {
+                console.error(error)
+                return { error: errorMessage(error, "Couldn't save the preset") }
+            }
+        },
+        [executePost, getIncludedParameters, stackName]
+    )
 
     const bulkDeploy = useCallback(
         async (values: AnyObject, prefix: string, count: number): Promise<{ deployments?: BulkDeployment[]; error?: BulkDeployError }> => {
@@ -157,5 +195,5 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         [executePost, buildInstances]
     )
 
-    return { createDeployment, savePreset, bulkDeploy, steps }
+    return { createDeployment, createFromPreset, savePreset, updatePreset, bulkDeploy, activeStacks, steps }
 }

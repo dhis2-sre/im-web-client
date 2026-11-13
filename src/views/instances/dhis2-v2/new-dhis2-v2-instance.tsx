@@ -1,12 +1,11 @@
 import { useAlert } from '@dhis2/app-service-alerts'
 import { Card } from '@dhis2/ui'
-import { FORM_ERROR } from 'final-form'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ConfirmationModal, Page } from '../../../components/index.ts'
+import { Page } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
@@ -48,7 +47,6 @@ export const NewDhis2V2Instance: FC = () => {
     const { show: showSaveFailed } = useAlert(({ message }) => message, CRITICAL_OPTIONS)
     const savingPreset = useRef(false)
 
-    const [presetToReplace, setPresetToReplace] = useState<AnyObject>()
     const [bulkValues, setBulkValues] = useState<AnyObject>()
     const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} ${count === 1 ? 'instance' : 'instances'}…`, SUCCESS_OPTIONS)
 
@@ -79,17 +77,13 @@ export const NewDhis2V2Instance: FC = () => {
     )
 
     const storePreset = useCallback(
-        async (values: AnyObject, overwrite: boolean) => {
+        async (values: AnyObject) => {
             savingPreset.current = true
-            const result = await savePreset(values, overwrite).finally(() => {
+            const { error } = await savePreset(values).finally(() => {
                 savingPreset.current = false
             })
-            if (result?.taken && !overwrite) {
-                setPresetToReplace(values)
-                return
-            }
-            if (result) {
-                showSaveFailed({ message: result[FORM_ERROR] ?? "Couldn't save the preset" })
+            if (error) {
+                showSaveFailed({ message: error })
                 return
             }
 
@@ -111,7 +105,7 @@ export const NewDhis2V2Instance: FC = () => {
                 return
             }
 
-            await storePreset(values, false)
+            await storePreset(values)
         },
         [storePreset]
     )
@@ -139,20 +133,6 @@ export const NewDhis2V2Instance: FC = () => {
             </Card>
             {bulkValues && (
                 <BulkDeployModal group={bulkValues.groupName} initialPrefix={bulkValues.name ?? ''} onCancel={() => setBulkValues(undefined)} onDeploy={startBulkDeploy} />
-            )}
-            {presetToReplace && (
-                <ConfirmationModal
-                    title={`Replace ${presetToReplace.name}?`}
-                    confirmLabel="Replace preset"
-                    destructive
-                    onCancel={() => setPresetToReplace(undefined)}
-                    onConfirm={() => {
-                        setPresetToReplace(undefined)
-                        void storePreset(presetToReplace, true)
-                    }}
-                >
-                    A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Saving replaces its settings with these.
-                </ConfirmationModal>
             )}
         </Page>
     )
