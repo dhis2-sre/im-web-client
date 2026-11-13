@@ -1,27 +1,27 @@
 import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import { FC } from 'react'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/index.ts'
-import styles from './clusters-list.module.css'
 import { NewClusterButton } from './new-cluster-button.tsx'
 
 export const ClustersList: FC = () => {
-    const [{ data }, refetch] = useAuthAxios<Cluster[]>('/clusters', { useCache: false })
+    const [{ data, loading, error }, refetch] = useAuthAxios<Cluster[]>('/clusters', { useCache: false })
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title="Clusters">
-                <NewClusterButton onComplete={refetch} />
-            </Heading>
+        <Page
+            title="Clusters"
+            actions={<NewClusterButton onComplete={refetch} />}
+            loading={loading && !data}
+            error={error && !data ? { title: "Couldn't load clusters", description: error.message } : undefined}
+        >
             <DataTable>
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Name</DataTableColumnHeader>
                         <DataTableColumnHeader>Description</DataTableColumnHeader>
-                        <DataTableColumnHeader>Group(s)</DataTableColumnHeader>
+                        <DataTableColumnHeader>Groups</DataTableColumnHeader>
                         <DataTableColumnHeader>Created</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
                     </DataTableRow>
@@ -36,16 +36,16 @@ export const ClustersList: FC = () => {
                                 <DataTableCell>{cluster.description}</DataTableCell>
                                 <DataTableCell>{cluster.groups?.map((group) => group.name).join(', ')}</DataTableCell>
                                 <DataTableCell>
-                                    <Moment date={cluster.createdAt} fromNow />
+                                    <MomentFromNow date={cluster.createdAt} />
                                 </DataTableCell>
                                 <DataTableCell>
-                                    <Moment date={cluster.updatedAt} fromNow />
+                                    <MomentFromNow date={cluster.updatedAt} />
                                 </DataTableCell>
                             </DataTableRow>
                         )
                     })}
                 </TableBody>
             </DataTable>
-        </div>
+        </Page>
     )
 }

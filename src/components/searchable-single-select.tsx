@@ -29,21 +29,8 @@ const FilterField = ({ filter, loading, onChange, onClear }: { filter: string; l
             </div>
 
             <button className={classes.clearButton} disabled={!filter} onClick={onClear}>
-                clear
+                Clear
             </button>
-        </div>
-    )
-}
-
-const Error = ({ msg, onRetryClick }: { msg: string; onRetryClick: () => void }) => {
-    return (
-        <div className={classes.error}>
-            <div className={classes.errorInnerWrapper}>
-                <span className={classes.loadingErrorLabel}>{msg}</span>
-                <button className={classes.errorRetryButton} type="button" onClick={onRetryClick}>
-                    Retry
-                </button>
-            </div>
         </div>
     )
 }
@@ -59,7 +46,6 @@ interface SearchableSingleSelectPropTypes {
     disabled?: boolean
     selected?: string
     invalid?: boolean
-    error?: string
     onBlur?: () => void
     onFocus?: () => void
 }
@@ -67,7 +53,6 @@ interface SearchableSingleSelectPropTypes {
 export const SearchableSingleSelect = ({
     invalid,
     disabled,
-    error,
     loading,
     placeholder,
     onBlur,
@@ -84,10 +69,6 @@ export const SearchableSingleSelect = ({
 
     const hasSelectedInOptionList = !!options.find(({ value }) => value === selected)
 
-    const onRetryClick = () => {
-        console.log('Retry clicked')
-    }
-
     return (
         <SingleSelect
             selected={hasSelectedInOptionList ? selected : ''}
@@ -100,13 +81,11 @@ export const SearchableSingleSelect = ({
         >
             {/* Deliberately not a "value" prop: the select finds its selected option by matching any
                 child's props.value, without first checking the child is an option. */}
-            <FilterField filter={filter} loading={!error && loading} onChange={setFilterValue} onClear={() => setFilterValue('')} />
+            <FilterField filter={filter} loading={loading} onChange={setFilterValue} onClear={() => setFilterValue('')} />
 
             {options.map(({ value, label }) => (
                 <SingleSelectOption key={value} value={value} label={label} />
             ))}
-
-            {error && <Error msg={error} onRetryClick={onRetryClick} />}
         </SingleSelect>
     )
 }

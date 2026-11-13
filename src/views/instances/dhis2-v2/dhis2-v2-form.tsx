@@ -86,7 +86,7 @@ export const Dhis2V2Form: FC<{
             ...currentValues,
             [STACK_ID]: {
                 ...initialParameterValues,
-                ...(currentValues[STACK_ID] ?? {}),
+                ...currentValues[STACK_ID],
             },
         })
     }, [form, initialParameterValues, isEdit])
@@ -104,7 +104,7 @@ export const Dhis2V2Form: FC<{
             <hr className={styles.hr} />
             {loading && <CircularLoader />}
             {error && !loading && (
-                <NoticeBox error title="Could not load parameter fields">
+                <NoticeBox error title="Couldn't load the stack parameters">
                     {error.message}
                 </NoticeBox>
             )}
@@ -130,7 +130,7 @@ export const Dhis2V2Form: FC<{
                     <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} formMode={companionFormMode(companion.name)} />
                 ))}
             {submitError && (
-                <NoticeBox className={styles.submitError} error title="There was an error in one of the deployment steps">
+                <NoticeBox className={styles.submitError} error title={isEdit ? "Couldn't save the changes" : "Couldn't create the instance"}>
                     {submitError}
                 </NoticeBox>
             )}
@@ -152,7 +152,7 @@ export const Dhis2V2Form: FC<{
                                 setSubmitMenuWidth(submitMenuAnchor.current?.offsetWidth)
                                 setSubmitMenuOpen((open) => !open)
                             }}
-                            aria-label="More ways to save"
+                            aria-label="More create options"
                         >
                             {submitMenuOpen ? <IconChevronUp16 /> : <IconChevronDown16 />}
                         </Button>
@@ -167,7 +167,7 @@ export const Dhis2V2Form: FC<{
                                                 onSavePreset()
                                             }}
                                         >
-                                            Save preset
+                                            Save as preset
                                         </Button>
                                         {onBulkDeploy && (
                                             <Button
@@ -177,7 +177,7 @@ export const Dhis2V2Form: FC<{
                                                     onBulkDeploy()
                                                 }}
                                             >
-                                                Bulk deploy
+                                                Bulk deploy…
                                             </Button>
                                         )}
                                     </div>

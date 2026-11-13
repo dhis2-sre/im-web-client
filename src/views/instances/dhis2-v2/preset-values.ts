@@ -23,7 +23,7 @@ export const presetFormValues = (preset: Deployment, mainStackName: string, init
         const parameters = Object.entries(instance.parameters ?? {})
             .map(([name, parameter]) => [name, parameter.value ?? ''] as const)
             .filter(([, value]) => value !== '' && !isMaskedValue(value))
-        values[instance.stackName] = { ...(initialValues[instance.stackName] ?? {}), ...Object.fromEntries(parameters) }
+        values[instance.stackName] = { ...initialValues[instance.stackName], ...Object.fromEntries(parameters) }
     }
 
     return values

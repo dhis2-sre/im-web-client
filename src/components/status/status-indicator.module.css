@@ -1,0 +1,4 @@
+/* Sized to sit in a tag's icon slot beside its label. */
+.tagDot {
+    --status-dot-size: 8px;
+}

@@ -1,84 +1,93 @@
-import { Button, ButtonStrip, Center, CircularLoader, Card, NoticeBox } from '@dhis2/ui'
-import { FC } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Heading } from '../../../components/index.ts'
+import { Button, IconClock16, IconClockHistory16, IconFolder16, IconLink16, IconUser16 } from '@dhis2/ui'
+import { FC, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { MetaFact, MetaLine, MomentFromNow, Page } from '../../../components/index.ts'
+import { STACK_NAMES } from '../../../constants.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
-import { Deployment } from '../../../types/index.ts'
+import { Deployment, DeploymentInstanceDeployState } from '../../../types/index.ts'
 import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
-import { DeleteButton } from '../list/delete-menu-button.tsx'
-import { DeploymentActionsMenu } from '../list/deployment-actions-menu.tsx'
-import { DeploymentComponents } from './deployment-components.tsx'
-import styles from './deployment-details.module.css'
-import { DeploymentInstancesList } from './deployment-instances-list.tsx'
-import { DeploymentSummary } from './deployment-summary.tsx'
+import { deploymentStatus } from '../list/component-health.ts'
+import { ExpiresCell } from '../list/expires-cell.tsx'
+import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
+import { expiresAt } from '../list/instance-filter-rules.ts'
+import { stackUrl } from '../list/open-button.tsx'
+import { DeploymentStacks } from './deployment-stacks.tsx'
+import { ExtendLifetimeModal } from './extend-lifetime-modal.tsx'
+import { InstanceUrl } from './instance-url.tsx'
+
+/* When it goes away leads, since that is what people check most. DHIS2's address comes last with its
+ * buttons, and is left out for a deployment without the stack or a group without a hostname. */
+const detailItems = (deployment: Deployment): Record<string, ReactNode> => {
+    const dhis2 = deployment.instances?.find((instance) => instance.stackName === STACK_NAMES.DHIS2)
+    return {
+        expires: (
+            <MetaFact icon={<IconClock16 />}>
+                <ExpiresCell deployment={deployment} prefix={expiresAt(deployment) < Date.now() ? 'Expired' : 'Expires'} />
+            </MetaFact>
+        ),
+        owner: <MetaFact icon={<IconUser16 />}>Owned by {deployment.user.email}</MetaFact>,
+        updated: (
+            <MetaFact icon={<IconClockHistory16 />}>
+                Updated <MomentFromNow date={deployment.updatedAt} />
+            </MetaFact>
+        ),
+        group: <MetaFact icon={<IconFolder16 />}>{deployment.groupName}</MetaFact>,
+        url: dhis2 && deployment.group?.hostname && (
+            <MetaFact icon={<IconLink16 />}>
+                <InstanceUrl url={stackUrl(deployment.group, dhis2.name)} />
+            </MetaFact>
+        ),
+    }
+}
 
 export const DeploymentDetails: FC = () => {
     const navigate = useNavigate()
+    const { id } = useParams()
     const [{ data: deployment, error, loading }, refetch] = useDeploymentDetails()
-    const title = 'Instance details'
+    /* The stacks, the status beside the name and the actions share the one query: it asks the
+     * cluster about every component of every instance, and the actions need it to know whether
+     * anything can be backed up. */
+    const components = useLiveComponents(Number(id))
+    const [extending, setExtending] = useState(false)
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title={title}>
-                {deployment && (
-                    <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
-                        <Button disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
-                            Edit
-                        </Button>
-                    </span>
-                )}
-                <Button onClick={() => navigate('/instances')}>Back to list</Button>
-            </Heading>
-
-            {error && !deployment && (
-                <NoticeBox error title="Could not retrieve instance details">
-                    {error.message}
-                </NoticeBox>
-            )}
-
-            {loading && (
-                <Center className={styles.loaderWrap}>
-                    <CircularLoader />
-                </Center>
-            )}
-
-            {deployment && (
-                <>
-                    <div className={styles.cardWrap}>
-                        <Card className={styles.card}>
-                            <DeploymentSummary deployment={deployment} />
-                        </Card>
-                    </div>
-                    {!deployment?.instances?.length && (
-                        <NoticeBox title="No stacks connected to this instance">Currently you can only add components to an instance when creating one.</NoticeBox>
-                    )}
-                    {deployment?.instances?.length > 0 && <DeploymentStacksAndComponents deployment={deployment} loading={loading} refetch={() => void refetch()} />}
-                </>
-            )}
-        </div>
-    )
-}
-
-/* Mounted only once the deployment has loaded, so the components query has an id to ask about. The
- * stack list and the components section share the one query: it asks the cluster about every
- * component of every instance, and the stack list needs it to know whether anything can be backed
- * up. */
-const DeploymentStacksAndComponents: FC<{ deployment: Deployment; loading: boolean; refetch: () => void }> = ({ deployment, loading, refetch }) => {
-    const navigate = useNavigate()
-    const components = useLiveComponents(deployment.id)
-
-    return (
-        <>
-            {/* Delete and the restart/reset menu act on the whole deployment, so they render once
-                here rather than in every instance row below. */}
-            <div className={styles.toolbar}>
-                <ButtonStrip end>
-                    <DeleteButton id={deployment.id} displayName={deployment.name} deploying={isDeploying(deployment)} onComplete={() => navigate('/instances')} />
-                    <DeploymentActionsMenu deployment={deployment} components={components.instances} refetch={refetch} />
-                </ButtonStrip>
-            </div>
-            <DeploymentInstancesList deployment={deployment} loading={loading} />
-            <DeploymentComponents deployment={deployment} components={components} />
-        </>
+        <Page
+            parent={{ label: 'Instances', to: '/instances' }}
+            title={deployment?.name}
+            description={deployment?.description || undefined}
+            status={deployment && deploymentStatus((deployment.instances ?? []) as DeploymentInstanceDeployState[], components.instances)}
+            band
+            actions={
+                deployment && (
+                    <>
+                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                            <Button small primary disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
+                                Edit
+                            </Button>
+                        </span>
+                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                            <Button small disabled={isDeploying(deployment)} onClick={() => setExtending(true)}>
+                                Extend…
+                            </Button>
+                        </span>
+                        <InstanceActionsMenu
+                            deployment={deployment}
+                            components={components.instances}
+                            includeEdit={false}
+                            buttons
+                            onChanged={() => void refetch()}
+                            onDeleted={() => navigate('/instances')}
+                        />
+                    </>
+                )
+            }
+            loading={loading && !deployment}
+            error={error && !deployment ? { title: "Couldn't load the instance", description: error.message } : undefined}
+            summary={deployment && <MetaLine items={detailItems(deployment)} />}
+        >
+            {deployment && <DeploymentStacks deployment={deployment} components={components} />}
+            {deployment && extending && <ExtendLifetimeModal deployment={deployment} onClose={() => setExtending(false)} onExtended={() => void refetch()} />}
+        </Page>
     )
 }

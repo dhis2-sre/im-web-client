@@ -1,0 +1,18 @@
+/* The popper measures this span, so it sits tight around the button. */
+.anchor {
+    display: inline-flex;
+}
+
+.unavailable {
+    display: flex;
+    flex-direction: column;
+}
+
+.reason {
+    font-size: var(--text-sm);
+}
+
+/* Sets the first destructive button apart from the ones before it, as the divider does in the menu. */
+.apart {
+    margin-left: 6px;
+}

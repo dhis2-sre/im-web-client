@@ -7,11 +7,11 @@ import styles from './reset-password.module.css'
 
 const getInputsErrorMessage = ({ password, confirmPassword }) => {
     if (!password) {
-        return 'Please provide a password'
+        return 'Enter a password'
     } else if (!confirmPassword) {
-        return 'Please confirm your password'
+        return 'Enter the new password again'
     } else if (password !== confirmPassword) {
-        return 'Passwords do not match'
+        return "Passwords don't match"
     } else {
         return ''
     }
@@ -49,15 +49,16 @@ export const ResetPassword = () => {
         async (event) => {
             event.preventDefault()
 
-            if (!inputs.password) {
-                setErrorMessage(getInputsErrorMessage(inputs))
+            const inputsError = getInputsErrorMessage(inputs)
+            if (inputsError) {
+                setErrorMessage(inputsError)
                 return
             }
 
             try {
                 const password = inputs.password
                 await postResetPassword({ data: { token, password } })
-                showAlert({ message: 'Password has been reset', isCritical: false })
+                showAlert({ message: 'Password changed. Log in with your new password.', isCritical: false })
                 navigate('/')
             } catch (error) {
                 console.error(error)

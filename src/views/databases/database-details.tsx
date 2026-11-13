@@ -1,95 +1,65 @@
-import { Button, Card, Center, CircularLoader, DataTable, DataTableBody, DataTableCell, DataTableColumnHeader, DataTableHead, DataTableRow, Tooltip } from '@dhis2/ui'
+import { IconAttachment16, IconClockHistory16, IconFolder16, IconUser16 } from '@dhis2/ui'
 import prettyBytes from 'pretty-bytes'
-import { useEffect, useState } from 'react'
-import Moment from 'react-moment'
+import type { ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { DetailsTable, MetaFact, MetaLine, MomentFromNow, Mono, Page, Panel } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database } from '../../types/generated/models/Database.ts'
-import styles from './databases-list.module.css'
+import { DatabaseActionsMenu } from './database-actions-menu.tsx'
+import { lockDescription } from './database-markers.tsx'
+
+/* Who owns it, when it last changed and where it lives, in the instance page's order, then the files
+ * saved with it. */
+const databaseFacts = (db: Database): Record<string, ReactNode> => ({
+    owner: db.user?.email && <MetaFact icon={<IconUser16 />}>Owned by {db.user.email}</MetaFact>,
+    updated: db.updatedAt && (
+        <MetaFact icon={<IconClockHistory16 />}>
+            Updated <MomentFromNow date={db.updatedAt} />
+        </MetaFact>
+    ),
+    group: db.groupName && <MetaFact icon={<IconFolder16 />}>{db.groupName}</MetaFact>,
+    files: db.filestoreId && (
+        <MetaFact icon={<IconAttachment16 />}>
+            Files: <Link to={`/databases/${db.filestoreId}`}>{db.filestore?.name ?? `Filestore ${db.filestoreId}`}</Link>
+            {db.filestore?.size ? ` (${prettyBytes(db.filestore.size)})` : ''}
+        </MetaFact>
+    ),
+})
+
+/* Everything else the database record holds, for whoever needs to find or refer to the dump itself.
+ * Ids and paths are literal values, so they are set in monospace. */
+const databaseDetails = (db: Database): Record<string, ReactNode> => ({
+    'Type': db.type === 'fs' ? 'Filestore' : 'Database',
+    'Size': db.size ? <span title={`${db.size.toLocaleString()} bytes`}>{prettyBytes(db.size)}</span> : 'Unknown',
+    'Lock': db.lock ? lockDescription(db.lock) : 'Not locked',
+    'Created': db.createdAt ? <MomentFromNow date={db.createdAt} /> : 'Unknown',
+    'Storage path': db.url ? <Mono>{db.url}</Mono> : 'No file',
+    'Slug': <Mono>{db.slug}</Mono>,
+    'ID': <Mono>{db.id}</Mono>,
+    'Download links': db.externalDownloads?.length ? `${db.externalDownloads.length} open` : undefined,
+})
 
 export const DatabaseDetails = () => {
     const navigate = useNavigate()
     const { id } = useParams()
-    const [{ data: database, loading }] = useAuthAxios<Database>(`databases/${id}`)
-
-    const [db, setDb] = useState<Database>()
-
-    useEffect(() => {
-        setDb(database)
-    }, [database])
-
-    if (loading || !db) {
-        return (
-            <Center className={styles.loaderWrap}>
-                <CircularLoader />
-            </Center>
-        )
-    }
-
-    const details = [
-        { name: 'ID', value: db.id?.toString() },
-        { name: 'Name', value: db.name },
-        { name: 'Description', value: db.description },
-        { name: 'Slug', value: db.slug },
-        { name: 'Type', value: db.type },
-        { name: 'Size', value: db.size ? <Tooltip content={`${db.size} bytes`}>{prettyBytes(db.size)}</Tooltip> : '-' },
-        { name: 'Group', value: db.groupName },
-        {
-            name: 'Created',
-            value: db.createdAt ? (
-                <Tooltip content={<Moment date={db.createdAt} format="YYYY-MM-DD HH:mm:ss" />}>
-                    <Moment date={db.createdAt} fromNow />
-                </Tooltip>
-            ) : undefined,
-        },
-        {
-            name: 'Updated',
-            value: db.updatedAt ? (
-                <Tooltip content={<Moment date={db.updatedAt} format="YYYY-MM-DD HH:mm:ss" />}>
-                    <Moment date={db.updatedAt} fromNow />
-                </Tooltip>
-            ) : undefined,
-        },
-        {
-            name: 'Files',
-            value: db.filestoreId ? (
-                <Link to={`/databases/${db.filestoreId}`}>
-                    {db.filestore?.name ?? `Filestore ${db.filestoreId}`}
-                    {db.filestore?.size ? ` (${prettyBytes(db.filestore.size)})` : ''}
-                </Link>
-            ) : (
-                'None saved with this database'
-            ),
-        },
-        { name: 'User', value: db.user?.email },
-    ].filter((d) => d.value !== undefined && d.value !== null)
+    const [{ data: db, loading, error }, refetch] = useAuthAxios<Database>(`databases/${id}`)
 
     return (
-        <>
-            <Heading title="Database details">
-                <Button onClick={() => navigate('/databases')}>Back to list</Button>
-            </Heading>
-            <div className={styles.cardWrap}>
-                <Card className={styles.card}>
-                    <DataTable>
-                        <DataTableHead>
-                            <DataTableRow>
-                                <DataTableColumnHeader>Name</DataTableColumnHeader>
-                                <DataTableColumnHeader>Value</DataTableColumnHeader>
-                            </DataTableRow>
-                        </DataTableHead>
-                        <DataTableBody>
-                            {details.map((detail) => (
-                                <DataTableRow key={detail.name}>
-                                    <DataTableCell staticStyle>{detail.name}</DataTableCell>
-                                    <DataTableCell staticStyle>{detail.value}</DataTableCell>
-                                </DataTableRow>
-                            ))}
-                        </DataTableBody>
-                    </DataTable>
-                </Card>
-            </div>
-        </>
+        <Page
+            parent={{ label: 'Databases', to: '/databases' }}
+            title={db?.name}
+            description={db?.description || undefined}
+            band
+            actions={db && <DatabaseActionsMenu database={db} buttons refetch={() => void refetch()} onDeleted={() => navigate('/databases')} />}
+            loading={loading && !db}
+            error={error && !db ? { title: "Couldn't load the database", description: error.message } : undefined}
+            summary={db && <MetaLine items={databaseFacts(db)} />}
+        >
+            {db && (
+                <Panel title="Details" flush>
+                    <DetailsTable rows={databaseDetails(db)} />
+                </Panel>
+            )}
+        </Page>
     )
 }

@@ -10,7 +10,6 @@ import {
     IMAGE_TAG,
     WORKER_IMAGE_TAG,
     WORKER_IMAGE_PULL_POLICY,
-    PGADMIN_CONFIRM_PASSWORD,
     PGADMIN_PASSWORD,
     PGADMIN_USERNAME,
     STORAGE_TYPE,
@@ -25,7 +24,6 @@ import {
     Dhis2StackName,
 } from '../parameters.ts'
 import { BooleanParameterCheckbox } from './boolean-parameter-checkbox.tsx'
-import { ConfirmPasswordInput } from './confirm-password.tsx'
 import { ImageRepositorySelect } from './image-repository-select.tsx'
 import { ImageTagSelect } from './image-tag-select.tsx'
 import { ImmutableDatabaseField } from './immutable-database-field.tsx'
@@ -92,7 +90,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
                 <TextParameterInput
                     stackId={stackId}
                     parameterName={parameterName}
-                    displayName={'pgAdmin Email'}
+                    displayName={'pgAdmin Login email'}
                     type="email"
                     sensitive={sensitive}
                     required={required}
@@ -111,8 +109,6 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
                     formMode={formMode}
                 />
             )
-        case PGADMIN_CONFIRM_PASSWORD:
-            return <ConfirmPasswordInput stackId={stackId} />
         case CUSTOM_DHIS2_CONFIG:
             return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} />
         default:

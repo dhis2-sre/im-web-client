@@ -1,24 +1,14 @@
-import { LogoIconWhite, IconAdd16, Tooltip } from '@dhis2/ui'
+import { IconAdd16, IconApps16, IconDimensionData16, IconLayoutRows16, IconQueue16, IconTerminalWindow16, IconUser16, IconUserGroup16, LogoIconWhite } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useCallback } from 'react'
-import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
 import styles from './layout.module.css'
-import { LogoutButton } from './logout-button.tsx'
 import { NotificationBell } from './notifications/notification-bell.tsx'
+import { UserMenu } from './user-menu.tsx'
 
 export const Layout: FC = () => {
-    const navigate = useNavigate()
-    const { isAdministrator } = useAuth()
+    const { currentUser, isAdministrator } = useAuth()
     const location = useLocation()
-    const toNewDhis2Instance = useCallback(
-        (event) => {
-            event.stopPropagation()
-            event.preventDefault()
-            navigate('/instances/new')
-        },
-        [navigate]
-    )
 
     if (location.pathname === '/') {
         return <Navigate to="/instances" />
@@ -27,33 +17,56 @@ export const Layout: FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.nav}>
-                <h1 className={styles.header}>
+                {/* The product's name, not a heading: each page titles itself with the one h1. */}
+                <div className={styles.header}>
                     <LogoIconWhite className={styles.logo} />
                     Instance Manager
-                </h1>
-                <nav className={styles.navlist}>
-                    <NavLink to="/instances">
-                        Instances
-                        <Tooltip content="Create new DHIS2 Core instance">
-                            <button onClick={toNewDhis2Instance} className={styles.toNewDhis2Instance}>
-                                <IconAdd16 />
-                            </button>
-                        </Tooltip>
+                </div>
+                <nav className={styles.navlist} aria-label="Main">
+                    {/* The + sits beside the link, not inside it: a link can't contain another link or a button. */}
+                    <div className={styles.navRow}>
+                        <NavLink to="/instances">
+                            <IconTerminalWindow16 />
+                            Instances
+                        </NavLink>
+                        <Link to="/instances/new" className={styles.navAction} aria-label="New instance" title="New instance">
+                            <IconAdd16 />
+                        </Link>
+                    </div>
+                    <NavLink to="/presets">
+                        <IconQueue16 />
+                        Presets
                     </NavLink>
-                    <NavLink to="/presets">Presets</NavLink>
-                    <NavLink to="/databases">Databases</NavLink>
+                    <NavLink to="/databases">
+                        <IconDimensionData16 />
+                        Databases
+                    </NavLink>
                     {isAdministrator && (
                         <>
-                            <NavLink to="/stacks">Stacks</NavLink>
-                            <NavLink to="/users">Users</NavLink>
-                            <NavLink to="/groups">Groups</NavLink>
-                            <NavLink to="/clusters">Clusters</NavLink>
+                            <hr className={styles.divider} />
+                            <NavLink to="/stacks">
+                                <IconLayoutRows16 />
+                                Stacks
+                            </NavLink>
+                            <NavLink to="/users">
+                                <IconUser16 />
+                                Users
+                            </NavLink>
+                            <NavLink to="/groups">
+                                <IconUserGroup16 />
+                                Groups
+                            </NavLink>
+                            <NavLink to="/clusters">
+                                <IconApps16 />
+                                Clusters
+                            </NavLink>
                         </>
                     )}
                 </nav>
                 <div className={styles.navFooter}>
+                    {/* Falls back to a label rather than hiding the row, which is the only way to log out. */}
+                    <UserMenu email={currentUser?.email ?? 'Account'} />
                     <NotificationBell />
-                    <LogoutButton />
                 </div>
             </div>
             <div className={styles.mainArea}>

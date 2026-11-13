@@ -68,16 +68,18 @@ test.describe('new instance', () => {
         await expect(page.getByRole('button', { name: 'Create instance' })).toBeEnabled()
         await page.getByRole('button', { name: 'Create instance' }).click()
 
-        // Navigate back to the instances list
-        await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
-        await page.getByRole('button', { name: 'Back to list' }).click()
+        // Creating ends on the details page; leaving any sooner would abort the requests still in flight.
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
 
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // A deploy holds the deployment's deploy lock and the backend refuses a delete until it
         // finishes, so the row says so instead of offering a delete that would be turned away.
         const newInstanceRow = page.getByRole('row', { name: randomName })
-        await expect(newInstanceRow.getByRole('button', { name: 'Delete' })).toBeDisabled()
+        await newInstanceRow.getByRole('button', { name: `Actions for ${randomName}` }).click()
+        await expect(page.getByRole('menuitem', { name: 'Delete' })).toHaveAttribute('aria-disabled', 'true')
+        await page.keyboard.press('Escape')
 
         await deleteDeployment(page, randomName)
     })
@@ -99,8 +101,9 @@ test.describe('new instance', () => {
         await page.getByTestId('dhis2-uicore-singleselectoption').filter({ hasText: targetGroup }).dispatchEvent('click')
         await page.keyboard.press('Escape')
 
+        // Six hours rather than one, so the Extend check below has a shorter lifetime to leave out.
         await page.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Lifetime' }).getByTestId('dhis2-uicore-select-input').click()
-        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="3600"]').dispatchEvent('click')
+        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="21600"]').dispatchEvent('click')
         await page.keyboard.press('Escape')
 
         const imageTagSelect = page
@@ -121,15 +124,30 @@ test.describe('new instance', () => {
         await page.keyboard.press('Escape')
 
         await page.getByRole('button', { name: 'Create instance' }).click()
-        await expect(page.getByRole('button', { name: 'Back to list' })).toBeVisible({ timeout: 60000 })
-        await page.getByRole('button', { name: 'Back to list' }).click()
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 60000 })
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await expect(page.getByRole('cell', { name: randomName, exact: true })).toBeVisible({ timeout: 60000 })
 
         // Open details, then the edit form. An edit takes the same deploy lock a deploy holds, so
         // the page offers no edit until the deploy lands.
-        await page.getByRole('row', { name: randomName }).click()
-        await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible()
+        await page.getByRole('link', { name: randomName, exact: true }).click()
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible()
         await expect(page.getByRole('button', { name: 'Edit', exact: true })).toBeEnabled({ timeout: 15 * 60 * 1000 })
+
+        // Extending offers only lifetimes that end later than this one does now. The presets count from
+        // now, so with nearly six hours left, an hour would cut it short and is not on offer, and the
+        // Extend button stays off until something later is picked.
+        await page.getByRole('button', { name: 'Extend…', exact: true }).click()
+        const extendModal = page.getByTestId('dhis2-uicore-modal')
+        await expect(extendModal.getByRole('button', { name: 'Extend', exact: true })).toBeDisabled()
+        await extendModal.getByTestId('dhis2-uiwidgets-singleselectfield').filter({ hasText: 'Lifetime' }).getByTestId('dhis2-uicore-select-input').click()
+        await expect(page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="21600"]')).toBeVisible()
+        await expect(page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="3600"]')).toHaveCount(0)
+        await page.locator('[data-test="dhis2-uicore-singleselectoption"][data-value="21600"]').dispatchEvent('click')
+        await expect(extendModal.getByRole('button', { name: 'Extend', exact: true })).toBeEnabled()
+        await extendModal.getByRole('button', { name: 'Cancel' }).click()
+        await expect(extendModal).toBeHidden()
+
         await page.getByRole('button', { name: 'Edit', exact: true }).click()
         await expect(page.getByRole('heading', { name: `Edit ${randomName}` })).toBeVisible()
 
@@ -152,11 +170,11 @@ test.describe('new instance', () => {
         await page.getByRole('button', { name: 'Save changes' }).click()
 
         // Successful update redirects back to the details view.
-        await expect(page.getByRole('heading', { name: 'Instance details' })).toBeVisible({ timeout: 30000 })
+        await expect(page.getByRole('heading', { name: randomName, level: 1 })).toBeVisible({ timeout: 30000 })
         await expect(page.getByText(updatedDescription)).toBeVisible()
 
         // Cleanup.
-        await page.getByRole('button', { name: 'Back to list' }).click()
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await deleteDeployment(page, randomName)
     })
 })

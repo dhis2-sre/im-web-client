@@ -1,0 +1,14 @@
+.expiringSoon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    color: var(--colors-yellow800);
+}
+
+.dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--colors-yellow800);
+}

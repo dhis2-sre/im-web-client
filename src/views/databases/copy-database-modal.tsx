@@ -1,127 +1,93 @@
-import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, Modal, ModalActions, ModalContent, ModalTitle, InputField, ButtonStrip } from '@dhis2/ui'
-import { FC, useState, useEffect, useCallback } from 'react'
+import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
+import { FC, useEffect, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/index.ts'
-import styles from './upload-database-modal.module.css'
+import { errorMessage } from '../../utils/error-message.ts'
 
 type CopyDatabaseModalProps = {
     onClose: () => void
     onComplete: () => void
     databaseId: number
     currentName: string
-    togglePopover: () => void
+    currentGroup: string
 }
 
-const GroupSelect: FC<{
-    groups: Group[]
-    selectedGroup: string
-    setSelectedGroup: (group: string) => void
-    loading: boolean
-}> = ({ groups, selectedGroup, setSelectedGroup, loading }) => {
-    const renderOptions = () => {
-        if (loading) {
-            return <option disabled>Loading...</option>
-        }
-        if (groups.length === 0) {
-            return <option disabled>No groups available</option>
-        }
-        return groups.map((group) => (
-            <option key={group.name} value={group.name}>
-                {group.name}
-            </option>
-        ))
-    }
-    return (
-        <div className={styles.field}>
-            <label htmlFor="group-select" className={styles.label}>
-                Select Group *
-            </label>
-            <select id="group-select" value={selectedGroup} onChange={({ target }) => setSelectedGroup(target.value)} disabled={loading} className={styles.select}>
-                {renderOptions()}
-            </select>
-        </div>
-    )
-}
+/* "-copy" goes before the extension, so the copy keeps the format the name says it has. */
+const copyName = (name: string) => name.replace(/(\.sql\.gz|\.pgc)?$/, (extension) => `-copy${extension}`)
 
-const useGroups = () => {
-    const [groups, setGroups] = useState<Group[]>([])
-    const [selectedGroup, setSelectedGroup] = useState<string>('')
-    const [{ data: groupsData, loading: groupsLoading }] = useAuthAxios<Group[]>({
-        method: 'GET',
-        url: '/groups',
-    })
+export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, currentGroup }) => {
+    const [newName, setNewName] = useState(copyName(currentName))
+    const [group, setGroup] = useState(currentGroup)
+    const [error, setError] = useState<string>()
+    const alert = useActionAlert()
+    /* Names only need to be unique within a group. */
+    const sameName = newName.trim() === currentName && group === currentGroup
+
+    const [{ data: groups, loading: groupsLoading }] = useAuthAxios<Group[]>({ method: 'GET', url: '/groups' })
+    const [{ loading }, copyDatabase] = useAuthAxios({ url: `/databases/${databaseId}/copy`, method: 'POST' }, { manual: true })
 
     useEffect(() => {
-        if (groupsData) {
-            setGroups(groupsData)
-            if (!groupsData.some((group) => group.name === selectedGroup)) {
-                setSelectedGroup(groupsData[0]?.name || '')
-            }
+        if (groups && !groups.some(({ name }) => name === group)) {
+            setGroup(groups[0]?.name ?? '')
         }
-    }, [groupsData, selectedGroup])
+    }, [groups, group])
 
-    return { groups, selectedGroup, setSelectedGroup, groupsLoading }
-}
-
-export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onComplete, databaseId, currentName, togglePopover }) => {
-    const [newName, setNewName] = useState<string>(currentName)
-    const { groups, selectedGroup, setSelectedGroup, groupsLoading } = useGroups()
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
-
-    const [{ loading }, copyDatabase] = useAuthAxios(
-        {
-            url: `/databases/${databaseId}/copy`,
-            method: 'POST',
-        },
-        { manual: true }
-    )
-
-    const onCopyDatabase = useCallback(async () => {
-        if (newName === currentName) {
-            showAlert({
-                message: 'New name cannot be the same as the current name.',
-                isCritical: true,
-            })
-            return
-        }
-
+    const onCopy = async () => {
+        setError(undefined)
         try {
-            await copyDatabase({
-                data: { group: selectedGroup, name: newName },
-            })
-            showAlert({
-                message: `Database "${currentName}" copied successfully.`,
-                isCritical: false,
-            })
+            await copyDatabase({ data: { group, name: newName.trim() } })
+            alert.success(`Copied to ${group}/${newName.trim()}`)
             onComplete()
-            togglePopover()
-        } catch {
-            showAlert({
-                message: 'There was a problem copying the database',
-                isCritical: true,
-            })
-            onComplete()
-            togglePopover()
+            onClose()
+        } catch (caught) {
+            console.error(caught)
+            setError(errorMessage(caught))
         }
-    }, [newName, togglePopover, currentName, selectedGroup, copyDatabase, showAlert, onComplete])
+    }
 
     return (
-        <Modal onClose={onClose}>
-            <ModalTitle>Copy Database</ModalTitle>
+        <Modal onClose={loading ? undefined : onClose}>
+            <ModalTitle>Copy {currentName}</ModalTitle>
             <ModalContent>
-                <InputField name="newName" label="New Name" value={newName} onChange={({ value }) => setNewName(value)} required disabled={loading} />
-                <GroupSelect groups={groups} selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} loading={groupsLoading} />
+                <InputField
+                    name="newName"
+                    label="Name of the copy"
+                    value={newName}
+                    onChange={({ value }) => setNewName(value ?? '')}
+                    required
+                    disabled={loading}
+                    error={sameName}
+                    validationText={sameName ? 'The original is already in this group. Choose another name or group.' : undefined}
+                />
+                <SingleSelectField
+                    label="Copy to group"
+                    selected={groups?.some(({ name }) => name === group) ? group : undefined}
+                    onChange={({ selected }) => setGroup(selected)}
+                    loading={groupsLoading}
+                    disabled={loading}
+                    filterable
+                    noMatchText="No group matches"
+                    required
+                >
+                    {(groups ?? []).map(({ name }) => (
+                        <SingleSelectOption key={name} label={name} value={name} />
+                    ))}
+                </SingleSelectField>
+                {error && (
+                    <NoticeBox error title={`Couldn't copy ${currentName}`}>
+                        {error}
+                    </NoticeBox>
+                )}
             </ModalContent>
             <ModalActions>
-                <ButtonStrip>
-                    <Button onClick={onCopyDatabase} disabled={loading || !newName || !selectedGroup} loading={loading} primary>
+                <ButtonStrip end>
+                    <Button secondary onClick={onClose} disabled={loading}>
+                        Cancel
+                    </Button>
+                    <Button primary onClick={() => void onCopy()} disabled={!newName.trim() || sameName || !group} loading={loading}>
                         Copy
                     </Button>
-                    <Button onClick={onClose}>Cancel</Button>
                 </ButtonStrip>
             </ModalActions>
         </Modal>

@@ -4,7 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: start;
-    color: var(--colors-gray900);
+    color: var(--colors-grey900);
 }
 
 .wrapper {

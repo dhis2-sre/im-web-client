@@ -6,7 +6,7 @@ import type { FC } from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ConfirmationModal, Heading } from '../../../components/index.ts'
+import { ConfirmationModal, Page } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
@@ -50,7 +50,7 @@ export const NewDhis2V2Instance: FC = () => {
 
     const [presetToReplace, setPresetToReplace] = useState<AnyObject>()
     const [bulkValues, setBulkValues] = useState<AnyObject>()
-    const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} instances`, SUCCESS_OPTIONS)
+    const { show: showBulkStarted } = useAlert(({ count }) => `Deploying ${count} ${count === 1 ? 'instance' : 'instances'}…`, SUCCESS_OPTIONS)
 
     /* The name isn't used by a bulk deploy, which names the deployments from a prefix, so its errors don't stop one. Any other error is shown by submitting, which final-form refuses while there are errors. */
     const openBulkDeploy = useCallback((form: FormApi) => {
@@ -89,7 +89,7 @@ export const NewDhis2V2Instance: FC = () => {
                 return
             }
             if (result) {
-                showSaveFailed({ message: result[FORM_ERROR] ?? 'Could not save the preset' })
+                showSaveFailed({ message: result[FORM_ERROR] ?? "Couldn't save the preset" })
                 return
             }
 
@@ -117,8 +117,7 @@ export const NewDhis2V2Instance: FC = () => {
     )
 
     return (
-        <>
-            <Heading title="Create a new DHIS2 Instance (v2)" />
+        <Page parent={{ label: 'Instances', to: '/instances' }} title="New instance">
             <Card className={styles.container}>
                 <Form onSubmit={createDeployment} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
@@ -143,6 +142,8 @@ export const NewDhis2V2Instance: FC = () => {
             )}
             {presetToReplace && (
                 <ConfirmationModal
+                    title={`Replace ${presetToReplace.name}?`}
+                    confirmLabel="Replace preset"
                     destructive
                     onCancel={() => setPresetToReplace(undefined)}
                     onConfirm={() => {
@@ -150,9 +151,9 @@ export const NewDhis2V2Instance: FC = () => {
                         void storePreset(presetToReplace, true)
                     }}
                 >
-                    A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Replace it?
+                    A preset named <strong>{presetToReplace.name}</strong> already exists in <strong>{presetToReplace.groupName}</strong>. Saving replaces its settings with these.
                 </ConfirmationModal>
             )}
-        </>
+        </Page>
     )
 }

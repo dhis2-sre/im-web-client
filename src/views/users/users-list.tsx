@@ -1,36 +1,26 @@
-import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow, Center, CircularLoader } from '@dhis2/ui'
+import { DataTable, DataTableBody as TableBody, DataTableCell, DataTableColumnHeader, DataTableHead as TableHead, DataTableRow } from '@dhis2/ui'
 import type { FC } from 'react'
-import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { User } from '../../types/index.ts'
 
 export const UsersList: FC = () => {
-    const [{ data, loading }] = useAuthAxios<User[]>('/users', {
+    const [{ data, loading, error }] = useAuthAxios<User[]>('/users', {
         useCache: false,
     })
 
-    if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
-    }
-
     return (
-        <div>
-            <Heading title="Users" />
+        <Page title="Users" loading={loading} error={error ? { title: "Couldn't load users", description: error.message } : undefined}>
             <DataTable>
                 <TableHead>
                     <DataTableRow>
                         <DataTableColumnHeader>Email</DataTableColumnHeader>
-                        <DataTableColumnHeader>Validated</DataTableColumnHeader>
-                        <DataTableColumnHeader>Created</DataTableColumnHeader>
+                        <DataTableColumnHeader>Email confirmed</DataTableColumnHeader>
+                        <DataTableColumnHeader>Joined</DataTableColumnHeader>
                         <DataTableColumnHeader>Updated</DataTableColumnHeader>
-                        <DataTableColumnHeader>Groups</DataTableColumnHeader>
-                        <DataTableColumnHeader>Groups Admin</DataTableColumnHeader>
+                        <DataTableColumnHeader>Member of</DataTableColumnHeader>
+                        <DataTableColumnHeader>Admin of</DataTableColumnHeader>
                     </DataTableRow>
                 </TableHead>
 
@@ -40,12 +30,12 @@ export const UsersList: FC = () => {
                             <DataTableCell>
                                 <Link to={`/users/${user.id}`}>{user.email}</Link>
                             </DataTableCell>
-                            <DataTableCell>{user.validated ? 'true' : 'false'}</DataTableCell>
+                            <DataTableCell>{user.validated ? 'Yes' : 'No'}</DataTableCell>
                             <DataTableCell>
-                                <Moment date={user.createdAt} fromNow />
+                                <MomentFromNow date={user.createdAt} />
                             </DataTableCell>
                             <DataTableCell>
-                                <Moment date={user.updatedAt} fromNow />
+                                <MomentFromNow date={user.updatedAt} />
                             </DataTableCell>
                             <DataTableCell>
                                 <ul>
@@ -65,6 +55,6 @@ export const UsersList: FC = () => {
                     ))}
                 </TableBody>
             </DataTable>
-        </div>
+        </Page>
     )
 }

@@ -67,7 +67,7 @@ export const GroupFieldset: FC<{
             {primary.map(renderField)}
             {secondary.length > 0 && (
                 <details className={ownStyles.advanced}>
-                    <summary className={styles.summary}>Advanced configuration</summary>
+                    <summary className={styles.summary}>Advanced settings</summary>
                     <fieldset className={cx(styles.fieldset, styles.parameters, styles.secondary)}>{secondary.map(renderField)}</fieldset>
                 </details>
             )}

@@ -1,3 +1,4 @@
+import './tokens.css'
 import './index.css'
 import './suppress-defaultprops-error-message.ts'
 import React from 'react'

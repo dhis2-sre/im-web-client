@@ -35,18 +35,17 @@ export const Validate = () => {
         )
     }
 
-    if (error && error.response.status !== 404) {
+    if (validated) {
+        return <Navigate to="/validate/success" />
+    }
+
+    if (error) {
         return (
-            <NoticeBox error title="Could not validate">
-                {error.message}
+            <NoticeBox error title="Couldn't verify your account">
+                {error.response?.status === 404 ? "This verification link isn't valid. Check that you opened the whole link from the email." : error.message}
             </NoticeBox>
         )
     }
 
-    return (
-        <div>
-            {validated && <Navigate to="/validate/success" />}
-            <h3>Validating token... {token}</h3>
-        </div>
-    )
+    return <h3>Verifying your account…</h3>
 }

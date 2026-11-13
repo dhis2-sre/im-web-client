@@ -1,91 +1,116 @@
-import { Button, ButtonStrip, Center, CircularLoader, DataTableToolbar, NoticeBox } from '@dhis2/ui'
+import { Button, IconApps16, IconClockHistory16, IconFolder16, IconUser16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useMemo } from 'react'
-import Moment from 'react-moment'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Heading } from '../../components/index.ts'
+import { ActionsMenu, ItemPanel, ItemPanelList, MetaFact, MetaLine, MomentFromNow, Page, useActionAlert } from '../../components/index.ts'
+import type { PageError } from '../../components/index.ts'
 import { useAuthAxios, useStack } from '../../hooks/index.ts'
 import type { Deployment, DeploymentInstance, StackWithParameterGroups } from '../../types/index.ts'
 import { groupParametersByComponent } from '../../utils/component-parameters.ts'
 import { ComponentParametersTable } from '../instances/details/component-parameters-table.tsx'
-import { DeletePresetButton } from './delete-preset-button.tsx'
-import { presetMainInstance } from './preset-summary.ts'
-import styles from './presets.module.css'
+import { presetMainInstance, presetSummary } from './preset-summary.ts'
 
-const PresetInstance: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
+const PresetStack: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
     const { stack } = useStack(instance.stackName ?? '')
     const { leftover } = useMemo(() => groupParametersByComponent(instance.parameters, stack as StackWithParameterGroups | undefined, []), [instance.parameters, stack])
 
+    return <ItemPanel title={instance.stackName ?? 'Stack'}>{leftover.length > 0 && <ComponentParametersTable parameters={leftover} />}</ItemPanel>
+}
+
+/* Who owns it, when it last changed and where it lives, in the instance page's order, then the
+ * stacks it deploys beside DHIS2. */
+const PresetFacts: FC<{ preset: Deployment }> = ({ preset }) => {
+    const { companions } = presetSummary(preset)
     return (
-        <div className={styles.instance}>
-            <DataTableToolbar className={styles.toolbar}>{instance.stackName}</DataTableToolbar>
-            <ComponentParametersTable parameters={leftover} />
-        </div>
+        <MetaLine
+            items={{
+                owner: preset.user?.email && <MetaFact icon={<IconUser16 />}>Owned by {preset.user.email}</MetaFact>,
+                updated: (
+                    <MetaFact icon={<IconClockHistory16 />}>
+                        Updated <MomentFromNow date={preset.updatedAt} />
+                    </MetaFact>
+                ),
+                group: <MetaFact icon={<IconFolder16 />}>{preset.groupName}</MetaFact>,
+                companions: companions.length > 0 && <MetaFact icon={<IconApps16 />}>With {companions.join(', ')}</MetaFact>,
+            }}
+        />
     )
+}
+
+const presetError = (preset: Deployment | undefined, error: Error | null): PageError | undefined => {
+    if (error || !preset) {
+        return { title: "Couldn't load the preset", description: error?.message }
+    }
+    if (!preset.preset) {
+        return { title: 'Not a preset', description: `${preset.name} is an instance, not a preset.` }
+    }
+    return undefined
 }
 
 export const PresetDetails: FC = () => {
     const { id } = useParams()
     const navigate = useNavigate()
+    const alert = useActionAlert()
     const [{ data: preset, loading, error }] = useAuthAxios<Deployment>(`/deployments/${id}`, { useCache: false })
+    const [, deletePreset] = useAuthAxios({ url: `/deployments/${id}`, method: 'DELETE' }, { manual: true, autoCancel: false })
 
-    if (loading) {
-        return (
-            <Center>
-                <CircularLoader />
-            </Center>
-        )
-    }
-
-    if (error || !preset) {
-        return (
-            <NoticeBox error title="Could not fetch the preset">
-                {error?.message}
-            </NoticeBox>
-        )
-    }
-
-    if (!preset.preset) {
-        return (
-            <NoticeBox error title="Not a preset">
-                {`${preset.name} is a deployment, not a preset.`}
-            </NoticeBox>
-        )
+    const remove = async (preset: Deployment) => {
+        try {
+            await deletePreset()
+            alert.success(`Deleted ${preset.name}`)
+            navigate('/presets')
+        } catch (error) {
+            alert.error(`Couldn't delete ${preset.name}: ${error instanceof Error ? error.message : String(error)}`)
+        }
     }
 
     return (
-        <div className={styles.wrapper}>
-            <Heading title={preset.name ?? ''}>
-                <ButtonStrip>
-                    <Button primary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-                        Load
-                    </Button>
-                    <DeletePresetButton preset={preset} onDeleted={() => navigate('/presets')} />
-                </ButtonStrip>
-            </Heading>
-            <dl className={styles.summary}>
-                <dt>Group</dt>
-                <dd>{preset.groupName}</dd>
-                {preset.description && (
+        <Page
+            parent={{ label: 'Presets', to: '/presets' }}
+            title={preset?.preset ? preset.name : undefined}
+            description={preset?.preset ? preset.description || undefined : undefined}
+            band
+            actions={
+                preset?.preset && (
                     <>
-                        <dt>Description</dt>
-                        <dd>{preset.description}</dd>
+                        <Button small primary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
+                            Use preset
+                        </Button>
+                        <ActionsMenu
+                            label={`Actions for ${preset.name}`}
+                            buttons
+                            items={[
+                                {
+                                    label: 'Delete',
+                                    destructive: true,
+                                    confirm: {
+                                        title: `Delete ${preset.name}?`,
+                                        message: (
+                                            <>
+                                                Deletes the preset from <strong>{preset.groupName}</strong>. Instances created from it keep running. This can&apos;t be undone.
+                                            </>
+                                        ),
+                                        confirmLabel: 'Delete preset',
+                                        destructive: true,
+                                    },
+                                    onClick: () => remove(preset),
+                                },
+                            ]}
+                        />
                     </>
-                )}
-                <dt>Owner</dt>
-                <dd>{preset.user?.email}</dd>
-                <dt>Created</dt>
-                <dd>
-                    <Moment date={preset.createdAt} fromNow />
-                </dd>
-                <dt>Updated</dt>
-                <dd>
-                    <Moment date={preset.updatedAt} fromNow />
-                </dd>
-            </dl>
-            {preset.instances?.map((instance) => (
-                <PresetInstance key={instance.id} instance={instance} />
-            ))}
-        </div>
+                )
+            }
+            loading={loading}
+            error={loading ? undefined : presetError(preset, error)}
+            summary={preset && <PresetFacts preset={preset} />}
+        >
+            {preset && (
+                <ItemPanelList title="Stacks">
+                    {preset.instances?.map((instance) => (
+                        <PresetStack key={instance.id} instance={instance} />
+                    ))}
+                </ItemPanelList>
+            )}
+        </Page>
     )
 }
