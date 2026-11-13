@@ -129,3 +129,14 @@
 .notice {
     margin-bottom: var(--spacers-dp24);
 }
+
+.bulkSummary,
+.bulkTotals {
+    margin: 0 0 var(--spacers-dp12);
+    font-size: 14px;
+    color: var(--colors-grey700);
+}
+
+.bulkNotice {
+    margin-bottom: var(--spacers-dp16);
+}

@@ -92,7 +92,13 @@ export const NewDhis2V2Instance: FC = () => {
                 </Form>
             </Card>
             {bulkValues && (
-                <BulkDeployModal group={bulkValues.groupName} initialPrefix={bulkValues.name ?? ''} onCancel={() => setBulkValues(undefined)} onDeploy={startBulkDeploy} />
+                <BulkDeployModal
+                    group={bulkValues.groupName}
+                    values={bulkValues}
+                    initialPrefix={bulkValues.name ?? ''}
+                    onCancel={() => setBulkValues(undefined)}
+                    onDeploy={startBulkDeploy}
+                />
             )}
         </Page>
     )
