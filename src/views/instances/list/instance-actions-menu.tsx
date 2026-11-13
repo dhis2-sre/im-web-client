@@ -68,6 +68,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
     const database = advertises(components, 'databaseSave')
     const filestore = advertises(components, 'filestoreBackup')
     const backupTarget = database ?? filestore
+    const hasDhis2 = instances.some((instance) => instance.stackName === STACK_NAMES.DHIS2)
     const pgAdmin = instances.some((instance) => instance.stackName === STACK_NAMES.PG_ADMIN)
 
     const actOnAll = (action: 'restart' | 'reset') => async () => {
@@ -106,6 +107,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                         unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         onClick: () => navigate(`/instances/${deployment.id}/edit`),
                     },
+                    hasDhis2 && { label: 'Save as preset', onClick: () => navigate(`/presets/new?instance=${deployment.id}`) },
                     pgAdmin &&
                         !buttons && {
                             label: 'Open pgAdmin',
