@@ -41,4 +41,9 @@ describe('presetFormValues', () => {
             'pgadmin': { PGADMIN_USERNAME: 'admin@dhis2.org' },
         })
     })
+
+    it('blanks masked values when asked', () => {
+        const values = presetFormValues(preset, 'dhis2-v2', { 'dhis2-v2': { DATABASE_PASSWORD: 'dhis' } }, { blankMasked: true })
+        expect(values['dhis2-v2'].DATABASE_PASSWORD).toBe('')
+    })
 })
