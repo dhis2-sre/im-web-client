@@ -109,7 +109,13 @@ export const Dhis2V2Form: FC<{
                 {isPreset && <NameInput availabilityUrl="/presets/availability" helpText="Unique among the presets in the group" own={ownName} />}
                 <DescriptionTextarea />
                 <PublicCheckbox />
-                {isEdit && deployment ? <ExtendTtlSelect deployment={deployment} /> : <TtlSelect label={isPreset ? 'Lifetime of instances created from it' : undefined} />}
+                {isEdit && deployment ? (
+                    <ExtendTtlSelect deployment={deployment} />
+                ) : isPreset ? (
+                    <TtlSelect label="Lifetime of instances created from it" helpText="Instances created from it are deleted automatically after this long." />
+                ) : (
+                    <TtlSelect />
+                )}
                 {!isEdit && <GroupSelect />}
             </fieldset>
             <hr className={styles.hr} />

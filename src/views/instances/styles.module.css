@@ -125,3 +125,7 @@
     color: var(--colors-red700);
     text-decoration: line-through;
 }
+
+.notice {
+    margin-bottom: var(--spacers-dp24);
+}

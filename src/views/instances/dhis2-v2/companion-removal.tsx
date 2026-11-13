@@ -45,9 +45,13 @@ export const companionsBeingRemoved = (deployment: Deployment, companions: Stack
         .map((companion) => companion.name)
 }
 
-export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: string; onConfirm: () => void; onCancel: () => void }> = ({
+/* A preset holds settings, not a running release, so removing a companion from one drops only its saved login. */
+type RemovalNoun = 'instance' | 'preset'
+
+export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: string; noun?: RemovalNoun; onConfirm: () => void; onCancel: () => void }> = ({
     names,
     deploymentName,
+    noun = 'instance',
     onConfirm,
     onCancel,
 }) => {
@@ -56,7 +60,17 @@ export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: strin
         <Modal onClose={onCancel}>
             <ModalTitle>Remove {removing}?</ModalTitle>
             <ModalContent>
-                Saving removes {removing} from <strong>{deploymentName}</strong> and deletes everything stored in {names.length > 1 ? 'them' : 'it'}. This can&apos;t be undone.
+                {noun === 'preset' ? (
+                    <>
+                        Saving removes {removing} from the preset <strong>{deploymentName}</strong>, along with {names.length > 1 ? 'their' : 'its'} saved login. This can&apos;t be
+                        undone.
+                    </>
+                ) : (
+                    <>
+                        Saving removes {removing} from <strong>{deploymentName}</strong> and deletes everything stored in {names.length > 1 ? 'them' : 'it'}. This can&apos;t be
+                        undone.
+                    </>
+                )}
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
@@ -74,11 +88,14 @@ export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: strin
 
 type Save = (values: AnyObject, dirtyFields: Record<string, boolean>) => Promise<AnyObject | undefined>
 
+/* eslint-disable max-params -- the noun is an addition to an existing three-argument call */
 export const useCompanionRemovalConfirm = (
     deployment: Deployment | undefined,
     companions: StackCompanion[],
-    save: Save
+    save: Save,
+    noun: RemovalNoun = 'instance'
 ): { submit: (values: AnyObject, form: FormApi) => Promise<AnyObject | undefined>; modal: ReactNode } => {
+    /* eslint-enable max-params */
     const [pendingRemoval, setPendingRemoval] = useState<{ names: string[]; confirm: () => void; cancel: () => void } | null>(null)
 
     const submit = useCallback(
@@ -109,7 +126,7 @@ export const useCompanionRemovalConfirm = (
     )
 
     const modal = pendingRemoval && (
-        <CompanionRemovalModal names={pendingRemoval.names} deploymentName={deployment?.name} onConfirm={pendingRemoval.confirm} onCancel={pendingRemoval.cancel} />
+        <CompanionRemovalModal names={pendingRemoval.names} deploymentName={deployment?.name} noun={noun} onConfirm={pendingRemoval.confirm} onCancel={pendingRemoval.cancel} />
     )
 
     return { submit, modal }
