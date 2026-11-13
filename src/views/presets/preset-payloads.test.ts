@@ -87,6 +87,21 @@ describe('preset payloads', () => {
         })
         expect(askFor).toEqual([{ stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin: Password', type: 'password' }])
     })
+    it('labels the asked values as the form does, without naming the companion twice', () => {
+        const stacks = [
+            {
+                name: 'pgadmin',
+                parameters: [
+                    { parameterName: 'PGADMIN_USERNAME', displayName: 'pgAdmin Username' },
+                    { parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin Password' },
+                ],
+            },
+        ]
+        expect(askForUncopyable({ values: {}, activeStacks: ['dhis2-v2', 'pgadmin'], uncopyable: { pgadmin: ['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'] }, stacks })).toEqual([
+            { stackName: 'pgadmin', parameterName: 'PGADMIN_USERNAME', displayName: 'pgAdmin Login email', type: 'email' },
+            { stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin Password', type: 'password' },
+        ])
+    })
     it('lays asked values into their stacks', () => {
         expect(withAsked({ name: 'a', pgadmin: { X: '1' } }, { pgadmin: { Y: '2' } })).toEqual({ name: 'a', pgadmin: { X: '1', Y: '2' } })
     })

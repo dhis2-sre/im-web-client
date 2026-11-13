@@ -23,11 +23,12 @@ type Kind = 'new' | 'edit' | 'duplicate' | 'instance'
 
 const NEW_VALUES = { ttl: DEFAULT_TTL_SECONDS }
 
-const PresetFormActions: FC<{ isEdit: boolean; onCancel: () => void }> = ({ isEdit, onCancel }) => {
+/* Saving before the stack parameters load would store a preset without them. */
+const PresetFormActions: FC<{ isEdit: boolean; parametersReady: boolean; onCancel: () => void }> = ({ isEdit, parametersReady, onCancel }) => {
     const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid } = useFormState({
         subscription: { submitError: true, submitting: true, modifiedSinceLastSubmit: true, pristine: true, invalid: true },
     })
-    const disabled = (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
+    const disabled = !parametersReady || (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
     return (
         <ButtonStrip>
             <Button primary disabled={disabled} loading={submitting} type="submit">
@@ -53,7 +54,7 @@ export const PresetForm: FC = () => {
     const sourceUrl = { new: undefined, edit: `/presets/${id}`, duplicate: `/presets/${from}`, instance: `/deployments/${instanceId}` }[kind]
     const [{ data: source, error }] = useAuthAxios<Deployment>({ url: sourceUrl }, { manual: !sourceUrl, useCache: false })
 
-    const { groups, companions } = useGroupedStackParameters(STACK_ID)
+    const { groups, companions, loading: parametersLoading, error: parametersError } = useGroupedStackParameters(STACK_ID)
     const getIncludedParameters = useCallback(
         (values: AnyObject) => {
             const stackValues: AnyObject = values[STACK_ID] ?? {}
@@ -139,7 +140,7 @@ export const PresetForm: FC = () => {
                             handleCancel={cancel}
                             mode={kind === 'edit' ? 'edit-preset' : 'new-preset'}
                             deployment={kind === 'edit' ? source : undefined}
-                            actions={<PresetFormActions isEdit={kind === 'edit'} onCancel={cancel} />}
+                            actions={<PresetFormActions isEdit={kind === 'edit'} parametersReady={!parametersLoading && !parametersError} onCancel={cancel} />}
                         />
                     )}
                 </Form>

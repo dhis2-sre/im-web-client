@@ -36,7 +36,7 @@ const validateEmailOptional = (value: string) => {
     return validateEmailFormat(value)
 }
 
-const validateEmailFormat = (value: string) => {
+export const validateEmailFormat = (value: string) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailPattern.test(value)) {
         return 'Enter a valid email address'

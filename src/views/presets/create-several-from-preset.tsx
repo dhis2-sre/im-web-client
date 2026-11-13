@@ -61,7 +61,7 @@ export const CreateSeveralFromPreset: FC<{ preset: Deployment; onClose: () => vo
                     return deployError
                 }
                 const created = deployments?.length ?? count
-                alert.success(`Deploying ${created} ${created === 1 ? 'instance' : 'instances'} from ${fresh?.name}`)
+                alert.success(`Deploying ${created} ${created === 1 ? 'instance' : 'instances'}…`)
                 onClose()
                 navigate('/instances')
                 return undefined

@@ -10,6 +10,7 @@ import {
     IMAGE_TAG,
     WORKER_IMAGE_TAG,
     WORKER_IMAGE_PULL_POLICY,
+    PARAMETER_LABELS,
     PGADMIN_PASSWORD,
     PGADMIN_USERNAME,
     STORAGE_TYPE,
@@ -90,7 +91,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
                 <TextParameterInput
                     stackId={stackId}
                     parameterName={parameterName}
-                    displayName={'pgAdmin Login email'}
+                    displayName={PARAMETER_LABELS[PGADMIN_USERNAME]}
                     type="email"
                     sensitive={sensitive}
                     required={required}

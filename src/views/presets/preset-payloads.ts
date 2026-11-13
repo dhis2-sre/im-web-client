@@ -3,6 +3,7 @@ import { COMPANION_LABELS } from '../../constants.ts'
 import { buildEditPayload, type EditPayloadInput } from '../../hooks/build-edit-payload.ts'
 import type { CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, Group, StackParameterWithGroup, User } from '../../types/index.ts'
 import type { BulkAskFor } from '../instances/dhis2-v2/bulk-deploy-modal.tsx'
+import { PARAMETER_LABELS, PGADMIN_USERNAME } from '../instances/parameters.ts'
 
 /* Fields that belong to the new instance or the preset itself, so they are not a difference from the preset. */
 export const PRESET_ONLY_FIELDS = ['name', 'ttl', 'groupName', 'description', 'presetChoice', 'presetName', 'saveAsPreset']
@@ -68,7 +69,8 @@ export const missingUncopyable = (values: AnyObject, uncopyable: Record<string, 
     return errors
 }
 
-/* The required values a copy can't carry that the values don't hold yet, for the Create several dialog to ask for. A companion's are labelled with its name. */
+/* The required values a copy can't carry that the values don't hold yet, for the Create several dialog to ask for, labelled as the form labels
+ * them. A companion's are prefixed with its name unless the label already starts with it. */
 export const askForUncopyable = ({
     values,
     activeStacks,
@@ -83,15 +85,18 @@ export const askForUncopyable = ({
 }): BulkAskFor[] =>
     activeStacks.flatMap((stackName, index) => {
         const stack = stacks.find((candidate) => candidate.name === stackName)
-        const prefix = index === 0 ? '' : `${COMPANION_LABELS[stackName] ?? stackName}: `
+        const companionLabel = index === 0 ? '' : (COMPANION_LABELS[stackName] ?? stackName)
         return (uncopyable[stackName] ?? [])
             .filter((parameterName) => !values[stackName]?.[parameterName])
-            .map((parameterName) => ({
-                stackName,
-                parameterName,
-                displayName: `${prefix}${stack?.parameters?.find((candidate) => candidate.parameterName === parameterName)?.displayName ?? parameterName}`,
-                type: parameterName.includes('PASSWORD') ? 'password' : 'text',
-            }))
+            .map((parameterName): BulkAskFor => {
+                const label = PARAMETER_LABELS[parameterName] ?? stack?.parameters?.find((candidate) => candidate.parameterName === parameterName)?.displayName ?? parameterName
+                return {
+                    stackName,
+                    parameterName,
+                    displayName: label.startsWith(companionLabel) ? label : `${companionLabel}: ${label}`,
+                    type: parameterName === PGADMIN_USERNAME ? 'email' : parameterName.includes('PASSWORD') ? 'password' : 'text',
+                }
+            })
     })
 
 /* What the dialog asked for, laid into each stack's values. */

@@ -46,4 +46,7 @@ describe('presetFormValues', () => {
         const values = presetFormValues(preset, 'dhis2-v2', { 'dhis2-v2': { DATABASE_PASSWORD: 'dhis' } }, { blankMasked: true })
         expect(values['dhis2-v2'].DATABASE_PASSWORD).toBe('')
     })
+    it('keeps the form ttl when the preset has none', () => {
+        expect(presetFormValues({ ...preset, ttl: 0 }, 'dhis2-v2', { ttl: 3600 }).ttl).toBe(3600)
+    })
 })

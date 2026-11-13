@@ -12,7 +12,7 @@ import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-para
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { askForUncopyable, missingUncopyable } from '../../presets/preset-payloads.ts'
-import { KEEP_CURRENT_VALUE, KeepValuePlaceholder } from '../fields/keep-value-placeholder.ts'
+import { KeepValuePlaceholder } from '../fields/keep-value-placeholder.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
@@ -52,7 +52,7 @@ export const NewDhis2V2Instance: FC = () => {
 
     /* Names for the settings the Preset section lists as differing. A companion's switch is named after the companion when the stack gives it no name of its own. */
     const displayNames = useMemo(() => {
-        const names: Record<string, string> = {}
+        const names: Record<string, string> = { public: 'Make public' }
         for (const stack of stacks.filter(({ name }) => name === STACK_ID || companions.some((companion) => companion.name === name))) {
             for (const { parameterName, displayName } of stack.parameters ?? []) {
                 if (parameterName && displayName) {
@@ -95,8 +95,8 @@ export const NewDhis2V2Instance: FC = () => {
                                 blankValues={blankValues}
                                 onLoaded={setSourcePreset}
                             />
-                            {/* Blank sensitive fields stand for the preset's values when filled from one. */}
-                            <KeepValuePlaceholder.Provider value={sourcePreset ? "Leave blank to keep the preset's value" : KEEP_CURRENT_VALUE}>
+                            {/* Blank sensitive fields stand for the preset's values when creating from one. Saved as a new preset, a blank field gets the stack default instead. */}
+                            <KeepValuePlaceholder.Provider value={sourcePreset && values.presetChoice !== 'new' ? "Leave blank to keep the preset's value" : undefined}>
                                 <Dhis2V2Form
                                     handleCancel={navigateToInstanceList}
                                     handleSubmit={handleSubmit}

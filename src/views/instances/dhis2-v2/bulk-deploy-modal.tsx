@@ -7,6 +7,7 @@ import { useAuthAxios, useDatabaseLabel } from '../../../hooks/index.ts'
 import type { BulkDeployError } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { ClusterResources } from '../../../types/index.ts'
 import { CopyNotice } from '../../presets/copy-notice.tsx'
+import { validateEmailFormat } from '../fields/text-parameter-input.tsx'
 import { TTL_PRESETS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
 import { formatGi, isBusy, perInstanceResources } from './bulk-summary.ts'
@@ -20,7 +21,7 @@ const parseCount = (count: string) => {
     return Number.isInteger(parsed) && parsed >= 1 && parsed <= MAX_BULK_DEPLOYMENTS ? parsed : undefined
 }
 
-export type BulkAskFor = { stackName: string; parameterName: string; displayName: string; type?: string }
+export type BulkAskFor = { stackName: string; parameterName: string; displayName: string; type?: 'text' | 'password' | 'email' }
 
 const DAY_SECONDS = 86400
 
@@ -51,7 +52,8 @@ export const BulkDeployModal: FC<{
     const [asked, setAsked] = useState<Record<string, string>>({})
     const count = parseCount(countInput)
     const askedKey = (field: BulkAskFor) => `${field.stackName}.${field.parameterName}`
-    const askedComplete = askFor.every((field) => !!asked[askedKey(field)])
+    const askedError = (field: BulkAskFor) => (field.type === 'email' && asked[askedKey(field)] ? validateEmailFormat(asked[askedKey(field)]) : undefined)
+    const askedComplete = askFor.every((field) => !!asked[askedKey(field)] && !askedError(field))
     const main: AnyObject = values['dhis2-v2'] ?? {}
     const { label: database } = useDatabaseLabel(main.DATABASE_ID)
     const [{ data: resources }] = useAuthAxios<ClusterResources>(`/groups/${encodeURIComponent(group)}/resources`, { useCache: false })
@@ -104,8 +106,10 @@ export const BulkDeployModal: FC<{
                             <InputField
                                 key={askedKey(field)}
                                 label={field.displayName}
-                                type={field.type === 'password' ? 'password' : 'text'}
+                                type={field.type ?? 'text'}
                                 value={asked[askedKey(field)] ?? ''}
+                                error={!!askedError(field)}
+                                validationText={askedError(field)}
                                 onChange={({ value }) => setAsked((current) => ({ ...current, [askedKey(field)]: value ?? '' }))}
                                 required
                                 className={styles.bulkPrefix}

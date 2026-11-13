@@ -12,7 +12,8 @@ export const presetFormValues = (preset: Deployment, mainStackName: string, init
         ...initialValues,
         name: preset.name,
         description: preset.description ?? '',
-        ttl: preset.ttl ?? initialValues.ttl,
+        /* A ttl of 0 means the server default, which the Lifetime select has no option for. */
+        ttl: preset.ttl || initialValues.ttl,
         groupName: preset.groupName ?? initialValues.groupName,
         public: preset.instances?.find((instance) => instance.stackName === mainStackName)?.public ?? false,
     }
