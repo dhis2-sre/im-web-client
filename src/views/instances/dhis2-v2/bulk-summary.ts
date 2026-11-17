@@ -36,3 +36,11 @@ export const perInstanceResources = (values: AnyObject): { disk: number; memory:
 
 export const isBusy = (resources?: ClusterResources): boolean =>
     !!resources && !resources.Autoscaled && (parseFloat(resources.CPU ?? '') >= BUSY_PERCENT || parseFloat(resources.Memory ?? '') >= BUSY_PERCENT)
+
+/* Up to three names in full, then how many more, so a long list stays one line. */
+export const listNames = (names: string[]): string => {
+    if (names.length > 3) {
+        return `${names.slice(0, 2).join(', ')} and ${names.length - 2} more`
+    }
+    return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : (names[0] ?? '')
+}

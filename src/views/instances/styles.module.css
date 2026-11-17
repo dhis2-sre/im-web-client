@@ -104,12 +104,6 @@
     color: var(--colors-grey600);
 }
 
-.bulkIntro {
-    margin: 0 0 var(--spacers-dp16);
-    font-size: 14px;
-    color: var(--colors-grey800);
-}
-
 .bulkFields {
     display: flex;
     flex-wrap: wrap;
@@ -122,40 +116,28 @@
     min-width: 200px;
 }
 
-.bulkNames {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacers-dp4);
-    margin-bottom: var(--spacers-dp12);
-}
-
-.bulkName,
-.bulkNameTaken {
-    padding: 2px var(--spacers-dp8);
-    border-radius: 3px;
-    font-family: var(--font-mono);
-    font-size: var(--text-mono);
-    background: var(--colors-grey200);
-    color: var(--colors-grey900);
-}
-
-.bulkNameTaken {
-    background: var(--colors-red050);
-    color: var(--colors-red700);
-    text-decoration: line-through;
-}
-
 .notice {
     margin-bottom: var(--spacers-dp24);
 }
 
-.bulkSummary,
+.bulkPreview {
+    margin: 0 0 var(--spacers-dp16);
+    font-size: var(--text-md);
+    color: var(--colors-grey900);
+}
+
 .bulkTotals {
-    margin: 0 0 var(--spacers-dp12);
-    font-size: 14px;
     color: var(--colors-grey700);
 }
 
-.bulkNotice {
+/* Notices stack with a gap between them, and keep the fields below clear; an empty stack takes no room. */
+.bulkNotices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp8);
     margin-bottom: var(--spacers-dp16);
+}
+
+.bulkNotices:empty {
+    display: none;
 }
