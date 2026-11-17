@@ -12,7 +12,7 @@ import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-para
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { askForUncopyable, missingUncopyable } from '../../presets/preset-payloads.ts'
-import { KeepValuePlaceholder } from '../fields/keep-value-placeholder.ts'
+import { KEEP_PRESET_VALUE, NOT_COPIED_FROM_PRESET, SensitiveFieldHintContext } from '../fields/sensitive-field-hint.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
@@ -96,7 +96,7 @@ export const NewDhis2V2Instance: FC = () => {
                                 onLoaded={setSourcePreset}
                             />
                             {/* Blank sensitive fields stand for the preset's values when creating from one. Saved as a new preset, a blank field gets the stack default instead. */}
-                            <KeepValuePlaceholder.Provider value={sourcePreset && values.presetChoice !== 'new' ? "Leave blank to keep the preset's value" : undefined}>
+                            <SensitiveFieldHintContext.Provider value={!sourcePreset ? undefined : values.presetChoice === 'new' ? NOT_COPIED_FROM_PRESET : KEEP_PRESET_VALUE}>
                                 <Dhis2V2Form
                                     handleCancel={navigateToInstanceList}
                                     handleSubmit={handleSubmit}
@@ -107,7 +107,7 @@ export const NewDhis2V2Instance: FC = () => {
                                     footer={<PresetSection sourcePreset={sourcePreset} displayNames={displayNames} />}
                                     onCreateSeveral={() => openBulk(form)}
                                 />
-                            </KeepValuePlaceholder.Provider>
+                            </SensitiveFieldHintContext.Provider>
                         </>
                     )}
                 </Form>

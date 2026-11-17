@@ -1,14 +1,14 @@
 import { InputFieldFF, hasValue } from '@dhis2/ui'
 import { FC, useContext } from 'react'
 import { Field } from 'react-final-form'
-import { KeepValuePlaceholder } from './keep-value-placeholder.ts'
 import { ParameterFieldProps } from './parameter-field.tsx'
+import { SensitiveFieldHintContext } from './sensitive-field-hint.ts'
 
 export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameterName, displayName, type = 'text', sensitive, required = false, formMode = 'create' }) => {
     const shouldRequireValue = required && !(sensitive && formMode === 'update')
     const validate = type === 'email' ? (shouldRequireValue ? validateEmailRequired : validateEmailOptional) : shouldRequireValue ? hasValue : undefined
-    const keepValue = useContext(KeepValuePlaceholder)
-    const placeholder = sensitive && formMode === 'update' ? keepValue : undefined
+    const fieldHint = useContext(SensitiveFieldHintContext)
+    const hint = sensitive && formMode === 'update' ? fieldHint : undefined
     return (
         <Field
             required={shouldRequireValue}
@@ -17,7 +17,8 @@ export const TextParameterInput: FC<ParameterFieldProps> = ({ stackId, parameter
             component={InputFieldFF}
             validate={validate}
             type={type}
-            placeholder={placeholder}
+            placeholder={hint?.placeholder}
+            helpText={hint?.help}
         />
     )
 }

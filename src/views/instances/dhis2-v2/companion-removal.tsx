@@ -62,8 +62,8 @@ export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: strin
             <ModalContent>
                 {noun === 'preset' ? (
                     <>
-                        Saving removes {removing} from the preset <strong>{deploymentName}</strong>, along with {names.length > 1 ? 'their' : 'its'} saved login. This can&apos;t be
-                        undone.
+                        Saving removes {removing} from the preset <strong>{deploymentName}</strong>, along with {names.length > 1 ? 'their' : 'its'} saved settings. This can&apos;t
+                        be undone.
                     </>
                 ) : (
                     <>

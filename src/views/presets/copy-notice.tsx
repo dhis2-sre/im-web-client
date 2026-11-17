@@ -5,6 +5,6 @@ import type { FC } from 'react'
 export const CopyNotice: FC<{ source: string; target: 'preset' | 'instances'; onForm?: boolean; className?: string }> = ({ source, target, onForm, className }) => (
     <NoticeBox className={className} title="Passwords and keys aren't copied">
         Passwords, keys and the custom dhis.conf of <strong>{source}</strong> can&apos;t be copied, so {target === 'preset' ? 'the preset starts with' : 'these instances get'} the
-        stack defaults.{onForm && ' Enter any you need below.'}
+        stack defaults.{onForm && ' Enter any you need in the form.'}
     </NoticeBox>
 )
