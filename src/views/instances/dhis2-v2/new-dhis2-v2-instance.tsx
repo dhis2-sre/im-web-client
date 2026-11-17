@@ -10,12 +10,12 @@ import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-para
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { askForUncopyable } from '../../presets/preset-payloads.ts'
-import { KEEP_PRESET_VALUE, SensitiveFieldHintContext } from '../fields/sensitive-field-hint.ts'
+import { keepPresetValue, SensitiveFieldHintContext } from '../fields/sensitive-field-hint.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
 import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
-import { PresetPicker } from './preset-picker.tsx'
+import { FillFromPreset } from './preset-picker.tsx'
 import { PresetSection } from './preset-section.tsx'
 import { useNewInstanceSubmit } from './use-new-instance-submit.ts'
 
@@ -48,6 +48,8 @@ export const NewDhis2V2Instance: FC = () => {
 
     const blankValues = useMemo(() => ({ ttl: DEFAULT_TTL_SECONDS, [STACK_ID]: initialParameterValues }), [initialParameterValues])
 
+    const sensitiveHint = useMemo(() => (sourcePreset ? keepPresetValue(sourcePreset.name) : undefined), [sourcePreset])
+
     const askFor = useMemo(
         () => (bulk ? askForUncopyable({ values: bulk.values, activeStacks: activeStacks(bulk.values), uncopyable, stacks }) : []),
         [bulk, activeStacks, uncopyable, stacks]
@@ -59,7 +61,7 @@ export const NewDhis2V2Instance: FC = () => {
                 <Form onSubmit={submit} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
                         <>
-                            <PresetPicker
+                            <FillFromPreset
                                 presets={presets}
                                 mainStackName={STACK_ID}
                                 initialPresetId={searchParams.get('preset') ?? undefined}
@@ -67,7 +69,7 @@ export const NewDhis2V2Instance: FC = () => {
                                 onLoaded={setSourcePreset}
                             />
                             {/* Blank sensitive fields stand for the preset's values when creating from one. */}
-                            <SensitiveFieldHintContext.Provider value={sourcePreset ? KEEP_PRESET_VALUE : undefined}>
+                            <SensitiveFieldHintContext.Provider value={sensitiveHint}>
                                 <Dhis2V2Form
                                     handleCancel={navigateToInstanceList}
                                     handleSubmit={handleSubmit}

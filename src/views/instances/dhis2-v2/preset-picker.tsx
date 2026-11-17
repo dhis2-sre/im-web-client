@@ -1,42 +1,21 @@
-import { Button, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
-import cx from 'classnames'
+import { DropdownButton, IconCheckmarkCircle16, Input, Menu, MenuDivider, MenuItem, MenuSectionHeader } from '@dhis2/ui'
 import type { AnyObject, FormApi } from 'final-form'
-import type { FC, MouseEvent } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-final-form'
-import { Link } from 'react-router-dom'
+import type { FC } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useForm, useFormState } from 'react-final-form'
 import { ConfirmationModal, useActionAlert } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { usePresetSummary } from '../../presets/preset-summary.ts'
-import fieldStyles from '../fields/fields.module.css'
 import styles from '../styles.module.css'
 import { presetFormValues } from './preset-values.ts'
 
 const BLANK = 'blank'
 const FIELDS_OWN_TO_THE_SECTION = ['presetName', 'saveAsPreset']
 
-type PresetOptionProps = {
-    label: string
-    value: string
-    preset: Deployment
-    mainStackName: string
-    active?: boolean
-    onClick?: (payload: object, event: MouseEvent) => void
-}
-
-/* A SingleSelectOption only takes a string label, so this renders the same row with the preset's main settings after it. The select still filters and shows the selection by label. */
-const PresetOption: FC<PresetOptionProps> = ({ label, value, preset, mainStackName, active, onClick }) => {
-    const { version, database, storage, companions } = usePresetSummary(preset, mainStackName)
-    const details = [version, database, storage, ...companions].filter(Boolean)
-
-    return (
-        <div className={cx(styles.presetOption, { [styles.active]: active })} data-value={value} onClick={(event) => onClick?.({}, event)}>
-            <span>{label}</span>
-            {details.length > 0 && <span className={styles.presetDetails}>{details.join(' · ')}</span>}
-        </div>
-    )
-}
+/* With a preset loaded a change is anything that differs from it; on a blank form it is a field someone touched, since some fields fill themselves in. */
+const hasChanges = (dirtyFields: Record<string, boolean>, touched: Record<string, boolean>, fromPreset: boolean) =>
+    Object.keys(dirtyFields).some((field) => dirtyFields[field] && !FIELDS_OWN_TO_THE_SECTION.includes(field) && (fromPreset || touched[field]))
 
 /* The form keeps dirty fields when it is reinitialised, which would let a value changed before the preset loaded survive filling from it. Filling replaces everything. */
 const restart = (form: FormApi, values: AnyObject) => {
@@ -45,8 +24,29 @@ const restart = (form: FormApi, values: AnyObject) => {
     form.setConfig('keepDirtyOnReinitialize', true)
 }
 
-/* Picking a preset fills the form from it, so its values become the form's initial values and final-form's dirty fields are exactly what differs from it. */
-export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; initialPresetId?: string; blankValues: AnyObject; onLoaded: (preset?: Deployment) => void }> = ({
+const PresetLabel: FC<{ preset: Deployment; mainStackName: string }> = ({ preset, mainStackName }) => {
+    const { version, database, storage, companions } = usePresetSummary(preset, mainStackName)
+    const details = [version, database, storage, ...companions].filter(Boolean)
+
+    return (
+        <span className={styles.presetItem}>
+            <span>{preset.name}</span>
+            {details.length > 0 && <span className={styles.presetDetails}>{details.join(' · ')}</span>}
+        </span>
+    )
+}
+
+/* In order of first appearance, so the list keeps the order the server gives. */
+const byGroup = (presets: Deployment[]) => {
+    const groups = new Map<string, Deployment[]>()
+    for (const preset of presets) {
+        groups.set(preset.groupName, [...(groups.get(preset.groupName) ?? []), preset])
+    }
+    return [...groups.entries()]
+}
+
+/* Filling from a preset is something you do, not something the form is: the button always reads the same, and a note beside it confirms the fill only until the form is changed. The preset's values become the form's initial values, so final-form's dirty fields are what has changed since. */
+export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; initialPresetId?: string; blankValues: AnyObject; onLoaded: (preset?: Deployment) => void }> = ({
     presets,
     mainStackName,
     initialPresetId,
@@ -55,8 +55,12 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; in
 }) => {
     const form = useForm()
     const alert = useActionAlert()
+    const { dirtyFields, touched = {} } = useFormState({ subscription: { dirtyFields: true, touched: true } })
+    const [open, setOpen] = useState(false)
+    const [filter, setFilter] = useState('')
     const [loaded, setLoaded] = useState<Deployment>()
     const [pending, setPending] = useState<string>()
+    const [status, setStatus] = useState<string>()
     const [{ loading }, fetchPreset] = useAuthAxios<Deployment>({ method: 'GET' }, { manual: true, autoCancel: false })
     const [, fetchAvailability] = useAuthAxios<{ names: string[]; taken: string[] }>({ method: 'GET', url: '/deployments/bulk/availability' }, { manual: true, autoCancel: false })
 
@@ -74,18 +78,34 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; in
         [fetchAvailability]
     )
 
+    const settle = useCallback(
+        (preset?: Deployment) => {
+            setLoaded(preset)
+            onLoaded(preset)
+        },
+        [onLoaded]
+    )
+
+    /* The note is about the fill, so it goes for good once the form is changed, even if the change is later taken back. */
+    const changed = hasChanges(dirtyFields, touched, Boolean(loaded))
+    useEffect(() => {
+        if (changed) {
+            setStatus(undefined)
+        }
+    }, [changed])
+
     const loadPreset = useCallback(
         async (id: string) => {
             try {
                 const { data: preset } = await fetchPreset({ url: `/presets/${id}` })
                 restart(form, { ...presetFormValues(preset, mainStackName, blankValues, { blankMasked: true }), name: await firstFreeName(preset) })
-                setLoaded(preset)
-                onLoaded(preset)
+                settle(preset)
+                setStatus(`Filled from ${preset.name}`)
             } catch (error) {
                 alert.error(`Couldn't load the preset: ${error instanceof Error ? error.message : error}`)
             }
         },
-        [fetchPreset, form, mainStackName, blankValues, firstFreeName, onLoaded, alert]
+        [fetchPreset, form, mainStackName, blankValues, firstFreeName, settle, alert]
     )
 
     /* Use preset opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
@@ -106,25 +126,29 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; in
                 return
             }
             restart(form, { ...blankValues, groupName: form.getState().values.groupName })
-            setLoaded(undefined)
-            onLoaded(undefined)
+            settle(undefined)
+            setStatus('Cleared the form')
         },
-        [form, blankValues, loadPreset, onLoaded]
+        [loadPreset, form, blankValues, settle]
     )
 
-    /* With a preset loaded a change is anything that differs from it; on a blank form it is a field someone touched, since some fields fill themselves in. */
     const choose = useCallback(
         (selected: string) => {
-            const { dirtyFields, touched = {} } = form.getState()
-            const changed = Object.keys(dirtyFields).some((field) => dirtyFields[field] && !FIELDS_OWN_TO_THE_SECTION.includes(field) && (loaded || touched[field]))
+            setOpen(false)
+            setFilter('')
             if (changed) {
                 setPending(selected)
             } else {
                 apply(selected)
             }
         },
-        [form, loaded, apply]
+        [changed, apply]
     )
+
+    const groups = useMemo(() => {
+        const query = filter.trim().toLowerCase()
+        return byGroup(query ? presets.filter(({ name, groupName }) => `${name} ${groupName}`.toLowerCase().includes(query)) : presets)
+    }, [presets, filter])
 
     if (presets.length === 0) {
         return null
@@ -133,33 +157,56 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; in
     const pendingName = presets.find(({ id }) => String(id) === pending)?.name
 
     return (
-        <>
-            <div className={styles.presetBar}>
-                <SingleSelectField
-                    className={fieldStyles.field}
-                    label="Start from a preset"
-                    selected={loaded ? String(loaded.id) : BLANK}
-                    onChange={({ selected }) => selected !== (loaded ? String(loaded.id) : BLANK) && choose(selected)}
-                    loading={loading}
-                    filterable
-                    noMatchText="No preset matches"
-                >
-                    <SingleSelectOption value={BLANK} label="Blank (no preset)" />
-                    {presets.map((preset) => (
-                        <PresetOption key={preset.id} value={String(preset.id)} label={`${preset.name} (${preset.groupName})`} preset={preset} mainStackName={mainStackName} />
-                    ))}
-                </SingleSelectField>
-                {loaded && (
-                    <p className={styles.presetNote}>
-                        Filled from <strong>{loaded.name}</strong>
-                        <Link to={`/presets/${loaded.id}`}>View preset</Link>
-                        <Button small secondary onClick={() => void loadPreset(String(loaded.id))}>
-                            Reset to preset
-                        </Button>
-                    </p>
-                )}
-            </div>
-            <hr className={styles.hr} />
+        <div className={styles.formToolbar}>
+            <DropdownButton
+                secondary
+                small
+                disabled={loading}
+                open={open}
+                onClick={({ open: next }) => {
+                    setOpen(next)
+                    setFilter('')
+                }}
+                component={
+                    /* The popper focuses this panel as it opens, as FlyoutMenu's does; it hands focus on to the search. */
+                    <div
+                        className={styles.presetMenu}
+                        tabIndex={-1}
+                        onFocus={(event) => event.target === event.currentTarget && event.currentTarget.querySelector('input')?.focus()}
+                    >
+                        <div className={styles.presetSearch}>
+                            <Input dense placeholder="Search presets" value={filter} onChange={({ value }) => setFilter(value ?? '')} />
+                        </div>
+                        <Menu dense>
+                            {groups.length === 0 && <MenuItem dense disabled label="No preset matches" />}
+                            {groups.flatMap(([group, members], index) => [
+                                /* The search's own bottom edge already divides the first group from it. */
+                                <MenuSectionHeader key={`group-${group}`} dense hideDivider={index === 0} label={group} />,
+                                ...members.map((preset) => (
+                                    <MenuItem
+                                        key={preset.id}
+                                        dense
+                                        /* The library takes ariaLabel for a label that isn't a string, but its types leave it out. */
+                                        {...{ ariaLabel: preset.name }}
+                                        label={<PresetLabel preset={preset} mainStackName={mainStackName} />}
+                                        onClick={() => choose(String(preset.id))}
+                                    />
+                                )),
+                            ])}
+                            <MenuDivider dense />
+                            <MenuItem dense label="Blank form" onClick={() => choose(BLANK)} />
+                        </Menu>
+                    </div>
+                }
+            >
+                Fill from preset
+            </DropdownButton>
+            {status && (
+                <output className={styles.fillStatus}>
+                    <IconCheckmarkCircle16 color="var(--colors-green600)" />
+                    {status}
+                </output>
+            )}
             {pending && (
                 <ConfirmationModal
                     title="Replace your changes?"
@@ -180,6 +227,6 @@ export const PresetPicker: FC<{ presets: Deployment[]; mainStackName: string; in
                     )}
                 </ConfirmationModal>
             )}
-        </>
+        </div>
     )
 }

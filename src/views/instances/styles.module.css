@@ -57,40 +57,50 @@
     margin-bottom: var(--spacers-dp16);
 }
 
-.presetBar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacers-dp8);
-}
-
-.presetNote {
+/* A toolbar across the top of the form card, edge to edge, for actions on the whole form. */
+.formToolbar {
     display: flex;
     align-items: center;
     gap: var(--spacers-dp12);
+    margin: calc(var(--spacers-dp16) * -1) calc(var(--spacers-dp16) * -1) var(--spacers-dp16);
+    padding: var(--spacers-dp8);
+    border-bottom: 1px solid var(--colors-grey300);
+}
+
+.fillStatus {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin: 0;
-    font-size: 14px;
+    font-size: var(--text-md);
     color: var(--colors-grey800);
 }
 
-.presetOption {
+.presetMenu {
+    width: 360px;
+    max-height: 420px;
+    overflow-y: auto;
+    background: var(--colors-white);
+    border-radius: 4px;
+    box-shadow: var(--elevations-e300);
+}
+
+.presetSearch {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: var(--spacers-dp8);
+    background: var(--colors-white);
+    border-bottom: 1px solid var(--colors-grey300);
+}
+
+.presetItem {
     display: flex;
-    align-items: baseline;
-    gap: var(--spacers-dp8);
-    padding: var(--spacers-dp8) var(--spacers-dp12);
-    font-size: 14px;
-    color: var(--colors-grey900);
-    cursor: pointer;
-}
-
-.presetOption:hover {
-    background-color: var(--colors-grey200);
-}
-
-.presetOption.active {
-    background-color: var(--colors-teal050);
+    flex-direction: column;
 }
 
 .presetDetails {
+    font-size: var(--text-sm);
     color: var(--colors-grey600);
 }
 
