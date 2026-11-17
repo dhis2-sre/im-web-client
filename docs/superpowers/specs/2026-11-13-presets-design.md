@@ -22,7 +22,7 @@ It is production code, not a prototype: the prototype is a reference for behavio
 
 Breaking: `GET /deployments/presets`, `preset`/`overwrite` on `POST /deployments`, and `preset=true` on `/deployments/availability` are gone, and `/deployments/:id` no longer returns presets. The client must ship with (or after) this backend release; there is no compatibility path.
 
-Write access (edit, delete) is the owner while in the group, an admin of the group, or an administrator (`CanWriteDeployment`). The server enforces it; the client only uses it to grey out "Update preset" (below).
+Write access (edit, delete) is the owner while in the group, an admin of the group, or an administrator (`CanWriteDeployment`). The server enforces it.
 
 ### Known limit: copies lose sensitive values
 
@@ -33,8 +33,7 @@ The browser only ever sees sensitive values masked (dhis2-v2: custom dhis.conf, 
 1. Manage presets from the Presets pages: create, edit (including rename and move group), duplicate, delete.
 2. Start one instance from a preset with its passwords and keys intact.
 3. Start several instances from a preset or from the form.
-4. Keep a tweak: from the new instance form, update the preset it came from or save a new one.
-5. Save an existing instance's settings as a preset.
+4. Save an existing instance's settings as a preset, or a blank new instance form's configuration.
 
 ## Non-goals
 
@@ -48,7 +47,7 @@ The browser only ever sees sensitive values masked (dhis2-v2: custom dhis.conf, 
 
 - Silently losing a password or key. Every lossy copy says so.
 - A rename or edit that changes a preset's id or drops its saved values (the prototype's save-new-then-delete-old trick).
-- Updating someone's shared preset without them choosing to: "Update preset" is never the default.
+- Changing a shared preset as a side effect of creating an instance: the new instance form never writes to the preset it was filled from.
 
 ## The UI, screen by screen
 
@@ -100,16 +99,11 @@ One page component, three routes: `/presets/new`, `/presets/:id/edit`, `/presets
 - A blank form creates as today (`POST /deployments`, instances, deploy).
 - The deploy progress panel still shows; when creating from a preset, the instances are registered in one call, so the steps settle together.
 
-**Preset section** (Joe chose to keep it), the last section before the buttons:
+**Preset section**, the last section before the buttons, on a blank form only:
 
-- Blank form: checkbox "Save this configuration as a preset"; when ticked, a Preset name field (checked with `/presets/availability`), defaulting to the instance name.
-- Filled from a preset: hidden until something differs from the preset. Then three radios:
-    - "Don't save as a preset" (default).
-    - "Update "{name}" with these changes", with help text listing what differs ("2 settings differ: Version, pgAdmin", first four then "and N more"). Disabled for users who can't write the preset, with help text "Only {owner} or an admin can change this preset". If the user undoes their changes, a chosen Update falls back to Don't save.
-    - "Save as a new preset", with a Preset name field and the copy notice.
-- What counts as a difference excludes the instance's own name, lifetime, group and description: those are per instance, and Update never renames or moves the shared preset. (My call, from the builder check: otherwise deploying into another group and choosing Update would move the preset out of everyone else's group.)
-- "Save as a new preset" saves into the group chosen in the form.
-- On submit, the preset is saved first (`POST /presets` or `PATCH /presets/:id` with only the changes). If that fails, nothing is created and the error shows on the form ("Couldn't save the preset: …" / "Couldn't update the preset: …"). On success, alert "Saved preset {name}", then create the instance.
+- Checkbox "Save this configuration as a preset"; when ticked, a Preset name field (checked with `/presets/availability`), defaulting to the instance name.
+- On submit, the preset is saved first (`POST /presets`). If that fails, nothing is created and the error shows on the form ("Couldn't save the preset: …"). On success, alert "Saved preset {name}", then create the instance.
+- A form filled from a preset has no Preset section: presets only prefill the form, and the form isn't connected to the preset afterwards. Presets are changed on their own pages (Edit, Duplicate) or saved from an instance (screen 5). (Joe's call, 2026-11-17: an earlier version offered "Update {preset}" and "Save as a new preset" here; dropped as unneeded now that presets can be edited properly.)
 
 **Buttons:** the split button and its menu go. The strip is: **Create instance** (primary), **Create several instances…** (secondary), **Cancel**.
 
@@ -123,7 +117,7 @@ Today's Bulk deploy dialog (`BulkDeployModal`), renamed and extended. Opened fro
 - Busy warning from `GET /groups/:group/resources`: when the cluster isn't autoscaled and CPU or memory use is at or above 70%, a warning "{group} is already busy", body "It's using {cpu} of its CPU and {memory} of its memory. {n} more instances may not fit."
 - Still `POST /deployments/bulk` with the full configuration. When the values came from a preset, the copy notice shows ("…so these instances get the stack defaults").
 - Opened from a preset's ··· menu, the dialog also asks for any required sensitive value that has no default and that the copy can't carry, for the stacks the preset includes. Today that is the pgAdmin login (`PGADMIN_USERNAME`, `PGADMIN_PASSWORD`) when pgAdmin is on; it is derived from the stack definitions (required, sensitive, no default), not hard-coded. Create stays disabled until they're filled.
-- From the form: whatever the Preset section asked for is saved first, as with Create instance.
+- From a blank form: if the Preset section's checkbox is ticked, the preset is saved first, as with Create instance.
 
 ### 5. Save as preset from an instance
 
@@ -135,8 +129,8 @@ Today's Bulk deploy dialog (`BulkDeployModal`), renamed and extended. Opened fro
 One component, used wherever the browser copies settings:
 
 - Title "Passwords and keys aren't copied". Body: "Passwords, keys and the custom dhis.conf of {source} can't be copied, so {the preset starts | these instances get} the stack defaults. Enter any you need in the form." (the last sentence only on forms).
-- Shown on: Duplicate, New preset from an instance, "Save as a new preset" in the new instance form when filled from a preset, Create several when the values came from a preset.
-- Not shown on: Create instance from a preset, Edit preset, Update preset (none of these copy).
+- Shown on: Duplicate, New preset from an instance, Create several when the values came from a preset.
+- Not shown on: Create instance from a preset, Edit preset (neither copies).
 - It shows every time on those paths: the client can't tell whether a masked value differs from the default.
 
 ### Required values a copy can't carry
@@ -144,7 +138,7 @@ One component, used wherever the browser copies settings:
 Some sensitive parameters are required and have no default (today the pgAdmin login). A copy that drops them is refused by the server with a 400, so wherever the client copies, those fields are required again (Joe's choice, over looping the single preset endpoint):
 
 - Duplicate and New preset from an instance: already required, since those forms are in create mode.
-- New instance form filled from a preset: while "Save as a new preset" is chosen, or when Create several is opened, those fields become required and blank; the form shows the usual required error on them. Creating a single instance from the preset doesn't need them (the server carries them).
+- New instance form filled from a preset: Create several asks for them in its dialog (my call, kept by Joe until the backend decides whether bulk can carry a preset's stored values). Creating a single instance from the preset doesn't need them (the server carries them).
 - Create several from a preset's ··· menu: the dialog asks for them (screen 4).
 
 ## Mock API

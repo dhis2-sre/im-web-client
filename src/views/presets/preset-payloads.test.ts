@@ -1,28 +1,6 @@
-import {
-    askForUncopyable,
-    buildEditPresetRequest,
-    buildFromPresetRequest,
-    canWritePreset,
-    changedFromPreset,
-    creationParameters,
-    describeChanges,
-    missingUncopyable,
-    uncopyableParameters,
-    withAsked,
-} from './preset-payloads.ts'
+import { askForUncopyable, buildEditPresetRequest, buildFromPresetRequest, creationParameters, missingUncopyable, uncopyableParameters, withAsked } from './preset-payloads.ts'
 
 describe('preset payloads', () => {
-    it('ignores per-instance fields when comparing with the preset', () => {
-        expect(changedFromPreset({ 'name': true, 'ttl': true, 'groupName': true, 'description': true, 'presetChoice': true, 'dhis2-v2.IMAGE_TAG': true })).toEqual([
-            'dhis2-v2.IMAGE_TAG',
-        ])
-    })
-    it('lists the first four changes then a count', () => {
-        const names = { 'dhis2-v2.IMAGE_TAG': 'Version', 'dhis2-v2.ENABLE_PGADMIN': 'pgAdmin' }
-        expect(describeChanges(['dhis2-v2.IMAGE_TAG', 'dhis2-v2.ENABLE_PGADMIN'], names)).toBe('2 settings differ: Version, pgAdmin')
-        expect(describeChanges(['a.A', 'a.B', 'a.C', 'a.D', 'a.E', 'a.F'], {})).toBe('6 settings differ: A, B, C, D and 2 more')
-        expect(describeChanges(['a.A'], {})).toBe('1 setting differs: A')
-    })
     it('edits a preset without sending untouched sensitive values', () => {
         const request = buildEditPresetRequest({
             source: { name: 'p', groupName: 'g' },
@@ -104,15 +82,6 @@ describe('preset payloads', () => {
     })
     it('lays asked values into their stacks', () => {
         expect(withAsked({ name: 'a', pgadmin: { X: '1' } }, { pgadmin: { Y: '2' } })).toEqual({ name: 'a', pgadmin: { X: '1', Y: '2' } })
-    })
-    it('lets administrators, group admins and owners in the group write a preset', () => {
-        const preset = { userId: 1, groupName: 'design' }
-        const group = { name: 'design' }
-        expect(canWritePreset(preset, null, true)).toBe(true)
-        expect(canWritePreset(preset, { id: 2, adminGroups: [group] }, false)).toBe(true)
-        expect(canWritePreset(preset, { id: 1, groups: [group] }, false)).toBe(true)
-        expect(canWritePreset(preset, { id: 1, groups: [] }, false)).toBe(false)
-        expect(canWritePreset(preset, { id: 2, groups: [group] }, false)).toBe(false)
     })
     it('creates an instance only with the declared parameters the server accepts', () => {
         const pgadmin = {

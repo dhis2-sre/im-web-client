@@ -14,7 +14,7 @@ import styles from '../styles.module.css'
 import { presetFormValues } from './preset-values.ts'
 
 const BLANK = 'blank'
-const FIELDS_OWN_TO_THE_SECTION = ['presetChoice', 'presetName', 'saveAsPreset']
+const FIELDS_OWN_TO_THE_SECTION = ['presetName', 'saveAsPreset']
 
 type PresetOptionProps = {
     label: string

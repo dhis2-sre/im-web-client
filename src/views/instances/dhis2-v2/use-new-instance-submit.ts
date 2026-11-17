@@ -5,19 +5,20 @@ import { useNavigate } from 'react-router-dom'
 import { useActionAlert } from '../../../components/index.ts'
 import type { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
-import { changedFromPreset, withAsked } from '../../presets/preset-payloads.ts'
+import { withAsked } from '../../presets/preset-payloads.ts'
 
 type Snapshot = { values: AnyObject; dirtyFields: Record<string, boolean>; form: FormApi }
 
-const NOTHING_TO_SAVE = { presetChoice: 'none', saveAsPreset: false }
+const NOTHING_TO_SAVE = { saveAsPreset: false }
 
 /* A preset once saved isn't saved again when creating is retried. */
 const forgetPresetChoice = (form: FormApi) => form.batch(() => Object.entries(NOTHING_TO_SAVE).forEach(([field, value]) => form.change(field, value)))
 
-/* Creates one instance or several from the new instance form. Whatever the Preset section asked for is
- * saved first, so a preset that can't be saved stops before anything is created. */
+/* Creates one instance or several from the new instance form. A blank form may also be saved as a preset,
+ * first, so a preset that can't be saved stops before anything is created. A form filled from a preset only
+ * prefills: it creates from the preset and never changes it. */
 export const useNewInstanceSubmit = (
-    { createDeployment, createFromPreset, savePreset, updatePreset, bulkDeploy }: ReturnType<typeof useStackDeploymentCreation>,
+    { createDeployment, createFromPreset, savePreset, bulkDeploy }: ReturnType<typeof useStackDeploymentCreation>,
     sourcePreset: Deployment | undefined,
     onPresetSaved: () => void
 ) => {
@@ -26,29 +27,19 @@ export const useNewInstanceSubmit = (
     const [bulk, setBulk] = useState<Snapshot>()
 
     const savePresetAsked = useCallback(
-        async ({ values, dirtyFields }: Snapshot): Promise<{ error?: string; saved?: boolean }> => {
-            const choice = sourcePreset ? values.presetChoice : values.saveAsPreset ? 'new' : 'none'
-            if (choice === 'new') {
-                const { error } = await savePreset({ ...values, name: values.presetName })
-                if (error) {
-                    return { error: `Couldn't save the preset: ${error}` }
-                }
-                alert.success(`Saved preset ${values.presetName}`)
-            } else if (choice === 'update' && sourcePreset) {
-                /* Only what differs from the preset, under its own name and group: Update never renames or moves a shared preset. */
-                const changes = Object.fromEntries(changedFromPreset(dirtyFields).map((field) => [field, true]))
-                const { error } = await updatePreset(sourcePreset, { ...values, name: sourcePreset.name, groupName: sourcePreset.groupName }, changes)
-                if (error) {
-                    return { error: `Couldn't update the preset: ${error}` }
-                }
-                alert.success(`Saved preset ${sourcePreset.name}`)
-            } else {
+        async ({ values }: Snapshot): Promise<{ error?: string; saved?: boolean }> => {
+            if (sourcePreset || !values.saveAsPreset) {
                 return {}
             }
+            const { error } = await savePreset({ ...values, name: values.presetName })
+            if (error) {
+                return { error: `Couldn't save the preset: ${error}` }
+            }
+            alert.success(`Saved preset ${values.presetName}`)
             onPresetSaved()
             return { saved: true }
         },
-        [sourcePreset, savePreset, updatePreset, alert, onPresetSaved]
+        [sourcePreset, savePreset, alert, onPresetSaved]
     )
 
     const submit = useCallback(

@@ -1,24 +1,9 @@
 import type { AnyObject } from 'final-form'
 import { COMPANION_LABELS } from '../../constants.ts'
 import { buildEditPayload, type EditPayloadInput } from '../../hooks/build-edit-payload.ts'
-import type { CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, Group, StackParameterWithGroup, User } from '../../types/index.ts'
+import type { CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, StackParameterWithGroup } from '../../types/index.ts'
 import type { BulkAskFor } from '../instances/dhis2-v2/bulk-deploy-modal.tsx'
 import { PARAMETER_LABELS, PGADMIN_USERNAME } from '../instances/parameters.ts'
-
-/* Fields that belong to the new instance or the preset itself, so they are not a difference from the preset. */
-export const PRESET_ONLY_FIELDS = ['name', 'ttl', 'groupName', 'description', 'presetChoice', 'presetName', 'saveAsPreset']
-
-export const changedFromPreset = (dirtyFields: Record<string, boolean> | undefined): string[] =>
-    Object.keys(dirtyFields ?? {}).filter((field) => dirtyFields![field] && !PRESET_ONLY_FIELDS.includes(field))
-
-const SHOWN_CHANGES = 4
-
-export const describeChanges = (fields: string[], displayNames: Record<string, string>): string => {
-    const labels = fields.map((field) => displayNames[field] ?? field.slice(field.lastIndexOf('.') + 1))
-    const shown = labels.slice(0, SHOWN_CHANGES).join(', ')
-    const more = labels.length > SHOWN_CHANGES ? ` and ${labels.length - SHOWN_CHANGES} more` : ''
-    return `${labels.length} ${labels.length === 1 ? 'setting differs' : 'settings differ'}: ${shown}${more}`
-}
 
 export const buildEditPresetRequest = ({ source, ...input }: EditPayloadInput & { source: Deployment }): EditPresetRequest => {
     const request: EditPresetRequest = buildEditPayload(input)
@@ -102,9 +87,3 @@ export const askForUncopyable = ({
 /* What the dialog asked for, laid into each stack's values. */
 export const withAsked = (values: AnyObject, asked: AnyObject): AnyObject =>
     Object.fromEntries(Object.entries({ ...values, ...asked }).map(([key, value]) => [key, asked[key] ? { ...values[key], ...asked[key] } : value]))
-
-/* As the server decides it: an administrator, an admin of the preset's group, or its owner while still in that group. */
-export const canWritePreset = (preset: Deployment, user: User | null, isAdministrator: boolean) => {
-    const inGroup = (groups: Group[] = []) => groups.some((group) => group.name === preset.groupName)
-    return isAdministrator || inGroup(user?.adminGroups) || (!!user && preset.userId === user.id && inGroup(user.groups))
-}

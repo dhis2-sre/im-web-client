@@ -1,18 +1,16 @@
 import { Card } from '@dhis2/ui'
-import { setIn } from 'final-form'
 import type { AnyObject } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Page } from '../../../components/index.ts'
-import { COMPANION_LABELS } from '../../../constants.ts'
 import { useAuthAxios, useStacks, useUncopyable } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
-import { askForUncopyable, missingUncopyable } from '../../presets/preset-payloads.ts'
-import { KEEP_PRESET_VALUE, NOT_COPIED_FROM_PRESET, SensitiveFieldHintContext } from '../fields/sensitive-field-hint.ts'
+import { askForUncopyable } from '../../presets/preset-payloads.ts'
+import { KEEP_PRESET_VALUE, SensitiveFieldHintContext } from '../fields/sensitive-field-hint.ts'
 import { DEFAULT_TTL_SECONDS } from '../fields/ttl-presets.ts'
 import styles from '../styles.module.css'
 import { BulkDeployModal } from './bulk-deploy-modal.tsx'
@@ -48,34 +46,7 @@ export const NewDhis2V2Instance: FC = () => {
     const [sourcePreset, setSourcePreset] = useState<Deployment>()
     const { submit, bulk, openBulk, closeBulk, startBulk } = useNewInstanceSubmit(creation, sourcePreset, refetchPresets)
 
-    const blankValues = useMemo(() => ({ ttl: DEFAULT_TTL_SECONDS, presetChoice: 'none', [STACK_ID]: initialParameterValues }), [initialParameterValues])
-
-    /* Names for the settings the Preset section lists as differing. A companion's switch is named after the companion when the stack gives it no name of its own. */
-    const displayNames = useMemo(() => {
-        const names: Record<string, string> = { public: 'Make public' }
-        for (const stack of stacks.filter(({ name }) => name === STACK_ID || companions.some((companion) => companion.name === name))) {
-            for (const { parameterName, displayName } of stack.parameters ?? []) {
-                if (parameterName && displayName) {
-                    names[`${stack.name}.${parameterName}`] = displayName
-                }
-            }
-        }
-        for (const { name, when } of companions) {
-            if (when) {
-                names[`${STACK_ID}.${when.parameter}`] ??= COMPANION_LABELS[name] ?? name
-            }
-        }
-        return names
-    }, [stacks, companions])
-
-    /* Saving a new preset copies the form, which can't carry the preset's required logins, so they are asked for again. Creating from the preset carries them. */
-    const validate = useCallback(
-        (values: AnyObject) =>
-            sourcePreset && values.presetChoice === 'new'
-                ? Object.entries(missingUncopyable(values, uncopyable, activeStacks(values))).reduce((errors, [field, message]) => setIn(errors, field, message), {})
-                : {},
-        [sourcePreset, uncopyable, activeStacks]
-    )
+    const blankValues = useMemo(() => ({ ttl: DEFAULT_TTL_SECONDS, [STACK_ID]: initialParameterValues }), [initialParameterValues])
 
     const askFor = useMemo(
         () => (bulk ? askForUncopyable({ values: bulk.values, activeStacks: activeStacks(bulk.values), uncopyable, stacks }) : []),
@@ -85,7 +56,7 @@ export const NewDhis2V2Instance: FC = () => {
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title="New instance">
             <Card className={styles.container}>
-                <Form onSubmit={submit} validate={validate} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS, presetChoice: 'none' }}>
+                <Form onSubmit={submit} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
                     {({ handleSubmit, values, form }) => (
                         <>
                             <PresetPicker
@@ -95,8 +66,8 @@ export const NewDhis2V2Instance: FC = () => {
                                 blankValues={blankValues}
                                 onLoaded={setSourcePreset}
                             />
-                            {/* Blank sensitive fields stand for the preset's values when creating from one. Saved as a new preset, a blank field gets the stack default instead. */}
-                            <SensitiveFieldHintContext.Provider value={!sourcePreset ? undefined : values.presetChoice === 'new' ? NOT_COPIED_FROM_PRESET : KEEP_PRESET_VALUE}>
+                            {/* Blank sensitive fields stand for the preset's values when creating from one. */}
+                            <SensitiveFieldHintContext.Provider value={sourcePreset ? KEEP_PRESET_VALUE : undefined}>
                                 <Dhis2V2Form
                                     handleCancel={navigateToInstanceList}
                                     handleSubmit={handleSubmit}
@@ -104,7 +75,7 @@ export const NewDhis2V2Instance: FC = () => {
                                     steps={steps}
                                     mode="create"
                                     deployment={sourcePreset}
-                                    footer={<PresetSection sourcePreset={sourcePreset} displayNames={displayNames} />}
+                                    footer={sourcePreset ? undefined : <PresetSection />}
                                     onCreateSeveral={() => openBulk(form)}
                                 />
                             </SensitiveFieldHintContext.Provider>

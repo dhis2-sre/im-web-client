@@ -72,10 +72,6 @@
     color: var(--colors-grey800);
 }
 
-.presetChoiceHelp {
-    padding-inline-start: var(--spacers-dp24);
-}
-
 .presetOption {
     display: flex;
     align-items: baseline;
