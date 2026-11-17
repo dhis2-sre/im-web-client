@@ -87,7 +87,7 @@ One page component, three routes: `/presets/new`, `/presets/:id/edit`, `/presets
 
 - A toolbar across the top of the form card (8px padding, 1px grey300 line under it) holds a **Fill from preset** menu button. The menu has a search, presets grouped by group with the summary line under each name, and **Blank form** at the bottom. The toolbar shows only when there are dhis2-v2 presets.
 - Picking a preset fills the form from `/presets/:id`, replacing everything. An inline note beside the button, "✓ Filled from **{name}**" (or "Cleared the form" for Blank form), shows until the first change. No Undo, View preset or Reset.
-- Sensitive fields filled from a preset say "Leave blank to keep {name}'s value", the one place the preset still shows, since creation copies its stored values.
+- Sensitive fields filled from a preset say "Leave blank to keep preset value", since creation copies the preset's stored values.
 - Picking another preset or Blank after the user changed something asks first: dialog "Replace your changes?", body "Filling the form from **{name}** replaces everything you've changed." (or "Starting from a blank form clears everything you've changed."), buttons Keep editing / Replace. "Changed" means a field that differs from the loaded preset; on a blank form, a field the user actually touched.
 - Blank resets to the form as it opens, keeping the chosen group.
 - Name: the preset name with the first number free in the group (`{name}-1`, `-2`, …), from the existing `/deployments/bulk/availability`; falls back to `{name}-1`.
