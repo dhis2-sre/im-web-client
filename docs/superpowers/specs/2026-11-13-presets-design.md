@@ -57,9 +57,9 @@ Mockups for each screen were reviewed with Joe; the descriptions below are what 
 
 - Both read from `/presets` and `/presets/:id`. The preset page's "Not a preset" error state goes, since `/presets/:id` only returns presets.
 - List: a primary **New preset** button in the page header, placed as **New instance** is on the instances list. It goes to `/presets/new`.
-- Each row keeps **Use preset** (to `/instances/new?preset=:id`) and gains a ··· `ActionsMenu`: **Create several instances…**, **Edit**, **Duplicate**, **Delete**. The preset page's existing ··· menu (today only Delete) gets the same four, beside its primary **Use preset**.
+- Each row has **Create instance** (to `/instances/new?preset=:id`; was "Use preset") and gains a ··· `ActionsMenu`: **Create several instances…**, **Edit**, **Duplicate**, **Delete**. The preset page's existing ··· menu (today only Delete) gets the same four, beside its primary **Create instance**.
     - Create several opens the dialog from screen 4 for that preset. Edit goes to `/presets/:id/edit`. Duplicate goes to `/presets/new?from=:id`. Delete keeps today's confirm dialog and copy.
-    - Use preset and Create several are disabled for a preset with no dhis2-v2 instance, as Use preset is today.
+    - Create instance and Create several are disabled for a preset with no dhis2-v2 instance.
 - Empty state description: "Create one with New preset, or save one from an instance."
 - Unchanged: grouping by group, search, group filter, Only mine, the columns, the facts line, the Stacks panels.
 
@@ -83,14 +83,15 @@ One page component, three routes: `/presets/new`, `/presets/:id/edit`, `/presets
 
 ### 3. New instance form (`/instances/new`)
 
-**Preset bar** (replaces today's "Presets" fieldset and its Delete preset button):
+**Fill from preset** (replaces today's "Presets" fieldset and its Delete preset button). Updated 2026-11-17: picking a preset is an action, not a state, so nothing on the form keeps claiming it _is_ the preset once edited.
 
-- A "Start from a preset" select at the top of the form, with a **Blank (no preset)** option first, then presets as today (name, group and the summary line in each option). It shows only when there are dhis2-v2 presets.
-- Picking a preset fills the form from `/presets/:id`, replacing everything. Once filled, a line under the select: "Filled from **{name}**", with **View preset** (link to `/presets/:id`) and **Reset to preset** (fill again).
+- A toolbar across the top of the form card (8px padding, 1px grey300 line under it) holds a **Fill from preset** menu button. The menu has a search, presets grouped by group with the summary line under each name, and **Blank form** at the bottom. The toolbar shows only when there are dhis2-v2 presets.
+- Picking a preset fills the form from `/presets/:id`, replacing everything. An inline note beside the button, "✓ Filled from **{name}**" (or "Cleared the form" for Blank form), shows until the first change. No Undo, View preset or Reset.
+- Sensitive fields filled from a preset say "Leave blank to keep {name}'s value", the one place the preset still shows, since creation copies its stored values.
 - Picking another preset or Blank after the user changed something asks first: dialog "Replace your changes?", body "Filling the form from **{name}** replaces everything you've changed." (or "Starting from a blank form clears everything you've changed."), buttons Keep editing / Replace. "Changed" means a field that differs from the loaded preset; on a blank form, a field the user actually touched.
 - Blank resets to the form as it opens, keeping the chosen group.
 - Name: the preset name with the first number free in the group (`{name}-1`, `-2`, …), from the existing `/deployments/bulk/availability`; falls back to `{name}-1`.
-- `?preset=:id` (from Use preset) loads that preset once on open, as today.
+- `?preset=:id` (from Create instance on a preset) loads that preset once on open, with the same note.
 
 **Creating from a preset:**
 

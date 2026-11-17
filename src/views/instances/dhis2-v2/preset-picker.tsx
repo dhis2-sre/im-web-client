@@ -108,7 +108,7 @@ export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; 
         [fetchPreset, form, mainStackName, blankValues, firstFreeName, settle, alert]
     )
 
-    /* Use preset opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
+    /* Create instance on a preset opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
     const appliedInitial = useRef(false)
     useEffect(() => {
         if (appliedInitial.current || !initialPresetId || !presets.some(({ id }) => String(id) === initialPresetId)) {

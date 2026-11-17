@@ -25,7 +25,7 @@ const LoadButton: FC<{ preset: Deployment }> = ({ preset }) => {
 
     return (
         <Button small secondary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-            Use preset
+            Create instance
         </Button>
     )
 }

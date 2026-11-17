@@ -52,7 +52,7 @@ export const PresetDetails: FC = () => {
                 preset && (
                     <>
                         <Button small primary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-                            Use preset
+                            Create instance
                         </Button>
                         <PresetActions preset={preset} buttons onDeleted={() => navigate('/presets')} />
                     </>
