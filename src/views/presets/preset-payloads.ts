@@ -55,7 +55,7 @@ export const missingUncopyable = (values: AnyObject, uncopyable: Record<string, 
 }
 
 /* The required values a copy can't carry that the values don't hold yet, for the Create several dialog to ask for, labelled as the form labels
- * them. A companion's are prefixed with its name unless the label already starts with it. */
+ * them. A companion's are prefixed with its name, as "pgAdmin Login password", unless the label already starts with it. */
 export const askForUncopyable = ({
     values,
     activeStacks,
@@ -78,7 +78,7 @@ export const askForUncopyable = ({
                 return {
                     stackName,
                     parameterName,
-                    displayName: label.startsWith(companionLabel) ? label : `${companionLabel}: ${label}`,
+                    displayName: label.startsWith(companionLabel) ? label : `${companionLabel} ${label}`,
                     type: parameterName === PGADMIN_USERNAME ? 'email' : parameterName.includes('PASSWORD') ? 'password' : 'text',
                 }
             })

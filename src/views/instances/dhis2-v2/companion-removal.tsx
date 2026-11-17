@@ -6,12 +6,10 @@ import { COMPANION_LABELS } from '../../../constants.ts'
 import type { Deployment, StackCompanion } from '../../../types/index.ts'
 import { deploymentHasInstanceOf } from './deployment-instances.ts'
 import { STACK_ID } from './dhis2-v2-form.tsx'
+import { isMaskedValue } from './preset-values.ts'
 
-/* A read replaces every sensitive value with a run of stars, which is not a value anyone can submit.
- * Those fields start empty instead, and the form tells the user that leaving them so keeps what the
- * instance already holds. */
-const isMaskedValue = (value: string) => /^[*•]+$/.test(value)
-
+/* Masked sensitive values start empty instead, and the form tells the user that leaving them so keeps
+ * what the instance already holds. */
 export const initialValuesFor = (deployment: Deployment) => {
     const perStack: Record<string, Record<string, string>> = {}
     for (const instance of deployment.instances ?? []) {
@@ -88,14 +86,17 @@ export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: strin
 
 type Save = (values: AnyObject, dirtyFields: Record<string, boolean>) => Promise<AnyObject | undefined>
 
-/* eslint-disable max-params -- the noun is an addition to an existing three-argument call */
-export const useCompanionRemovalConfirm = (
-    deployment: Deployment | undefined,
-    companions: StackCompanion[],
-    save: Save,
-    noun: RemovalNoun = 'instance'
-): { submit: (values: AnyObject, form: FormApi) => Promise<AnyObject | undefined>; modal: ReactNode } => {
-    /* eslint-enable max-params */
+export const useCompanionRemovalConfirm = ({
+    deployment,
+    companions,
+    save,
+    noun = 'instance',
+}: {
+    deployment: Deployment | undefined
+    companions: StackCompanion[]
+    save: Save
+    noun?: RemovalNoun
+}): { submit: (values: AnyObject, form: FormApi) => Promise<AnyObject | undefined>; modal: ReactNode } => {
     const [pendingRemoval, setPendingRemoval] = useState<{ names: string[]; confirm: () => void; cancel: () => void } | null>(null)
 
     const submit = useCallback(

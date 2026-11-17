@@ -129,7 +129,7 @@ Today's Bulk deploy dialog (`BulkDeployModal`), renamed and extended. Opened fro
 
 One component, used wherever the browser copies settings:
 
-- Title "Passwords and keys aren't copied". Body: "Passwords, keys and the custom dhis.conf of {source} can't be copied, so {the preset starts | these instances get} the stack defaults. Enter any you need in the form." (the last sentence only on forms).
+- Title "Passwords and keys aren't copied". Body: "Passwords, keys and the custom dhis.conf of {source} can't be copied, so {the preset starts | these instances get} the stack defaults. Enter any you need." (the last sentence only where there are fields to enter them in).
 - Shown on: Duplicate, New preset from an instance, Create several when the values came from a preset.
 - Not shown on: Create instance from a preset, Edit preset (neither copies).
 - It shows every time on those paths: the client can't tell whether a masked value differs from the default.

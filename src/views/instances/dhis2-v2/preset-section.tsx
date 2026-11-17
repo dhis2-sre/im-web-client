@@ -22,9 +22,7 @@ export const PresetSection: FC = () => {
             <fieldset className={cx(styles.fieldset, styles.main)}>
                 <legend className={styles.legend}>Preset</legend>
                 <Field name="saveAsPreset" type="checkbox" component={CheckboxFieldFF} label="Save this configuration as a preset" />
-                {values.saveAsPreset && (
-                    <NameInput fieldName="presetName" availabilityUrl="/presets/availability" label="Preset name" helpText="Unique among the presets in the group" />
-                )}
+                {values.saveAsPreset && <NameInput fieldName="presetName" availabilityUrl="/presets/availability" label="Preset name" helpText="" />}
             </fieldset>
             <hr className={styles.hr} />
         </>

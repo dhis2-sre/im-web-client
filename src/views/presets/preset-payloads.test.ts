@@ -63,7 +63,7 @@ describe('preset payloads', () => {
             uncopyable: { pgadmin: ['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'] },
             stacks,
         })
-        expect(askFor).toEqual([{ stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin: Password', type: 'password' }])
+        expect(askFor).toEqual([{ stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin Password', type: 'password' }])
     })
     it('labels the asked values as the form does, without naming the companion twice', () => {
         const stacks = [

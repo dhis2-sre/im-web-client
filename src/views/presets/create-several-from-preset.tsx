@@ -1,5 +1,4 @@
-import type { AnyObject } from 'final-form'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useActionAlert } from '../../components/index.ts'
@@ -19,27 +18,23 @@ export const CreateSeveralFromPreset: FC<{ preset: Deployment; onClose: () => vo
     const alert = useActionAlert()
     const { stacks } = useStacks()
     const [{ data: fresh, error }] = useAuthAxios<Deployment>(`/presets/${preset.id}`, { useCache: false })
-    const { groups, companions, initialParameterValues } = useGroupedStackParameters(STACK_ID)
-    const getIncludedParameters = useCallback(
-        (values: AnyObject) => {
-            const stackValues: AnyObject = values[STACK_ID] ?? {}
-            return groups
-                .filter(({ group }) => !group.when || stackValues[group.when.parameter] === group.when.equals)
-                .flatMap(({ parameters }) => parameters.map((parameter) => parameter.parameterName ?? ''))
-        },
-        [groups]
-    )
+    const { companions, stackDefaults, getIncludedParameters, loading: parametersLoading, error: parametersError } = useGroupedStackParameters(STACK_ID)
     const { bulkDeploy, activeStacks } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
     const uncopyable = useUncopyable([STACK_ID, ...companions.map((companion) => companion.name)])
 
     useEffect(() => {
-        if (error) {
-            alert.error(`Couldn't read ${preset.name}: ${error.message}`)
+        const failed = error ?? parametersError
+        if (failed) {
+            alert.error(`Couldn't read ${preset.name}: ${failed.message}`)
             onClose()
         }
-    }, [error, alert, preset.name, onClose])
+    }, [error, parametersError, alert, preset.name, onClose])
 
-    const values = useMemo(() => fresh && presetFormValues(fresh, STACK_ID, { ttl: DEFAULT_TTL_SECONDS, [STACK_ID]: initialParameterValues }), [fresh, initialParameterValues])
+    /* Until the stacks are in, the payload would carry no parameters and the dialog wouldn't know what to ask for. */
+    const values = useMemo(
+        () => (fresh && !parametersLoading ? presetFormValues(fresh, { mainStackName: STACK_ID, initialValues: { ttl: DEFAULT_TTL_SECONDS, ...stackDefaults } }) : undefined),
+        [fresh, parametersLoading, stackDefaults]
+    )
 
     const askFor = useMemo(() => (values ? askForUncopyable({ values, activeStacks: activeStacks(values), uncopyable, stacks }) : []), [values, activeStacks, stacks, uncopyable])
 

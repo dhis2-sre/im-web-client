@@ -54,16 +54,7 @@ export const PresetForm: FC = () => {
     const sourceUrl = { new: undefined, edit: `/presets/${id}`, duplicate: `/presets/${from}`, instance: `/deployments/${instanceId}` }[kind]
     const [{ data: source, error }] = useAuthAxios<Deployment>({ url: sourceUrl }, { manual: !sourceUrl, useCache: false })
 
-    const { groups, companions, loading: parametersLoading, error: parametersError } = useGroupedStackParameters(STACK_ID)
-    const getIncludedParameters = useCallback(
-        (values: AnyObject) => {
-            const stackValues: AnyObject = values[STACK_ID] ?? {}
-            return groups
-                .filter(({ group }) => !group.when || stackValues[group.when.parameter] === group.when.equals)
-                .flatMap(({ parameters }) => parameters.map((parameter) => parameter.parameterName ?? ''))
-        },
-        [groups]
-    )
+    const { companions, getIncludedParameters, loading: parametersLoading, error: parametersError } = useGroupedStackParameters(STACK_ID)
     const { savePreset, updatePreset, activeStacks } = useStackDeploymentCreation(STACK_ID, getIncludedParameters, companions)
     const uncopyable = useUncopyable([STACK_ID, ...companions.map((companion) => companion.name)])
 
@@ -89,7 +80,7 @@ export const PresetForm: FC = () => {
         async (values: AnyObject, dirtyFields: Record<string, boolean>) => (source ? saved(await updatePreset(source, values, dirtyFields), values.name) : undefined),
         [saved, updatePreset, source]
     )
-    const { submit: submitEdit, modal } = useCompanionRemovalConfirm(kind === 'edit' ? source : undefined, companions, saveEdit, 'preset')
+    const { submit: submitEdit, modal } = useCompanionRemovalConfirm({ deployment: kind === 'edit' ? source : undefined, companions, save: saveEdit, noun: 'preset' })
     const submitNew = useCallback(async (values: AnyObject) => saved(await savePreset(values), values.name), [saved, savePreset])
 
     /* The pgAdmin login and the like are required with no default, so a copy that can't carry them
@@ -111,7 +102,7 @@ export const PresetForm: FC = () => {
         if (kind === 'edit') {
             return { ...initialValuesFor(source), name: source.name, groupName: source.groupName }
         }
-        return { ...presetFormValues(source, STACK_ID, NEW_VALUES), name: kind === 'duplicate' ? `${source.name}-copy` : source.name }
+        return { ...presetFormValues(source, { mainStackName: STACK_ID, initialValues: NEW_VALUES }), name: kind === 'duplicate' ? `${source.name}-copy` : source.name }
     }, [kind, source])
 
     const loadError =
@@ -132,7 +123,7 @@ export const PresetForm: FC = () => {
     return (
         <Page parent={parent} title={title} description={kind === 'new' ? 'A saved configuration to start new instances from. Nothing is deployed.' : undefined}>
             <Card className={styles.container}>
-                {isCopy && source && <CopyNotice className={styles.notice} source={source.name ?? ''} target="preset" onForm />}
+                {isCopy && source && <CopyNotice className={styles.notice} source={source.name ?? ''} target="preset" canEnter />}
                 <Form onSubmit={kind === 'edit' ? submitEdit : submitNew} initialValues={initialValues} validate={validate} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => (
                         <Dhis2V2Form

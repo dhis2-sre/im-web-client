@@ -97,11 +97,8 @@
     gap: 6px;
 }
 
-.fittingActions {
-    display: flex;
+.actions.fitted {
     flex-wrap: nowrap;
-    align-items: center;
-    gap: 6px;
 }
 
 .description {

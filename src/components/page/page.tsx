@@ -5,6 +5,7 @@ import { NonIdealState } from '../states/non-ideal-state.tsx'
 import { StatusDot } from '../status/status-dot.tsx'
 import type { Status } from '../status/statuses.ts'
 import styles from './page.module.css'
+import { useActionsFit } from './use-actions-fit.ts'
 
 type PageHeaderProps = {
     /* Left out while a details page has not loaded the name it shows, rather than standing in a
@@ -17,7 +18,9 @@ type PageHeaderProps = {
     status?: Status
     /* What the entity is for, in its owner's words, as a line under the title. */
     description?: string
-    actions?: ReactNode
+    /* Given as a function, the actions are told whether they fit beside the title as buttons, so they can
+     * collapse into a menu on a narrow header. */
+    actions?: ReactNode | ((fits: boolean) => ReactNode)
     /* Facts about the entity, straight under the header. */
     summary?: ReactNode
     /* The header and facts on a white band across the top, for a details page. Set from the start
@@ -32,6 +35,8 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, parent, status, descrip
     /* A name that arrives after the page opened fades in, so it reads as the page finishing loading.
      * A title that is there from the start just shows. */
     const [arrives] = useState(title === undefined)
+    const collapsible = typeof actions === 'function'
+    const { rowRef, actionsRef, fits } = useActionsFit(collapsible)
     const arrival = arrives ? ` ${styles.arrival}` : ''
 
     const below = (
@@ -53,7 +58,7 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, parent, status, descrip
                     </span>
                 </div>
             )}
-            <div className={band ? `${styles.titleRow} ${styles.strip} ${styles.pinned}` : styles.titleRow}>
+            <div ref={rowRef} className={band ? `${styles.titleRow} ${styles.strip} ${styles.pinned}` : styles.titleRow}>
                 <div className={styles.heading}>
                     {/* The dot sits inside the title, held to its last word by a no-break space, so a title
                      * that wraps keeps it at the end of its last line rather than out at the far edge of
@@ -72,7 +77,11 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, parent, status, descrip
                         </h1>
                     )}
                 </div>
-                {actions && <div className={styles.actions}>{actions}</div>}
+                {actions && (
+                    <div ref={actionsRef} className={collapsible ? `${styles.actions} ${styles.fitted}` : styles.actions}>
+                        {collapsible ? actions(fits) : actions}
+                    </div>
+                )}
             </div>
             {band ? <div className={`${styles.strip} ${styles.stripBottom}`}>{below}</div> : below}
         </header>

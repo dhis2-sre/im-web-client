@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ActionsMenu, useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
+import { errorMessage } from '../../utils/error-message.ts'
 import { CreateSeveralFromPreset } from './create-several-from-preset.tsx'
 import { presetMainInstance } from './preset-summary.ts'
 
@@ -27,7 +28,7 @@ export const PresetActions: FC<PresetActionsProps> = ({ preset, buttons, onDelet
             alert.success(`Deleted ${preset.name}`)
             onDeleted()
         } catch (error) {
-            alert.error(`Couldn't delete ${preset.name}: ${error instanceof Error ? error.message : String(error)}`)
+            alert.error(`Couldn't delete ${preset.name}: ${errorMessage(error)}`)
         }
     }
 

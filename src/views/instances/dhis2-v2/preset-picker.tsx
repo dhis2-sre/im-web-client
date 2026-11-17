@@ -5,8 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useForm, useFormState } from 'react-final-form'
 import { ConfirmationModal, useActionAlert } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import type { Deployment } from '../../../types/index.ts'
-import { usePresetSummary } from '../../presets/preset-summary.ts'
+import type { Deployment, GroupsWithDatabases } from '../../../types/index.ts'
+import { presetSummary } from '../../presets/preset-summary.ts'
 import styles from '../styles.module.css'
 import { presetFormValues } from './preset-values.ts'
 
@@ -24,9 +24,10 @@ const restart = (form: FormApi, values: AnyObject) => {
     form.setConfig('keepDirtyOnReinitialize', true)
 }
 
-const PresetLabel: FC<{ preset: Deployment; mainStackName: string }> = ({ preset, mainStackName }) => {
-    const { version, database, storage, companions } = usePresetSummary(preset, mainStackName)
-    const details = [version, database, storage, ...companions].filter(Boolean)
+/* Databases are resolved from one list rather than a request per preset; an unknown id shows as itself. */
+const PresetLabel: FC<{ preset: Deployment; mainStackName: string; databaseLabels: Map<string, string> }> = ({ preset, mainStackName, databaseLabels }) => {
+    const { version, databaseId, storage, companions } = presetSummary(preset, mainStackName)
+    const details = [version, databaseLabels.get(databaseId) ?? databaseId, storage, ...companions].filter(Boolean)
 
     return (
         <span className={styles.presetItem}>
@@ -46,7 +47,8 @@ const byGroup = (presets: Deployment[]) => {
 }
 
 /* Filling from a preset is something you do, not something the form is: the button always reads the same, and a note beside it confirms the fill only until the form is changed. The preset's values become the form's initial values, so final-form's dirty fields are what has changed since. */
-export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; initialPresetId?: string; blankValues: AnyObject; onLoaded: (preset?: Deployment) => void }> = ({
+/* presets is undefined while it loads. */
+export const FillFromPreset: FC<{ presets?: Deployment[]; mainStackName: string; initialPresetId?: string; blankValues: AnyObject; onLoaded: (preset?: Deployment) => void }> = ({
     presets,
     mainStackName,
     initialPresetId,
@@ -98,7 +100,7 @@ export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; 
         async (id: string) => {
             try {
                 const { data: preset } = await fetchPreset({ url: `/presets/${id}` })
-                restart(form, { ...presetFormValues(preset, mainStackName, blankValues, { blankMasked: true }), name: await firstFreeName(preset) })
+                restart(form, { ...presetFormValues(preset, { mainStackName, initialValues: blankValues, blankMasked: true }), name: await firstFreeName(preset) })
                 settle(preset)
                 setStatus(`Filled from ${preset.name}`)
             } catch (error) {
@@ -108,15 +110,20 @@ export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; 
         [fetchPreset, form, mainStackName, blankValues, firstFreeName, settle, alert]
     )
 
-    /* Create instance on a preset opens this form with the preset in the url; it is applied once, as soon as the presets have arrived. */
+    /* Create instance on a preset opens this form with the preset in the url; it is applied once, as soon as the presets have arrived.
+     * One that isn't among them, deleted or without a DHIS2 instance, is said so rather than leaving a blank form to pass for it. */
     const appliedInitial = useRef(false)
     useEffect(() => {
-        if (appliedInitial.current || !initialPresetId || !presets.some(({ id }) => String(id) === initialPresetId)) {
+        if (appliedInitial.current || !initialPresetId || !presets) {
             return
         }
         appliedInitial.current = true
-        void loadPreset(initialPresetId)
-    }, [initialPresetId, presets, loadPreset])
+        if (presets.some(({ id }) => String(id) === initialPresetId)) {
+            void loadPreset(initialPresetId)
+        } else {
+            alert.error("Couldn't fill the form from that preset. It may have been deleted.")
+        }
+    }, [initialPresetId, presets, loadPreset, alert])
 
     /* Blank is the form as it opens, keeping the chosen group. */
     const apply = useCallback(
@@ -145,12 +152,22 @@ export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; 
         [changed, apply]
     )
 
+    const [{ data: databaseGroups }] = useAuthAxios<GroupsWithDatabases[]>('/databases', { manual: !presets?.length, autoCatch: true })
+    const databaseLabels = useMemo(
+        () =>
+            new Map((databaseGroups ?? []).flatMap(({ name: group, databases = [] }) => databases.map(({ id, name }) => [String(id), group ? `${group}/${name}` : (name ?? '')]))),
+        [databaseGroups]
+    )
+
     const groups = useMemo(() => {
         const query = filter.trim().toLowerCase()
+        if (!presets) {
+            return []
+        }
         return byGroup(query ? presets.filter(({ name, groupName }) => `${name} ${groupName}`.toLowerCase().includes(query)) : presets)
     }, [presets, filter])
 
-    if (presets.length === 0) {
+    if (!presets?.length) {
         return null
     }
 
@@ -188,7 +205,7 @@ export const FillFromPreset: FC<{ presets: Deployment[]; mainStackName: string; 
                                         dense
                                         /* The library takes ariaLabel for a label that isn't a string, but its types leave it out. */
                                         {...{ ariaLabel: preset.name }}
-                                        label={<PresetLabel preset={preset} mainStackName={mainStackName} />}
+                                        label={<PresetLabel preset={preset} mainStackName={mainStackName} databaseLabels={databaseLabels} />}
                                         onClick={() => choose(String(preset.id))}
                                     />
                                 )),

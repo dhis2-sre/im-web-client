@@ -119,7 +119,7 @@ export const BulkDeployModal: FC<{
                             Choose another prefix.
                         </NoticeBox>
                     )}
-                    {copiedFrom && <CopyNotice dense source={copiedFrom} target="instances" onForm={askFor.length > 0} />}
+                    {copiedFrom && <CopyNotice dense source={copiedFrom} target="instances" canEnter={askFor.length > 0} />}
                 </div>
                 {askFor.length > 0 && (
                     <div className={styles.bulkFields}>

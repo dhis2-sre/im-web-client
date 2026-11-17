@@ -106,7 +106,7 @@ export const Dhis2V2Form: FC<{
             <fieldset className={cx(styles.fieldset, styles.main)}>
                 <legend className={styles.legend}>Basic information</legend>
                 {mode === 'create' && <NameInput />}
-                {isPreset && <NameInput availabilityUrl="/presets/availability" helpText="Unique among the presets in the group" own={ownName} />}
+                {isPreset && <NameInput availabilityUrl="/presets/availability" helpText="" own={ownName} />}
                 <DescriptionTextarea />
                 <PublicCheckbox />
                 {isEdit && deployment ? <ExtendTtlSelect deployment={deployment} /> : isPreset ? <TtlSelect label="Lifetime of created instances" helpText="" /> : <TtlSelect />}

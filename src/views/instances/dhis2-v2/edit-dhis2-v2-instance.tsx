@@ -1,5 +1,4 @@
 import { Card } from '@dhis2/ui'
-import type { AnyObject } from 'final-form'
 import type { FC } from 'react'
 import { useCallback, useMemo } from 'react'
 import { Form } from 'react-final-form'
@@ -17,18 +16,9 @@ export const EditDhis2V2Instance: FC = () => {
     const deploymentId = parseInt(id!, 10)
     const [{ data: deployment, error }] = useDeploymentDetails()
 
-    const { groups, companions } = useGroupedStackParameters(STACK_ID)
-    const getIncludedParameters = useCallback(
-        (values: AnyObject) => {
-            const stackValues: AnyObject = values[STACK_ID] ?? {}
-            return groups
-                .filter(({ group }) => !group.when || stackValues[group.when.parameter] === group.when.equals)
-                .flatMap(({ parameters }) => parameters.map((parameter) => parameter.parameterName ?? ''))
-        },
-        [groups]
-    )
+    const { companions, getIncludedParameters } = useGroupedStackParameters(STACK_ID)
     const saveEdit = useDeploymentEdit(STACK_ID, deploymentId, getIncludedParameters)
-    const { submit, modal } = useCompanionRemovalConfirm(deployment, companions, saveEdit)
+    const { submit, modal } = useCompanionRemovalConfirm({ deployment, companions, save: saveEdit })
 
     const initialValues = useMemo(() => (deployment ? initialValuesFor(deployment) : undefined), [deployment])
 

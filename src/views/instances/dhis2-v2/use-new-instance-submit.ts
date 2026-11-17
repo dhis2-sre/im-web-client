@@ -6,13 +6,9 @@ import { useActionAlert } from '../../../components/index.ts'
 import type { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
 import { withAsked } from '../../presets/preset-payloads.ts'
+import { savePresetFirst } from './save-preset-first.ts'
 
 type Snapshot = { values: AnyObject; dirtyFields: Record<string, boolean>; form: FormApi }
-
-const NOTHING_TO_SAVE = { saveAsPreset: false }
-
-/* A preset once saved isn't saved again when creating is retried. */
-const forgetPresetChoice = (form: FormApi) => form.batch(() => Object.entries(NOTHING_TO_SAVE).forEach(([field, value]) => form.change(field, value)))
 
 /* Creates one instance or several from the new instance form. A blank form may also be saved as a preset,
  * first, so a preset that can't be saved stops before anything is created. A form filled from a preset only
@@ -26,18 +22,19 @@ export const useNewInstanceSubmit = (
     const alert = useActionAlert()
     const [bulk, setBulk] = useState<Snapshot>()
 
-    const savePresetAsked = useCallback(
-        async ({ values }: Snapshot): Promise<{ error?: string; saved?: boolean }> => {
-            if (sourcePreset || !values.saveAsPreset) {
-                return {}
+    /* A form filled from a preset has no box to tick: it only prefills. */
+    const saveAsPreset = useCallback(
+        async (values: AnyObject) => {
+            if (sourcePreset) {
+                return undefined
             }
             const { error } = await savePreset({ ...values, name: values.presetName })
             if (error) {
-                return { error: `Couldn't save the preset: ${error}` }
+                return `Couldn't save the preset: ${error}`
             }
             alert.success(`Saved preset ${values.presetName}`)
             onPresetSaved()
-            return { saved: true }
+            return undefined
         },
         [sourcePreset, savePreset, alert, onPresetSaved]
     )
@@ -45,16 +42,13 @@ export const useNewInstanceSubmit = (
     const submit = useCallback(
         async (values: AnyObject, form: FormApi) => {
             const { dirtyFields } = form.getState()
-            const { error, saved } = await savePresetAsked({ values, dirtyFields, form })
+            const error = await savePresetFirst(values, form, saveAsPreset)
             if (error) {
                 return { [FORM_ERROR]: error }
             }
-            if (saved) {
-                forgetPresetChoice(form)
-            }
             return sourcePreset ? createFromPreset(Number(sourcePreset.id), values, dirtyFields) : createDeployment(values)
         },
-        [savePresetAsked, sourcePreset, createFromPreset, createDeployment]
+        [saveAsPreset, sourcePreset, createFromPreset, createDeployment]
     )
 
     /* The name isn't used when creating several, which names them from a prefix, so its errors don't stop it. Any other error is shown by submitting, which final-form refuses while there are errors. */
@@ -74,13 +68,12 @@ export const useNewInstanceSubmit = (
             if (!bulk) {
                 return undefined
             }
-            const { error: presetError, saved } = await savePresetAsked(bulk)
+            const presetError = await savePresetFirst(bulk.values, bulk.form, saveAsPreset)
             if (presetError) {
                 return { message: presetError, refused: true }
             }
-            if (saved) {
-                forgetPresetChoice(bulk.form)
-                setBulk({ ...bulk, values: { ...bulk.values, ...NOTHING_TO_SAVE } })
+            if (bulk.values.saveAsPreset) {
+                setBulk({ ...bulk, values: { ...bulk.values, saveAsPreset: false } })
             }
             const { deployments, error } = await bulkDeploy(withAsked(bulk.values, asked), prefix, count)
             if (error) {
@@ -91,7 +84,7 @@ export const useNewInstanceSubmit = (
             navigate('/instances')
             return undefined
         },
-        [bulk, savePresetAsked, bulkDeploy, alert, navigate]
+        [bulk, saveAsPreset, bulkDeploy, alert, navigate]
     )
 
     return { submit, bulk, openBulk, closeBulk, startBulk }

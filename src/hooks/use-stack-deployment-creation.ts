@@ -4,6 +4,7 @@ import type { AnyObject } from 'final-form'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Deployment, SaveDeploymentRequest, SaveInstanceRequest, SavePresetRequest, StackCompanion } from '../types/index.ts'
+import { errorMessage } from '../utils/error-message.ts'
 import { buildEditPresetRequest, buildFromPresetRequest, creationParameters } from '../views/presets/preset-payloads.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 import { useStacks } from './use-stacks.ts'
@@ -66,9 +67,6 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         setSteps((current) => current.map((step) => (names.includes(step.stackName) ? { ...step, status } : step)))
     }, [])
 
-    const errorMessage = (error: unknown, fallback: string) =>
-        isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : error instanceof Error ? error.message : fallback
-
     /* Deploying is accepted rather than performed, so this returns long before anything runs in the
      * cluster. The details page is where the deploy is watched. */
     const deployAndOpen = useCallback(
@@ -101,7 +99,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
             } catch (error) {
                 console.error(error)
                 setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                return { [FORM_ERROR]: errorMessage(error, "Couldn't create the instance") }
+                return { [FORM_ERROR]: errorMessage(error) }
             }
         },
         [executePost, buildInstances, setStatus, deployAndOpen]
@@ -121,7 +119,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
             } catch (error) {
                 console.error(error)
                 setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                return { [FORM_ERROR]: errorMessage(error, "Couldn't create the instance") }
+                return { [FORM_ERROR]: errorMessage(error) }
             }
         },
         [executePost, activeStacks, setStatus, getIncludedParameters, stackName, deployAndOpen]
@@ -135,7 +133,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 return { id: preset.id }
             } catch (error) {
                 console.error(error)
-                return { error: errorMessage(error, "Couldn't save the preset") }
+                return { error: errorMessage(error) }
             }
         },
         [executePost, buildInstances]
@@ -149,7 +147,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 return { id: source.id }
             } catch (error) {
                 console.error(error)
-                return { error: errorMessage(error, "Couldn't save the preset") }
+                return { error: errorMessage(error) }
             }
         },
         [executePost, getIncludedParameters, stackName]
