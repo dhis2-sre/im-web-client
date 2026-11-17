@@ -97,6 +97,13 @@
     gap: 6px;
 }
 
+.fittingActions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+}
+
 .description {
     max-width: 72ch;
     margin: 0;

@@ -2,7 +2,7 @@ import { Button, IconClock16, IconClockHistory16, IconFolder16, IconLink16, Icon
 import { FC, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { MetaFact, MetaLine, MomentFromNow, Page } from '../../../components/index.ts'
+import { FittingActions, MetaFact, MetaLine, MomentFromNow, Page } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment, DeploymentInstanceDeployState } from '../../../types/index.ts'
@@ -60,26 +60,28 @@ export const DeploymentDetails: FC = () => {
             band
             actions={
                 deployment && (
-                    <>
-                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
-                            <Button small primary disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
-                                Edit
-                            </Button>
-                        </span>
-                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
-                            <Button small disabled={isDeploying(deployment)} onClick={() => setExtending(true)}>
-                                Extend…
-                            </Button>
-                        </span>
-                        <InstanceActionsMenu
-                            deployment={deployment}
-                            components={components.instances}
-                            includeEdit={false}
-                            buttons
-                            onChanged={() => void refetch()}
-                            onDeleted={() => navigate('/instances')}
-                        />
-                    </>
+                    /* Edit stays a button; the rest fold into a menu beside it once they would crowd the name. */
+                    <FittingActions>
+                        {(fits) => (
+                            <>
+                                <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
+                                    <Button small primary disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
+                                        Edit
+                                    </Button>
+                                </span>
+                                <InstanceActionsMenu
+                                    deployment={deployment}
+                                    components={components.instances}
+                                    includeEdit={false}
+                                    includePgAdmin={false}
+                                    buttons={fits}
+                                    onExtend={() => setExtending(true)}
+                                    onChanged={() => void refetch()}
+                                    onDeleted={() => navigate('/instances')}
+                                />
+                            </>
+                        )}
+                    </FittingActions>
                 )
             }
             loading={loading && !deployment}
