@@ -6,8 +6,6 @@ import { useDebounce } from 'use-debounce'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { BulkDeployError } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { ClusterResources } from '../../../types/index.ts'
-import { CopyNotice } from '../../presets/copy-notice.tsx'
-import { validateEmailFormat } from '../fields/text-parameter-input.tsx'
 import styles from '../styles.module.css'
 import { formatGi, isBusy, listNames, perInstanceResources } from './bulk-summary.ts'
 
@@ -20,29 +18,19 @@ const parseCount = (count: string) => {
     return Number.isInteger(parsed) && parsed >= 1 && parsed <= MAX_BULK_DEPLOYMENTS ? parsed : undefined
 }
 
-export type BulkAskFor = { stackName: string; parameterName: string; displayName: string; type?: 'text' | 'password' | 'email' }
-
 /* The names are checked as they are typed so a taken one shows before anything is sent, but the bulk deploy checks them again when it creates the deployments and creates none if one was taken in between. */
 export const BulkDeployModal: FC<{
     group: string
     values: AnyObject
     initialPrefix: string
-    /* The name of the preset the values were copied from, which can't carry passwords and keys. */
-    copiedFrom?: string
-    /* Required values the copy couldn't carry, asked for here and merged into the values. */
-    askFor?: BulkAskFor[]
     onCancel: () => void
-    onDeploy: (prefix: string, count: number, extra: AnyObject) => Promise<BulkDeployError | undefined>
-}> = ({ group, values, initialPrefix, copiedFrom, askFor = [], onCancel, onDeploy }) => {
+    onDeploy: (prefix: string, count: number) => Promise<BulkDeployError | undefined>
+}> = ({ group, values, initialPrefix, onCancel, onDeploy }) => {
     const [prefix, setPrefix] = useState(initialPrefix)
     const [countInput, setCountInput] = useState('2')
     const [deploying, setDeploying] = useState(false)
     const [deployError, setDeployError] = useState<BulkDeployError>()
-    const [asked, setAsked] = useState<Record<string, string>>({})
     const count = parseCount(countInput)
-    const askedKey = (field: BulkAskFor) => `${field.stackName}.${field.parameterName}`
-    const askedError = (field: BulkAskFor) => (field.type === 'email' && asked[askedKey(field)] ? validateEmailFormat(asked[askedKey(field)]) : undefined)
-    const askedComplete = askFor.every((field) => !!asked[askedKey(field)] && !askedError(field))
     const [{ data: resources }] = useAuthAxios<ClusterResources>(`/groups/${encodeURIComponent(group)}/resources`, { useCache: false })
     const each = perInstanceResources(values)
     const [checkedPrefix] = useDebounce(prefix, 300)
@@ -57,18 +45,14 @@ export const BulkDeployModal: FC<{
             ? availability
             : undefined
     const taken = current?.taken ?? []
-    const canDeploy = !!current && !current.reason && taken.length === 0 && askedComplete && !deploying
+    const canDeploy = !!current && !current.reason && taken.length === 0 && !deploying
 
     const deploy = async () => {
         if (!count) {
             return
         }
         setDeploying(true)
-        const extra = askFor.reduce<AnyObject>(
-            (merged, field) => ({ ...merged, [field.stackName]: { ...merged[field.stackName], [field.parameterName]: asked[askedKey(field)] } }),
-            {}
-        )
-        setDeployError(await onDeploy(prefix, count, extra))
+        setDeployError(await onDeploy(prefix, count))
         setDeploying(false)
     }
 
@@ -119,25 +103,7 @@ export const BulkDeployModal: FC<{
                             Choose another prefix.
                         </NoticeBox>
                     )}
-                    {copiedFrom && <CopyNotice dense source={copiedFrom} target="instances" canEnter={askFor.length > 0} />}
                 </div>
-                {askFor.length > 0 && (
-                    <div className={styles.bulkFields}>
-                        {askFor.map((field) => (
-                            <InputField
-                                key={askedKey(field)}
-                                label={field.displayName}
-                                type={field.type ?? 'text'}
-                                value={asked[askedKey(field)] ?? ''}
-                                error={!!askedError(field)}
-                                validationText={askedError(field)}
-                                onChange={({ value }) => setAsked((current) => ({ ...current, [askedKey(field)]: value ?? '' }))}
-                                required
-                                className={styles.bulkPrefix}
-                            />
-                        ))}
-                    </div>
-                )}
                 {error && !loading && (
                     <NoticeBox dense error>
                         Couldn&apos;t check the names: {error.message}

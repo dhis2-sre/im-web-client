@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Deployment, SaveDeploymentRequest, SaveInstanceRequest, SavePresetRequest, StackCompanion } from '../types/index.ts'
 import { errorMessage } from '../utils/error-message.ts'
-import { buildEditPresetRequest, buildFromPresetRequest, creationParameters } from '../views/presets/preset-payloads.ts'
+import { buildBulkFromPresetRequest, buildEditPresetRequest, buildFromPresetRequest, creationParameters } from '../views/presets/preset-payloads.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 import { useStacks } from './use-stacks.ts'
 
@@ -27,7 +27,7 @@ const SETTLED_PAUSE_MS = 800
  * condition the stack gates it on holds, since that condition is the opt-in, and a companion
  * declared without one is always included, the same reading the form renders by. Only parameters
  * the stack declares are sent, never its consumed ones (see creationParameters). Saving a preset stores the same instances under /presets, and a
- * bulk deploy sends the same instances to be created and deployed under many names. */
+ * bulk deploy sends the same instances to be created and deployed under many names, or from a preset only what changed of it. */
 export const useStackDeploymentCreation = (stackName: string, getIncludedParameters: (values: AnyObject) => string[], companions: StackCompanion[] = []) => {
     const navigate = useNavigate()
     const { stacks } = useStacks()
@@ -153,18 +153,34 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         [executePost, getIncludedParameters, stackName]
     )
 
+    /* From a preset, the server copies the preset's sensitive values, which a read only ever shows masked, so only what changed is sent. */
     const bulkDeploy = useCallback(
-        async (values: AnyObject, prefix: string, count: number): Promise<{ deployments?: BulkDeployment[]; error?: BulkDeployError }> => {
-            const payload: BulkDeployRequest = {
-                prefix,
-                count,
-                group: values.groupName,
-                description: values.description,
-                ttl: values.ttl,
-                instances: buildInstances(values),
-            }
+        async (
+            values: AnyObject,
+            { prefix, count, fromPreset }: { prefix: string; count: number; fromPreset?: { id: number; dirtyFields: Record<string, boolean> } }
+        ): Promise<{ deployments?: BulkDeployment[]; error?: BulkDeployError }> => {
+            const request = fromPreset
+                ? {
+                      url: `/presets/${fromPreset.id}/deployments/bulk`,
+                      data: buildBulkFromPresetRequest(
+                          { values, dirtyFields: fromPreset.dirtyFields, includedParameters: new Set(getIncludedParameters(values)), stackName },
+                          prefix,
+                          count
+                      ),
+                  }
+                : {
+                      url: '/deployments/bulk',
+                      data: {
+                          prefix,
+                          count,
+                          group: values.groupName,
+                          description: values.description,
+                          ttl: values.ttl,
+                          instances: buildInstances(values),
+                      } satisfies BulkDeployRequest,
+                  }
             try {
-                const { data } = await executePost({ url: '/deployments/bulk', data: payload })
+                const { data } = await executePost(request)
                 return { deployments: data.deployments }
             } catch (error) {
                 console.error(error)
@@ -178,7 +194,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 }
             }
         },
-        [executePost, buildInstances]
+        [executePost, buildInstances, getIncludedParameters, stackName]
     )
 
     return { createDeployment, createFromPreset, savePreset, updatePreset, bulkDeploy, activeStacks, steps }

@@ -20,3 +20,5 @@ export type CreateDeploymentFromPresetRequest = {
     ttl?: number
     instances?: Record<string, EditInstanceRequest>
 }
+
+export type BulkDeployFromPresetRequest = Omit<CreateDeploymentFromPresetRequest, 'name'> & { prefix: string; count: number }

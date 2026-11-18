@@ -1,4 +1,4 @@
-import { askForUncopyable, buildEditPresetRequest, buildFromPresetRequest, creationParameters, missingUncopyable, uncopyableParameters, withAsked } from './preset-payloads.ts'
+import { buildBulkFromPresetRequest, buildEditPresetRequest, buildFromPresetRequest, creationParameters, missingUncopyable, uncopyableParameters } from './preset-payloads.ts'
 
 describe('preset payloads', () => {
     it('edits a preset without sending untouched sensitive values', () => {
@@ -47,41 +47,19 @@ describe('preset payloads', () => {
         })
         expect(missingUncopyable({}, uncopyable, [])).toEqual({})
     })
-    it('asks only for the uncopyable values still missing, labelling a companion', () => {
-        const stacks = [
-            {
-                name: 'pgadmin',
-                parameters: [
-                    { parameterName: 'PGADMIN_USERNAME', displayName: 'Login' },
-                    { parameterName: 'PGADMIN_PASSWORD', displayName: 'Password' },
-                ],
-            },
-        ]
-        const askFor = askForUncopyable({
-            values: { pgadmin: { PGADMIN_USERNAME: 'dba@example.org' } },
-            activeStacks: ['dhis2-v2', 'pgadmin'],
-            uncopyable: { pgadmin: ['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'] },
-            stacks,
-        })
-        expect(askFor).toEqual([{ stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin Password', type: 'password' }])
-    })
-    it('labels the asked values as the form does, without naming the companion twice', () => {
-        const stacks = [
-            {
-                name: 'pgadmin',
-                parameters: [
-                    { parameterName: 'PGADMIN_USERNAME', displayName: 'pgAdmin Username' },
-                    { parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin Password' },
-                ],
-            },
-        ]
-        expect(askForUncopyable({ values: {}, activeStacks: ['dhis2-v2', 'pgadmin'], uncopyable: { pgadmin: ['PGADMIN_USERNAME', 'PGADMIN_PASSWORD'] }, stacks })).toEqual([
-            { stackName: 'pgadmin', parameterName: 'PGADMIN_USERNAME', displayName: 'pgAdmin Login email', type: 'email' },
-            { stackName: 'pgadmin', parameterName: 'PGADMIN_PASSWORD', displayName: 'pgAdmin Password', type: 'password' },
-        ])
-    })
-    it('lays asked values into their stacks', () => {
-        expect(withAsked({ name: 'a', pgadmin: { X: '1' } }, { pgadmin: { Y: '2' } })).toEqual({ name: 'a', pgadmin: { X: '1', Y: '2' } })
+    it('bulk deploys from a preset with a prefix and count and only the changed values', () => {
+        expect(
+            buildBulkFromPresetRequest(
+                {
+                    stackName: 'dhis2-v2',
+                    includedParameters: new Set(['IMAGE_TAG', 'DATABASE_PASSWORD']),
+                    dirtyFields: { 'dhis2-v2.IMAGE_TAG': true },
+                    values: { 'name': 'ignored', 'groupName': 'g', 'ttl': 3600, 'dhis2-v2': { IMAGE_TAG: '2.42', DATABASE_PASSWORD: '' } },
+                },
+                'load',
+                3
+            )
+        ).toEqual({ prefix: 'load', count: 3, group: 'g', ttl: 3600, instances: { 'dhis2-v2': { parameters: { IMAGE_TAG: { value: '2.42' } } } } })
     })
     it('creates an instance only with the declared parameters the server accepts', () => {
         const pgadmin = {

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { useActionAlert } from '../../../components/index.ts'
 import type { useStackDeploymentCreation } from '../../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../../types/index.ts'
-import { withAsked } from '../../presets/preset-payloads.ts'
 import { savePresetFirst } from './save-preset-first.ts'
 
 type Snapshot = { values: AnyObject; dirtyFields: Record<string, boolean>; form: FormApi }
@@ -64,7 +63,7 @@ export const useNewInstanceSubmit = (
     const closeBulk = useCallback(() => setBulk(undefined), [])
 
     const startBulk = useCallback(
-        async (prefix: string, count: number, asked: AnyObject) => {
+        async (prefix: string, count: number) => {
             if (!bulk) {
                 return undefined
             }
@@ -75,7 +74,11 @@ export const useNewInstanceSubmit = (
             if (bulk.values.saveAsPreset) {
                 setBulk({ ...bulk, values: { ...bulk.values, saveAsPreset: false } })
             }
-            const { deployments, error } = await bulkDeploy(withAsked(bulk.values, asked), prefix, count)
+            const { deployments, error } = await bulkDeploy(bulk.values, {
+                prefix,
+                count,
+                fromPreset: sourcePreset && { id: Number(sourcePreset.id), dirtyFields: bulk.dirtyFields },
+            })
             if (error) {
                 return error
             }
@@ -84,7 +87,7 @@ export const useNewInstanceSubmit = (
             navigate('/instances')
             return undefined
         },
-        [bulk, saveAsPreset, bulkDeploy, alert, navigate]
+        [bulk, saveAsPreset, bulkDeploy, sourcePreset, alert, navigate]
     )
 
     return { submit, bulk, openBulk, closeBulk, startBulk }

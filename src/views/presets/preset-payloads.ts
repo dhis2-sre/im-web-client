@@ -1,9 +1,6 @@
 import type { AnyObject } from 'final-form'
-import { COMPANION_LABELS } from '../../constants.ts'
 import { buildEditPayload, type EditPayloadInput } from '../../hooks/build-edit-payload.ts'
-import type { CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, StackParameterWithGroup } from '../../types/index.ts'
-import type { BulkAskFor } from '../instances/dhis2-v2/bulk-deploy-modal.tsx'
-import { PARAMETER_LABELS, PGADMIN_USERNAME } from '../instances/parameters.ts'
+import type { BulkDeployFromPresetRequest, CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, StackParameterWithGroup } from '../../types/index.ts'
 
 export const buildEditPresetRequest = ({ source, ...input }: EditPayloadInput & { source: Deployment }): EditPresetRequest => {
     const request: EditPresetRequest = buildEditPayload(input)
@@ -16,11 +13,20 @@ export const buildEditPresetRequest = ({ source, ...input }: EditPayloadInput & 
     return request
 }
 
-export const buildFromPresetRequest = (input: EditPayloadInput): CreateDeploymentFromPresetRequest => {
+/* What deployments made from a preset change of it. The server copies the rest, sensitive values included. */
+const fromPresetChanges = (input: EditPayloadInput) => {
     const { values } = input
     const { instances } = buildEditPayload(input)
-    return { name: values.name, group: values.groupName, description: values.description, ttl: values.ttl, ...(instances && { instances }) }
+    return { group: values.groupName, description: values.description, ttl: values.ttl, ...(instances && { instances }) }
 }
+
+export const buildFromPresetRequest = (input: EditPayloadInput): CreateDeploymentFromPresetRequest => ({ name: input.values.name, ...fromPresetChanges(input) })
+
+export const buildBulkFromPresetRequest = (input: EditPayloadInput, prefix: string, count: number): BulkDeployFromPresetRequest => ({
+    prefix,
+    count,
+    ...fromPresetChanges(input),
+})
 
 type StackParameters = { name?: string; parameters?: { parameterName?: string; displayName?: string; consumed?: boolean }[] }
 
@@ -53,37 +59,3 @@ export const missingUncopyable = (values: AnyObject, uncopyable: Record<string, 
     }
     return errors
 }
-
-/* The required values a copy can't carry that the values don't hold yet, for the Create several dialog to ask for, labelled as the form labels
- * them. A companion's are prefixed with its name, as "pgAdmin Login password", unless the label already starts with it. */
-export const askForUncopyable = ({
-    values,
-    activeStacks,
-    uncopyable,
-    stacks,
-}: {
-    values: AnyObject
-    /* The main stack first, then the companions, as useStackDeploymentCreation's activeStacks lists them. */
-    activeStacks: string[]
-    uncopyable: Record<string, string[]>
-    stacks: StackParameters[]
-}): BulkAskFor[] =>
-    activeStacks.flatMap((stackName, index) => {
-        const stack = stacks.find((candidate) => candidate.name === stackName)
-        const companionLabel = index === 0 ? '' : (COMPANION_LABELS[stackName] ?? stackName)
-        return (uncopyable[stackName] ?? [])
-            .filter((parameterName) => !values[stackName]?.[parameterName])
-            .map((parameterName): BulkAskFor => {
-                const label = PARAMETER_LABELS[parameterName] ?? stack?.parameters?.find((candidate) => candidate.parameterName === parameterName)?.displayName ?? parameterName
-                return {
-                    stackName,
-                    parameterName,
-                    displayName: label.startsWith(companionLabel) ? label : `${companionLabel} ${label}`,
-                    type: parameterName === PGADMIN_USERNAME ? 'email' : parameterName.includes('PASSWORD') ? 'password' : 'text',
-                }
-            })
-    })
-
-/* What the dialog asked for, laid into each stack's values. */
-export const withAsked = (values: AnyObject, asked: AnyObject): AnyObject =>
-    Object.fromEntries(Object.entries({ ...values, ...asked }).map(([key, value]) => [key, asked[key] ? { ...values[key], ...asked[key] } : value]))

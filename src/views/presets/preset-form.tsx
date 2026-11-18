@@ -123,7 +123,7 @@ export const PresetForm: FC = () => {
     return (
         <Page parent={parent} title={title} description={kind === 'new' ? 'A saved configuration to start new instances from. Nothing is deployed.' : undefined}>
             <Card className={styles.container}>
-                {isCopy && source && <CopyNotice className={styles.notice} source={source.name ?? ''} target="preset" canEnter />}
+                {isCopy && source && <CopyNotice className={styles.notice} source={source.name ?? ''} />}
                 <Form onSubmit={kind === 'edit' ? submitEdit : submitNew} initialValues={initialValues} validate={validate} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => (
                         <Dhis2V2Form
