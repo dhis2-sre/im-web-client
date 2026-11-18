@@ -1,7 +1,8 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Card, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AuthHeading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import styles from './reset-password.module.css'
 
@@ -50,10 +51,7 @@ export const RequestPasswordReset = () => {
     return (
         <form className={styles.container} onSubmit={onSubmit}>
             <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Request password reset
-                </h2>
+                <AuthHeading>Request password reset</AuthHeading>
                 <InputField disabled={loading} name="email" label="Email" type="email" value={email} onChange={onInputChange} />
                 {errorMessage && <Help error>{errorMessage}</Help>}
                 <Button primary type="submit" value="Send reset link" disabled={!email}>

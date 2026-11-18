@@ -1,7 +1,8 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Card, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AuthHeading } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import styles from './sign-up.module.css'
 
@@ -73,10 +74,7 @@ export const SignUp = () => {
     return (
         <form className={styles.container} onSubmit={onSubmit}>
             <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Sign up for Instance Manager
-                </h2>
+                <AuthHeading>Sign up to deploy and manage DHIS2 instances.</AuthHeading>
                 <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
                 <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
                 <InputField

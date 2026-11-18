@@ -1,5 +1,6 @@
 import { AlertsProvider } from '@dhis2/app-service-alerts'
 import { CssReset, CssVariables } from '@dhis2/ui'
+import '@fontsource/ibm-plex-sans/latin-400.css'
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'

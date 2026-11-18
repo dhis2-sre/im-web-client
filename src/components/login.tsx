@@ -1,8 +1,9 @@
-import { Button, Card, CheckboxField, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Card, CheckboxField, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
 import { baseURL } from '../hooks/use-auth-axios.ts'
+import { AuthHeading } from './auth-heading.tsx'
 import styles from './login.module.css'
 
 export const Login = () => {
@@ -24,10 +25,7 @@ export const Login = () => {
     return (
         <form className={styles.container} onSubmit={onSubmit}>
             <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Log in to Instance Manager
-                </h2>
+                <AuthHeading>Log in to deploy and manage DHIS2 instances.</AuthHeading>
                 <InputField
                     name="email"
                     label="Email"
