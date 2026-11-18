@@ -1,4 +1,5 @@
 export { Alerts } from './alerts.tsx'
+export { AuthCard } from './auth-card.tsx'
 export { AuthHeading } from './auth-heading.tsx'
 export { AuthProvider } from './auth-provider.tsx'
 export { ConfirmationModal } from './confirmation-modal.tsx'

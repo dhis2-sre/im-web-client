@@ -1,25 +1,15 @@
-/* A faint 2px dot every 16px behind the card: a nod to the mark's dot grid. */
-.container {
+.row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-image: radial-gradient(circle at 8px 8px, rgba(33, 41, 52, 0.06) 1px, transparent 1.5px);
-    background-size: 16px 16px;
-}
-
-.container .box {
-    width: 400px;
-    height: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacers-dp16);
-}
-
-.linkContainer {
-    display: flex;
     justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.busy {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .divider {
