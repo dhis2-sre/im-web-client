@@ -8,7 +8,7 @@ import { useGroupSelectHelpText } from './group-select-help-text.tsx'
 
 export const GroupSelect = () => {
     const form = useForm()
-    const [currentGroup, setCurrentGroup] = useState()
+    const [currentGroup, setCurrentGroup] = useState<string | undefined>(() => form.getState().values.groupName)
 
     const [{ data: groups, loading, error }] = useAuthAxios<Group[]>({
         method: 'GET',
@@ -18,7 +18,12 @@ export const GroupSelect = () => {
         },
     })
 
-    const options = useMemo(() => (groups ?? []).map(({ name }) => ({ label: name, value: name })), [groups])
+    /* A form opened on a preset already has its group, which the select must offer before the groups
+     * arrive, and keeps offering if it isn't one the user can deploy to. */
+    const options = useMemo(() => {
+        const names = (groups ?? []).map(({ name }) => name)
+        return (currentGroup && !names.includes(currentGroup) ? [...names, currentGroup] : names).map((name) => ({ label: name, value: name }))
+    }, [groups, currentGroup])
     const helpText = useGroupSelectHelpText(currentGroup)
 
     useEffect(() => {

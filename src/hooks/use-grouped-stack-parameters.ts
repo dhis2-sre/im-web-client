@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import type { AnyObject } from 'final-form'
+import { useCallback, useMemo } from 'react'
 import { StackParameterGroup, StackParameterWithGroup, StackWithParameterGroups } from '../types/index.ts'
-import { useStack } from './use-stacks.ts'
+import { useStack, useStacks } from './use-stacks.ts'
 
 export type GroupedParameters = {
     group: StackParameterGroup
@@ -10,8 +11,18 @@ export type GroupedParameters = {
 /* Stacks without declared groups render as a single flat section. */
 const FLAT_GROUP: StackParameterGroup = { name: '', title: 'Parameters' }
 
+/* The values a stack's parameters start with, where it declares one. Consumed parameters are the server's to fill. */
+export const parameterDefaults = (parameters: StackParameterWithGroup[] = []) =>
+    parameters.reduce<Record<string, string>>((defaults, parameter) => {
+        if (parameter.parameterName && parameter.defaultValue !== undefined && !parameter.consumed) {
+            defaults[parameter.parameterName] = parameter.defaultValue
+        }
+        return defaults
+    }, {})
+
 export const useGroupedStackParameters = (stackName: string) => {
     const { stack: rawStack, loading, error } = useStack(stackName)
+    const { stacks } = useStacks()
     const stack = rawStack as StackWithParameterGroups | undefined
 
     const parameters = useMemo(() => (stack?.parameters ?? []).filter((parameter) => !parameter.consumed).sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0)), [stack])
@@ -26,16 +37,7 @@ export const useGroupedStackParameters = (stackName: string) => {
             .filter((grouped) => grouped.parameters.length > 0)
     }, [stack, parameters])
 
-    const initialParameterValues = useMemo(
-        () =>
-            parameters.reduce<Record<string, string>>((initialValues, parameter) => {
-                if (parameter.parameterName && parameter.defaultValue !== undefined) {
-                    initialValues[parameter.parameterName] = parameter.defaultValue
-                }
-                return initialValues
-            }, {}),
-        [parameters]
-    )
+    const initialParameterValues = useMemo(() => parameterDefaults(parameters), [parameters])
 
     const sensitiveParameters = useMemo(
         () =>
@@ -64,5 +66,30 @@ export const useGroupedStackParameters = (stackName: string) => {
 
     const companions = useMemo(() => stack?.companions ?? [], [stack])
 
-    return { loading, error, groups, companions, initialParameterValues, sensitiveParameters, immutableReasons }
+    /* Every stack's defaults, the companions' as well, keyed as the form keeps them. A form filled from a preset
+     * lays the preset over these, so a companion it turns on starts complete rather than being seeded, and so
+     * changed, once its section appears. */
+    const stackDefaults = useMemo(
+        () => ({
+            ...Object.fromEntries(
+                companions.map(({ name }) => [name, parameterDefaults(stacks.find((candidate) => candidate.name === name)?.parameters as StackParameterWithGroup[])])
+            ),
+            [stackName]: initialParameterValues,
+        }),
+        [companions, stacks, stackName, initialParameterValues]
+    )
+
+    /* The parameters whose section shows for these values: a conditional group counts only while its condition holds,
+     * so a value typed into a section a later choice hid is never sent. */
+    const getIncludedParameters = useCallback(
+        (values: AnyObject) => {
+            const stackValues: AnyObject = values[stackName] ?? {}
+            return groups
+                .filter(({ group }) => !group.when || stackValues[group.when.parameter] === group.when.equals)
+                .flatMap((grouped) => grouped.parameters.map((parameter) => parameter.parameterName ?? ''))
+        },
+        [groups, stackName]
+    )
+
+    return { loading, error, groups, companions, initialParameterValues, stackDefaults, sensitiveParameters, immutableReasons, getIncludedParameters }
 }

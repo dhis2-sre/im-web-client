@@ -21,6 +21,7 @@ import {
     NewDhis2V2Instance,
     NotFound,
     PresetDetails,
+    PresetForm,
     PresetsList,
     RequestPasswordReset,
     ResetPassword,
@@ -61,7 +62,9 @@ if (location.hostname === 'play.dhis2.org') {
                             <Route path="/stacks/:name" element={<StackDetails />} />
                             <Route path="/instances" element={<InstancesList />} />
                             <Route path="/presets" element={<PresetsList />} />
+                            <Route path="/presets/new" element={<PresetForm />} />
                             <Route path="/presets/:id" element={<PresetDetails />} />
+                            <Route path="/presets/:id/edit" element={<PresetForm />} />
                             <Route path="/databases" element={<DatabasesList />} />
                             <Route path="/databases/:id" element={<DatabaseDetails />} />
                             <Route path="/clusters" element={<ClustersList />} />

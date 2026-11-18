@@ -39,9 +39,12 @@ type InstanceActionsMenuProps = {
     components?: DeploymentInstanceComponents[]
     /* Off where Edit is already a button of its own, as on the details page. */
     includeEdit?: boolean
-    /* Every action as a button instead of a menu, as on the details page. pgAdmin is left out there,
-     * since its stack has an Open of its own. */
+    /* Every action as a button instead of a menu, as on the details page while there is room. */
     buttons?: boolean
+    /* Off on the details page, where the pgAdmin stack has an Open of its own. */
+    includePgAdmin?: boolean
+    /* Extend lifetime, where the page has its own dialog for it, as the details page does. */
+    onExtend?: () => void
     onChanged: () => void
     onDeleted: () => void
 }
@@ -51,7 +54,16 @@ type InstanceActionsMenuProps = {
  * endpoints without a selector cover all of them. Instances are walked in the order the deployment
  * lists them, which is the order they were added, so a stack is acted on after whatever it depends
  * on. */
-export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, components, includeEdit = true, buttons, onChanged, onDeleted }) => {
+export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({
+    deployment,
+    components,
+    includeEdit = true,
+    buttons,
+    includePgAdmin = true,
+    onExtend,
+    onChanged,
+    onDeleted,
+}) => {
     const navigate = useNavigate()
     const alert = useActionAlert()
     const [savingAs, setSavingAs] = useState(false)
@@ -68,6 +80,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
     const database = advertises(components, 'databaseSave')
     const filestore = advertises(components, 'filestoreBackup')
     const backupTarget = database ?? filestore
+    const hasDhis2 = instances.some((instance) => instance.stackName === STACK_NAMES.DHIS2)
     const pgAdmin = instances.some((instance) => instance.stackName === STACK_NAMES.PG_ADMIN)
 
     const actOnAll = (action: 'restart' | 'reset') => async () => {
@@ -106,8 +119,10 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({ deployment, 
                         unavailable: deploying ? 'Unavailable while deploying' : undefined,
                         onClick: () => navigate(`/instances/${deployment.id}/edit`),
                     },
+                    onExtend && { label: 'Extend…', unavailable: deploying ? 'Unavailable while deploying' : undefined, onClick: onExtend },
+                    hasDhis2 && { label: 'Save as preset', onClick: () => navigate(`/presets/new?instance=${deployment.id}`) },
                     pgAdmin &&
-                        !buttons && {
+                        includePgAdmin && {
                             label: 'Open pgAdmin',
                             onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
                         },

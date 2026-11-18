@@ -57,66 +57,51 @@
     margin-bottom: var(--spacers-dp16);
 }
 
-.presetRow {
+/* A toolbar across the top of the form card, edge to edge, for actions on the whole form. */
+.formToolbar {
     display: flex;
     align-items: center;
-    gap: var(--spacers-dp16);
+    gap: var(--spacers-dp12);
+    margin: calc(var(--spacers-dp16) * -1) calc(var(--spacers-dp16) * -1) var(--spacers-dp16);
+    padding: var(--spacers-dp8);
+    border-bottom: 1px solid var(--colors-grey300);
 }
 
-.splitButton {
-    display: inline-flex;
-    position: relative;
+.fillStatus {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey800);
 }
 
-.splitButton > button:first-child {
-    border-start-end-radius: 0;
-    border-end-end-radius: 0;
-    border-inline-end: 0;
+.presetMenu {
+    width: 360px;
+    max-height: 420px;
+    overflow-y: auto;
+    background: var(--colors-white);
+    border-radius: 4px;
+    box-shadow: var(--elevations-e300);
 }
 
-.splitButton > button:nth-child(2) {
-    border-start-start-radius: 0;
-    border-end-start-radius: 0;
-    padding: 0 var(--spacers-dp12);
+.presetSearch {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: var(--spacers-dp8);
+    background: var(--colors-white);
+    border-bottom: 1px solid var(--colors-grey300);
 }
 
-.splitMenu {
+.presetItem {
     display: flex;
     flex-direction: column;
-    gap: var(--spacers-dp4);
-    padding-top: var(--spacers-dp4);
-}
-
-.splitMenu > button {
-    flex: 1;
-}
-
-.presetOption {
-    display: flex;
-    align-items: baseline;
-    gap: var(--spacers-dp8);
-    padding: var(--spacers-dp8) var(--spacers-dp12);
-    font-size: 14px;
-    color: var(--colors-grey900);
-    cursor: pointer;
-}
-
-.presetOption:hover {
-    background-color: var(--colors-grey200);
-}
-
-.presetOption.active {
-    background-color: var(--colors-teal050);
 }
 
 .presetDetails {
+    font-size: var(--text-sm);
     color: var(--colors-grey600);
-}
-
-.bulkIntro {
-    margin: 0 0 var(--spacers-dp16);
-    font-size: 14px;
-    color: var(--colors-grey800);
 }
 
 .bulkFields {
@@ -131,25 +116,28 @@
     min-width: 200px;
 }
 
-.bulkNames {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacers-dp4);
-    margin-bottom: var(--spacers-dp12);
+.notice {
+    margin-bottom: var(--spacers-dp24);
 }
 
-.bulkName,
-.bulkNameTaken {
-    padding: 2px var(--spacers-dp8);
-    border-radius: 3px;
-    font-family: var(--font-mono);
-    font-size: var(--text-mono);
-    background: var(--colors-grey200);
+.bulkPreview {
+    margin: 0 0 var(--spacers-dp16);
+    font-size: var(--text-md);
     color: var(--colors-grey900);
 }
 
-.bulkNameTaken {
-    background: var(--colors-red050);
-    color: var(--colors-red700);
-    text-decoration: line-through;
+.bulkTotals {
+    color: var(--colors-grey700);
+}
+
+/* Notices stack with a gap between them, and keep the fields below clear; an empty stack takes no room. */
+.bulkNotices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp8);
+    margin-bottom: var(--spacers-dp16);
+}
+
+.bulkNotices:empty {
+    display: none;
 }

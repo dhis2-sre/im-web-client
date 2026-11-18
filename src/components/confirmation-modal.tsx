@@ -8,12 +8,14 @@ type ConfirmationModalProps = {
     title: string
     /* The action on the confirm button, such as Delete instance or Restart, so it says what clicking it does. */
     confirmLabel: string
+    /* The way out, when "Cancel" would read as cancelling something else, such as Keep editing. */
+    cancelLabel?: string
     destructive?: boolean
     onConfirm: BaseButtonProps['onClick']
     onCancel: BaseButtonProps['onClick']
 }
 
-export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title, confirmLabel, destructive, onConfirm, onCancel }) => {
+export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title, confirmLabel, cancelLabel = 'Cancel', destructive, onConfirm, onCancel }) => {
     // Modal's onClose is called with no args on Escape, and with ({}, event) on backdrop click.
     // Wrap to provide the (_, event) shape that onCancel expects.
     const handleClose = () => {
@@ -28,7 +30,7 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title,
             <ModalActions>
                 <ButtonStrip end>
                     <Button onClick={onCancel} secondary>
-                        Cancel
+                        {cancelLabel}
                     </Button>
                     <Button primary={!destructive} destructive={destructive} onClick={onConfirm}>
                         {confirmLabel}

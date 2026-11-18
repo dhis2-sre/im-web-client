@@ -2,12 +2,12 @@ import { Button, IconApps16, IconClockHistory16, IconFolder16, IconUser16 } from
 import type { FC } from 'react'
 import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ActionsMenu, ItemPanel, ItemPanelList, MetaFact, MetaLine, MomentFromNow, Page, useActionAlert } from '../../components/index.ts'
-import type { PageError } from '../../components/index.ts'
+import { ItemPanel, ItemPanelList, MetaFact, MetaLine, MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios, useStack } from '../../hooks/index.ts'
 import type { Deployment, DeploymentInstance, StackWithParameterGroups } from '../../types/index.ts'
 import { groupParametersByComponent } from '../../utils/component-parameters.ts'
 import { ComponentParametersTable } from '../instances/details/component-parameters-table.tsx'
+import { PresetActions } from './preset-actions.tsx'
 import { presetMainInstance, presetSummary } from './preset-summary.ts'
 
 const PresetStack: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
@@ -37,71 +37,29 @@ const PresetFacts: FC<{ preset: Deployment }> = ({ preset }) => {
     )
 }
 
-const presetError = (preset: Deployment | undefined, error: Error | null): PageError | undefined => {
-    if (error || !preset) {
-        return { title: "Couldn't load the preset", description: error?.message }
-    }
-    if (!preset.preset) {
-        return { title: 'Not a preset', description: `${preset.name} is an instance, not a preset.` }
-    }
-    return undefined
-}
-
 export const PresetDetails: FC = () => {
     const { id } = useParams()
     const navigate = useNavigate()
-    const alert = useActionAlert()
-    const [{ data: preset, loading, error }] = useAuthAxios<Deployment>(`/deployments/${id}`, { useCache: false })
-    const [, deletePreset] = useAuthAxios({ url: `/deployments/${id}`, method: 'DELETE' }, { manual: true, autoCancel: false })
-
-    const remove = async (preset: Deployment) => {
-        try {
-            await deletePreset()
-            alert.success(`Deleted ${preset.name}`)
-            navigate('/presets')
-        } catch (error) {
-            alert.error(`Couldn't delete ${preset.name}: ${error instanceof Error ? error.message : String(error)}`)
-        }
-    }
+    const [{ data: preset, loading, error }] = useAuthAxios<Deployment>(`/presets/${id}`, { useCache: false })
 
     return (
         <Page
             parent={{ label: 'Presets', to: '/presets' }}
-            title={preset?.preset ? preset.name : undefined}
-            description={preset?.preset ? preset.description || undefined : undefined}
+            title={preset?.name}
+            description={preset?.description || undefined}
             band
             actions={
-                preset?.preset && (
+                preset && (
                     <>
                         <Button small primary disabled={!presetMainInstance(preset)} onClick={() => navigate(`/instances/new?preset=${preset.id}`)}>
-                            Use preset
+                            Create instance
                         </Button>
-                        <ActionsMenu
-                            label={`Actions for ${preset.name}`}
-                            buttons
-                            items={[
-                                {
-                                    label: 'Delete',
-                                    destructive: true,
-                                    confirm: {
-                                        title: `Delete ${preset.name}?`,
-                                        message: (
-                                            <>
-                                                Deletes the preset from <strong>{preset.groupName}</strong>. Instances created from it keep running. This can&apos;t be undone.
-                                            </>
-                                        ),
-                                        confirmLabel: 'Delete preset',
-                                        destructive: true,
-                                    },
-                                    onClick: () => remove(preset),
-                                },
-                            ]}
-                        />
+                        <PresetActions preset={preset} buttons onDeleted={() => navigate('/presets')} />
                     </>
                 )
             }
             loading={loading}
-            error={loading ? undefined : presetError(preset, error)}
+            error={loading || (preset && !error) ? undefined : { title: "Couldn't load the preset", description: error?.message }}
             summary={preset && <PresetFacts preset={preset} />}
         >
             {preset && (

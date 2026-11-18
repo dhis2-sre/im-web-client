@@ -1,10 +1,13 @@
 import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
+import type { AnyObject } from 'final-form'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { useDebounce } from 'use-debounce'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import type { BulkDeployError } from '../../../hooks/use-stack-deployment-creation.ts'
+import type { ClusterResources } from '../../../types/index.ts'
 import styles from '../styles.module.css'
+import { formatGi, isBusy, listNames, perInstanceResources } from './bulk-summary.ts'
 
 export const MAX_BULK_DEPLOYMENTS = 50
 
@@ -18,15 +21,18 @@ const parseCount = (count: string) => {
 /* The names are checked as they are typed so a taken one shows before anything is sent, but the bulk deploy checks them again when it creates the deployments and creates none if one was taken in between. */
 export const BulkDeployModal: FC<{
     group: string
+    values: AnyObject
     initialPrefix: string
     onCancel: () => void
     onDeploy: (prefix: string, count: number) => Promise<BulkDeployError | undefined>
-}> = ({ group, initialPrefix, onCancel, onDeploy }) => {
+}> = ({ group, values, initialPrefix, onCancel, onDeploy }) => {
     const [prefix, setPrefix] = useState(initialPrefix)
     const [countInput, setCountInput] = useState('2')
     const [deploying, setDeploying] = useState(false)
     const [deployError, setDeployError] = useState<BulkDeployError>()
     const count = parseCount(countInput)
+    const [{ data: resources }] = useAuthAxios<ClusterResources>(`/groups/${encodeURIComponent(group)}/resources`, { useCache: false })
+    const each = perInstanceResources(values)
     const [checkedPrefix] = useDebounce(prefix, 300)
     const [checkedCount] = useDebounce(count, 300)
     const ready = !!checkedPrefix && !!checkedCount
@@ -38,8 +44,8 @@ export const BulkDeployModal: FC<{
         ready && checkedPrefix === prefix && checkedCount === count && !loading && !error && availability?.names.length === count && availability.names[0] === `${prefix}-1`
             ? availability
             : undefined
-    const taken = new Set(current ? current.taken : [])
-    const canDeploy = !!current && !current.reason && taken.size === 0 && !deploying
+    const taken = current?.taken ?? []
+    const canDeploy = !!current && !current.reason && taken.length === 0 && !deploying
 
     const deploy = async () => {
         if (!count) {
@@ -52,12 +58,8 @@ export const BulkDeployModal: FC<{
 
     return (
         <Modal onClose={deploying ? undefined : onCancel}>
-            <ModalTitle>Bulk deploy</ModalTitle>
+            <ModalTitle>Create several instances</ModalTitle>
             <ModalContent>
-                <p className={styles.bulkIntro}>
-                    Creates instances with these settings in <strong>{group}</strong>, numbered from the prefix. They deploy a few at a time and show their progress in the instance
-                    list.
-                </p>
                 <div className={styles.bulkFields}>
                     <InputField label="Name prefix" value={prefix} onChange={({ value }) => setPrefix(value ?? '')} required className={styles.bulkPrefix} />
                     <InputField
@@ -73,26 +75,42 @@ export const BulkDeployModal: FC<{
                         inputWidth="100px"
                     />
                 </div>
-                {current && current.reason && <NoticeBox error>{current.reason}</NoticeBox>}
-                {current && !current.reason && (
-                    <>
-                        <div className={styles.bulkNames}>
-                            {current.names.map((name) => (
-                                <span key={name} className={taken.has(name) ? styles.bulkNameTaken : styles.bulkName}>
-                                    {name}
-                                </span>
-                            ))}
-                        </div>
-                        {taken.size > 0 && (
-                            <NoticeBox warning title="Some names are taken">
-                                {[...taken].join(', ')} {taken.size === 1 ? 'already exists' : 'already exist'} in {group}. Choose another prefix.
-                            </NoticeBox>
+                {/* What will be created, in one line: the run of names and what they add up to. */}
+                {prefix && count && (
+                    <p className={styles.bulkPreview}>
+                        <strong>{count === 1 ? `${prefix}-1` : `${prefix}-1 to ${prefix}-${count}`}</strong> in {group}
+                        {(each.disk > 0 || each.memory > 0) && (
+                            <span className={styles.bulkTotals}>
+                                {' '}
+                                · {formatGi(each.disk * count)} disk, {formatGi(each.memory * count)} memory in total
+                            </span>
                         )}
-                    </>
+                    </p>
                 )}
-                {error && !loading && <NoticeBox error>Couldn&apos;t check the names: {error.message}</NoticeBox>}
+                <div className={styles.bulkNotices}>
+                    {count && isBusy(resources) && (
+                        <NoticeBox dense warning title={`${group} is already busy`}>
+                            It&apos;s using {resources?.CPU} of its CPU and {resources?.Memory} of its memory. {count} more {count === 1 ? 'instance' : 'instances'} may not fit.
+                        </NoticeBox>
+                    )}
+                    {current && current.reason && (
+                        <NoticeBox dense error>
+                            {current.reason}
+                        </NoticeBox>
+                    )}
+                    {taken.length > 0 && (
+                        <NoticeBox dense warning title={`${listNames(taken)} already ${taken.length === 1 ? 'exists' : 'exist'} in ${group}`}>
+                            Choose another prefix.
+                        </NoticeBox>
+                    )}
+                </div>
+                {error && !loading && (
+                    <NoticeBox dense error>
+                        Couldn&apos;t check the names: {error.message}
+                    </NoticeBox>
+                )}
                 {deployError && (
-                    <NoticeBox error title={deployError.refused ? 'Nothing was deployed' : 'The bulk deploy may have started'}>
+                    <NoticeBox dense error title={deployError.refused ? 'Nothing was created' : 'Some instances may have been created'}>
                         {deployError.refused ? deployError.message : `${deployError.message} Check the instance list before you try again.`}
                     </NoticeBox>
                 )}
@@ -103,7 +121,7 @@ export const BulkDeployModal: FC<{
                         Cancel
                     </Button>
                     <Button primary disabled={!canDeploy} loading={deploying || (ready && loading)} onClick={() => void deploy()}>
-                        {count ? `Deploy ${count} ${count === 1 ? 'instance' : 'instances'}` : 'Deploy'}
+                        {count ? `Create ${count} ${count === 1 ? 'instance' : 'instances'}` : 'Create'}
                     </Button>
                 </ButtonStrip>
             </ModalActions>

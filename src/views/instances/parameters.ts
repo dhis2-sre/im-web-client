@@ -20,5 +20,7 @@ export const ALLOW_SUSPEND = 'ALLOW_SUSPEND'
 export const DEPLOY_GLOWROOT = 'DEPLOY_GLOWROOT'
 export const PGADMIN_USERNAME = 'PGADMIN_USERNAME'
 export const PGADMIN_PASSWORD = 'PGADMIN_PASSWORD'
+/* The label the form gives a parameter in place of the stack's display name. */
+export const PARAMETER_LABELS: Record<string, string> = { [PGADMIN_USERNAME]: 'pgAdmin Login email' }
 export const CUSTOM_DHIS2_CONFIG = 'CUSTOM_DHIS2_CONFIG'
 export const PRIVATE_IMAGE_REPOSITORIES = new Set(['ghcr.io/dhis2/core-embargoed'])

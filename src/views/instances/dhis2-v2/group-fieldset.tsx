@@ -45,8 +45,10 @@ export const GroupFieldset: FC<{
     immutableReasons?: Record<string, string>
     formMode?: 'create' | 'update'
 }> = ({ stackId, group, parameters, subGroups = [], sensitiveParameters, immutableReasons = {}, formMode = 'create' }) => {
-    const primary = parameters.filter((parameter) => PRIMARY_PARAMETERS.has(parameter.parameterName ?? ''))
-    const secondary = parameters.filter((parameter) => !PRIMARY_PARAMETERS.has(parameter.parameterName ?? ''))
+    /* A required field with no default has to be filled in, so it isn't tucked away where its error can't be seen. */
+    const isPrimary = (parameter: StackParameterWithGroup) => PRIMARY_PARAMETERS.has(parameter.parameterName ?? '') || (parameter.required && parameter.defaultValue === undefined)
+    const primary = parameters.filter(isPrimary)
+    const secondary = parameters.filter((parameter) => !isPrimary(parameter))
 
     const renderField = (parameter: StackParameterWithGroup) => (
         <ParameterField

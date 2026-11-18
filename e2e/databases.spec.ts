@@ -46,7 +46,7 @@ test.describe('databases', () => {
         await copyButton.dispatchEvent('click')
 
         // The dialog closes once the copy succeeds
-        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Copied to ${newName}`, { exact: true })).toBeVisible({ timeout: 10000 })
+        await expect(page.getByTestId('dhis2-uicore-alertbar').getByText(`Copied to ${targetGroup}/${newName}`, { exact: true })).toBeVisible({ timeout: 10000 })
 
         // Delete the copy
         await deleteTestDatabase(page, newName)

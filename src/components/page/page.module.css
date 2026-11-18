@@ -97,6 +97,10 @@
     gap: 6px;
 }
 
+.actions.fitted {
+    flex-wrap: nowrap;
+}
+
 .description {
     max-width: 72ch;
     margin: 0;

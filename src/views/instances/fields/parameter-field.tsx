@@ -10,6 +10,7 @@ import {
     IMAGE_TAG,
     WORKER_IMAGE_TAG,
     WORKER_IMAGE_PULL_POLICY,
+    PARAMETER_LABELS,
     PGADMIN_PASSWORD,
     PGADMIN_USERNAME,
     STORAGE_TYPE,
@@ -90,7 +91,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
                 <TextParameterInput
                     stackId={stackId}
                     parameterName={parameterName}
-                    displayName={'pgAdmin Login email'}
+                    displayName={PARAMETER_LABELS[PGADMIN_USERNAME]}
                     type="email"
                     sensitive={sensitive}
                     required={required}
@@ -110,7 +111,7 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
                 />
             )
         case CUSTOM_DHIS2_CONFIG:
-            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} />
+            return <TextareaParameter stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} formMode={formMode} />
         default:
             return <TextParameterInput stackId={stackId} parameterName={parameterName} displayName={displayName} sensitive={sensitive} required={required} formMode={formMode} />
     }

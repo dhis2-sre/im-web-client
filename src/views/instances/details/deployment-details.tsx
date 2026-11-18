@@ -59,28 +59,27 @@ export const DeploymentDetails: FC = () => {
             status={deployment && deploymentStatus((deployment.instances ?? []) as DeploymentInstanceDeployState[], components.instances)}
             band
             actions={
-                deployment && (
+                deployment &&
+                /* Edit stays a button; the rest fold into a menu beside it once they would crowd the name. */
+                ((fits: boolean) => (
                     <>
                         <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
                             <Button small primary disabled={isDeploying(deployment)} onClick={() => navigate(`/instances/${deployment.id}/edit`)}>
                                 Edit
                             </Button>
                         </span>
-                        <span title={isDeploying(deployment) ? DEPLOYING_REFUSAL : undefined}>
-                            <Button small disabled={isDeploying(deployment)} onClick={() => setExtending(true)}>
-                                Extend…
-                            </Button>
-                        </span>
                         <InstanceActionsMenu
                             deployment={deployment}
                             components={components.instances}
                             includeEdit={false}
-                            buttons
+                            includePgAdmin={false}
+                            buttons={fits}
+                            onExtend={() => setExtending(true)}
                             onChanged={() => void refetch()}
                             onDeleted={() => navigate('/instances')}
                         />
                     </>
-                )
+                ))
             }
             loading={loading && !deployment}
             error={error && !deployment ? { title: "Couldn't load the instance", description: error.message } : undefined}
