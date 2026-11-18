@@ -18,11 +18,11 @@ export const Layout: FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.nav}>
-                {/* The product's name, not a heading: each page titles itself with the one h1. */}
-                <div className={styles.header}>
+                {/* The product's name, not a heading: each page titles itself with the one h1. Like most sites, it links home. */}
+                <Link to="/instances" className={styles.header}>
                     <Mark size={16} onDark className={styles.logo} />
                     Instance Manager
-                </div>
+                </Link>
                 <nav className={styles.navlist} aria-label="Main">
                     {/* The + sits beside the link, not inside it: a link can't contain another link or a button. */}
                     <div className={styles.navRow}>

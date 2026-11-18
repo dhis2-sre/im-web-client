@@ -42,7 +42,12 @@
     line-height: 18px;
     font-weight: 400;
     letter-spacing: -0.01em;
+    text-decoration: none;
     padding: 16px;
+}
+/* A link, but it keeps looking like the name: no link blue on hover. */
+.header:hover {
+    color: white;
 }
 /* Whole-pixel nudge that centres the mark on the name's cap height. */
 .logo {
