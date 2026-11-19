@@ -9,8 +9,9 @@ const Identicon: FC<{ email: string }> = ({ email }) => {
     const { dots, color } = identicon(email)
     return (
         <svg className={styles.avatar} viewBox={`0 0 ${IDENTICON_SIZE} ${IDENTICON_SIZE}`} aria-hidden="true">
+            {/* Dots drawn like the 16px mark's: 2px on 4px cells, so they stay crisp, with the same unlit grey. */}
             {dots.map(({ x, y, lit }) => (
-                <circle key={`${x},${y}`} cx={x + 0.5} cy={y + 0.5} r="0.34" fill={lit ? color : 'rgba(255, 255, 255, 0.2)'} />
+                <circle key={`${x},${y}`} cx={x + 0.5} cy={y + 0.5} r="0.25" fill={lit ? color : 'rgba(255, 255, 255, 0.28)'} />
             ))}
         </svg>
     )
