@@ -1,9 +1,9 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { AuthCard } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
-import styles from './reset-password.module.css'
 
 const getInputsErrorMessage = ({ password, confirmPassword }) => {
     if (!password) {
@@ -69,27 +69,21 @@ export const ResetPassword = () => {
     )
 
     return (
-        <form className={styles.container} onSubmit={onSubmit}>
-            <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Reset password
-                </h2>
-                <InputField disabled={loading} name="password" label="New password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
-                <InputField
-                    disabled={loading}
-                    name="confirmPassword"
-                    label="Confirm new password"
-                    type="password"
-                    value={inputs.confirmPassword}
-                    autoComplete="new-password"
-                    onChange={onInputChange}
-                />
-                {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Reset password" disabled={!inputs.password}>
-                    Reset password
-                </Button>
-            </Card>
-        </form>
+        <AuthCard heading="Reset password" onSubmit={onSubmit} footer={<Link to="/">Back to log in</Link>}>
+            <InputField disabled={loading} name="password" label="New password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+            <InputField
+                disabled={loading}
+                name="confirmPassword"
+                label="Confirm new password"
+                type="password"
+                value={inputs.confirmPassword}
+                autoComplete="new-password"
+                onChange={onInputChange}
+            />
+            {errorMessage && <Help error>{errorMessage}</Help>}
+            <Button primary type="submit" value="Reset password" disabled={!inputs.password}>
+                Reset password
+            </Button>
+        </AuthCard>
     )
 }

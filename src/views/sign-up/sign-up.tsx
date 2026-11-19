@@ -1,9 +1,9 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { AuthCard } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
-import styles from './sign-up.module.css'
 
 const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
     if (!email) {
@@ -71,28 +71,30 @@ export const SignUp = () => {
     )
 
     return (
-        <form className={styles.container} onSubmit={onSubmit}>
-            <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Sign up for Instance Manager
-                </h2>
-                <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
-                <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
-                <InputField
-                    disabled={loading}
-                    name="confirmPassword"
-                    label="Confirm password"
-                    type="password"
-                    value={inputs.confirmPassword}
-                    autoComplete="new-password"
-                    onChange={onInputChange}
-                />
-                {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Sign up" disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}>
-                    Sign up
-                </Button>
-            </Card>
-        </form>
+        <AuthCard
+            heading="Sign up to deploy and manage DHIS2 instances."
+            onSubmit={onSubmit}
+            footer={
+                <>
+                    Already have an account? <Link to="/">Log in</Link>
+                </>
+            }
+        >
+            <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
+            <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+            <InputField
+                disabled={loading}
+                name="confirmPassword"
+                label="Confirm password"
+                type="password"
+                value={inputs.confirmPassword}
+                autoComplete="new-password"
+                onChange={onInputChange}
+            />
+            {errorMessage && <Help error>{errorMessage}</Help>}
+            <Button primary type="submit" value="Sign up" disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}>
+                Sign up
+            </Button>
+        </AuthCard>
     )
 }

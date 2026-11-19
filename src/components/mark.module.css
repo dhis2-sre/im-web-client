@@ -1,0 +1,38 @@
+.mark {
+    flex: none;
+    display: block;
+    fill: currentColor;
+}
+
+.unlit {
+    fill-opacity: 0.28;
+}
+
+/* Blue 240: a darker value on light grounds, a lighter one on the dark sidebar. */
+.accent {
+    fill: #0079c9;
+}
+
+.onDark .accent {
+    fill: #3db9ff;
+}
+
+@keyframes mark-busy {
+    0%,
+    100% {
+        fill-opacity: 1;
+    }
+    45% {
+        fill-opacity: 0.28;
+    }
+}
+
+.busy circle:not(.unlit) {
+    animation: mark-busy 1.1s ease-in-out infinite both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .busy circle {
+        animation: none;
+    }
+}

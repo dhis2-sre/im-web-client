@@ -1,8 +1,9 @@
-import { IconAdd16, IconApps16, IconDimensionData16, IconLayoutRows16, IconQueue16, IconTerminalWindow16, IconUser16, IconUserGroup16, LogoIconWhite } from '@dhis2/ui'
+import { IconAdd16, IconApps16, IconDimensionData16, IconLayoutRows16, IconQueue16, IconTerminalWindow16, IconUser16, IconUserGroup16 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/index.ts'
 import styles from './layout.module.css'
+import { Mark } from './mark.tsx'
 import { NotificationBell } from './notifications/notification-bell.tsx'
 import { UserMenu } from './user-menu.tsx'
 
@@ -17,11 +18,11 @@ export const Layout: FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.nav}>
-                {/* The product's name, not a heading: each page titles itself with the one h1. */}
-                <div className={styles.header}>
-                    <LogoIconWhite className={styles.logo} />
+                {/* The product's name, not a heading: each page titles itself with the one h1. Like most sites, it links home. */}
+                <Link to="/instances" className={styles.header}>
+                    <Mark size={16} onDark className={styles.logo} />
                     Instance Manager
-                </div>
+                </Link>
                 <nav className={styles.navlist} aria-label="Main">
                     {/* The + sits beside the link, not inside it: a link can't contain another link or a button. */}
                     <div className={styles.navRow}>
