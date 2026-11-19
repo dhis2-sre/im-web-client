@@ -6,7 +6,7 @@ import { password, targetGroup, username } from './utils/env.ts'
 const staleAfterMs = 2 * 60 * 60 * 1000
 const testDatabaseName = /^(copy-)?e2e-(copy-)?test-\d+/
 
-export default async function deleteStaleTestDatabases() {
+const deleteStaleTestDatabases = async () => {
     const api = await request.newContext({ baseURL: process.env.API_URL })
     try {
         const basicAuth = Buffer.from(`${username}:${password}`).toString('base64')
@@ -35,3 +35,5 @@ export default async function deleteStaleTestDatabases() {
         await api.dispose()
     }
 }
+
+export default deleteStaleTestDatabases
