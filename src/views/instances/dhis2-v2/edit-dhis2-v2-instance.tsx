@@ -1,4 +1,3 @@
-import { Card } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useMemo } from 'react'
 import { Form } from 'react-final-form'
@@ -6,7 +5,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Page } from '../../../components/index.ts'
 import { useDeploymentDetails, useDeploymentEdit } from '../../../hooks/index.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
-import styles from '../styles.module.css'
 import { initialValuesFor, useCompanionRemovalConfirm } from './companion-removal.tsx'
 import { Dhis2V2Form, STACK_ID } from './dhis2-v2-form.tsx'
 
@@ -38,11 +36,9 @@ export const EditDhis2V2Instance: FC = () => {
 
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title={`Edit ${deployment.name ?? 'instance'}`}>
-            <Card className={styles.container}>
-                <Form onSubmit={submit} initialValues={initialValues} keepDirtyOnReinitialize>
-                    {({ handleSubmit }) => <Dhis2V2Form handleSubmit={handleSubmit} handleCancel={navigateToDetails} mode="edit" deployment={deployment} />}
-                </Form>
-            </Card>
+            <Form onSubmit={submit} initialValues={initialValues} keepDirtyOnReinitialize>
+                {({ handleSubmit }) => <Dhis2V2Form handleSubmit={handleSubmit} handleCancel={navigateToDetails} mode="edit" deployment={deployment} />}
+            </Form>
             {modal}
         </Page>
     )

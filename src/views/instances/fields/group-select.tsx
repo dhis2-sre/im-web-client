@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Field, useForm } from 'react-final-form'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Group } from '../../../types/index.ts'
-import styles from './fields.module.css'
 import { useGroupSelectHelpText } from './group-select-help-text.tsx'
 
 export const GroupSelect = () => {
@@ -45,8 +44,8 @@ export const GroupSelect = () => {
     return (
         <Field
             filterable={options.length > 7}
-            className={styles.field}
-            required={loading}
+            required
+            loading={loading}
             error={error}
             name="groupName"
             label="Group"

@@ -3,6 +3,7 @@ import { Button, ButtonStrip, CheckboxField, InputField, Modal, ModalActions, Mo
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useActionAlert } from '../../components/index.ts'
+import modalStyles from '../../components/modal-fields.module.css'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Cluster } from '../../types/generated/models/Cluster.ts'
 import { Group } from '../../types/generated/models/Group.ts'
@@ -48,7 +49,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
     return (
         <Modal onClose={loading ? undefined : () => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
             <ModalTitle>New group</ModalTitle>
-            <ModalContent>
+            <ModalContent className={modalStyles.fields}>
                 <InputField label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />
                 <InputField label="Description" value={description} onChange={({ value }) => setDescription(value)} required disabled={loading} />
                 <InputField label="Namespace" value={namespace} onChange={({ value }) => setNamespace(value)} required disabled={loading} />

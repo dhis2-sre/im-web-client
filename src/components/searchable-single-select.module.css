@@ -45,9 +45,3 @@
     color: var(--theme-valid);
     text-decoration: none;
 }
-
-.label {
-    /* background-color: blue; */
-    font-size: 14px;
-    margin-bottom: 50px !important;
-}

@@ -34,6 +34,20 @@ import { SameSiteCookiesSelect } from './same-site-cookies-select.tsx'
 import { TextParameterInput } from './text-parameter-input.tsx'
 import { TextareaParameter } from './textarea-parameter.tsx'
 
+/* Parameters the stacks keep as 'true'/'false' strings, rendered as checkboxes. A section lists them after its other fields. */
+export const BOOLEAN_PARAMETERS = new Set([
+    FLYWAY_MIGRATE_OUT_OF_ORDER,
+    FLYWAY_REPAIR_BEFORE_MIGRATION,
+    ENABLE_QUERY_LOGGING,
+    DEPLOY_CHAP,
+    DHIS2_ENABLED,
+    DHIS2_REGISTER,
+    ENABLE_DORIS,
+    ENABLE_PGADMIN,
+    ALLOW_SUSPEND,
+    DEPLOY_GLOWROOT,
+])
+
 export type ParameterFieldProps = {
     displayName: string
     parameterName: string
@@ -56,6 +70,10 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
         return <ImmutableParameterField stackId={stackId} parameterName={parameterName} displayName={displayName} reason={immutableReason} />
     }
 
+    if (BOOLEAN_PARAMETERS.has(parameterName)) {
+        return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
+    }
+
     switch (parameterName) {
         case IMAGE_TAG:
             if (stackId === 'chap') {
@@ -75,17 +93,6 @@ export const ParameterField: FC<ParameterFieldProps> = ({ stackId, displayName, 
             return <IntergrationParameterSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case SAME_SITE_COOKIES:
             return <SameSiteCookiesSelect stackId={stackId} parameterName={parameterName} displayName={displayName} />
-        case FLYWAY_MIGRATE_OUT_OF_ORDER:
-        case FLYWAY_REPAIR_BEFORE_MIGRATION:
-        case ENABLE_QUERY_LOGGING:
-        case DEPLOY_CHAP:
-        case DHIS2_ENABLED:
-        case DHIS2_REGISTER:
-        case ENABLE_DORIS:
-        case ENABLE_PGADMIN:
-        case ALLOW_SUSPEND:
-        case DEPLOY_GLOWROOT:
-            return <BooleanParameterCheckbox stackId={stackId} parameterName={parameterName} displayName={displayName} />
         case PGADMIN_USERNAME:
             return (
                 <TextParameterInput

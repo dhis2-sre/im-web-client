@@ -1,4 +1,3 @@
-import { Card } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { Form } from 'react-final-form'
@@ -37,34 +36,32 @@ export const NewDhis2V2Instance: FC = () => {
 
     return (
         <Page parent={{ label: 'Instances', to: '/instances' }} title="New instance">
-            <Card className={styles.container}>
-                <Form onSubmit={submit} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
-                    {({ handleSubmit, values, form }) => (
-                        <>
-                            <FillFromPreset
-                                presets={presets}
-                                mainStackName={STACK_ID}
-                                initialPresetId={searchParams.get('preset') ?? undefined}
-                                blankValues={blankValues}
-                                onLoaded={setSourcePreset}
+            <Form onSubmit={submit} keepDirtyOnReinitialize initialValues={{ ttl: DEFAULT_TTL_SECONDS }}>
+                {({ handleSubmit, values, form }) => (
+                    <div className={styles.form}>
+                        <FillFromPreset
+                            presets={presets}
+                            mainStackName={STACK_ID}
+                            initialPresetId={searchParams.get('preset') ?? undefined}
+                            blankValues={blankValues}
+                            onLoaded={setSourcePreset}
+                        />
+                        {/* Blank sensitive fields stand for the preset's values when creating from one. */}
+                        <SensitiveFieldHintContext.Provider value={sourcePreset ? KEEP_PRESET_VALUE : undefined}>
+                            <Dhis2V2Form
+                                handleCancel={navigateToInstanceList}
+                                handleSubmit={handleSubmit}
+                                name={values.name}
+                                steps={steps}
+                                mode="create"
+                                deployment={sourcePreset}
+                                footer={sourcePreset ? undefined : <PresetSection />}
+                                onCreateSeveral={() => openBulk(form)}
                             />
-                            {/* Blank sensitive fields stand for the preset's values when creating from one. */}
-                            <SensitiveFieldHintContext.Provider value={sourcePreset ? KEEP_PRESET_VALUE : undefined}>
-                                <Dhis2V2Form
-                                    handleCancel={navigateToInstanceList}
-                                    handleSubmit={handleSubmit}
-                                    name={values.name}
-                                    steps={steps}
-                                    mode="create"
-                                    deployment={sourcePreset}
-                                    footer={sourcePreset ? undefined : <PresetSection />}
-                                    onCreateSeveral={() => openBulk(form)}
-                                />
-                            </SensitiveFieldHintContext.Provider>
-                        </>
-                    )}
-                </Form>
-            </Card>
+                        </SensitiveFieldHintContext.Provider>
+                    </div>
+                )}
+            </Form>
             {bulk && <BulkDeployModal group={bulk.values.groupName} values={bulk.values} initialPrefix={bulk.values.name ?? ''} onCancel={closeBulk} onDeploy={startBulk} />}
         </Page>
     )

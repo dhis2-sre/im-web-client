@@ -1,6 +1,7 @@
 import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import { FC, useEffect, useState } from 'react'
 import { useActionAlert } from '../../components/index.ts'
+import modalStyles from '../../components/modal-fields.module.css'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group } from '../../types/index.ts'
 import { errorMessage } from '../../utils/error-message.ts'
@@ -49,7 +50,7 @@ export const CopyDatabaseModal: FC<CopyDatabaseModalProps> = ({ onClose, onCompl
     return (
         <Modal onClose={loading ? undefined : onClose}>
             <ModalTitle>Copy {currentName}</ModalTitle>
-            <ModalContent>
+            <ModalContent className={modalStyles.fields}>
                 <InputField
                     name="newName"
                     label="Name of the copy"

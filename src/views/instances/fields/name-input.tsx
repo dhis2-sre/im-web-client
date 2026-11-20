@@ -2,7 +2,6 @@ import { InputFieldFF } from '@dhis2/ui'
 import { useMemo } from 'react'
 import { Field } from 'react-final-form'
 import { useAuthAxios } from '../../../hooks/index.ts'
-import styles from './fields.module.css'
 import { allowOwnName, createDeploymentNameValidator } from './validate-deployment-name.ts'
 import type { DeploymentNameAvailability } from './validate-deployment-name.ts'
 
@@ -33,7 +32,6 @@ export const NameInput = ({
                     <InputFieldFF
                         input={input}
                         meta={meta}
-                        className={styles.field}
                         required
                         label={label}
                         helpText={helpText}

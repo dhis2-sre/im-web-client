@@ -2,10 +2,12 @@ import { Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle, Not
 import { FORM_ERROR } from 'final-form'
 import type { FC } from 'react'
 import { Form } from 'react-final-form'
+import modalStyles from '../../../components/modal-fields.module.css'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
 import { refusalMessage } from '../../../utils/deploy-state.ts'
 import { ExtendTtlSelect } from '../fields/extend-ttl-select.tsx'
+import styles from './extend-lifetime-modal.module.css'
 
 /* The Lifetime field of the edit form on its own, offering only later ends: its presets count from
  * now, so a short one would cut an instance with days left short. A PATCH carrying only a ttl touches
@@ -29,8 +31,10 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
             {({ handleSubmit, pristine, invalid, submitting, submitError }) => (
                 <Modal onClose={onClose}>
                     <ModalTitle>Extend lifetime of {deployment.name}</ModalTitle>
-                    <ModalContent>
-                        <ExtendTtlSelect deployment={deployment} extendOnly />
+                    <ModalContent className={modalStyles.fields}>
+                        <div className={styles.lifetime}>
+                            <ExtendTtlSelect deployment={deployment} extendOnly />
+                        </div>
                         {submitError && (
                             <NoticeBox error title="Couldn't extend the lifetime">
                                 {submitError}

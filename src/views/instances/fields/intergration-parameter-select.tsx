@@ -8,11 +8,8 @@ import { ParameterFieldProps } from './parameter-field.tsx'
 
 export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayName, parameterName, stackId }) => {
     const fieldName = `${stackId}.${parameterName}`
-    const {
-        meta: { initial: initialValue },
-        input,
-    } = useField(fieldName, {
-        subscription: { initial: true, value: true },
+    const { input } = useField(fieldName, {
+        subscription: { value: true },
     })
     const [{ data, error, loading }, refetch] = useAuthAxios(
         {
@@ -43,24 +40,31 @@ export const IntergrationParameterSelect: FC<ParameterFieldProps> = ({ displayNa
         window.addEventListener('focus', refresh)
         return () => window.removeEventListener('focus', refresh)
     }, [refetchesOnFocus, refetch])
+    /* The select throws, taking the whole page with it, when the selected value is not one of its
+     * options, so whatever the field holds is always offered. Keying on the value rather than on the
+     * field's initial value matters for a companion stack: its defaults are seeded with change, not
+     * initialize, so they have no initial value, and they are in place before /integrations answers. */
+    const { value, onChange } = input
     const options = useMemo(() => {
-        if (!data) {
-            return initialValue ? [{ value: initialValue, label: initialValue }] : []
-        }
+        const listed: { value: string; label: string }[] = !data
+            ? []
+            : Array.isArray(data)
+              ? data.map(mapStringToValueLabel)
+              : Object.entries(data).map(([value, label]) => ({
+                    value,
+                    label: label as string,
+                }))
 
-        return Array.isArray(data)
-            ? data.map(mapStringToValueLabel)
-            : Object.entries(data).map(([value, label]) => ({
-                  value,
-                  label,
-              }))
-    }, [data, initialValue])
+        if (value && !listed.some((option) => option.value === value)) {
+            return [...listed, { value, label: value }]
+        }
+        return listed
+    }, [data, value])
 
     /* A parameter whose options are environment specific, the database being the one that matters,
      * has no default the stack could carry, so the field would sit empty and invalid until someone
      * opened it. The first option is as good a starting point as any and beats a blocked form.
      * Parameters that do carry a default already have a value here, so this leaves them alone. */
-    const { value, onChange } = input
     useEffect(() => {
         if (!value && options.length > 0) {
             onChange(options[0].value)
