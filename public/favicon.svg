@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <style>
+        circle { fill: #151b22 }
+        .unlit { fill-opacity: 0.28 }
+        .accent { fill: #0079c9 }
+        @media (prefers-color-scheme: dark) {
+            circle { fill: #eef1f5 }
+            .accent { fill: #3db9ff }
+        }
+    </style>
+    <circle class="unlit" cx="2" cy="2" r="1" />
+    <circle class="accent" cx="6" cy="2" r="1" />
+    <circle class="unlit" cx="10" cy="2" r="1" />
+    <circle class="unlit" cx="14" cy="2" r="1" />
+    <circle cx="2" cy="6" r="1" />
+    <circle class="unlit" cx="6" cy="6" r="1" />
+    <circle class="unlit" cx="10" cy="6" r="1" />
+    <circle cx="14" cy="6" r="1" />
+    <circle class="unlit" cx="2" cy="10" r="1" />
+    <circle cx="6" cy="10" r="1" />
+    <circle class="unlit" cx="10" cy="10" r="1" />
+    <circle class="unlit" cx="14" cy="10" r="1" />
+    <circle cx="2" cy="14" r="1" />
+    <circle cx="6" cy="14" r="1" />
+    <circle class="unlit" cx="10" cy="14" r="1" />
+    <circle cx="14" cy="14" r="1" />
+</svg>

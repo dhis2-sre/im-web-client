@@ -43,9 +43,9 @@ export const SameSiteCookiesSelect: FC<ParameterFieldProps> = ({ displayName, pa
             label={displayName}
             filterable={false}
             tabIndex="0"
-            helpText="If you are setting session.cookie.samesite in the dhis.conf field, ensure this matches the value you select here"
+            helpText="If custom dhis.conf sets session.cookie.samesite, use the same value here."
             warning={showWarning}
-            validationText={showWarning ? 'CAUTION: This setting is insecure and should only be used for local development' : undefined}
+            validationText={showWarning ? 'Not secure. Use only for local development.' : undefined}
         >
             {options.map((option) => (
                 <SingleSelectOption key={option.value} {...option} />

@@ -21,7 +21,7 @@ export const useDeploymentDetails = (): [
 ] => {
     const { id } = useParams()
     const [{ data, error, loading }, refetch] = useAuthAxios<Deployment>(`/deployments/${id}`, { manual: true, autoCatch: true, autoCancel: false })
-    const { lastDeploymentEvent } = useNotificationsContext()
+    const { onDeploymentEvent } = useNotificationsContext()
 
     useEffect(() => {
         if (id) {
@@ -32,12 +32,15 @@ export const useDeploymentDetails = (): [
     /* Deploying is asynchronous, so the deploy status the page shows only stays true if it is
      * reloaded as the deploy moves. The event says which deployment moved, not what the new status
      * is, so the answer still comes from the endpoint. */
-    useEffect(() => {
-        if (!id || !lastDeploymentEvent || String(lastDeploymentEvent.data.deploymentId) !== id) {
-            return
-        }
-        void refetch()
-    }, [id, lastDeploymentEvent, refetch])
+    useEffect(
+        () =>
+            onDeploymentEvent((event) => {
+                if (id && String(event.deploymentId) === id) {
+                    void refetch()
+                }
+            }),
+        [id, onDeploymentEvent, refetch]
+    )
 
     return [{ data, loading, error }, refetch]
 }

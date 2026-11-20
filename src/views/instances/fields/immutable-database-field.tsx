@@ -6,7 +6,7 @@ import { useDatabaseLabel } from '../../../hooks/index.ts'
 const DatabaseValue: FC<{ value: string; displayName: string; reason: string }> = ({ value, displayName, reason }) => {
     const { label, loading } = useDatabaseLabel(value)
 
-    return <InputField label={displayName} value={label} helpText={`Cannot be changed: ${reason}`} loading={loading} disabled />
+    return <InputField label={displayName} value={label} helpText={`Can't be changed: ${reason}`} loading={loading} disabled />
 }
 
 /* A deployment stores its database as an id, so the plain immutable field shows a number nobody

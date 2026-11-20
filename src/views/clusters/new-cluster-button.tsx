@@ -20,7 +20,7 @@ export const NewClusterButton: FC<NewClusterButtonProps> = ({ onComplete }) => {
     return (
         <>
             <Button icon={<IconAdd24 />} onClick={() => setShowModal(true)}>
-                New cluster
+                New cluster…
             </Button>
             {showModal && <NewClusterModal onCancel={closeModal} onComplete={closeModalAndFetchList} />}
         </>

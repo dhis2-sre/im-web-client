@@ -1,0 +1,18 @@
+/* A label column just wide enough for its longest label, so the values line up close beside them. */
+.name {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    overflow-wrap: anywhere;
+}
+
+.hidden {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    color: var(--colors-grey600);
+}

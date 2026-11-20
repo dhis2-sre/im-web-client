@@ -13,10 +13,10 @@ export const validateDnsLabel = (value = '') => {
         throw new Error(`Name validator received a non-string type: "${typeof value}"`)
     }
     if (!value) {
-        return 'Name is required'
+        return 'Enter a name'
     }
     if (value.length > maxLength) {
-        return `Name can only contain ${maxLength} characters`
+        return `Use ${maxLength} characters or fewer`
     }
     if (!startPattern.test(value.charAt(0))) {
         return 'Name must start with a lowercase letter'
@@ -25,7 +25,7 @@ export const validateDnsLabel = (value = '') => {
         return 'Name must end with a lowercase letter or a number'
     }
     if (!interiorPattern.test(value)) {
-        return 'Name can only contain lower case letter, numbers and hyphens'
+        return 'Use only lowercase letters, numbers and hyphens'
     }
     return undefined
 }

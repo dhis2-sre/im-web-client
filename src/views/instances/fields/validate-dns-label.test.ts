@@ -9,12 +9,12 @@ describe('<NameInput /> - DNS Label validation', () => {
 
     describe('it rejects invalid names', () => {
         test.each([
-            { name: '', errorMessage: 'Name is required' },
+            { name: '', errorMessage: 'Enter a name' },
             { name: '1aaaa', errorMessage: 'Name must start with a lowercase letter' },
             { name: '-1aaaa', errorMessage: 'Name must start with a lowercase letter' },
-            { name: 'aaaa@@@aaa', errorMessage: 'Name can only contain lower case letter, numbers and hyphens' },
-            { name: 'lsdf22-||sar', errorMessage: 'Name can only contain lower case letter, numbers and hyphens' },
-            { name: 'f2&¤%".......22', errorMessage: 'Name can only contain lower case letter, numbers and hyphens' },
+            { name: 'aaaa@@@aaa', errorMessage: 'Use only lowercase letters, numbers and hyphens' },
+            { name: 'lsdf22-||sar', errorMessage: 'Use only lowercase letters, numbers and hyphens' },
+            { name: 'f2&¤%".......22', errorMessage: 'Use only lowercase letters, numbers and hyphens' },
             { name: 'aaaaa11111-', errorMessage: 'Name must end with a lowercase letter or a number' },
         ])('name "$name" produces error message "$errorMessage"', ({ name, errorMessage }) => {
             expect(validateDnsLabel(name)).toBe(errorMessage)

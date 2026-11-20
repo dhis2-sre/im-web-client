@@ -1,0 +1,85 @@
+/* The card on a faint dot grid that fades out from the middle. */
+.container {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    min-height: 100vh;
+    padding: 48px 16px;
+    box-sizing: border-box;
+}
+
+/* Dots 16px apart: twice the 8px spacing of the 32px mark's dots in the lockup above the form. */
+.container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 8px 8px, rgba(33, 41, 52, 0.18) 1px, transparent 1.5px);
+    background-size: 16px 16px;
+    background-position: center;
+    mask-image: radial-gradient(ellipse 48% 58% at 50% 50%, #000 20%, transparent 100%);
+    pointer-events: none;
+}
+
+.cardWrap {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+}
+
+.container .box {
+    height: auto;
+    padding: 40px 40px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    border-radius: 12px;
+    box-shadow:
+        0 1px 2px rgba(33, 41, 52, 0.04),
+        0 12px 32px -8px rgba(33, 41, 52, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+/* The card lifts a little while you're in it. */
+.container .box:focus-within {
+    box-shadow:
+        0 1px 2px rgba(33, 41, 52, 0.04),
+        0 24px 56px -14px rgba(33, 41, 52, 0.18);
+}
+
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp16);
+}
+
+.footer {
+    position: relative;
+    margin: 0;
+    color: var(--colors-grey700);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+/* Links at the size of the text beside them, in the primary button's blue, underlined only on hover. */
+.container a {
+    color: var(--colors-blue800);
+    font-size: 14px;
+    line-height: 20px;
+    text-decoration: none;
+    border-radius: 2px;
+}
+
+.container a:hover {
+    color: var(--colors-blue900);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.container a:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: 2px;
+}

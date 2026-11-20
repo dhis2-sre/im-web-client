@@ -1,17 +1,17 @@
 import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { Button, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { AuthCard } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
-import styles from './reset-password.module.css'
 
 const getInputsErrorMessage = ({ password, confirmPassword }) => {
     if (!password) {
-        return 'Please provide a password'
+        return 'Enter a password'
     } else if (!confirmPassword) {
-        return 'Please confirm your password'
+        return 'Enter the new password again'
     } else if (password !== confirmPassword) {
-        return 'Passwords do not match'
+        return "Passwords don't match"
     } else {
         return ''
     }
@@ -49,15 +49,16 @@ export const ResetPassword = () => {
         async (event) => {
             event.preventDefault()
 
-            if (!inputs.password) {
-                setErrorMessage(getInputsErrorMessage(inputs))
+            const inputsError = getInputsErrorMessage(inputs)
+            if (inputsError) {
+                setErrorMessage(inputsError)
                 return
             }
 
             try {
                 const password = inputs.password
                 await postResetPassword({ data: { token, password } })
-                showAlert({ message: 'Password has been reset', isCritical: false })
+                showAlert({ message: 'Password changed. Log in with your new password.', isCritical: false })
                 navigate('/')
             } catch (error) {
                 console.error(error)
@@ -68,27 +69,21 @@ export const ResetPassword = () => {
     )
 
     return (
-        <form className={styles.container} onSubmit={onSubmit}>
-            <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Reset password
-                </h2>
-                <InputField disabled={loading} name="password" label="New password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
-                <InputField
-                    disabled={loading}
-                    name="confirmPassword"
-                    label="Confirm new password"
-                    type="password"
-                    value={inputs.confirmPassword}
-                    autoComplete="new-password"
-                    onChange={onInputChange}
-                />
-                {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Reset password" disabled={!inputs.password}>
-                    Reset password
-                </Button>
-            </Card>
-        </form>
+        <AuthCard heading="Reset password" onSubmit={onSubmit} footer={<Link to="/">Back to log in</Link>}>
+            <InputField disabled={loading} name="password" label="New password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+            <InputField
+                disabled={loading}
+                name="confirmPassword"
+                label="Confirm new password"
+                type="password"
+                value={inputs.confirmPassword}
+                autoComplete="new-password"
+                onChange={onInputChange}
+            />
+            {errorMessage && <Help error>{errorMessage}</Help>}
+            <Button primary type="submit" value="Reset password" disabled={!inputs.password}>
+                Reset password
+            </Button>
+        </AuthCard>
     )
 }

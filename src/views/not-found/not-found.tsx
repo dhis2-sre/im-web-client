@@ -4,7 +4,7 @@ import style from './not-found.module.css'
 export const NotFound = () => {
     return (
         <div className={style.wrapper}>
-            <NoticeBox title="404 - Page Not Found">
+            <NoticeBox title="Page not found">
                 Sorry, the page you are looking for could not be found.
                 <p>
                     If you&apos;re looking for all public instances, they can be found on the{' '}

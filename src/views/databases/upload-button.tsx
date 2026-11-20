@@ -18,7 +18,7 @@ export const UploadButton: FC<UploadButtonProps> = ({ onComplete }) => {
     return (
         <>
             <Button icon={<IconAdd24 />} onClick={() => setShowModal(true)}>
-                Upload database
+                Upload database…
             </Button>
             {showModal && <UploadDatabaseModal onClose={() => setShowModal(false)} onComplete={complete} />}
         </>

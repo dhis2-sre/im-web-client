@@ -1,4 +1,3 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import {
     Button,
     ButtonStrip,
@@ -9,123 +8,48 @@ import {
     ModalActions,
     ModalContent,
     ModalTitle,
+    NoticeBox,
     SingleSelectField,
     SingleSelectOption,
     TextAreaField,
 } from '@dhis2/ui'
-import type { BaseButtonProps } from '@dhis2/ui'
+import { isCancel } from 'axios'
+import type { AxiosProgressEvent } from 'axios'
 import type { FC } from 'react'
 import { useCallback, useEffect, useState } from 'react'
+import { useActionAlert } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Group, GroupsWithDatabases } from '../../types/index.ts'
+import { errorMessage } from '../../utils/error-message.ts'
 import styles from './upload-database-modal.module.css'
 
 type UploadDatabaseModalProps = {
-    onClose: BaseButtonProps['onClick']
+    onClose: () => void
     onComplete: () => void
 }
 
-const defaultFormat = 'custom'
-const formats = new Map<string, { label: string; extension: string }>([
-    ['custom', { label: 'custom (pgc)', extension: '.pgc' }],
-    ['plain', { label: 'plain (sql.gz)', extension: '.sql.gz' }],
-])
+/* The format is read off the file's extension, so these are also the only files that can be uploaded. */
+const formats = [
+    { extension: '.pgc', label: 'Custom format', contentType: 'application/pgc' },
+    { extension: '.sql.gz', label: 'Plain SQL', contentType: 'application/gzip' },
+]
 
+/* The file comes first because it fills in the name and decides the format; everything after it can be
+ * changed. A failed upload stays in the dialog with what was typed. */
 export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onComplete }) => {
     const [group, setGroup] = useState('')
-    const [databaseFile, setDatabaseFile] = useState<File>(new Blob() as File)
-    const [name, setName] = useState<string>('')
-    const [description, setDescription] = useState<string>('')
-    const [format, setFormat] = useState<string>(defaultFormat)
-    const [extension, setExtension] = useState<string>(formats.get(defaultFormat).extension)
-
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
-
+    const [databaseFile, setDatabaseFile] = useState<File>()
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
+    const [fileError, setFileError] = useState<string>()
+    const [uploadError, setUploadError] = useState<string>()
     const [uploadProgress, setUploadProgress] = useState(0)
+    const format = formats.find(({ extension }) => databaseFile?.name.endsWith(extension))
+    const alert = useActionAlert()
 
-    const onUploadProgress = useCallback((progressEvent) => {
-        const { loaded, total } = progressEvent
-        const percentage = Math.floor((loaded * 100) / total)
-        setUploadProgress(percentage)
-    }, [])
-
-    const [{ loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupsWithDatabases>(
-        {
-            url: `/databases`,
-            method: 'put',
-            onUploadProgress,
-        },
-        { manual: true }
-    )
-
-    const onUpload = useCallback(async () => {
-        // TODO: How do I disable the upload button until a file is selected
-        if (databaseFile.size === 0) {
-            showAlert({
-                message: 'No file selected',
-                isCritical: true,
-            })
-            return
-        }
-
-        try {
-            let contentType: string
-            if (extension === '.sql.gz') {
-                contentType = 'application/gzip'
-            } else if (extension === '.pgc') {
-                contentType = 'application/pgc'
-            } else {
-                contentType = 'application/octet-stream'
-            }
-
-            await postDatabase({
-                headers: {
-                    'X-Upload-Group': group,
-                    'X-Upload-Name': name + extension,
-                    'X-Upload-Description': description,
-                    'Content-Type': contentType,
-                },
-                data: databaseFile,
-            })
-
-            showAlert({
-                message: 'Database added successfully',
-                isCritical: false,
-            })
-            onComplete()
-        } catch (error) {
-            showAlert({
-                message: 'There was a problem uploading the database',
-                isCritical: true,
-            })
-            console.error(error)
-        }
-    }, [databaseFile, showAlert, extension, postDatabase, group, name, description, onComplete])
-
-    const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({
-        method: 'GET',
-        url: '/groups',
-    })
-
-    if (groupsError) {
-        showAlert({ message: 'There was a problem loading the groups', isCritical: true })
-        console.error(groupsError)
-    }
-
-    const onFileSelect = useCallback(async ({ files }) => {
-        const uploadedFile = files[0]
-        setDatabaseFile(uploadedFile)
-
-        const [matchingFormat, { extension }] = Array.from(formats.entries()).find(([, { extension }]) => uploadedFile.name.endsWith(extension))
-        if (matchingFormat) {
-            setName(uploadedFile.name.replace(extension, ''))
-            setExtension(extension)
-            setFormat(matchingFormat)
-        }
-    }, [])
+    const onUploadProgress = useCallback(({ loaded, total }: AxiosProgressEvent) => setUploadProgress(total ? Math.floor((loaded * 100) / total) : 0), [])
+    const [{ loading }, postDatabase, cancelPostRequest] = useAuthAxios<GroupsWithDatabases>({ url: `/databases`, method: 'put', onUploadProgress }, { manual: true })
+    const [{ data: groups, loading: groupsLoading, error: groupsError }] = useAuthAxios<Group[]>({ method: 'GET', url: '/groups' })
 
     useEffect(() => {
         if (groups && groups.length > 0) {
@@ -133,81 +57,115 @@ export const UploadDatabaseModal: FC<UploadDatabaseModalProps> = ({ onClose, onC
         }
     }, [groups])
 
-    const onSelectChange = useCallback(
-        ({ selected }) => {
-            setFormat(selected)
-            setExtension(formats.get(selected).extension)
-        },
-        [setFormat, setExtension]
-    )
+    const onFileSelect = ({ files }: { files: FileList }) => {
+        const file = files[0]
+        const match = formats.find(({ extension }) => file?.name.endsWith(extension))
+        setUploadError(undefined)
+        if (!file || !match) {
+            setDatabaseFile(undefined)
+            setFileError(file ? 'Choose a .pgc or .sql.gz file.' : undefined)
+            return
+        }
+        setFileError(undefined)
+        setDatabaseFile(file)
+        setName(file.name.slice(0, -match.extension.length))
+    }
+
+    const onUpload = async () => {
+        if (!databaseFile || !format) {
+            return
+        }
+        setUploadError(undefined)
+        const fileName = name.trim() + format.extension
+        try {
+            await postDatabase({
+                headers: {
+                    'X-Upload-Group': group,
+                    'X-Upload-Name': fileName,
+                    'X-Upload-Description': description,
+                    'Content-Type': format.contentType,
+                },
+                data: databaseFile,
+            })
+            alert.success(`Uploaded ${fileName} to ${group}`)
+            onComplete()
+        } catch (error) {
+            if (isCancel(error)) {
+                return
+            }
+            console.error(error)
+            setUploadError(errorMessage(error))
+        }
+    }
 
     if (groupsLoading) {
-        return
+        return null
     }
 
     return (
-        <Modal onClose={() => onClose({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
+        <Modal onClose={loading ? undefined : onClose}>
             <ModalTitle>Upload database</ModalTitle>
             <ModalContent className={styles.container}>
-                <SingleSelectField inputWidth="280px" className={styles.field} selected={group} filterable={true} onChange={({ selected }) => setGroup(selected)} label="Group">
-                    {groups.map((group) => (
-                        <SingleSelectOption key={group.name} label={group.name} value={group.name} />
-                    ))}
-                </SingleSelectField>
+                <div className={styles.fileRow}>
+                    <FileInput buttonLabel="Choose file" accept=".pgc,.gz" onChange={onFileSelect} disabled={loading} error={!!fileError} />
+                    {databaseFile && format && (
+                        <span className={styles.label}>
+                            <b>{databaseFile.name}</b> · {format.label}
+                        </span>
+                    )}
+                    {fileError && <span className={styles.fileError}>{fileError}</span>}
+                </div>
                 <div className={styles.fileAndExtension}>
                     <InputField
-                        className={styles.field}
                         dataTest="upload-database-name"
                         name="databaseName"
+                        inputWidth="280px"
                         label="Name"
                         value={name}
-                        onChange={({ value }) => setName(value)}
+                        onChange={({ value }) => setName(value ?? '')}
                         required
                         disabled={loading}
                     />
-                    <span>{extension}</span>
+                    <span>{format?.extension}</span>
                 </div>
-                <TextAreaField
-                    className={styles.field}
-                    dataTest="upload-database-description"
-                    label="Description"
-                    value={description}
-                    onChange={({ value }) => setDescription(value)}
-                    required
-                    disabled={loading}
-                />
-                <SingleSelectField className={styles.field} selected={format} onChange={onSelectChange} label="Format">
-                    {Array.from(formats.keys()).map((key) => (
-                        <SingleSelectOption key={key} label={formats.get(key).label} value={key} />
+                <SingleSelectField inputWidth="280px" selected={group} filterable onChange={({ selected }) => setGroup(selected)} label="Group" disabled={loading}>
+                    {(groups ?? []).map((group) => (
+                        <SingleSelectOption key={group.name} label={group.name} value={group.name} />
                     ))}
                 </SingleSelectField>
-                <FileInput buttonLabel="Select database" onChange={onFileSelect} disabled={loading} />
-                {databaseFile.size > 0 && (
+                <TextAreaField
+                    dataTest="upload-database-description"
+                    label="Description"
+                    inputWidth="280px"
+                    value={description}
+                    onChange={({ value }) => setDescription(value ?? '')}
+                    disabled={loading}
+                />
+                {loading && (
                     <div className={styles.progressWrap}>
-                        <span className={styles.label}>
-                            {loading ? (
-                                <>
-                                    Uploading database file: <b>{name + extension}</b> ({uploadProgress}%)
-                                    <button className={styles.cancelButton} onClick={cancelPostRequest}>
-                                        Cancel
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    Selected database file: <b>{name + extension}</b>
-                                </>
-                            )}
-                        </span>
-                        {loading && <LinearLoader amount={uploadProgress} className={styles.loader} />}
+                        <span className={styles.label}>Uploading… {uploadProgress}%</span>
+                        <LinearLoader amount={uploadProgress} className={styles.loader} />
                     </div>
+                )}
+                {groupsError && (
+                    <NoticeBox error title="Couldn't load the groups">
+                        {errorMessage(groupsError)}
+                    </NoticeBox>
+                )}
+                {uploadError && (
+                    <NoticeBox error title="Couldn't upload the database">
+                        {uploadError}
+                    </NoticeBox>
                 )}
             </ModalContent>
             <ModalActions>
                 <ButtonStrip end>
-                    <Button onClick={onUpload} disabled={loading || databaseFile.size === 0}>
+                    <Button secondary onClick={loading ? cancelPostRequest : onClose}>
+                        {loading ? 'Cancel upload' : 'Cancel'}
+                    </Button>
+                    <Button primary onClick={() => void onUpload()} disabled={!databaseFile || !name.trim() || !group} loading={loading}>
                         Upload
                     </Button>
-                    <Button onClick={onClose}>Close</Button>
                 </ButtonStrip>
             </ModalActions>
         </Modal>

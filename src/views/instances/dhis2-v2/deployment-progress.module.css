@@ -31,5 +31,5 @@
 .dots {
     display: inline-block;
     width: 18px;
-    font-family: monospace;
+    font-family: var(--font-mono);
 }

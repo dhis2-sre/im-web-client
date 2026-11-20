@@ -2,10 +2,9 @@ import { SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import { useState } from 'react'
 import { useField } from 'react-final-form'
 import { CustomDateCalendar } from './custom-date-calendar.tsx'
-import styles from './fields.module.css'
 import { CUSTOM_LABEL, CUSTOM_VALUE, TTL_PRESETS } from './ttl-presets.ts'
 
-export const TtlSelect = () => {
+export const TtlSelect = ({ label = 'Lifetime', helpText = 'How long until this instance is deleted automatically.' }: { label?: string; helpText?: string }) => {
     const { input } = useField<number>('ttl', { subscription: { value: true } })
     const [customMode, setCustomMode] = useState(false)
     const [calendarDate, setCalendarDate] = useState('')
@@ -31,13 +30,7 @@ export const TtlSelect = () => {
 
     return (
         <div>
-            <SingleSelectField
-                className={styles.field}
-                label="Lifetime"
-                selected={selected}
-                onChange={({ selected: next }: { selected: string }) => handleSelectChange(next)}
-                helpText="How long this instance will run for until automatic shutdown."
-            >
+            <SingleSelectField label={label} required selected={selected} onChange={({ selected: next }: { selected: string }) => handleSelectChange(next)} helpText={helpText}>
                 {TTL_PRESETS.map((p) => (
                     <SingleSelectOption key={p.seconds} label={p.label} value={String(p.seconds)} />
                 ))}
