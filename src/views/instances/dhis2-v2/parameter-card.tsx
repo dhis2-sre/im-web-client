@@ -29,7 +29,7 @@ const PRIMARY_PARAMETERS = new Set([
 
 const name = (parameter: StackParameterWithGroup) => parameter.parameterName ?? ''
 
-const ConditionalSection: FC<{ stackId: Dhis2StackName; when: NonNullable<StackParameterGroup['when']>; children: ReactNode }> = ({ stackId, when, children }) =>
+const ConditionalSection: FC<{ stackId: Dhis2StackName; when?: StackParameterGroup['when']; children: ReactNode }> = ({ stackId, when, children }) =>
     useParameterCondition(stackId, when) ? <>{children}</> : null
 
 export type ParameterCardProps = {
@@ -132,7 +132,7 @@ export const ParameterCard: FC<ParameterCardProps> = ({
     )
 
     const renderInset = ({ group, parameters }: GroupedParameters) => (
-        <ConditionalSection key={`inset-${group.name}`} stackId={stackId} when={group.when!}>
+        <ConditionalSection key={`inset-${group.name}`} stackId={stackId} when={group.when}>
             <div className={styles.inset}>
                 <h3 className={styles.insetTitle}>{group.title}</h3>
                 {fields(shown(parameters))}

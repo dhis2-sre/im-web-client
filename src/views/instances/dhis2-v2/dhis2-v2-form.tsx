@@ -53,16 +53,20 @@ export const Dhis2V2Form: FC<{
     const formMode = deployment ? 'update' : 'create'
     const { groups, companions, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
-    const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid } = useFormState({
+    const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid, errors } = useFormState({
         subscription: {
             submitError: true,
             submitting: true,
             modifiedSinceLastSubmit: true,
             pristine: true,
             invalid: true,
+            errors: true,
         },
     })
     const shouldDisableSubmit = (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
+    /* Creating several names the instances from a prefix the dialog asks for, so only the rest of the form has to
+     * be valid: a taken or empty Name doesn't stop it. */
+    const shouldDisableCreateSeveral = submitting || Object.keys(errors ?? {}).some((field) => field !== 'name') || (!!submitError && !modifiedSinceLastSubmit)
 
     /* A companion already on the deployment is edited like the rest of it: sensitive fields are
      * optional and left blank to keep what is stored. A companion opted into during this edit has
@@ -180,7 +184,7 @@ export const Dhis2V2Form: FC<{
                         {isEdit ? 'Save changes' : 'Create instance'}
                     </Button>
                     {!isEdit && onCreateSeveral && (
-                        <Button secondary disabled={submitting} onClick={onCreateSeveral}>
+                        <Button secondary disabled={shouldDisableCreateSeveral} onClick={onCreateSeveral}>
                             Create several instances…
                         </Button>
                     )}

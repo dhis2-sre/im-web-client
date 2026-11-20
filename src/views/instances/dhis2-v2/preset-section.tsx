@@ -20,7 +20,11 @@ export const PresetSection: FC = () => {
     return (
         <SectionCard title="Preset" className={styles.presetCard}>
             <Field name="saveAsPreset" type="checkbox" component={CheckboxFieldFF} label="Save this configuration as a preset" />
-            {values.saveAsPreset && <NameInput fieldName="presetName" availabilityUrl="/presets/availability" label="Preset name" helpText="" />}
+            {values.saveAsPreset && (
+                <div className={styles.grid}>
+                    <NameInput fieldName="presetName" availabilityUrl="/presets/availability" label="Preset name" helpText="" />
+                </div>
+            )}
         </SectionCard>
     )
 }

@@ -1,0 +1,5 @@
+/* The form's Lifetime field fills its grid cell; on its own in this dialog it keeps a field's usual width. */
+.lifetime {
+    width: 320px;
+    max-width: 100%;
+}

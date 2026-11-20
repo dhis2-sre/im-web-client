@@ -16,7 +16,6 @@
     border: 1px solid var(--colors-grey300);
     border-radius: 4px;
     background: var(--colors-white);
-    box-shadow: var(--elevations-e100);
 }
 
 .cardHeader {
