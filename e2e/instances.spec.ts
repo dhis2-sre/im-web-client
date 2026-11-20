@@ -47,7 +47,8 @@ test.describe('new instance', () => {
         // Select the DHIS2 core image tag
         const imageTagSelect = page
             .getByRole('group', { name: /^DHIS ?2 core$/i })
-            .locator('div', { hasText: /^Image tag/i })
+            .getByTestId('dhis2-uicore-field')
+            .filter({ hasText: /^Image tag/i })
             .getByTestId('dhis2-uicore-select-input')
         await imageTagSelect.click()
         await page.getByPlaceholder('Filter options').fill(dhis2CoreImageTag)
@@ -108,7 +109,8 @@ test.describe('new instance', () => {
 
         const imageTagSelect = page
             .getByRole('group', { name: /^DHIS ?2 core$/i })
-            .locator('div', { hasText: /^Image tag/i })
+            .getByTestId('dhis2-uicore-field')
+            .filter({ hasText: /^Image tag/i })
             .getByTestId('dhis2-uicore-select-input')
         await imageTagSelect.click()
         await page.getByPlaceholder('Filter options').fill(dhis2CoreImageTag)
@@ -159,7 +161,8 @@ test.describe('new instance', () => {
         if (dhis2CoreUpdateImageTag !== dhis2CoreImageTag) {
             const editImageTagSelect = page
                 .getByRole('group', { name: /^DHIS ?2 core$/i })
-                .locator('div', { hasText: /^Image tag/i })
+                .getByTestId('dhis2-uicore-field')
+                .filter({ hasText: /^Image tag/i })
                 .getByTestId('dhis2-uicore-select-input')
             await editImageTagSelect.click()
             await page.getByPlaceholder('Filter options').fill(dhis2CoreUpdateImageTag)
