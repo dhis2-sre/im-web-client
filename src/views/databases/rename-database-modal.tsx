@@ -1,6 +1,7 @@
 import { Button, ButtonStrip, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
 import { FC, useState } from 'react'
 import { useActionAlert } from '../../components/index.ts'
+import modalStyles from '../../components/modal-fields.module.css'
 import { useAuthAxios } from '../../hooks/index.ts'
 import { Database, UpdateDatabaseRequest } from '../../types/index.ts'
 import { errorMessage } from '../../utils/error-message.ts'
@@ -39,7 +40,7 @@ export const RenameDatabaseModal: FC<RenameDatabaseModalProps> = ({ onClose, onC
     return (
         <Modal onClose={loading ? undefined : onClose}>
             <ModalTitle>Edit {currentName}</ModalTitle>
-            <ModalContent>
+            <ModalContent className={modalStyles.fields}>
                 <InputField label="Name" value={newName} onChange={({ value }) => setNewName(value ?? '')} required disabled={loading} />
                 <InputField label="Description" value={newDescription} onChange={({ value }) => setNewDescription(value ?? '')} disabled={loading} />
                 {error && (

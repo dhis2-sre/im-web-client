@@ -1,0 +1,7 @@
+/* A dialog's fields and notices, stacked with the same space between them as the other form dialogs; the
+ * library's fields carry no margin of their own. */
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp16);
+}

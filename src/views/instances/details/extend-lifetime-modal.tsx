@@ -2,6 +2,7 @@ import { Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle, Not
 import { FORM_ERROR } from 'final-form'
 import type { FC } from 'react'
 import { Form } from 'react-final-form'
+import modalStyles from '../../../components/modal-fields.module.css'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Deployment } from '../../../types/index.ts'
 import { refusalMessage } from '../../../utils/deploy-state.ts'
@@ -30,7 +31,7 @@ export const ExtendLifetimeModal: FC<{ deployment: Deployment; onClose: () => vo
             {({ handleSubmit, pristine, invalid, submitting, submitError }) => (
                 <Modal onClose={onClose}>
                     <ModalTitle>Extend lifetime of {deployment.name}</ModalTitle>
-                    <ModalContent>
+                    <ModalContent className={modalStyles.fields}>
                         <div className={styles.lifetime}>
                             <ExtendTtlSelect deployment={deployment} extendOnly />
                         </div>
