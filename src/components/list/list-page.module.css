@@ -59,6 +59,15 @@
     white-space: nowrap;
 }
 
+/* One line, cut with an ellipsis, so a long value can't take a column's width from its neighbours. */
+.clip {
+    display: block;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* Each group's header sticks under the column headers, and the next group's header covers it as it arrives. */
 .groupHeader {
     position: sticky;

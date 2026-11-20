@@ -35,4 +35,5 @@ export { FilterFields, GroupFilter, SearchFilter } from './list/filter-fields.ts
 export { ListPage } from './list/list-page.tsx'
 export type { ListColumn, ListGroup } from './list/list-page.tsx'
 export { OnlyMineFilter, useOnlyMine } from './list/only-mine-filter.tsx'
+export { OwnerCell } from './list/owner-cell.tsx'
 export { useSavedSearchParams } from './list/use-saved-search-params.ts'
