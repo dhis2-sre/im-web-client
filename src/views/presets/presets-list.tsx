@@ -1,7 +1,7 @@
 import { Button, IconAdd24 } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FilterFields, GroupFilter, ListPage, MomentFromNow, OnlyMineFilter, SearchFilter, useOnlyMine, useSavedSearchParams } from '../../components/index.ts'
+import { FilterFields, GroupFilter, ListPage, MomentFromNow, OnlyMineFilter, OwnerCell, SearchFilter, useOnlyMine, useSavedSearchParams } from '../../components/index.ts'
 import type { ListColumn } from '../../components/index.ts'
 import { useAuthAxios, useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
@@ -16,7 +16,7 @@ const columns: ListColumn<Deployment>[] = [
     { key: 'database', label: 'Database', render: (preset) => <PresetDatabase preset={preset} />, breakAnywhere: true },
     { key: 'storage', label: 'Storage', render: (preset) => presetSummary(preset).storage, nowrap: true },
     { key: 'companions', label: 'Companions', render: (preset) => presetSummary(preset).companions.join(', ') },
-    { key: 'owner', label: 'Owner', render: (preset) => preset.user?.email, sortValue: (preset) => preset.user?.email ?? '', breakAnywhere: true },
+    { key: 'owner', label: 'Owner', render: (preset) => <OwnerCell owner={preset.user} />, sortValue: (preset) => preset.user?.email ?? '' },
     { key: 'updated', label: 'Updated', render: (preset) => <MomentFromNow date={preset.updatedAt} />, sortValue: (preset) => preset.updatedAt, nowrap: true },
 ]
 
