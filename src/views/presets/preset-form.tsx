@@ -1,4 +1,4 @@
-import { Button, ButtonStrip, Card } from '@dhis2/ui'
+import { Button } from '@dhis2/ui'
 import { FORM_ERROR, setIn } from 'final-form'
 import type { AnyObject } from 'final-form'
 import type { FC } from 'react'
@@ -30,14 +30,14 @@ const PresetFormActions: FC<{ isEdit: boolean; parametersReady: boolean; onCance
     })
     const disabled = !parametersReady || (isEdit && pristine) || submitting || (invalid && !submitError) || (submitError && !modifiedSinceLastSubmit)
     return (
-        <ButtonStrip>
+        <div className={styles.actions}>
             <Button primary disabled={disabled} loading={submitting} type="submit">
                 {isEdit ? 'Save' : 'Save preset'}
             </Button>
-            <Button disabled={submitting} onClick={onCancel}>
+            <Button secondary disabled={submitting} onClick={onCancel}>
                 Cancel
             </Button>
-        </ButtonStrip>
+        </div>
     )
 }
 
@@ -122,8 +122,8 @@ export const PresetForm: FC = () => {
 
     return (
         <Page parent={parent} title={title} description={kind === 'new' ? 'A saved configuration to start new instances from. Nothing is deployed.' : undefined}>
-            <Card className={styles.container}>
-                {isCopy && source && <CopyNotice className={styles.notice} source={source.name ?? ''} />}
+            <div className={styles.form}>
+                {isCopy && source && <CopyNotice source={source.name ?? ''} />}
                 <Form onSubmit={kind === 'edit' ? submitEdit : submitNew} initialValues={initialValues} validate={validate} keepDirtyOnReinitialize>
                     {({ handleSubmit }) => (
                         <Dhis2V2Form
@@ -135,7 +135,7 @@ export const PresetForm: FC = () => {
                         />
                     )}
                 </Form>
-            </Card>
+            </div>
             {modal}
         </Page>
     )

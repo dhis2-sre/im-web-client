@@ -1,13 +1,13 @@
-import { Button, ButtonStrip, CircularLoader, NoticeBox } from '@dhis2/ui'
-import cx from 'classnames'
+import { Button, CircularLoader, InputField, NoticeBox } from '@dhis2/ui'
 import type { AnyObject } from 'final-form'
 import { useEffect, useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
 import { useForm, useFormState } from 'react-final-form'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import type { GroupedParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
+import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
 import type { DeploymentStep } from '../../../hooks/use-stack-deployment-creation.ts'
-import type { Deployment } from '../../../types/index.ts'
+import type { Deployment, StackParameterGroup } from '../../../types/index.ts'
 import { DescriptionTextarea } from '../fields/description-textarea.tsx'
 import { ExtendTtlSelect } from '../fields/extend-ttl-select.tsx'
 import { GroupSelect } from '../fields/group-select.tsx'
@@ -15,12 +15,16 @@ import { NameInput } from '../fields/name-input.tsx'
 import { PublicCheckbox } from '../fields/public-checkbox.tsx'
 import { TtlSelect } from '../fields/ttl-select.tsx'
 import styles from '../styles.module.css'
-import { CompanionSection } from './companion-section.tsx'
+import { findAddOns } from './add-ons.ts'
+import { ComponentsSection } from './components-section.tsx'
 import { deploymentHasInstanceOf } from './deployment-instances.ts'
 import { DeploymentProgress } from './deployment-progress.tsx'
-import { GroupFieldset } from './group-fieldset.tsx'
+import { ParameterCard } from './parameter-card.tsx'
+import { SectionCard } from './section-card.tsx'
 
 export const STACK_ID = 'dhis2-v2'
+
+const Conditional: FC<{ when?: StackParameterGroup['when']; children: ReactNode }> = ({ when, children }) => (useParameterCondition(STACK_ID, when) ? <>{children}</> : null)
 
 const SUBMIT_ERROR_TITLES = {
     'create': "Couldn't create the instance",
@@ -65,22 +69,28 @@ export const Dhis2V2Form: FC<{
      * nothing stored yet, so it is filled in like a brand new instance instead. */
     const companionFormMode = (companionName: string): 'create' | 'update' => (deploymentHasInstanceOf(deployment, companionName) ? 'update' : 'create')
 
-    /* A conditional group nests under the group that owns its enabling parameter, e.g. the MinIO
-     * section renders inside DHIS 2 Core because STORAGE_TYPE lives there. */
-    const { topLevel, subGroupsByParent } = useMemo(() => {
+    /* Components are offered as tiles and get a card of their own once added, so their switches and the
+     * sections they gate leave the cards below. */
+    const addOns = useMemo(() => findAddOns(groups, companions), [groups, companions])
+    const addOnParameters = useMemo(() => new Set(addOns.map(({ parameter }) => parameter)), [addOns])
+
+    /* A conditional group shows inside the card of the group that owns its enabling parameter, e.g. the MinIO
+     * section inside DHIS 2 Core because STORAGE_TYPE lives there. */
+    const { topLevel, insetsByParent } = useMemo(() => {
+        const addOnGroups = new Set(addOns.flatMap(({ groups: gated }) => gated.map(({ group }) => group.name)))
         const ownerOf = (parameterName: string) => groups.find(({ parameters }) => parameters.some((parameter) => parameter.parameterName === parameterName))
-        const subGroupsByParent = new Map<string, GroupedParameters[]>()
+        const insetsByParent = new Map<string, GroupedParameters[]>()
         const topLevel: GroupedParameters[] = []
-        for (const grouped of groups) {
+        for (const grouped of groups.filter(({ group }) => !addOnGroups.has(group.name))) {
             const owner = grouped.group.when ? ownerOf(grouped.group.when.parameter) : undefined
             if (owner && owner.group.name !== grouped.group.name) {
-                subGroupsByParent.set(owner.group.name, [...(subGroupsByParent.get(owner.group.name) ?? []), grouped])
+                insetsByParent.set(owner.group.name, [...(insetsByParent.get(owner.group.name) ?? []), grouped])
             } else {
                 topLevel.push(grouped)
             }
         }
-        return { topLevel, subGroupsByParent }
-    }, [groups])
+        return { topLevel, insetsByParent }
+    }, [groups, addOns])
 
     /* Stack defaults seed a new deployment or preset. An edit is seeded from what it is editing, so
      * folding the defaults in would quietly rewrite the values it actually holds. */
@@ -102,17 +112,30 @@ export const Dhis2V2Form: FC<{
     const ownName = useMemo(() => (mode === 'edit-preset' ? { name: deployment?.name, group: deployment?.groupName } : undefined), [mode, deployment])
 
     return (
-        <form onSubmit={handleSubmit}>
-            <fieldset className={cx(styles.fieldset, styles.main)}>
-                <legend className={styles.legend}>Basic information</legend>
-                {mode === 'create' && <NameInput />}
-                {isPreset && <NameInput availabilityUrl="/presets/availability" helpText="" own={ownName} />}
-                <DescriptionTextarea />
+        <form className={styles.form} onSubmit={handleSubmit}>
+            <SectionCard title="Basic information">
+                <div className={styles.grid}>
+                    {mode === 'create' && <NameInput />}
+                    {isPreset && <NameInput availabilityUrl="/presets/availability" helpText="Unique among the presets in the group" own={ownName} />}
+                    {!isEdit && <GroupSelect />}
+                    {/* An instance keeps its name and group, so editing shows them without letting them change. */}
+                    {isEdit && deployment && (
+                        <>
+                            <InputField label="Name" value={deployment.name ?? ''} disabled />
+                            <InputField label="Group" value={deployment.groupName ?? ''} disabled />
+                        </>
+                    )}
+                    {isEdit && deployment ? (
+                        <ExtendTtlSelect deployment={deployment} />
+                    ) : isPreset ? (
+                        <TtlSelect label="Lifetime of created instances" helpText="" />
+                    ) : (
+                        <TtlSelect />
+                    )}
+                    <DescriptionTextarea />
+                </div>
                 <PublicCheckbox />
-                {isEdit && deployment ? <ExtendTtlSelect deployment={deployment} /> : isPreset ? <TtlSelect label="Lifetime of created instances" helpText="" /> : <TtlSelect />}
-                {!isEdit && <GroupSelect />}
-            </fieldset>
-            <hr className={styles.hr} />
+            </SectionCard>
             {loading && <CircularLoader />}
             {error && !loading && (
                 <NoticeBox error title="Couldn't load the stack parameters">
@@ -121,33 +144,38 @@ export const Dhis2V2Form: FC<{
             )}
             {!error &&
                 !loading &&
-                topLevel.map(({ group, parameters }) => (
-                    <GroupFieldset
-                        key={group.name}
-                        stackId={STACK_ID}
-                        group={group}
-                        parameters={parameters}
-                        subGroups={subGroupsByParent.get(group.name)}
-                        sensitiveParameters={sensitiveParameters}
-                        immutableReasons={isEdit ? immutableReasons : undefined}
-                        formMode={formMode}
-                    />
+                topLevel.map((grouped) => (
+                    <Conditional key={grouped.group.name} when={grouped.group.when}>
+                        <ParameterCard
+                            stackId={STACK_ID}
+                            title={grouped.group.title}
+                            groups={[grouped]}
+                            insets={insetsByParent.get(grouped.group.name)}
+                            hiddenParameters={addOnParameters}
+                            sensitiveParameters={sensitiveParameters}
+                            immutableReasons={isEdit ? immutableReasons : undefined}
+                            formMode={formMode}
+                        />
+                    </Conditional>
                 ))}
-            {/* Every companion the stack declares, each shown while the condition it was declared
-                with holds. Nothing here names a particular companion. */}
-            {!error &&
-                !loading &&
-                companions.map((companion) => (
-                    <CompanionSection key={companion.name} offeringStackId={STACK_ID} companion={companion} formMode={companionFormMode(companion.name)} showImmutable={isEdit} />
-                ))}
+            {!error && !loading && (
+                <ComponentsSection
+                    stackId={STACK_ID}
+                    addOns={addOns}
+                    shared={{ sensitiveParameters, immutableReasons: isEdit ? immutableReasons : undefined, formMode }}
+                    companionFormMode={companionFormMode}
+                    showImmutable={isEdit}
+                    address={isEdit ? { name: deployment?.name } : mode === 'create' ? 'form' : undefined}
+                />
+            )}
             {footer}
             {submitError && (
-                <NoticeBox className={styles.submitError} error title={SUBMIT_ERROR_TITLES[mode]}>
+                <NoticeBox error title={SUBMIT_ERROR_TITLES[mode]}>
                     {submitError}
                 </NoticeBox>
             )}
             {actions ?? (
-                <ButtonStrip>
+                <div className={styles.actions}>
                     <Button primary disabled={shouldDisableSubmit} loading={submitting} type="submit">
                         {isEdit ? 'Save changes' : 'Create instance'}
                     </Button>
@@ -156,10 +184,10 @@ export const Dhis2V2Form: FC<{
                             Create several instances…
                         </Button>
                     )}
-                    <Button disabled={submitting} onClick={handleCancel}>
+                    <Button secondary disabled={submitting} onClick={handleCancel}>
                         Cancel
                     </Button>
-                </ButtonStrip>
+                </div>
             )}
             {mode === 'create' && <DeploymentProgress name={name ?? ''} steps={steps} />}
         </form>

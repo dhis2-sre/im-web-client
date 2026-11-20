@@ -1,70 +1,287 @@
-.container {
-    display: block !important;
-    height: auto !important;
-    padding: var(--spacers-dp16);
-}
-
-.legend {
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 23px;
-    padding-bottom: var(--spacers-dp24);
-}
-
-.fieldset {
-    border: none;
-    gap: var(--spacers-dp16);
-    padding: 0;
-    margin: 0;
-}
-
-.fieldset.main {
+/* The instance and preset form: a column of section cards, then the buttons, no wider than 1200px. */
+.form {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 0;
+    gap: var(--spacers-dp16);
+    max-width: 1200px;
+}
+
+/* A section of the form as a card. It is a fieldset so each section is a named group; the legend floats
+ * so it lays out as the card's header rather than sitting on the border. */
+.card {
+    position: relative;
     margin: 0;
+    padding: 0;
+    min-width: 0;
+    border: 1px solid var(--colors-grey300);
+    border-radius: 4px;
+    background: var(--colors-white);
+    box-shadow: var(--elevations-e100);
 }
 
-.fieldset.parameters {
-    display: grid;
-}
-
-.fieldset.parameters.primary {
-    grid-template-columns: 320px 320px 320px;
-}
-
-.fieldset.parameters.secondary {
-    grid-template-columns: repeat(3, 1fr);
-    padding-top: var(--spacers-dp16);
-}
-
-.hr {
-    border: none;
-    border-top: 1px solid var(--colors-grey400);
+.cardHeader {
+    float: left;
     width: 100%;
-    margin: var(--spacers-dp24) 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacers-dp12);
+    padding: var(--spacers-dp12) var(--spacers-dp16);
+    border-bottom: 1px solid var(--colors-grey300);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
 }
 
-.summary {
-    color: var(--colors-blue700);
-    margin: var(--spacers-dp24) 0 0 0;
+.cardActions {
+    position: absolute;
+    top: var(--spacers-dp8);
+    right: var(--spacers-dp16);
+}
+
+.cardBody {
+    clear: both;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp24);
+    padding: var(--spacers-dp24) var(--spacers-dp16);
+}
+
+/* Fields three to a row, down to one as the card narrows; every field fills its cell. */
+.grid {
+    container-type: inline-size;
+    display: grid;
+    gap: var(--spacers-dp24) var(--spacers-dp16);
+    grid-template-columns: repeat(auto-fill, minmax(max(220px, calc((100% - 2 * var(--spacers-dp16)) / 3)), 1fr));
+}
+
+.checks {
+    display: grid;
+    gap: var(--spacers-dp12) var(--spacers-dp16);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.subsection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp12);
+}
+
+.subheading {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey800);
+}
+
+/* A section that belongs to a choice made above it, such as the file store's. */
+.inset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp12);
+    padding: var(--spacers-dp16);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 4px;
+    background: var(--colors-grey050);
+}
+
+.insetTitle {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.advanced {
+    padding: 0 var(--spacers-dp16) var(--spacers-dp12);
+}
+
+/* The Advanced toggle as a full-width quiet button inside the card's padding: no fill until hovered, a chevron
+ * that turns down when open, then the title. */
+.advanced > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    box-sizing: border-box;
+    min-height: 40px;
+    padding: var(--spacers-dp8) var(--spacers-dp8);
+    border-radius: 4px;
+    list-style: none;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey900);
     cursor: pointer;
     user-select: none;
+    transition: background-color 150ms ease-out;
 }
 
-.submitError {
-    margin-bottom: var(--spacers-dp16);
+.advanced > summary::-webkit-details-marker {
+    display: none;
 }
 
-/* A toolbar across the top of the form card, edge to edge, for actions on the whole form. */
+.advanced > summary:hover {
+    background: var(--colors-grey100);
+}
+
+.advanced > summary:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: -2px;
+}
+
+.advancedChevron {
+    display: flex;
+    color: var(--colors-grey700);
+    transition: transform 150ms ease-out;
+}
+
+.advanced[open] .advancedChevron {
+    transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .advanced > summary,
+    .advancedChevron {
+        transition: none;
+    }
+}
+
+.advancedBody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp24);
+    padding: var(--spacers-dp16) 0 var(--spacers-dp12);
+}
+
+.note {
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
+}
+
+/* Inline code, as chat apps set it: a literal value in a small light box. */
+.code {
+    padding: 1px var(--spacers-dp4);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 3px;
+    background: var(--colors-grey100);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: inherit;
+}
+
+/* Optional components: a heading on the page, a row of tiles to add them, then a card for each added one. */
+.componentsHeading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp4);
+    margin: var(--spacers-dp24) 0 var(--spacers-dp8);
+}
+
+.componentsHeading h2 {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--colors-grey900);
+}
+
+.componentsHeading p {
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
+}
+
+.tiles {
+    display: grid;
+    gap: var(--spacers-dp12);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp8);
+    padding: var(--spacers-dp16);
+    border: 1px dashed var(--colors-grey500);
+    border-radius: 4px;
+    background: var(--colors-white);
+}
+
+.tile.added {
+    border-style: solid;
+    border-color: var(--colors-teal600);
+    background: var(--colors-teal050);
+}
+
+.tileName {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.tileDescription {
+    margin: 0 0 var(--spacers-dp4);
+    font-size: var(--text-md);
+    line-height: 1.4;
+    color: var(--colors-grey700);
+}
+
+.tileAction {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacers-dp8);
+    min-height: 28px;
+}
+
+/* An added tile's Remove stays in place but shows only while the tile is hovered or holds focus, and always
+ * where there is no hover. */
+.tileRemove {
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+}
+
+.tile:hover .tileRemove,
+.tile:focus-within .tileRemove {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .tileRemove {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tileRemove {
+        transition: none;
+    }
+}
+
+.addedLabel {
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-teal700);
+}
+
+/* Set apart from the Components above it, as the Components heading is from the cards before it. */
+.presetCard {
+    margin-top: var(--spacers-dp24);
+}
+
+/* Buttons at the end of the form, left-aligned like the rest of it. */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8);
+}
+
+/* Fill from preset and its status, above the sections. */
 .formToolbar {
     display: flex;
     align-items: center;
     gap: var(--spacers-dp12);
-    margin: calc(var(--spacers-dp16) * -1) calc(var(--spacers-dp16) * -1) var(--spacers-dp16);
-    padding: var(--spacers-dp8);
-    border-bottom: 1px solid var(--colors-grey300);
 }
 
 .fillStatus {
@@ -114,10 +331,6 @@
 .bulkPrefix {
     flex: 1;
     min-width: 200px;
-}
-
-.notice {
-    margin-bottom: var(--spacers-dp24);
 }
 
 .bulkPreview {

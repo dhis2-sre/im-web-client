@@ -47,7 +47,6 @@ export const ExtendTtlSelect = ({ deployment, extendOnly = false }: { deployment
     return (
         <div className={styles.extendTtl}>
             <SingleSelectField
-                className={styles.field}
                 label={`Lifetime (${remainingLabel})`}
                 selected={selected}
                 placeholder="Choose a new lifetime"

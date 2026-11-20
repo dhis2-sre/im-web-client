@@ -1,11 +1,12 @@
+/* Fields fill the cell of the section grid they sit in; a text area takes two cells where there are two. */
 .textarea {
-    width: 480px;
+    grid-column: 1 / -1;
 }
-.field {
-    width: 320px;
-}
-.parameterCheckbox {
-    padding-top: 18px;
+/* A text area starts its own row, so a short field before it doesn't end up beside it. */
+@container (min-width: 560px) {
+    .textarea {
+        grid-column: 1 / span 2;
+    }
 }
 .calendarContainer {
     margin-top: 15px;
@@ -50,12 +51,6 @@
 }
 
 .dateError {
-    font-size: 12px;
-    color: var(--colors-red700);
-    margin-top: 4px;
-}
-
-.validationError {
     font-size: 12px;
     color: var(--colors-red700);
     margin-top: 4px;

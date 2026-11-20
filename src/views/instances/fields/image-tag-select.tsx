@@ -1,11 +1,9 @@
-import { Help, hasValue } from '@dhis2/ui'
+import { Field, hasValue } from '@dhis2/ui'
 import { FC, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useField } from 'react-final-form'
-import classes from '../../../components/searchable-single-select.module.css'
 import { SearchableSingleSelect } from '../../../components/searchable-single-select.tsx'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { Dhis2StackName, IMAGE_REPOSITORY, IMAGE_TAG, PRIVATE_IMAGE_REPOSITORIES } from '../parameters.ts'
-import fieldClasses from './fields.module.css'
 import { mapStringToValueLabel } from './map-string-to-value-label.tsx'
 
 interface ImageTagSelectProps {
@@ -221,9 +219,13 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
     const displayOptions = useMemo(() => (filtered ? filteredOptions : options).map(mapStringToValueLabel), [filtered, filteredOptions, options])
 
     return (
-        <div>
-            <label className={classes.label}>{displayName} *</label>
-
+        <Field
+            label={displayName}
+            required
+            error={!!error}
+            validationText={error}
+            helpText={isPrivateRepository ? "Private image tags aren't listed. Type the exact tag." : undefined}
+        >
             {/* Keyed on the repository so the menu's own filter text goes with the list it filtered,
                 rather than sitting in the box describing a search that is no longer applied. */}
             <SearchableSingleSelect
@@ -237,8 +239,6 @@ export const ImageTagSelect: FC<ImageTagSelectProps> = ({ displayName, stackId =
                 placeholder={displayName}
                 onFilterChange={filterOptions}
             />
-            {error && <div className={fieldClasses.validationError}>{error}</div>}
-            {isPrivateRepository && <Help>Private image tags aren&apos;t listed. Type the exact tag.</Help>}
-        </div>
+        </Field>
     )
 }
