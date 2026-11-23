@@ -77,26 +77,9 @@ const CompanionCard: FC<{
     )
 }
 
-/* Whose name an add-on's own path hangs off: the instance being edited, the one this form is creating (read
- * from its Name field), or none yet, as for a preset. */
-export type InstanceAddress = { name?: string } | 'form' | undefined
+const cardId = (addOn: AddOn) => `add-on-${addOn.parameter.toLowerCase()}`
 
-const FormName: FC<{ children: (name?: string) => ReactNode }> = ({ children }) => {
-    const { input } = useField('name', { subscription: { value: true } })
-    return <>{children(input.value || undefined)}</>
-}
-
-/* Where an add-on with nothing to set is served, with the instance's name swapped in once there is one. */
-const AddressNote: FC<{ pathSuffix: string; address: InstanceAddress }> = ({ pathSuffix, address }) => {
-    const note = (name?: string) => (
-        <p className={styles.note}>
-            Available at <code className={styles.code}>{`/${name ?? 'instance-name'}${pathSuffix}`}</code>
-        </p>
-    )
-    return address === 'form' ? <FormName>{note}</FormName> : note(address?.name)
-}
-
-const cardId = (addOn: AddOn) => `component-${addOn.parameter.toLowerCase()}`
+const hasCard = (addOn: AddOn) => !!addOn.companion || addOn.groups.length > 0
 
 const Tile: FC<{ stackId: string; addOn: AddOn; locked?: string; onAdd: () => void }> = ({ stackId, addOn, locked, onAdd }) => {
     const { input } = useField(`${stackId}.${addOn.parameter}`, { subscription: { value: true } })
@@ -109,9 +92,16 @@ const Tile: FC<{ stackId: string; addOn: AddOn; locked?: string; onAdd: () => vo
                 {added ? (
                     <>
                         <span className={styles.addedLabel}>Added</span>
-                        {/* Shown on hover or focus, for someone back at the tiles who changed their mind. */}
+                        {/* Shown on hover or focus, for someone back at the tiles who changed their mind. Always
+                            shown for an add-on with no card, where the tile is the only place to remove it. */}
                         {!locked && (
-                            <Button small secondary className={styles.tileRemove} aria-label={`Remove ${addOn.name}`} onClick={() => input.onChange('false')}>
+                            <Button
+                                small
+                                secondary
+                                className={cx({ [styles.tileRemove]: hasCard(addOn) })}
+                                aria-label={`Remove ${addOn.name}`}
+                                onClick={() => input.onChange('false')}
+                            >
                                 Remove
                             </Button>
                         )}
@@ -144,14 +134,13 @@ const AddOnCard: FC<{
     showImmutable: boolean
     justAdded: boolean
     onScrolled: () => void
-    address: InstanceAddress
-}> = ({ stackId, addOn, shared, companionFormMode, showImmutable, justAdded, onScrolled, address }) => {
+}> = ({ stackId, addOn, shared, companionFormMode, showImmutable, justAdded, onScrolled }) => {
     const { input } = useField(`${stackId}.${addOn.parameter}`, { subscription: { value: true } })
     const ref = useRef<HTMLDivElement>(null)
     const added = input.value === 'true'
 
     /* Adding from a tile brings the new card into view, since it opens below the tiles. Only that once: a
-     * preset that later switches the same component on must not move the page. */
+     * preset that later switches the same add-on on must not move the page. */
     useEffect(() => {
         if (added && justAdded) {
             ref.current?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
@@ -159,7 +148,7 @@ const AddOnCard: FC<{
         }
     }, [added, justAdded, onScrolled])
 
-    if (!added) {
+    if (!added || !hasCard(addOn)) {
         return null
     }
     const locked = shared.formMode === 'update' ? shared.immutableReasons?.[addOn.parameter] : undefined
@@ -170,41 +159,34 @@ const AddOnCard: FC<{
     )
     const id = cardId(addOn)
 
-    let card
-    if (addOn.companion) {
-        card = (
-            <CompanionCard
-                offeringStackId={stackId}
-                companion={addOn.companion}
-                title={addOn.name}
-                formMode={companionFormMode}
-                showImmutable={showImmutable}
-                id={id}
-                actions={actions}
-            />
-        )
-    } else if (addOn.groups.length > 0) {
-        card = <ParameterCard stackId={stackId} title={addOn.name} id={id} actions={actions} groups={addOn.groups} {...shared} />
-    } else {
-        card = (
-            <SectionCard title={addOn.name} id={id} actions={actions}>
-                {addOn.pathSuffix ? <AddressNote pathSuffix={addOn.pathSuffix} address={address} /> : <p className={styles.note}>Nothing to set.</p>}
-            </SectionCard>
-        )
-    }
-    return <div ref={ref}>{card}</div>
+    return (
+        <div ref={ref}>
+            {addOn.companion ? (
+                <CompanionCard
+                    offeringStackId={stackId}
+                    companion={addOn.companion}
+                    title={addOn.name}
+                    formMode={companionFormMode}
+                    showImmutable={showImmutable}
+                    id={id}
+                    actions={actions}
+                />
+            ) : (
+                <ParameterCard stackId={stackId} title={addOn.name} id={id} actions={actions} groups={addOn.groups} {...shared} />
+            )}
+        </div>
+    )
 }
 
-/* The optional components: a tile for each, then a card for each one added. A tile stays where it is when its
- * component is added, so the row doesn't shift under the pointer; the card opens below the tiles. */
-export const ComponentsSection: FC<{
+/* The add-ons: a tile for each, then a card for each one added that has something to set. A tile stays where
+ * it is when its add-on is added, so the row doesn't shift under the pointer; the card opens below the tiles. */
+export const AddOnsSection: FC<{
     stackId: Dhis2StackName
     addOns: AddOn[]
     shared: Shared
     companionFormMode: (companionName: string) => 'create' | 'update'
     showImmutable: boolean
-    address: InstanceAddress
-}> = ({ stackId, addOns, shared, companionFormMode, showImmutable, address }) => {
+}> = ({ stackId, addOns, shared, companionFormMode, showImmutable }) => {
     const [justAdded, setJustAdded] = useState<string>()
     const clearJustAdded = useCallback(() => setJustAdded(undefined), [])
     if (addOns.length === 0) {
@@ -212,8 +194,8 @@ export const ComponentsSection: FC<{
     }
     return (
         <>
-            <div className={styles.componentsHeading}>
-                <h2>Components</h2>
+            <div className={styles.addOnsHeading}>
+                <h2>Add-ons</h2>
                 <p>Optional services that run alongside this instance.</p>
             </div>
             <div className={styles.tiles}>
@@ -237,7 +219,6 @@ export const ComponentsSection: FC<{
                     showImmutable={showImmutable}
                     justAdded={justAdded === addOn.parameter}
                     onScrolled={clearJustAdded}
-                    address={address}
                 />
             ))}
         </>

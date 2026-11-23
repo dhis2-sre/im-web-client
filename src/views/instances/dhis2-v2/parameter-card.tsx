@@ -43,7 +43,7 @@ export type ParameterCardProps = {
     sensitiveParameters: Record<string, boolean>
     immutableReasons?: Record<string, string>
     formMode?: 'create' | 'update'
-    /* Parameters rendered elsewhere, such as the switches the Components tiles stand for. */
+    /* Parameters rendered elsewhere, such as the switches the add-on tiles stand for. */
     hiddenParameters?: Set<string>
     id?: string
     actions?: ReactNode

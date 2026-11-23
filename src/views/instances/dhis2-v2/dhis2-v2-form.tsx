@@ -15,8 +15,8 @@ import { NameInput } from '../fields/name-input.tsx'
 import { PublicCheckbox } from '../fields/public-checkbox.tsx'
 import { TtlSelect } from '../fields/ttl-select.tsx'
 import styles from '../styles.module.css'
+import { AddOnsSection } from './add-ons-section.tsx'
 import { findAddOns } from './add-ons.ts'
-import { ComponentsSection } from './components-section.tsx'
 import { deploymentHasInstanceOf } from './deployment-instances.ts'
 import { DeploymentProgress } from './deployment-progress.tsx'
 import { ParameterCard } from './parameter-card.tsx'
@@ -73,7 +73,7 @@ export const Dhis2V2Form: FC<{
      * nothing stored yet, so it is filled in like a brand new instance instead. */
     const companionFormMode = (companionName: string): 'create' | 'update' => (deploymentHasInstanceOf(deployment, companionName) ? 'update' : 'create')
 
-    /* Components are offered as tiles and get a card of their own once added, so their switches and the
+    /* Add-ons are offered as tiles and get a card of their own once added, so their switches and the
      * sections they gate leave the cards below. */
     const addOns = useMemo(() => findAddOns(groups, companions), [groups, companions])
     const addOnParameters = useMemo(() => new Set(addOns.map(({ parameter }) => parameter)), [addOns])
@@ -163,13 +163,12 @@ export const Dhis2V2Form: FC<{
                     </Conditional>
                 ))}
             {!error && !loading && (
-                <ComponentsSection
+                <AddOnsSection
                     stackId={STACK_ID}
                     addOns={addOns}
                     shared={{ sensitiveParameters, immutableReasons: isEdit ? immutableReasons : undefined, formMode }}
                     companionFormMode={companionFormMode}
                     showImmutable={isEdit}
-                    address={isEdit ? { name: deployment?.name } : mode === 'create' ? 'form' : undefined}
                 />
             )}
             {footer}
