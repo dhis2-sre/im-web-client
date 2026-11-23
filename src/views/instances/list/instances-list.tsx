@@ -2,7 +2,7 @@ import { Button, IconAdd24 } from '@dhis2/ui'
 import { createContext, memo, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ListPage, MomentFromNow } from '../../../components/index.ts'
+import { ListPage, MomentFromNow, OwnerCell } from '../../../components/index.ts'
 import type { ListColumn } from '../../../components/index.ts'
 import { createEmitter } from '../../../hooks/create-emitter.ts'
 import { useLiveComponents } from '../../../hooks/index.ts'
@@ -98,7 +98,7 @@ const RowActions: FC<{ deployment: Deployment; refetch: () => void }> = ({ deplo
 }
 
 const columns: ListColumn<Deployment>[] = [
-    { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name, breakAnywhere: true },
+    { key: 'name', label: 'Name', render: (deployment) => deployment.name, sortValue: (deployment) => deployment.name },
     { key: 'status', label: 'Status', render: (deployment) => <StatusCell id={deployment.id} /> },
     {
         key: 'expires',
@@ -107,7 +107,7 @@ const columns: ListColumn<Deployment>[] = [
         sortValue: (deployment) => new Date(deployment.createdAt).getTime() + deployment.ttl * 1000,
         nowrap: true,
     },
-    { key: 'owner', label: 'Owner', render: (deployment) => deployment.user.email, sortValue: (deployment) => deployment.user.email, breakAnywhere: true },
+    { key: 'owner', label: 'Owner', render: (deployment) => <OwnerCell owner={deployment.user} />, sortValue: (deployment) => deployment.user.email },
     { key: 'updated', label: 'Updated', render: (deployment) => <MomentFromNow date={deployment.updatedAt} />, sortValue: (deployment) => deployment.updatedAt, nowrap: true },
 ]
 
