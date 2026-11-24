@@ -23,7 +23,7 @@ test.describe('new instance', () => {
     test('create new dhis2 instance', async ({ page }) => {
         test.setTimeout(30 * 60 * 1000) // the teardown waits the deploy out, since a delete mid-deploy is refused
 
-        await page.getByRole('link', { name: 'Instances' }).click()
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await expect(page.getByRole('group', { name: 'Basic information' })).toBeVisible()
@@ -92,7 +92,7 @@ test.describe('new instance', () => {
         const updatedDescription = 'Updated by e2e test.'
 
         // Create the instance to update.
-        await page.getByRole('link', { name: 'Instances' }).click()
+        await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
         await page.getByRole('button', { name: 'New instance', exact: true }).click()
 
         await page.getByRole('textbox', { name: 'Name' }).fill(randomName)

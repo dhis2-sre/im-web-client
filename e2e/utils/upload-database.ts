@@ -10,7 +10,7 @@ const dbFixturePath = path.join(import.meta.dirname, `../fixtures/${defaultDbNam
 export const uploadTestDatabase = async (page, dbName = defaultDbName) => {
     const fileName = `${dbName}${dbExtension}`
 
-    await page.getByRole('link', { name: 'Databases' }).click()
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Databases' }).click()
     await expect(page.getByRole('button', { name: 'Upload database…' })).toBeVisible()
     await page.getByRole('button', { name: 'Upload database…' }).click()
 

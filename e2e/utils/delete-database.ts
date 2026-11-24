@@ -3,7 +3,7 @@ import { expect, Page } from '@playwright/test'
 export const deleteTestDatabase = async (page: Page, name: string) => {
     // Dismiss any open modals and navigate to databases via client-side navigation
     await page.keyboard.press('Escape')
-    await page.getByRole('link', { name: 'Databases' }).click()
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Databases' }).click()
     await expect(page.getByRole('button', { name: 'Upload database…' })).toBeVisible()
 
     await expect(page.getByRole('link', { name, exact: true })).toBeVisible()
