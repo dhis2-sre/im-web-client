@@ -1,4 +1,3 @@
-import type { BaseButtonProps } from '@dhis2/ui'
 import { Button, ButtonStrip, FileInputField, FileListItem, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
@@ -10,7 +9,7 @@ import styles from './new-cluster-modal.module.css'
 
 type NewClusterModalProps = {
     onComplete: () => void
-    onCancel: BaseButtonProps['onClick']
+    onCancel: () => void
 }
 
 export const NewClusterModal: FC<NewClusterModalProps> = ({ onComplete, onCancel }) => {
@@ -46,7 +45,7 @@ export const NewClusterModal: FC<NewClusterModalProps> = ({ onComplete, onCancel
     }, [name, description, kubernetesConfiguration, createCluster, onComplete, alert])
 
     return (
-        <Modal onClose={loading ? undefined : () => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
+        <Modal onClose={loading ? undefined : onCancel}>
             <ModalTitle>New cluster</ModalTitle>
             <ModalContent className={styles.container}>
                 <InputField className={styles.field} label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />

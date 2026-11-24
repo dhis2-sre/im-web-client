@@ -1,6 +1,6 @@
 import type { AnyObject } from 'final-form'
 import { useCallback, useMemo } from 'react'
-import { StackParameterGroup, StackParameterWithGroup, StackWithParameterGroups } from '../types/index.ts'
+import { StackParameterGroup, StackParameterWithGroup } from '../types/index.ts'
 import { useStack, useStacks } from './use-stacks.ts'
 
 export type GroupedParameters = {
@@ -21,9 +21,8 @@ export const parameterDefaults = (parameters: StackParameterWithGroup[] = []) =>
     }, {})
 
 export const useGroupedStackParameters = (stackName: string) => {
-    const { stack: rawStack, loading, error } = useStack(stackName)
+    const { stack, loading, error } = useStack(stackName)
     const { stacks } = useStacks()
-    const stack = rawStack as StackWithParameterGroups | undefined
 
     const parameters = useMemo(() => (stack?.parameters ?? []).filter((parameter) => !parameter.consumed).sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0)), [stack])
 
@@ -72,9 +71,7 @@ export const useGroupedStackParameters = (stackName: string) => {
      * changed, once its section appears. */
     const stackDefaults = useMemo(
         () => ({
-            ...Object.fromEntries(
-                companions.map(({ name }) => [name, parameterDefaults(stacks.find((candidate) => candidate.name === name)?.parameters as StackParameterWithGroup[])])
-            ),
+            ...Object.fromEntries(companions.map(({ name }) => [name, parameterDefaults(stacks.find((candidate) => candidate.name === name)?.parameters)])),
             [stackName]: initialParameterValues,
         }),
         [companions, stacks, stackName, initialParameterValues]

@@ -31,7 +31,6 @@ export const DatabaseActionsMenu: FC<{ database: Database; refetch: () => void; 
             link.href = `${baseURL}/databases/external/${data.uuid}`
             link.target = '_blank'
             link.click()
-            link.remove()
         } catch (error) {
             console.error(error)
             alert.error(`Couldn't download ${fullName}`)

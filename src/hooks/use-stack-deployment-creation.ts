@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Deployment, SaveDeploymentRequest, SaveInstanceRequest, SavePresetRequest, StackCompanion } from '../types/index.ts'
 import { errorMessage } from '../utils/error-message.ts'
-import { buildBulkFromPresetRequest, buildEditPresetRequest, buildFromPresetRequest, creationParameters } from '../views/presets/preset-payloads.ts'
+import { buildBulkFromPresetRequest, buildEditPresetRequest, buildFromPresetRequest, creationParameters } from './preset-payloads.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 import { useStacks } from './use-stacks.ts'
 
@@ -20,6 +20,13 @@ type BulkDeployRequest = { prefix: string; count: number; group: string; descrip
  * returns. Deploying is what happens after that, asynchronously, and is watched on the details page
  * rather than here. */
 const SETTLED_PAUSE_MS = 800
+
+const deploymentFields = (values: AnyObject) => ({ name: values.name, group: values.groupName, description: values.description, ttl: values.ttl })
+
+const presetFailure = (error: unknown) => {
+    console.error(error)
+    return { error: errorMessage(error) }
+}
 
 /* Creates a deployment with an instance of the given stack plus any opted-in companion stacks and
  * deploys it. Only the listed parameters are sent for the main stack, so values entered in sections
@@ -79,13 +86,19 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         [executePost, navigate]
     )
 
+    const creationFailure = useCallback((error: unknown) => {
+        console.error(error)
+        setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
+        return { [FORM_ERROR]: errorMessage(error) }
+    }, [])
+
     const createDeployment = useCallback(
         async (values: AnyObject) => {
             const instances = buildInstances(values)
             setSteps(instances.map((instance) => ({ stackName: instance.stackName ?? '', status: 'pending' })))
 
             try {
-                const deploymentPayload: SaveDeploymentRequest = { name: values.name, group: values.groupName, description: values.description, ttl: values.ttl }
+                const deploymentPayload: SaveDeploymentRequest = deploymentFields(values)
                 const { data: deployment } = await executePost({ data: deploymentPayload })
 
                 for (const instance of instances) {
@@ -97,12 +110,10 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 await deployAndOpen(deployment.id)
                 return undefined
             } catch (error) {
-                console.error(error)
-                setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                return { [FORM_ERROR]: errorMessage(error) }
+                return creationFailure(error)
             }
         },
-        [executePost, buildInstances, setStatus, deployAndOpen]
+        [executePost, buildInstances, setStatus, deployAndOpen, creationFailure]
     )
 
     const createFromPreset = useCallback(
@@ -117,23 +128,20 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 await deployAndOpen(deployment.id)
                 return undefined
             } catch (error) {
-                console.error(error)
-                setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))
-                return { [FORM_ERROR]: errorMessage(error) }
+                return creationFailure(error)
             }
         },
-        [executePost, activeStacks, setStatus, getIncludedParameters, stackName, deployAndOpen]
+        [executePost, activeStacks, setStatus, getIncludedParameters, stackName, deployAndOpen, creationFailure]
     )
 
     const savePreset = useCallback(
         async (values: AnyObject): Promise<{ id?: number; error?: string }> => {
-            const data: SavePresetRequest = { name: values.name, group: values.groupName, description: values.description, ttl: values.ttl, instances: buildInstances(values) }
+            const data: SavePresetRequest = { ...deploymentFields(values), instances: buildInstances(values) }
             try {
                 const { data: preset } = await executePost({ url: '/presets', data })
                 return { id: preset.id }
             } catch (error) {
-                console.error(error)
-                return { error: errorMessage(error) }
+                return presetFailure(error)
             }
         },
         [executePost, buildInstances]
@@ -146,8 +154,7 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 await executePost({ url: `/presets/${source.id}`, method: 'PATCH', data })
                 return { id: source.id }
             } catch (error) {
-                console.error(error)
-                return { error: errorMessage(error) }
+                return presetFailure(error)
             }
         },
         [executePost, getIncludedParameters, stackName]
@@ -184,14 +191,8 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
                 return { deployments: data.deployments }
             } catch (error) {
                 console.error(error)
-                const serverMessage = isAxiosError(error) && typeof error.response?.data === 'string' ? error.response.data : undefined
                 const status = isAxiosError(error) ? error.response?.status : undefined
-                return {
-                    error: {
-                        message: serverMessage ?? (error instanceof Error ? error.message : "Couldn't start the bulk deploy"),
-                        refused: !!status && status >= 400 && status < 500,
-                    },
-                }
+                return { error: { message: errorMessage(error), refused: !!status && status >= 400 && status < 500 } }
             }
         },
         [executePost, buildInstances, getIncludedParameters, stackName]

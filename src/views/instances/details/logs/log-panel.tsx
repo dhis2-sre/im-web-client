@@ -196,30 +196,40 @@ export const LogPanel: FC<{
 
     // Input rather than InputField, which drops the accessible name; its types leave ariaLabel out
     const untyped: Record<string, unknown> = { ariaLabel: 'Filter lines' }
-    const label = paused && (status === 'live' || status === 'reconnecting') ? 'Paused' : STATUS_LABELS[status]
-    const tone = label === 'Paused' ? styles.paused : status === 'live' ? styles.live : ''
+    const isPaused = paused && (status === 'live' || status === 'reconnecting')
+    const label = isPaused ? 'Paused' : STATUS_LABELS[status]
+    const liveTone = status === 'live' ? styles.live : ''
+    const tone = isPaused ? styles.paused : liveTone
     const empty = entries.length === 0
     const earlier = Math.min(RENDER_LINES, visible.length - drawn.length)
-    const message =
-        status === 'waiting' ? (
-            <>
-                <b>{component.name} is still starting up.</b> Logs will appear here when the container starts.
-            </>
-        ) : status === 'error' ? (
-            <>
-                <b>Couldn&apos;t load the log</b> {error}
-                <Button
-                    small
-                    secondary
-                    onClick={(_, event) => {
-                        leaving(event)
-                        retry()
-                    }}
-                >
-                    Try again
-                </Button>
-            </>
-        ) : undefined
+    const statusMessage = () => {
+        if (status === 'waiting') {
+            return (
+                <>
+                    <b>{component.name} is still starting up.</b> Logs will appear here when the container starts.
+                </>
+            )
+        }
+        if (status === 'error') {
+            return (
+                <>
+                    <b>Couldn&apos;t load the log</b> {error}
+                    <Button
+                        small
+                        secondary
+                        onClick={(_, event) => {
+                            leaving(event)
+                            retry()
+                        }}
+                    >
+                        Try again
+                    </Button>
+                </>
+            )
+        }
+        return undefined
+    }
+    const message = statusMessage()
 
     return (
         <div className={styles.root} hidden={!active}>

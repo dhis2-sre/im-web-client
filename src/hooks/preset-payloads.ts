@@ -1,6 +1,6 @@
 import type { AnyObject } from 'final-form'
-import { buildEditPayload, type EditPayloadInput } from '../../hooks/build-edit-payload.ts'
-import type { BulkDeployFromPresetRequest, CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, StackParameterWithGroup } from '../../types/index.ts'
+import type { BulkDeployFromPresetRequest, CreateDeploymentFromPresetRequest, Deployment, EditPresetRequest, StackParameterWithGroup } from '../types/index.ts'
+import { buildEditPayload, type EditPayloadInput } from './build-edit-payload.ts'
 
 export const buildEditPresetRequest = ({ source, ...input }: EditPayloadInput & { source: Deployment }): EditPresetRequest => {
     const request: EditPresetRequest = buildEditPayload(input)

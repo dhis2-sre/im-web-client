@@ -1,4 +1,3 @@
-import type { BaseButtonProps } from '@dhis2/ui'
 import { Button, ButtonStrip, CheckboxField, InputField, Modal, ModalActions, ModalContent, ModalTitle, NoticeBox, SingleSelectField, SingleSelectOption } from '@dhis2/ui'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
@@ -11,7 +10,7 @@ import { errorMessage } from '../../utils/error-message.ts'
 
 type NewGroupModalProps = {
     onComplete: () => void
-    onCancel: BaseButtonProps['onClick']
+    onCancel: () => void
 }
 
 export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) => {
@@ -47,7 +46,7 @@ export const NewGroupModal: FC<NewGroupModalProps> = ({ onComplete, onCancel }) 
     const incomplete = !name.trim() || !namespace.trim() || !hostname.trim() || !description.trim()
 
     return (
-        <Modal onClose={loading ? undefined : () => onCancel({}, undefined satisfies React.MouseEvent<HTMLDivElement>)}>
+        <Modal onClose={loading ? undefined : onCancel}>
             <ModalTitle>New group</ModalTitle>
             <ModalContent className={modalStyles.fields}>
                 <InputField label="Name" value={name} onChange={({ value }) => setName(value)} required disabled={loading} />

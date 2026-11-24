@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import type { FC } from 'react'
 import { Drawer } from '../../../components/index.ts'
 import { useStack } from '../../../hooks/index.ts'
-import { DeploymentInstance, DeploymentInstanceComponents, StackWithParameterGroups } from '../../../types/index.ts'
+import { DeploymentInstance, DeploymentInstanceComponents } from '../../../types/index.ts'
 import { groupParametersByComponent } from '../../../utils/component-parameters.ts'
 import { ComponentParametersTable } from './component-parameters-table.tsx'
 import { ComponentsTable } from './components-table.tsx'
@@ -21,7 +21,7 @@ export const InstanceComponentsSection: FC<{
         () =>
             groupParametersByComponent(
                 instance?.parameters,
-                stack as StackWithParameterGroups | undefined,
+                stack,
                 instanceComponents.components.map((component) => component.name)
             ),
         [instance?.parameters, stack, instanceComponents.components]

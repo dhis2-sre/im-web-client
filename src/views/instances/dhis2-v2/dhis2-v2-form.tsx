@@ -3,6 +3,7 @@ import type { AnyObject } from 'final-form'
 import { useEffect, useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
 import { useForm, useFormState } from 'react-final-form'
+import { DHIS2_STACK } from '../../../constants.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import type { GroupedParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
@@ -22,9 +23,19 @@ import { DeploymentProgress } from './deployment-progress.tsx'
 import { ParameterCard } from './parameter-card.tsx'
 import { SectionCard } from './section-card.tsx'
 
-export const STACK_ID = 'dhis2-v2'
+export const STACK_ID = DHIS2_STACK
 
 const Conditional: FC<{ when?: StackParameterGroup['when']; children: ReactNode }> = ({ when, children }) => (useParameterCondition(STACK_ID, when) ? <>{children}</> : null)
+
+const LifetimeField: FC<{ deployment?: Deployment; isPreset: boolean }> = ({ deployment, isPreset }) => {
+    if (deployment) {
+        return <ExtendTtlSelect deployment={deployment} />
+    }
+    if (isPreset) {
+        return <TtlSelect label="Lifetime of created instances" helpText="" />
+    }
+    return <TtlSelect />
+}
 
 const SUBMIT_ERROR_TITLES = {
     'create': "Couldn't create the instance",
@@ -113,6 +124,9 @@ export const Dhis2V2Form: FC<{
         })
     }, [form, initialParameterValues, seedsFromDefaults])
 
+    const addressOnCreate = mode === 'create' ? ('form' as const) : undefined
+    const address = isEdit ? { name: deployment?.name } : addressOnCreate
+
     const ownName = useMemo(() => (mode === 'edit-preset' ? { name: deployment?.name, group: deployment?.groupName } : undefined), [mode, deployment])
 
     return (
@@ -129,13 +143,7 @@ export const Dhis2V2Form: FC<{
                             <InputField label="Group" value={deployment.groupName ?? ''} disabled />
                         </>
                     )}
-                    {isEdit && deployment ? (
-                        <ExtendTtlSelect deployment={deployment} />
-                    ) : isPreset ? (
-                        <TtlSelect label="Lifetime of created instances" helpText="" />
-                    ) : (
-                        <TtlSelect />
-                    )}
+                    <LifetimeField deployment={isEdit ? deployment : undefined} isPreset={isPreset} />
                     <DescriptionTextarea />
                 </div>
                 <PublicCheckbox />
@@ -169,7 +177,7 @@ export const Dhis2V2Form: FC<{
                     shared={{ sensitiveParameters, immutableReasons: isEdit ? immutableReasons : undefined, formMode }}
                     companionFormMode={companionFormMode}
                     showImmutable={isEdit}
-                    address={isEdit ? { name: deployment?.name } : mode === 'create' ? 'form' : undefined}
+                    address={address}
                 />
             )}
             {footer}

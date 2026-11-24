@@ -164,8 +164,9 @@ export const createLogConnection = (render: (update: (view: LogView) => LogView)
         level = undefined
         gotLine = false
         let first = true
-        // Any error after an abort is ours (an abort during the token refresh can surface as an axios error)
-        const current = () => my === gen && !ctl.signal.aborted
+        /* stop() moves the generation on before it aborts, so whatever an abort surfaces as (during the token
+         * refresh it can be an axios error) arrives after this connection stopped being the current one. */
+        const current = () => my === gen
 
         const onChunk = (chunk: string) => {
             if (!current()) {

@@ -32,7 +32,7 @@ Prettier and the linters enforce most of this. Follow it while writing so the fi
 - At most 3 parameters. Pass an object beyond that.
 - Always use braces on `if` and loops.
 - Import paths include the file extension (`'./thing.ts'`, `'./thing.tsx'`). Use `import type` for type-only imports.
-- Imports are sorted alphabetically by path, with no blank lines between them: packages first, then `../` paths, then `./` paths. **Get this right by hand**: eslint's `import/order` rule crashes under ESLint 10 instead of reporting a misordered import, so the error you get is a stack trace from `import/order`, not a lint message.
+- Imports are sorted alphabetically by path, with no blank lines between them: packages first, then `../` paths, then `./` paths. eslint's `import/order` rule enforces it, and `yarn format` fixes it.
 - File and folder names are kebab-case (enforced by ls-lint): `deployment-row.tsx`, `deployment-row.module.css`, `build-edit-payload.test.ts`.
 - Comments explain why, not what, in full sentences. Match the comment density of the file you're in.
 

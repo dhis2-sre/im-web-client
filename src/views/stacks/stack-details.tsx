@@ -59,7 +59,7 @@ const ParametersTable: FC<{ parameters: StackParameterWithGroup[] }> = ({ parame
 export const StackDetails = () => {
     const { name } = useParams()
     const { stack, loading, error } = useStack(name ?? '')
-    const sections = useMemo(() => groupStackParameters(stack as StackWithParameterGroups | undefined), [stack])
+    const sections = useMemo(() => groupStackParameters(stack), [stack])
 
     let pageError: PageError | undefined
     if (error) {
@@ -76,7 +76,7 @@ export const StackDetails = () => {
             band
             loading={loading}
             error={pageError}
-            summary={stack && <MetaLine items={stackFacts(stack as StackWithParameterGroups)} />}
+            summary={stack && <MetaLine items={stackFacts(stack)} />}
         >
             {/* A stack that declares no groups has one flat list of parameters, which needs no section
              * of its own. */}

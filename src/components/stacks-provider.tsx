@@ -2,10 +2,10 @@ import { FC, useMemo } from 'react'
 import { Outlet } from 'react-router-dom'
 import { StacksContext } from '../contexts/index.ts'
 import { useAuthAxios } from '../hooks/use-auth-axios.ts'
-import type { Stack } from '../types/index.ts'
+import type { StackWithParameterGroups } from '../types/index.ts'
 
 export const StacksProvider: FC = () => {
-    const [{ data, loading, error }] = useAuthAxios<Stack[]>('/stacks')
+    const [{ data, loading, error }] = useAuthAxios<StackWithParameterGroups[]>('/stacks')
 
     const value = useMemo(
         () => ({

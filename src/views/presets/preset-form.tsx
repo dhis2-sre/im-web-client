@@ -7,6 +7,7 @@ import { Form, useFormState } from 'react-final-form'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Page, useActionAlert } from '../../components/index.ts'
 import { useAuthAxios, useUncopyable } from '../../hooks/index.ts'
+import { missingUncopyable } from '../../hooks/preset-payloads.ts'
 import { useGroupedStackParameters } from '../../hooks/use-grouped-stack-parameters.ts'
 import { useStackDeploymentCreation } from '../../hooks/use-stack-deployment-creation.ts'
 import type { Deployment } from '../../types/index.ts'
@@ -17,9 +18,18 @@ import { presetFormValues } from '../instances/dhis2-v2/preset-values.ts'
 import { DEFAULT_TTL_SECONDS } from '../instances/fields/ttl-presets.ts'
 import styles from '../instances/styles.module.css'
 import { CopyNotice } from './copy-notice.tsx'
-import { missingUncopyable } from './preset-payloads.ts'
 
 type Kind = 'new' | 'edit' | 'duplicate' | 'instance'
+
+const kindOf = ({ id, from, instanceId }: { id?: string; from: string | null; instanceId: string | null }): Kind => {
+    if (id) {
+        return 'edit'
+    }
+    if (from) {
+        return 'duplicate'
+    }
+    return instanceId ? 'instance' : 'new'
+}
 
 const NEW_VALUES = { ttl: DEFAULT_TTL_SECONDS }
 
@@ -50,7 +60,7 @@ export const PresetForm: FC = () => {
     const [searchParams] = useSearchParams()
     const from = searchParams.get('from')
     const instanceId = searchParams.get('instance')
-    const kind: Kind = id ? 'edit' : from ? 'duplicate' : instanceId ? 'instance' : 'new'
+    const kind = kindOf({ id, from, instanceId })
     const sourceUrl = { new: undefined, edit: `/presets/${id}`, duplicate: `/presets/${from}`, instance: `/deployments/${instanceId}` }[kind]
     const [{ data: source, error }] = useAuthAxios<Deployment>({ url: sourceUrl }, { manual: !sourceUrl, useCache: false })
 

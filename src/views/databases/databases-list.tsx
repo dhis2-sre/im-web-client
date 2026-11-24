@@ -149,14 +149,27 @@ const treeView = (
     return { crumbs, rows }
 }
 
+/* Storage can be unavailable (blocked site data, some private windows); the list then opens flat. */
+const readViewMode = () => {
+    try {
+        return localStorage.getItem(VIEW_MODE_KEY) === 'hierarchy'
+    } catch {
+        return false
+    }
+}
+
 export const DatabasesList: FC = () => {
     const { params, groups, groupNames, group, setGroup, clearFilters, total, error, loading, refetch, onlyMine, setOnlyMine, searchTerm, setSearchTerm } = useDatabases()
-    const [tree, setTree] = useState<boolean>(() => localStorage.getItem(VIEW_MODE_KEY) === 'hierarchy')
+    const [tree, setTree] = useState<boolean>(readViewMode)
     const refresh = () => void refetch()
 
     const toggleTree = (next: boolean) => {
         setTree(next)
-        localStorage.setItem(VIEW_MODE_KEY, next ? 'hierarchy' : 'flat')
+        try {
+            localStorage.setItem(VIEW_MODE_KEY, next ? 'hierarchy' : 'flat')
+        } catch {
+            // The choice then lasts only until reload, which is no reason to fail the toggle.
+        }
     }
 
     const treeState = tree ? treeView(groups, { group, path: params.get('path') ?? '', query: searchTerm }) : undefined

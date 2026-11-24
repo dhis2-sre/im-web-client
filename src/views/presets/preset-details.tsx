@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ItemPanel, ItemPanelList, MetaFact, MetaLine, MomentFromNow, Page } from '../../components/index.ts'
 import { useAuthAxios, useStack } from '../../hooks/index.ts'
-import type { Deployment, DeploymentInstance, StackWithParameterGroups } from '../../types/index.ts'
+import type { Deployment, DeploymentInstance } from '../../types/index.ts'
 import { groupParametersByComponent } from '../../utils/component-parameters.ts'
 import { ComponentParametersTable } from '../instances/details/component-parameters-table.tsx'
 import { PresetActions } from './preset-actions.tsx'
@@ -12,7 +12,7 @@ import { presetMainInstance, presetSummary } from './preset-summary.ts'
 
 const PresetStack: FC<{ instance: DeploymentInstance }> = ({ instance }) => {
     const { stack } = useStack(instance.stackName ?? '')
-    const { leftover } = useMemo(() => groupParametersByComponent(instance.parameters, stack as StackWithParameterGroups | undefined, []), [instance.parameters, stack])
+    const { leftover } = useMemo(() => groupParametersByComponent(instance.parameters, stack, []), [instance.parameters, stack])
 
     return <ItemPanel title={instance.stackName ?? 'Stack'}>{leftover.length > 0 && <ComponentParametersTable parameters={leftover} />}</ItemPanel>
 }

@@ -1,7 +1,7 @@
-import { useAlert } from '@dhis2/app-service-alerts'
 import { IconChevronDown16, IconLogOut16 } from '@dhis2/ui'
 import { type FC, useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../hooks/index.ts'
+import { useActionAlert } from './actions/use-action-alert.ts'
 import { IDENTICON_SIZE, identicon } from './identicon.ts'
 import styles from './user-menu.module.css'
 
@@ -17,14 +17,10 @@ const Identicon: FC<{ email: string }> = ({ email }) => {
     )
 }
 
-/* useAlert memoises show on these arguments, so they keep their identity across renders. */
-const logoutErrorMessage = ({ message }: { message: string }) => `Couldn't log out: ${message}`
-const CRITICAL_OPTIONS = { critical: true }
-
 /* A user is only an email and a login here, so the account row holds nothing but the way out. */
 export const UserMenu: FC<{ email: string }> = ({ email }) => {
     const { logout } = useAuth()
-    const { show: showError } = useAlert(logoutErrorMessage, CRITICAL_OPTIONS)
+    const alert = useActionAlert()
     const [open, setOpen] = useState(false)
     const wrapper = useRef<HTMLDivElement>(null)
     const trigger = useRef<HTMLButtonElement>(null)
@@ -62,9 +58,9 @@ export const UserMenu: FC<{ email: string }> = ({ email }) => {
         } catch (error) {
             console.error(error)
             const message = error?.response?.data ?? error?.message ?? 'no response from the server'
-            showError({ message })
+            alert.error(`Couldn't log out: ${message}`)
         }
-    }, [logout, showError])
+    }, [logout, alert])
 
     return (
         <div ref={wrapper} className={styles.wrapper}>

@@ -5,7 +5,7 @@ import { expect, Page } from '@playwright/test'
  * down therefore means waiting the deploy out, so a test that is not itself about the delete still
  * leaves nothing behind. */
 export const deleteDeployment = async (page: Page, name: string, deployTimeout = 15 * 60 * 1000) => {
-    await page.getByRole('link', { name: 'Instances' }).click()
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Instances' }).click()
     await expect(page.getByRole('cell', { name, exact: true })).toBeVisible({ timeout: 60000 })
 
     // The open menu follows the list as it refetches, so it can stay open while the deploy lands.

@@ -1,5 +1,4 @@
 import { Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
-import type { BaseButtonProps } from '@dhis2/ui'
 import type { FC } from 'react'
 
 type ConfirmationModalProps = {
@@ -11,32 +10,23 @@ type ConfirmationModalProps = {
     /* The way out, when "Cancel" would read as cancelling something else, such as Keep editing. */
     cancelLabel?: string
     destructive?: boolean
-    onConfirm: BaseButtonProps['onClick']
-    onCancel: BaseButtonProps['onClick']
+    onConfirm: () => void
+    onCancel: () => void
 }
 
-export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title, confirmLabel, cancelLabel = 'Cancel', destructive, onConfirm, onCancel }) => {
-    // Modal's onClose is called with no args on Escape, and with ({}, event) on backdrop click.
-    // Wrap to provide the (_, event) shape that onCancel expects.
-    const handleClose = () => {
-        const noop = () => {}
-        onCancel?.({}, { stopPropagation: noop, preventDefault: noop } as unknown as React.MouseEvent<HTMLButtonElement>)
-    }
-
-    return (
-        <Modal small onClose={handleClose}>
-            <ModalTitle>{title}</ModalTitle>
-            <ModalContent>{children}</ModalContent>
-            <ModalActions>
-                <ButtonStrip end>
-                    <Button onClick={onCancel} secondary>
-                        {cancelLabel}
-                    </Button>
-                    <Button primary={!destructive} destructive={destructive} onClick={onConfirm}>
-                        {confirmLabel}
-                    </Button>
-                </ButtonStrip>
-            </ModalActions>
-        </Modal>
-    )
-}
+export const ConfirmationModal: FC<ConfirmationModalProps> = ({ children, title, confirmLabel, cancelLabel = 'Cancel', destructive, onConfirm, onCancel }) => (
+    <Modal small onClose={onCancel}>
+        <ModalTitle>{title}</ModalTitle>
+        <ModalContent>{children}</ModalContent>
+        <ModalActions>
+            <ButtonStrip end>
+                <Button onClick={onCancel} secondary>
+                    {cancelLabel}
+                </Button>
+                <Button primary={!destructive} destructive={destructive} onClick={onConfirm}>
+                    {confirmLabel}
+                </Button>
+            </ButtonStrip>
+        </ModalActions>
+    </Modal>
+)

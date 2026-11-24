@@ -1,5 +1,6 @@
 import {
     appendCapped,
+    createMatcher,
     MAX_MARKS,
     createLineSplitter,
     dropOverlap,
@@ -8,7 +9,7 @@ import {
     reconnectDivider,
     splitMatches,
     toEntries,
-    visibleEntries,
+    type LevelFilter,
     type LogEntry,
 } from './log-lines.ts'
 
@@ -125,24 +126,29 @@ describe('dropOverlap', () => {
     })
 })
 
-describe('visibleEntries', () => {
-    it('visibleEntries filters literally and case-insensitively', () => {
+const matching = (entries: LogEntry[], query: string, level: LevelFilter) => {
+    const matcher = createMatcher(query, level)
+    return matcher ? entries.filter(matcher) : entries
+}
+
+describe('createMatcher', () => {
+    it('createMatcher filters literally and case-insensitively', () => {
         const entries = lines(['xa.bx', 'aXb'])
-        expect(visibleEntries(entries, 'A.B', 'all').map((e) => e.text)).toEqual(['xa.bx'])
-        expect(() => visibleEntries(entries, '(', 'all')).not.toThrow()
+        expect(matching(entries, 'A.B', 'all').map((e) => e.text)).toEqual(['xa.bx'])
+        expect(() => matching(entries, '(', 'all')).not.toThrow()
     })
 
-    it('visibleEntries applies the level chip', () => {
+    it('createMatcher applies the level chip', () => {
         const entries: LogEntry[] = [
             { id: 0, kind: 'line', text: 'i', level: undefined },
             { id: 1, kind: 'line', text: 'w', level: 'warn' },
             { id: 2, kind: 'line', text: 'e', level: 'error' },
             { id: 3, kind: 'divider', text: 'd' },
         ]
-        expect(visibleEntries(entries, '', 'all')).toHaveLength(4)
-        expect(visibleEntries(entries, '', 'warn').map((e) => e.text)).toEqual(['w', 'e'])
-        expect(visibleEntries(entries, '', 'error').map((e) => e.text)).toEqual(['e'])
-        expect(visibleEntries(entries, 'd', 'all')).toEqual([])
+        expect(matching(entries, '', 'all')).toHaveLength(4)
+        expect(matching(entries, '', 'warn').map((e) => e.text)).toEqual(['w', 'e'])
+        expect(matching(entries, '', 'error').map((e) => e.text)).toEqual(['e'])
+        expect(matching(entries, 'd', 'all')).toEqual([])
     })
 })
 

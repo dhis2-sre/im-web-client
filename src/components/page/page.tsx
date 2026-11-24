@@ -31,7 +31,7 @@ type PageHeaderProps = {
 /* The parent link sits outside the heading, so the heading's accessible name is the entity alone.
  * On a band the name and actions stay pinned to the top while the page scrolls, and the rest of the
  * band slides away under them. */
-export const PageHeader: FC<PageHeaderProps> = ({ title, parent, status, description, actions, summary, band }) => {
+const PageHeader: FC<PageHeaderProps> = ({ title, parent, status, description, actions, summary, band }) => {
     /* A name that arrives after the page opened fades in, so it reads as the page finishing loading.
      * A title that is there from the start just shows. */
     const [arrives] = useState(title === undefined)

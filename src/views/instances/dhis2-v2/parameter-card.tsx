@@ -45,7 +45,6 @@ export type ParameterCardProps = {
     formMode?: 'create' | 'update'
     /* Parameters rendered elsewhere, such as the switches the add-on tiles stand for. */
     hiddenParameters?: Set<string>
-    id?: string
     actions?: ReactNode
 }
 
@@ -58,7 +57,6 @@ export const ParameterCard: FC<ParameterCardProps> = ({
     immutableReasons = {},
     formMode = 'create',
     hiddenParameters,
-    id,
     actions,
 }) => {
     /* The choice an inset depends on is shown above it, whatever kind of parameter it is. */
@@ -154,7 +152,7 @@ export const ParameterCard: FC<ParameterCardProps> = ({
     }
 
     return (
-        <SectionCard title={title} id={id} actions={actions} footer={footer}>
+        <SectionCard title={title} actions={actions} footer={footer}>
             {primary.map(({ group, parameters }) => withInsets(group.name, several ? subsection(group.title, parameters) : fields(parameters), parameters))}
             {insets.filter((inset) => !placed.has(inset)).map(renderInset)}
         </SectionCard>
