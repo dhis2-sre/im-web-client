@@ -26,6 +26,17 @@ export const STACK_ID = 'dhis2-v2'
 
 const Conditional: FC<{ when?: StackParameterGroup['when']; children: ReactNode }> = ({ when, children }) => (useParameterCondition(STACK_ID, when) ? <>{children}</> : null)
 
+/* An instance being edited extends the lifetime it has; a preset sets the lifetime of what it creates. */
+const LifetimeField: FC<{ deployment?: Deployment; isPreset: boolean }> = ({ deployment, isPreset }) => {
+    if (deployment) {
+        return <ExtendTtlSelect deployment={deployment} />
+    }
+    if (isPreset) {
+        return <TtlSelect label="Lifetime of created instances" helpText="" />
+    }
+    return <TtlSelect />
+}
+
 const SUBMIT_ERROR_TITLES = {
     'create': "Couldn't create the instance",
     'edit': "Couldn't save the changes",
@@ -113,6 +124,10 @@ export const Dhis2V2Form: FC<{
         })
     }, [form, initialParameterValues, seedsFromDefaults])
 
+    /* Where a component will be reached: under the instance's stored name, under the name being typed, or nowhere for a preset. */
+    const addressOnCreate = mode === 'create' ? ('form' as const) : undefined
+    const address = isEdit ? { name: deployment?.name } : addressOnCreate
+
     const ownName = useMemo(() => (mode === 'edit-preset' ? { name: deployment?.name, group: deployment?.groupName } : undefined), [mode, deployment])
 
     return (
@@ -129,13 +144,7 @@ export const Dhis2V2Form: FC<{
                             <InputField label="Group" value={deployment.groupName ?? ''} disabled />
                         </>
                     )}
-                    {isEdit && deployment ? (
-                        <ExtendTtlSelect deployment={deployment} />
-                    ) : isPreset ? (
-                        <TtlSelect label="Lifetime of created instances" helpText="" />
-                    ) : (
-                        <TtlSelect />
-                    )}
+                    <LifetimeField deployment={isEdit ? deployment : undefined} isPreset={isPreset} />
                     <DescriptionTextarea />
                 </div>
                 <PublicCheckbox />
@@ -169,7 +178,7 @@ export const Dhis2V2Form: FC<{
                     shared={{ sensitiveParameters, immutableReasons: isEdit ? immutableReasons : undefined, formMode }}
                     companionFormMode={companionFormMode}
                     showImmutable={isEdit}
-                    address={isEdit ? { name: deployment?.name } : mode === 'create' ? 'form' : undefined}
+                    address={address}
                 />
             )}
             {footer}

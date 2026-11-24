@@ -21,6 +21,16 @@ import { missingUncopyable } from './preset-payloads.ts'
 
 type Kind = 'new' | 'edit' | 'duplicate' | 'instance'
 
+const kindOf = ({ id, from, instanceId }: { id?: string; from: string | null; instanceId: string | null }): Kind => {
+    if (id) {
+        return 'edit'
+    }
+    if (from) {
+        return 'duplicate'
+    }
+    return instanceId ? 'instance' : 'new'
+}
+
 const NEW_VALUES = { ttl: DEFAULT_TTL_SECONDS }
 
 /* Saving before the stack parameters load would store a preset without them. */
@@ -50,7 +60,7 @@ export const PresetForm: FC = () => {
     const [searchParams] = useSearchParams()
     const from = searchParams.get('from')
     const instanceId = searchParams.get('instance')
-    const kind: Kind = id ? 'edit' : from ? 'duplicate' : instanceId ? 'instance' : 'new'
+    const kind = kindOf({ id, from, instanceId })
     const sourceUrl = { new: undefined, edit: `/presets/${id}`, duplicate: `/presets/${from}`, instance: `/deployments/${instanceId}` }[kind]
     const [{ data: source, error }] = useAuthAxios<Deployment>({ url: sourceUrl }, { manual: !sourceUrl, useCache: false })
 
