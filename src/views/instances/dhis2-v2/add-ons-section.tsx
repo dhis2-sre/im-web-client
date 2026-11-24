@@ -77,9 +77,26 @@ const CompanionCard: FC<{
     )
 }
 
-const cardId = (addOn: AddOn) => `add-on-${addOn.parameter.toLowerCase()}`
+/* Whose name an add-on's own path hangs off: the instance being edited, the one this form is creating (read
+ * from its Name field), or none yet, as for a preset. */
+export type InstanceAddress = { name?: string } | 'form' | undefined
 
-const hasCard = (addOn: AddOn) => !!addOn.companion || addOn.groups.length > 0
+const FormName: FC<{ children: (name?: string) => ReactNode }> = ({ children }) => {
+    const { input } = useField('name', { subscription: { value: true } })
+    return <>{children(input.value || undefined)}</>
+}
+
+/* Where an add-on with nothing to set is served, with the instance's name swapped in once there is one. */
+const AddressNote: FC<{ pathSuffix: string; address: InstanceAddress }> = ({ pathSuffix, address }) => {
+    const note = (name?: string) => (
+        <p className={styles.note}>
+            Available at <code className={styles.code}>{`/${name ?? 'instance-name'}${pathSuffix}`}</code>
+        </p>
+    )
+    return address === 'form' ? <FormName>{note}</FormName> : note(address?.name)
+}
+
+const cardId = (addOn: AddOn) => `add-on-${addOn.parameter.toLowerCase()}`
 
 const Tile: FC<{ stackId: string; addOn: AddOn; locked?: string; onAdd: () => void }> = ({ stackId, addOn, locked, onAdd }) => {
     const { input } = useField(`${stackId}.${addOn.parameter}`, { subscription: { value: true } })
@@ -92,16 +109,9 @@ const Tile: FC<{ stackId: string; addOn: AddOn; locked?: string; onAdd: () => vo
                 {added ? (
                     <>
                         <span className={styles.addedLabel}>Added</span>
-                        {/* Shown on hover or focus, for someone back at the tiles who changed their mind. Always
-                            shown for an add-on with no card, where the tile is the only place to remove it. */}
+                        {/* Shown on hover or focus, for someone back at the tiles who changed their mind. */}
                         {!locked && (
-                            <Button
-                                small
-                                secondary
-                                className={cx({ [styles.tileRemove]: hasCard(addOn) })}
-                                aria-label={`Remove ${addOn.name}`}
-                                onClick={() => input.onChange('false')}
-                            >
+                            <Button small secondary className={styles.tileRemove} aria-label={`Remove ${addOn.name}`} onClick={() => input.onChange('false')}>
                                 Remove
                             </Button>
                         )}
@@ -134,7 +144,8 @@ const AddOnCard: FC<{
     showImmutable: boolean
     justAdded: boolean
     onScrolled: () => void
-}> = ({ stackId, addOn, shared, companionFormMode, showImmutable, justAdded, onScrolled }) => {
+    address: InstanceAddress
+}> = ({ stackId, addOn, shared, companionFormMode, showImmutable, justAdded, onScrolled, address }) => {
     const { input } = useField(`${stackId}.${addOn.parameter}`, { subscription: { value: true } })
     const ref = useRef<HTMLDivElement>(null)
     const added = input.value === 'true'
@@ -148,7 +159,7 @@ const AddOnCard: FC<{
         }
     }, [added, justAdded, onScrolled])
 
-    if (!added || !hasCard(addOn)) {
+    if (!added) {
         return null
     }
     const locked = shared.formMode === 'update' ? shared.immutableReasons?.[addOn.parameter] : undefined
@@ -159,34 +170,41 @@ const AddOnCard: FC<{
     )
     const id = cardId(addOn)
 
-    return (
-        <div ref={ref}>
-            {addOn.companion ? (
-                <CompanionCard
-                    offeringStackId={stackId}
-                    companion={addOn.companion}
-                    title={addOn.name}
-                    formMode={companionFormMode}
-                    showImmutable={showImmutable}
-                    id={id}
-                    actions={actions}
-                />
-            ) : (
-                <ParameterCard stackId={stackId} title={addOn.name} id={id} actions={actions} groups={addOn.groups} {...shared} />
-            )}
-        </div>
-    )
+    let card
+    if (addOn.companion) {
+        card = (
+            <CompanionCard
+                offeringStackId={stackId}
+                companion={addOn.companion}
+                title={addOn.name}
+                formMode={companionFormMode}
+                showImmutable={showImmutable}
+                id={id}
+                actions={actions}
+            />
+        )
+    } else if (addOn.groups.length > 0) {
+        card = <ParameterCard stackId={stackId} title={addOn.name} id={id} actions={actions} groups={addOn.groups} {...shared} />
+    } else {
+        card = (
+            <SectionCard title={addOn.name} id={id} actions={actions}>
+                {addOn.pathSuffix ? <AddressNote pathSuffix={addOn.pathSuffix} address={address} /> : <p className={styles.note}>Nothing to set.</p>}
+            </SectionCard>
+        )
+    }
+    return <div ref={ref}>{card}</div>
 }
 
-/* The add-ons: a tile for each, then a card for each one added that has something to set. A tile stays where
- * it is when its add-on is added, so the row doesn't shift under the pointer; the card opens below the tiles. */
+/* The add-ons: a tile for each, then a card for each one added. A tile stays where it is when its add-on is
+ * added, so the row doesn't shift under the pointer; the card opens below the tiles. */
 export const AddOnsSection: FC<{
     stackId: Dhis2StackName
     addOns: AddOn[]
     shared: Shared
     companionFormMode: (companionName: string) => 'create' | 'update'
     showImmutable: boolean
-}> = ({ stackId, addOns, shared, companionFormMode, showImmutable }) => {
+    address: InstanceAddress
+}> = ({ stackId, addOns, shared, companionFormMode, showImmutable, address }) => {
     const [justAdded, setJustAdded] = useState<string>()
     const clearJustAdded = useCallback(() => setJustAdded(undefined), [])
     if (addOns.length === 0) {
@@ -219,6 +237,7 @@ export const AddOnsSection: FC<{
                     showImmutable={showImmutable}
                     justAdded={justAdded === addOn.parameter}
                     onScrolled={clearJustAdded}
+                    address={address}
                 />
             ))}
         </>

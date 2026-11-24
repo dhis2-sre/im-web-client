@@ -151,6 +151,23 @@
     padding: var(--spacers-dp16) 0 var(--spacers-dp12);
 }
 
+.note {
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
+}
+
+/* Inline code, as chat apps set it: a literal value in a small light box. */
+.code {
+    padding: 1px var(--spacers-dp4);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 3px;
+    background: var(--colors-grey100);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: inherit;
+}
+
 /* Add-ons: a heading on the page, a row of tiles to add them, then a card for each added one. */
 .addOnsHeading {
     display: flex;

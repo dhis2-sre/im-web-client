@@ -21,9 +21,10 @@ const dorisBe: GroupedParameters = { group: { name: 'doris-be', title: 'Doris ba
 const featureX: GroupedParameters = { group: { name: 'x', title: 'Feature X', when: { parameter: 'ENABLE_FEATURE_X', equals: 'true' } }, parameters: [] }
 const chap = { name: 'chap', when: { parameter: 'DEPLOY_CHAP', equals: 'true' } }
 const sidecar = { name: 'sidecar', when: { parameter: 'ENABLE_SIDECAR', equals: 'true' } }
+const endpoints = [{ pathSuffix: '' }, { pathSuffix: '-glowroot', when: { parameter: 'DEPLOY_GLOWROOT', equals: 'true' } }]
 
 describe('findAddOns', () => {
-    const addOns = findAddOns([core, minio, dorisFe, dorisBe, featureX], [chap, sidecar])
+    const addOns = findAddOns([core, minio, dorisFe, dorisBe, featureX], [chap, sidecar], endpoints)
     const byParameter = Object.fromEntries(addOns.map((addOn) => [addOn.parameter, addOn]))
 
     it('finds the parameters the stack marks as add-ons, in the stack order', () => {
@@ -47,6 +48,11 @@ describe('findAddOns', () => {
 
     it('names and describes an add-on as the stack does', () => {
         expect(byParameter.ENABLE_DORIS).toMatchObject({ name: 'Doris', description: 'A separate database for analytics.' })
+    })
+
+    it('carries the path of the endpoint an add-on switches on', () => {
+        expect(byParameter.DEPLOY_GLOWROOT.pathSuffix).toBe('-glowroot')
+        expect(byParameter.DEPLOY_CHAP.pathSuffix).toBeUndefined()
     })
 
     it('names an add-on the stack gives no display name after its parameter', () => {

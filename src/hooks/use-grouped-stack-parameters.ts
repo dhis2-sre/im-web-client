@@ -65,6 +65,7 @@ export const useGroupedStackParameters = (stackName: string) => {
     )
 
     const companions = useMemo(() => stack?.companions ?? [], [stack])
+    const endpoints = useMemo(() => stack?.endpoints ?? [], [stack])
 
     /* Every stack's defaults, the companions' as well, keyed as the form keeps them. A form filled from a preset
      * lays the preset over these, so a companion it turns on starts complete rather than being seeded, and so
@@ -91,5 +92,5 @@ export const useGroupedStackParameters = (stackName: string) => {
         [groups, stackName]
     )
 
-    return { loading, error, groups, companions, initialParameterValues, stackDefaults, sensitiveParameters, immutableReasons, getIncludedParameters }
+    return { loading, error, groups, companions, endpoints, initialParameterValues, stackDefaults, sensitiveParameters, immutableReasons, getIncludedParameters }
 }

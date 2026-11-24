@@ -25,8 +25,14 @@ export type StackCompanion = {
     when?: StackParameterCondition
 }
 
+export type StackEndpoint = {
+    pathSuffix: string
+    when?: StackParameterCondition
+}
+
 export type StackWithParameterGroups = Omit<Stack, 'parameters'> & {
     parameterGroups?: StackParameterGroup[]
     parameters?: StackParameterWithGroup[]
     companions?: StackCompanion[]
+    endpoints?: StackEndpoint[]
 }

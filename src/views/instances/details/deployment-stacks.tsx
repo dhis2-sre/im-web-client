@@ -1,10 +1,10 @@
 import type { FC } from 'react'
 import { deployStatus, ItemPanel, ItemPanelList, NonIdealState, Panel } from '../../../components/index.ts'
-import { VIEWABLE_INSTANCE_TYPES } from '../../../constants.ts'
 import type { LiveComponents } from '../../../hooks/use-live-components.ts'
+import { useStacks } from '../../../hooks/use-stacks.ts'
 import { Deployment, DeploymentInstance, DeploymentInstanceDeployState } from '../../../types/index.ts'
+import { endpointUrl, ownEndpoint } from '../../../utils/stack-endpoints.ts'
 import { deploymentStatus } from '../list/component-health.ts'
-import { stackUrl } from '../list/open-button.tsx'
 import { InstanceComponentsSection } from './instance-components-section.tsx'
 import { InstanceUrl } from './instance-url.tsx'
 
@@ -15,6 +15,7 @@ import { InstanceUrl } from './instance-url.tsx'
  * A stack that serves a page gets its own address; what acts on the whole deployment is in the page header. */
 export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComponents }> = ({ deployment, components }) => {
     const { instances, loading, error, refetch } = components
+    const { stacks: definitions } = useStacks()
     const stacks = (deployment.instances ?? []) as (DeploymentInstance & DeploymentInstanceDeployState)[]
 
     if (stacks.length === 0) {
@@ -29,15 +30,14 @@ export const DeploymentStacks: FC<{ deployment: Deployment; components: LiveComp
         <ItemPanelList title="Stacks" hideTitle>
             {stacks.map((stack) => {
                 const live = instances?.find((candidate) => candidate.instanceId === stack.id)
+                const endpoint = ownEndpoint(definitions.find((definition) => definition.name === stack.stackName))
                 return (
                     <ItemPanel
                         key={stack.id}
                         title={stack.stackName}
                         status={deploymentStatus([stack], live && [live]) ?? deployStatus(stack)}
                         meta={{
-                            url: VIEWABLE_INSTANCE_TYPES.includes(stack.stackName) && deployment.group?.hostname && (
-                                <InstanceUrl url={stackUrl(deployment.group, stack.name, stack.stackName)} />
-                            ),
+                            url: endpoint && deployment.group?.hostname && <InstanceUrl url={endpointUrl(deployment.group, stack.name, endpoint)} />,
                         }}
                     >
                         {live ? (

@@ -51,7 +51,7 @@ export const Dhis2V2Form: FC<{
     const isEdit = mode === 'edit'
     const isPreset = mode === 'new-preset' || mode === 'edit-preset'
     const formMode = deployment ? 'update' : 'create'
-    const { groups, companions, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
+    const { groups, companions, endpoints, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(STACK_ID)
     const form = useForm()
     const { submitError, submitting, modifiedSinceLastSubmit, pristine, invalid, errors } = useFormState({
         subscription: {
@@ -75,7 +75,7 @@ export const Dhis2V2Form: FC<{
 
     /* Add-ons are offered as tiles and get a card of their own once added, so their switches and the
      * sections they gate leave the cards below. */
-    const addOns = useMemo(() => findAddOns(groups, companions), [groups, companions])
+    const addOns = useMemo(() => findAddOns(groups, companions, endpoints), [groups, companions, endpoints])
     const addOnParameters = useMemo(() => new Set(addOns.map(({ parameter }) => parameter)), [addOns])
 
     /* A conditional group shows inside the card of the group that owns its enabling parameter, e.g. the MinIO
@@ -169,6 +169,7 @@ export const Dhis2V2Form: FC<{
                     shared={{ sensitiveParameters, immutableReasons: isEdit ? immutableReasons : undefined, formMode }}
                     companionFormMode={companionFormMode}
                     showImmutable={isEdit}
+                    address={isEdit ? { name: deployment?.name } : mode === 'create' ? 'form' : undefined}
                 />
             )}
             {footer}

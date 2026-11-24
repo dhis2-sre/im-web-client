@@ -7,11 +7,11 @@ import { STACK_NAMES } from '../../../constants.ts'
 import { useDeploymentDetails, useLiveComponents } from '../../../hooks/index.ts'
 import { Deployment, DeploymentInstanceDeployState } from '../../../types/index.ts'
 import { DEPLOYING_REFUSAL, isDeploying } from '../../../utils/deploy-state.ts'
+import { endpointUrl } from '../../../utils/stack-endpoints.ts'
 import { deploymentStatus } from '../list/component-health.ts'
 import { ExpiresCell } from '../list/expires-cell.tsx'
 import { InstanceActionsMenu } from '../list/instance-actions-menu.tsx'
 import { expiresAt } from '../list/instance-filter-rules.ts'
-import { stackUrl } from '../list/open-button.tsx'
 import { DeploymentStacks } from './deployment-stacks.tsx'
 import { ExtendLifetimeModal } from './extend-lifetime-modal.tsx'
 import { InstanceUrl } from './instance-url.tsx'
@@ -35,7 +35,7 @@ const detailItems = (deployment: Deployment): Record<string, ReactNode> => {
         group: <MetaFact icon={<IconFolder16 />}>{deployment.groupName}</MetaFact>,
         url: dhis2 && deployment.group?.hostname && (
             <MetaFact icon={<IconLink16 />}>
-                <InstanceUrl url={stackUrl(deployment.group, dhis2.name)} />
+                <InstanceUrl url={endpointUrl(deployment.group, dhis2.name)} />
             </MetaFact>
         ),
     }
