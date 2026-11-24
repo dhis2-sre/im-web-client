@@ -21,7 +21,6 @@ const ICONS: Record<StatusTone, FC> = {
     progress: IconSync16,
 }
 
-export const toneTagProps = (tone: StatusTone) => TAG_PROPS[tone]
 export const ToneIcon: FC<{ tone: StatusTone }> = ({ tone }) => {
     const Icon = ICONS[tone]
     return <Icon />

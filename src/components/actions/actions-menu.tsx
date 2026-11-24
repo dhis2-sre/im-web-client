@@ -14,8 +14,6 @@ export type ActionItem = {
     destructive?: boolean
     /* Why the item cannot be used right now, shown under its label. The item is disabled while set. */
     unavailable?: string
-    /* Busy for a reason the menu cannot see, such as a modal the item opened. */
-    busy?: boolean
 }
 
 type ActionsMenuProps = {
@@ -39,7 +37,7 @@ export const ActionsMenu: FC<ActionsMenuProps> = ({ label, items, buttons, dataT
     const visibleItems = items.filter((item): item is ActionItem => Boolean(item))
     const buttonItems = buttons ? visibleItems : []
     const menuItems = buttons ? [] : visibleItems
-    const isBusy = (item: ActionItem) => Boolean(item.busy) || running.includes(item.label)
+    const isBusy = (item: ActionItem) => running.includes(item.label)
 
     const close = useCallback(() => {
         setOpen(false)

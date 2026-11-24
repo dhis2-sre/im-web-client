@@ -161,11 +161,6 @@ export const createMatcher = (query: string, level: LevelFilter): ((entry: LogEn
     }
 }
 
-export const visibleEntries = (entries: LogEntry[], query: string, level: LevelFilter): LogEntry[] => {
-    const matcher = createMatcher(query, level)
-    return matcher ? entries.filter(matcher) : entries
-}
-
 // The log's own lines, for taking out: dividers are this page's notes, not something the container wrote
 export const linesText = (entries: LogEntry[]): string =>
     entries
@@ -176,7 +171,7 @@ export const linesText = (entries: LogEntry[]): string =>
 // A one-letter filter on long lines would otherwise make a node per letter, millions across the drawn rows
 export const MAX_MARKS = 20
 
-/* Text cut around a lower-case needle, the same plain substring visibleEntries matches: even parts are plain
+/* Text cut around a lower-case needle, the same plain substring createMatcher matches: even parts are plain
  * and odd ones matched. After MAX_MARKS matches the rest stays plain. */
 export const splitMatches = (text: string, needle: string): string[] => {
     if (!needle) {

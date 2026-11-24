@@ -49,8 +49,6 @@ type ListPageProps<T> = {
     rowHref?: (row: T) => string
     /* The row's one visible action and its ActionsMenu. */
     renderRowActions?: (row: T) => ReactNode
-    /* The column shrinks to fit its buttons unless given a width. */
-    rowActionsWidth?: string
     /* Rows that stay on top whatever the sort, such as folders above files. */
     pinned?: (row: T) => boolean
     loading?: boolean
@@ -72,7 +70,7 @@ const sortRows = <T,>(rows: T[], sort: Sort, { sortValue, pinned }: { sortValue?
     return [...rows.filter(pinned).sort(byValue), ...rows.filter((row) => !pinned(row)).sort(byValue)]
 }
 
-type ListTableProps<T> = Pick<ListPageProps<T>, 'columns' | 'rowKey' | 'rowHref' | 'renderRowActions' | 'rowActionsWidth' | 'pinned'> & {
+type ListTableProps<T> = Pick<ListPageProps<T>, 'columns' | 'rowKey' | 'rowHref' | 'renderRowActions' | 'pinned'> & {
     /* One section per group, each under a full-width header row, so the column headers show once. */
     groups: ListGroup<T>[]
     sort: Sort
@@ -81,7 +79,7 @@ type ListTableProps<T> = Pick<ListPageProps<T>, 'columns' | 'rowKey' | 'rowHref'
 
 const cellClass = <T,>(column: ListColumn<T>) => [styles.cell, column.breakAnywhere && styles.breakAnywhere, column.nowrap && styles.nowrap].filter(Boolean).join(' ')
 
-const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, rowActionsWidth = '1%', pinned, sort, onSort }: ListTableProps<T>) => {
+const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, pinned, sort, onSort }: ListTableProps<T>) => {
     const sortColumn = columns.find((column) => column.key === sort.key)
     const rowCells = (row: T) => (
         <>
@@ -151,7 +149,7 @@ const ListTable = <T,>({ columns, groups, rowKey, rowHref, renderRowActions, row
                             </DataTableColumnHeader>
                         ))}
                         {renderRowActions && (
-                            <DataTableColumnHeader width={rowActionsWidth}>
+                            <DataTableColumnHeader width="1%">
                                 <span className="visually-hidden">Actions</span>
                             </DataTableColumnHeader>
                         )}

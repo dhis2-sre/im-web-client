@@ -24,9 +24,8 @@ const CompanionCard: FC<{
     title: string
     formMode: 'create' | 'update'
     showImmutable: boolean
-    id: string
     actions: ReactNode
-}> = ({ offeringStackId, companion, title, formMode, showImmutable, id, actions }) => {
+}> = ({ offeringStackId, companion, title, formMode, showImmutable, actions }) => {
     const { groups, initialParameterValues, sensitiveParameters, immutableReasons, loading, error } = useGroupedStackParameters(companion.name)
     const form = useForm()
     const applies = useParameterCondition(offeringStackId, companion.when)
@@ -50,7 +49,7 @@ const CompanionCard: FC<{
 
     if (loading || error) {
         return (
-            <SectionCard title={title} id={id} actions={actions}>
+            <SectionCard title={title} actions={actions}>
                 {loading ? (
                     <CircularLoader small />
                 ) : (
@@ -66,7 +65,6 @@ const CompanionCard: FC<{
         <ParameterCard
             stackId={companion.name as Dhis2StackName}
             title={title}
-            id={id}
             actions={actions}
             groups={groups.filter(({ group }) => !group.when)}
             insets={groups.filter(({ group }) => group.when)}
@@ -95,8 +93,6 @@ const AddressNote: FC<{ pathSuffix: string; address: InstanceAddress }> = ({ pat
     )
     return address === 'form' ? <FormName>{note}</FormName> : note(address?.name)
 }
-
-const cardId = (addOn: AddOn) => `component-${addOn.parameter.toLowerCase()}`
 
 const Tile: FC<{ stackId: string; addOn: AddOn; locked?: string; onAdd: () => void }> = ({ stackId, addOn, locked, onAdd }) => {
     const { input } = useField(`${stackId}.${addOn.parameter}`, { subscription: { value: true } })
@@ -168,26 +164,17 @@ const AddOnCard: FC<{
             Remove
         </Button>
     )
-    const id = cardId(addOn)
 
     let card
     if (addOn.companion) {
         card = (
-            <CompanionCard
-                offeringStackId={stackId}
-                companion={addOn.companion}
-                title={addOn.name}
-                formMode={companionFormMode}
-                showImmutable={showImmutable}
-                id={id}
-                actions={actions}
-            />
+            <CompanionCard offeringStackId={stackId} companion={addOn.companion} title={addOn.name} formMode={companionFormMode} showImmutable={showImmutable} actions={actions} />
         )
     } else if (addOn.groups.length > 0) {
-        card = <ParameterCard stackId={stackId} title={addOn.name} id={id} actions={actions} groups={addOn.groups} {...shared} />
+        card = <ParameterCard stackId={stackId} title={addOn.name} actions={actions} groups={addOn.groups} {...shared} />
     } else {
         card = (
-            <SectionCard title={addOn.name} id={id} actions={actions}>
+            <SectionCard title={addOn.name} actions={actions}>
                 {addOn.pathSuffix ? <AddressNote pathSuffix={addOn.pathSuffix} address={address} /> : <p className={styles.note}>Nothing to set.</p>}
             </SectionCard>
         )

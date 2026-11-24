@@ -1,4 +1,3 @@
-import { useDatabaseLabel } from '../../hooks/index.ts'
 import type { Deployment } from '../../types/index.ts'
 
 export const PRESET_STACK = 'dhis2-v2'
@@ -22,12 +21,4 @@ export const presetSummary = (preset: Deployment, mainStackName = PRESET_STACK) 
         storage: valueOf('STORAGE_TYPE'),
         companions: COMPANION_FLAGS.filter(([parameter]) => valueOf(parameter) === 'true').map(([, name]) => name),
     }
-}
-
-/* The summary with the database resolved from its id to the name it was picked by. */
-export const usePresetSummary = (preset: Deployment, mainStackName = PRESET_STACK) => {
-    const { databaseId, ...summary } = presetSummary(preset, mainStackName)
-    const { label: database } = useDatabaseLabel(databaseId)
-
-    return { ...summary, database }
 }
