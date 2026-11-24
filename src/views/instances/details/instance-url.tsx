@@ -17,12 +17,15 @@ export const InstanceUrl: FC<{ url: string }> = ({ url }) => {
         return () => clearTimeout(timeout)
     }, [copied])
 
-    // shortcut: a refused clipboard (no permission, insecure origin) just leaves the icon unchanged
+    /* A refused clipboard (no permission) just leaves the icon unchanged. So does an insecure origin, where
+     * navigator.clipboard is missing altogether, which is why the call is made inside the promise. */
     const copy = () =>
-        navigator.clipboard.writeText(url).then(
-            () => setCopied(true),
-            () => undefined
-        )
+        Promise.resolve()
+            .then(() => navigator.clipboard.writeText(url))
+            .then(
+                () => setCopied(true),
+                () => undefined
+            )
 
     return (
         <span className={styles.url}>
