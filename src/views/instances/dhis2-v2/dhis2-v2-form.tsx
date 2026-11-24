@@ -3,6 +3,7 @@ import type { AnyObject } from 'final-form'
 import { useEffect, useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
 import { useForm, useFormState } from 'react-final-form'
+import { DHIS2_STACK } from '../../../constants.ts'
 import { useGroupedStackParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import type { GroupedParameters } from '../../../hooks/use-grouped-stack-parameters.ts'
 import { useParameterCondition } from '../../../hooks/use-parameter-condition.ts'
@@ -22,7 +23,7 @@ import { DeploymentProgress } from './deployment-progress.tsx'
 import { ParameterCard } from './parameter-card.tsx'
 import { SectionCard } from './section-card.tsx'
 
-export const STACK_ID = 'dhis2-v2'
+export const STACK_ID = DHIS2_STACK
 
 const Conditional: FC<{ when?: StackParameterGroup['when']; children: ReactNode }> = ({ when, children }) => (useParameterCondition(STACK_ID, when) ? <>{children}</> : null)
 

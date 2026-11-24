@@ -1,7 +1,7 @@
-import { Button, ButtonStrip, Modal, ModalActions, ModalContent, ModalTitle } from '@dhis2/ui'
 import type { AnyObject, FormApi } from 'final-form'
 import type { FC, ReactNode } from 'react'
 import { useCallback, useState } from 'react'
+import { ConfirmationModal } from '../../../components/index.ts'
 import { COMPANION_LABELS } from '../../../constants.ts'
 import type { Deployment, StackCompanion } from '../../../types/index.ts'
 import { deploymentHasInstanceOf } from './deployment-instances.ts'
@@ -35,7 +35,7 @@ export const initialValuesFor = (deployment: Deployment) => {
 
 /* The companions the deployment has now that the edit would leave it without. Removing one destroys
  * a running release, which is the one thing in this form worth stopping to confirm. */
-export const companionsBeingRemoved = (deployment: Deployment, companions: StackCompanion[], values: AnyObject) => {
+const companionsBeingRemoved = (deployment: Deployment, companions: StackCompanion[], values: AnyObject) => {
     const stackValues: AnyObject = values[STACK_ID] ?? {}
     return companions
         .filter((companion) => deploymentHasInstanceOf(deployment, companion.name))
@@ -46,7 +46,7 @@ export const companionsBeingRemoved = (deployment: Deployment, companions: Stack
 /* A preset holds settings, not a running release, so removing a companion from one drops only its saved login. */
 type RemovalNoun = 'instance' | 'preset'
 
-export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: string; noun?: RemovalNoun; onConfirm: () => void; onCancel: () => void }> = ({
+const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: string; noun?: RemovalNoun; onConfirm: () => void; onCancel: () => void }> = ({
     names,
     deploymentName,
     noun = 'instance',
@@ -55,32 +55,18 @@ export const CompanionRemovalModal: FC<{ names: string[]; deploymentName?: strin
 }) => {
     const removing = names.map((name) => COMPANION_LABELS[name] ?? name).join(' and ')
     return (
-        <Modal onClose={onCancel}>
-            <ModalTitle>Remove {removing}?</ModalTitle>
-            <ModalContent>
-                {noun === 'preset' ? (
-                    <>
-                        Saving removes {removing} from the preset <strong>{deploymentName}</strong>, along with {names.length > 1 ? 'their' : 'its'} saved settings. This can&apos;t
-                        be undone.
-                    </>
-                ) : (
-                    <>
-                        Saving removes {removing} from <strong>{deploymentName}</strong> and deletes everything stored in {names.length > 1 ? 'them' : 'it'}. This can&apos;t be
-                        undone.
-                    </>
-                )}
-            </ModalContent>
-            <ModalActions>
-                <ButtonStrip end>
-                    <Button secondary onClick={onCancel}>
-                        Cancel
-                    </Button>
-                    <Button destructive onClick={onConfirm}>
-                        Save and remove
-                    </Button>
-                </ButtonStrip>
-            </ModalActions>
-        </Modal>
+        <ConfirmationModal destructive title={`Remove ${removing}?`} confirmLabel="Save and remove" onConfirm={onConfirm} onCancel={onCancel}>
+            {noun === 'preset' ? (
+                <>
+                    Saving removes {removing} from the preset <strong>{deploymentName}</strong>, along with {names.length > 1 ? 'their' : 'its'} saved settings. This can&apos;t be
+                    undone.
+                </>
+            ) : (
+                <>
+                    Saving removes {removing} from <strong>{deploymentName}</strong> and deletes everything stored in {names.length > 1 ? 'them' : 'it'}. This can&apos;t be undone.
+                </>
+            )}
+        </ConfirmationModal>
     )
 }
 

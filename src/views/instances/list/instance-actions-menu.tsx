@@ -8,6 +8,7 @@ import type { Deployment, DeploymentInstanceComponents } from '../../../types/in
 import { isDeploying, refusalMessage } from '../../../utils/deploy-state.ts'
 import { SaveAsModal } from '../details/save-as-modal.tsx'
 import { DATABASE_ID } from '../parameters.ts'
+import { stackUrl } from './open-button.tsx'
 
 // A backup needs one target, so unlike restart and reset this resolves the one instance that owns
 // the database, and it asks the components what they can do rather than matching on stack name.
@@ -124,7 +125,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({
                     pgAdmin &&
                         includePgAdmin && {
                             label: 'Open pgAdmin',
-                            onClick: () => void window.open(`https://${deployment.group.hostname}/${name}-pgadmin`, '_blank', 'noopener,noreferrer'),
+                            onClick: () => void window.open(stackUrl(deployment.group, name, STACK_NAMES.PG_ADMIN), '_blank', 'noopener,noreferrer'),
                         },
                     backupTarget && { label: 'Back up…', onClick: () => setSavingAs(true) },
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */
