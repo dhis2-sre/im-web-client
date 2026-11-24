@@ -3,12 +3,12 @@ import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ActionsMenu, useActionAlert } from '../../../components/index.ts'
 import { STACK_NAMES } from '../../../constants.ts'
-import { useAuthAxios, useDatabaseLabel } from '../../../hooks/index.ts'
+import { useAuthAxios, useDatabaseLabel, useStack } from '../../../hooks/index.ts'
 import type { Deployment, DeploymentInstanceComponents } from '../../../types/index.ts'
 import { isDeploying, refusalMessage } from '../../../utils/deploy-state.ts'
+import { endpointUrl, ownEndpoint } from '../../../utils/stack-endpoints.ts'
 import { SaveAsModal } from '../details/save-as-modal.tsx'
 import { DATABASE_ID } from '../parameters.ts'
-import { stackUrl } from './open-button.tsx'
 
 // A backup needs one target, so unlike restart and reset this resolves the one instance that owns
 // the database, and it asks the components what they can do rather than matching on stack name.
@@ -83,6 +83,7 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({
     const backupTarget = database ?? filestore
     const hasDhis2 = instances.some((instance) => instance.stackName === STACK_NAMES.DHIS2)
     const pgAdmin = instances.some((instance) => instance.stackName === STACK_NAMES.PG_ADMIN)
+    const pgAdminEndpoint = ownEndpoint(useStack(STACK_NAMES.PG_ADMIN).stack)
 
     const actOnAll = (action: 'restart' | 'reset') => async () => {
         try {
@@ -123,9 +124,10 @@ export const InstanceActionsMenu: FC<InstanceActionsMenuProps> = ({
                     onExtend && { label: 'Extend…', unavailable: deploying ? 'Unavailable while deploying' : undefined, onClick: onExtend },
                     hasDhis2 && { label: 'Save as preset', onClick: () => navigate(`/presets/new?instance=${deployment.id}`) },
                     pgAdmin &&
-                        includePgAdmin && {
+                        includePgAdmin &&
+                        pgAdminEndpoint && {
                             label: 'Open pgAdmin',
-                            onClick: () => void window.open(stackUrl(deployment.group, name, STACK_NAMES.PG_ADMIN), '_blank', 'noopener,noreferrer'),
+                            onClick: () => void window.open(endpointUrl(deployment.group, name, pgAdminEndpoint), '_blank', 'noopener,noreferrer'),
                         },
                     backupTarget && { label: 'Back up…', onClick: () => setSavingAs(true) },
                     /* A deployment whose first stack failed to save has nothing to restart or reset, but must still be deletable. */

@@ -168,22 +168,22 @@
     color: inherit;
 }
 
-/* Optional components: a heading on the page, a row of tiles to add them, then a card for each added one. */
-.componentsHeading {
+/* Add-ons: a heading on the page, a row of tiles to add them, then a card for each added one. */
+.addOnsHeading {
     display: flex;
     flex-direction: column;
     gap: var(--spacers-dp4);
     margin: var(--spacers-dp24) 0 var(--spacers-dp8);
 }
 
-.componentsHeading h2 {
+.addOnsHeading h2 {
     margin: 0;
     font-size: var(--text-lg);
     font-weight: 600;
     color: var(--colors-grey900);
 }
 
-.componentsHeading p {
+.addOnsHeading p {
     margin: 0;
     font-size: var(--text-md);
     color: var(--colors-grey700);
@@ -263,7 +263,7 @@
     color: var(--colors-teal700);
 }
 
-/* Set apart from the Components above it, as the Components heading is from the cards before it. */
+/* Set apart from the add-ons above it, as the Add-ons heading is from the cards before it. */
 .presetCard {
     margin-top: var(--spacers-dp24);
 }

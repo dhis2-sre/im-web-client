@@ -147,7 +147,7 @@ const AddOnCard: FC<{
     const added = input.value === 'true'
 
     /* Adding from a tile brings the new card into view, since it opens below the tiles. Only that once: a
-     * preset that later switches the same component on must not move the page. */
+     * preset that later switches the same add-on on must not move the page. */
     useEffect(() => {
         if (added && justAdded) {
             ref.current?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
@@ -182,9 +182,9 @@ const AddOnCard: FC<{
     return <div ref={ref}>{card}</div>
 }
 
-/* The optional components: a tile for each, then a card for each one added. A tile stays where it is when its
- * component is added, so the row doesn't shift under the pointer; the card opens below the tiles. */
-export const ComponentsSection: FC<{
+/* The add-ons: a tile for each, then a card for each one added. A tile stays where it is when its add-on is
+ * added, so the row doesn't shift under the pointer; the card opens below the tiles. */
+export const AddOnsSection: FC<{
     stackId: Dhis2StackName
     addOns: AddOn[]
     shared: Shared
@@ -199,8 +199,8 @@ export const ComponentsSection: FC<{
     }
     return (
         <>
-            <div className={styles.componentsHeading}>
-                <h2>Components</h2>
+            <div className={styles.addOnsHeading}>
+                <h2>Add-ons</h2>
                 <p>Optional services that run alongside this instance.</p>
             </div>
             <div className={styles.tiles}>
