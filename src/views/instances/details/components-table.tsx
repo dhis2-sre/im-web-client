@@ -89,6 +89,8 @@ export const ComponentsTable: FC<{
                                     <DataTableCell staticStyle>{only && <MomentFromNow date={only.createdAt} />}</DataTableCell>
                                     <DataTableCell staticStyle align="right">
                                         <span className={styles.rowActions}>
+                                            {/* Opens the same details as the name does, on purpose: the name reads as a link, and
+                                             * this is the row's one visible action, as on the list pages. */}
                                             <Button small secondary aria-label={`View ${component.name}`} onClick={() => view(component)}>
                                                 View
                                             </Button>
