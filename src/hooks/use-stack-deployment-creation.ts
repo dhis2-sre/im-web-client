@@ -21,7 +21,6 @@ type BulkDeployRequest = { prefix: string; count: number; group: string; descrip
  * rather than here. */
 const SETTLED_PAUSE_MS = 800
 
-/* What a deployment and a preset are both saved with, besides their instances. */
 const deploymentFields = (values: AnyObject) => ({ name: values.name, group: values.groupName, description: values.description, ttl: values.ttl })
 
 const presetFailure = (error: unknown) => {
@@ -87,7 +86,6 @@ export const useStackDeploymentCreation = (stackName: string, getIncludedParamet
         [executePost, navigate]
     )
 
-    /* The step that was running is the one that failed; the form shows why. */
     const creationFailure = useCallback((error: unknown) => {
         console.error(error)
         setSteps((current) => current.map((step) => (step.status === 'running' ? { ...step, status: 'error' } : step)))

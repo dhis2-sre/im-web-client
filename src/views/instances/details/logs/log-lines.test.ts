@@ -126,7 +126,6 @@ describe('dropOverlap', () => {
     })
 })
 
-/* The entries the panel shows: it filters with the matcher, and shows everything when there is none. */
 const matching = (entries: LogEntry[], query: string, level: LevelFilter) => {
     const matcher = createMatcher(query, level)
     return matcher ? entries.filter(matcher) : entries

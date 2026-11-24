@@ -1,6 +1,5 @@
 import { Dhis2StackName } from './views/instances/parameters.ts'
 
-/* The stack the instance and preset forms are built for. */
 export const DHIS2_STACK = 'dhis2-v2'
 
 export const STACK_NAMES: Record<string, Dhis2StackName> = {

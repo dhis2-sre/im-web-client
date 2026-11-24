@@ -27,7 +27,6 @@ export const STACK_ID = DHIS2_STACK
 
 const Conditional: FC<{ when?: StackParameterGroup['when']; children: ReactNode }> = ({ when, children }) => (useParameterCondition(STACK_ID, when) ? <>{children}</> : null)
 
-/* An instance being edited extends the lifetime it has; a preset sets the lifetime of what it creates. */
 const LifetimeField: FC<{ deployment?: Deployment; isPreset: boolean }> = ({ deployment, isPreset }) => {
     if (deployment) {
         return <ExtendTtlSelect deployment={deployment} />
@@ -125,7 +124,6 @@ export const Dhis2V2Form: FC<{
         })
     }, [form, initialParameterValues, seedsFromDefaults])
 
-    /* Where a component will be reached: under the instance's stored name, under the name being typed, or nowhere for a preset. */
     const addressOnCreate = mode === 'create' ? ('form' as const) : undefined
     const address = isEdit ? { name: deployment?.name } : addressOnCreate
 
