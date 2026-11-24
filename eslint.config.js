@@ -17,7 +17,8 @@ export default tseslint.config(
             tseslint.configs.recommended,
             ...fixupConfigRules(reactPlugin.configs.flat.recommended),
             reactHooksPlugin.configs.flat['recommended-latest'],
-            importPlugin.flatConfigs.recommended,
+            /* eslint-plugin-import still calls SourceCode methods that ESLint 10 removed; the compat wrapper puts them back. */
+            ...fixupConfigRules(importPlugin.flatConfigs.recommended),
             prettierPluginRecommended,
         ],
         plugins: {
