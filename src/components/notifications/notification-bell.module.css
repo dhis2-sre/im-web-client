@@ -50,5 +50,6 @@
 .overlay {
     position: fixed;
     inset: 0;
-    z-index: 999;
+    /* Just under the panel it closes. */
+    z-index: calc(var(--layers-popover) - 1);
 }
