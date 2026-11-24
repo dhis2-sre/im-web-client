@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Deployment, SaveDeploymentRequest, SaveInstanceRequest, SavePresetRequest, StackCompanion } from '../types/index.ts'
 import { errorMessage } from '../utils/error-message.ts'
-import { buildBulkFromPresetRequest, buildEditPresetRequest, buildFromPresetRequest, creationParameters } from '../views/presets/preset-payloads.ts'
+import { buildBulkFromPresetRequest, buildEditPresetRequest, buildFromPresetRequest, creationParameters } from './preset-payloads.ts'
 import { useAuthAxios } from './use-auth-axios.ts'
 import { useStacks } from './use-stacks.ts'
 

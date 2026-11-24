@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { uncopyableParameters } from '../views/presets/preset-payloads.ts'
+import { uncopyableParameters } from './preset-payloads.ts'
 import { useStacks } from './use-stacks.ts'
 
 /* Stacks not loaded yet have no entry. */
