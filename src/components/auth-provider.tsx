@@ -60,10 +60,10 @@ export const AuthProvider: FC = () => {
     )
 
     const login = useCallback(
-        async (username: string, password: string) => {
+        async (username: string, password: string, rememberMe: boolean) => {
             setIsAuthenticating(true)
             try {
-                await getTokens({ auth: { username, password } })
+                await getTokens({ auth: { username, password }, data: { rememberMe } })
                 const userResponse = await getUser()
 
                 setAuthenticationErrorMessage('')
