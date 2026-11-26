@@ -1,3 +1,4 @@
+import type { AnyObject } from 'final-form'
 import { validateDnsLabel } from './validate-dns-label.ts'
 
 export type DeploymentNameAvailability = { available: boolean; reason?: string }
@@ -28,7 +29,7 @@ export const createDeploymentNameValidator = (fetchAvailability: FetchAvailabili
             }
             try {
                 const { available, reason } = await fetchAvailability(group, name)
-                const error = available ? undefined : (reason ?? 'Name is not available')
+                const error = available ? undefined : (reason ?? "Name isn't available. Choose another.")
                 answers.set(key, error)
                 return error
             } catch {
@@ -37,3 +38,9 @@ export const createDeploymentNameValidator = (fetchAvailability: FetchAvailabili
         })
     }
 }
+
+/* A preset being edited keeps its own name in its own group, which the availability check would call taken. */
+export const allowOwnName =
+    (validate: (name: string, values: AnyObject) => Promise<string | undefined> | string | undefined, own: { name?: string; group?: string } = {}) =>
+    (name: string, values: AnyObject) =>
+        name === own.name && values.groupName === own.group ? undefined : validate(name, values)

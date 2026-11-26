@@ -1,5 +1,6 @@
 import { AlertsProvider } from '@dhis2/app-service-alerts'
 import { CssReset, CssVariables } from '@dhis2/ui'
+import '@fontsource/ibm-plex-sans/latin-400.css'
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/400-italic.css'
@@ -21,6 +22,7 @@ import {
     NewDhis2V2Instance,
     NotFound,
     PresetDetails,
+    PresetForm,
     PresetsList,
     RequestPasswordReset,
     ResetPassword,
@@ -61,7 +63,9 @@ if (location.hostname === 'play.dhis2.org') {
                             <Route path="/stacks/:name" element={<StackDetails />} />
                             <Route path="/instances" element={<InstancesList />} />
                             <Route path="/presets" element={<PresetsList />} />
+                            <Route path="/presets/new" element={<PresetForm />} />
                             <Route path="/presets/:id" element={<PresetDetails />} />
+                            <Route path="/presets/:id/edit" element={<PresetForm />} />
                             <Route path="/databases" element={<DatabasesList />} />
                             <Route path="/databases/:id" element={<DatabaseDetails />} />
                             <Route path="/clusters" element={<ClustersList />} />

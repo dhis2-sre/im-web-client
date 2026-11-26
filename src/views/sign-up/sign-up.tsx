@@ -1,18 +1,19 @@
-import { Button, Card, Help, InputField, LogoIcon } from '@dhis2/ui'
+import { useAlert } from '@dhis2/app-service-alerts'
+import { Button, Help, InputField } from '@dhis2/ui'
 import { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { AuthCard } from '../../components/index.ts'
 import { useAuthAxios } from '../../hooks/index.ts'
-import styles from './sign-up.module.css'
 
 const getInputsErrorMessage = ({ email, password, confirmPassword }) => {
     if (!email) {
-        return 'Please provide an email address'
+        return 'Enter an email address'
     } else if (!password) {
-        return 'Please provide a password'
+        return 'Enter a password'
     } else if (!confirmPassword) {
-        return 'Please confirm your password'
+        return 'Enter the password again'
     } else if (password !== confirmPassword) {
-        return 'Passwords do not match'
+        return "Passwords don't match"
     } else {
         return ''
     }
@@ -26,6 +27,7 @@ export const SignUp = () => {
         confirmPassword: '',
     })
     const [errorMessage, setErrorMessage] = useState('')
+    const { show: showSignedUp } = useAlert('Account created. Check your email for a link to verify it.', { success: true })
     const onInputChange = useCallback(({ value, name }) => {
         // Always clear the error when user starts typing again
         setErrorMessage('')
@@ -50,6 +52,7 @@ export const SignUp = () => {
                 try {
                     const { email, password } = inputs
                     await postSignUp({ data: { email, password } })
+                    showSignedUp()
                     navigate('/')
                 } catch (error) {
                     console.error(error)
@@ -64,32 +67,34 @@ export const SignUp = () => {
                 setErrorMessage(getInputsErrorMessage(inputs))
             }
         },
-        [inputs, postSignUp, navigate]
+        [inputs, postSignUp, navigate, showSignedUp]
     )
 
     return (
-        <form className={styles.container} onSubmit={onSubmit}>
-            <Card className={styles.box}>
-                <h2 className={styles.header}>
-                    <LogoIcon className={styles.logo} />
-                    Instance Manager sign up
-                </h2>
-                <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
-                <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
-                <InputField
-                    disabled={loading}
-                    name="confirmPassword"
-                    label="Confirm password"
-                    type="password"
-                    value={inputs.confirmPassword}
-                    autoComplete="new-password"
-                    onChange={onInputChange}
-                />
-                {errorMessage && <Help error>{errorMessage}</Help>}
-                <Button primary type="submit" value="Sign up" disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}>
-                    Sign up
-                </Button>
-            </Card>
-        </form>
+        <AuthCard
+            heading="Sign up to deploy and manage DHIS2 instances."
+            onSubmit={onSubmit}
+            footer={
+                <>
+                    Already have an account? <Link to="/">Log in</Link>
+                </>
+            }
+        >
+            <InputField disabled={loading} name="email" label="Email" type="email" value={inputs.email} onChange={onInputChange} />
+            <InputField disabled={loading} name="password" label="Password" type="password" value={inputs.password} autoComplete="new-password" onChange={onInputChange} />
+            <InputField
+                disabled={loading}
+                name="confirmPassword"
+                label="Confirm password"
+                type="password"
+                value={inputs.confirmPassword}
+                autoComplete="new-password"
+                onChange={onInputChange}
+            />
+            {errorMessage && <Help error>{errorMessage}</Help>}
+            <Button primary type="submit" value="Sign up" disabled={!inputs.email || !inputs.password || !inputs.confirmPassword}>
+                Sign up
+            </Button>
+        </AuthCard>
     )
 }

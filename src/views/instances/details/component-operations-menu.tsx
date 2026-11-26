@@ -1,166 +1,71 @@
-import { useAlert } from '@dhis2/app-service-alerts'
-import { Button, IconMore24, Menu, MenuItem, Popover } from '@dhis2/ui'
-import { useCallback, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { FC } from 'react'
-import { ConfirmationModal } from '../../../components/index.ts'
+import { ActionsMenu, useActionAlert } from '../../../components/index.ts'
 import { useAuthAxios } from '../../../hooks/index.ts'
 import { InstanceComponent, InstanceComponentReplica } from '../../../types/index.ts'
 import { grafanaLogsUrl } from '../../../utils/grafana-logs.ts'
-import { LogModal } from './log-modal.tsx'
 import { SaveAsModal } from './save-as-modal.tsx'
-
-/* Operations this menu accounts for; every other advertised operation is shown disabled so
- * capabilities stay visible until they get an action here. restartReplica is deliberately not
- * surfaced in the UI, the API keeps it for scripting. databaseSave and filestoreBackup share the
- * one Backup item: the dump and the file store are written together and linked, so the component
- * advertising either capability offers the same backup. logs is offered on the replica rows only,
- * since a log belongs to one pod rather than to the component as a whole. */
-const handledOperations = ['restart', 'restartReplica', 'reset', 'databaseSave', 'filestoreBackup', 'logs']
 
 export const ComponentOperationsMenu: FC<{
     instanceId: number
     stackName: string
     component: InstanceComponent
     replica?: InstanceComponentReplica
+    /* For a replica listed under its component: only what acts on that one replica, since the
+     * component's row already offers what acts on all of them. */
+    replicaOnly?: boolean
     namespace?: string
     instanceName?: string
     groupId?: number
+    groupName?: string
     onChanged: () => void
-}> = ({ instanceId, stackName, component, replica, namespace, instanceName, groupId, onChanged }) => {
-    const anchor = useRef<HTMLSpanElement>(null)
-    const [open, setOpen] = useState(false)
+    onShowLogs: (replica: InstanceComponentReplica) => void
+}> = ({ instanceId, stackName, component, replica, replicaOnly, namespace, instanceName, groupId, groupName, onChanged, onShowLogs }) => {
     const [showSaveAs, setShowSaveAs] = useState(false)
-    const [showLog, setShowLog] = useState(false)
-    const [confirmReset, setConfirmReset] = useState(false)
+    const alert = useActionAlert()
+    const [, execute] = useAuthAxios({ method: 'PUT', url: '' }, { manual: true, autoCancel: false })
 
     const grafanaUrl = grafanaLogsUrl({ namespace, instanceName, groupId, component: component.name })
+    const supports = (operation: string) => component.supportedOperations.includes(operation) && (!replicaOnly || operation === 'logs')
+    const backsUp = supports('databaseSave') || supports('filestoreBackup')
 
-    const backsUp = component.supportedOperations.includes('databaseSave') || component.supportedOperations.includes('filestoreBackup')
-
-    const { show: showAlert } = useAlert(
-        ({ message }) => message,
-        ({ isCritical }) => (isCritical ? { critical: true } : { success: true })
-    )
-
-    const [{ loading: restarting }, restart] = useAuthAxios(
-        {
-            method: 'PUT',
-            url: `/instances/${instanceId}/restart`,
-        },
-        { manual: true, autoCancel: false }
-    )
-
-    const onRestart = useCallback(async () => {
-        setOpen(false)
+    const act = (action: 'restart' | 'reset') => async () => {
         try {
-            await restart({ params: { selector: component.name } })
-            showAlert({ message: `Successfully requested restart of component "${component.name}"`, isCritical: false })
+            await execute({ url: `/instances/${instanceId}/${action}`, params: { selector: component.name } })
+            alert.success(`${action === 'restart' ? 'Restarting' : 'Resetting'} ${component.name}…`)
             onChanged()
-        } catch (restartError) {
-            showAlert({ message: `There was an error when restarting component "${component.name}"`, isCritical: true })
-            console.error(restartError)
+        } catch (error) {
+            console.error(error)
+            alert.error(`Couldn't ${action} ${component.name}`)
         }
-    }, [restart, component.name, showAlert, onChanged])
-
-    const [{ loading: resetting }, reset] = useAuthAxios(
-        {
-            method: 'PUT',
-            url: `/instances/${instanceId}/reset`,
-        },
-        { manual: true, autoCancel: false }
-    )
-
-    const onReset = useCallback(async () => {
-        setConfirmReset(false)
-        try {
-            await reset({ params: { selector: component.name } })
-            showAlert({ message: `Successfully requested reset of component "${component.name}"`, isCritical: false })
-            onChanged()
-        } catch (resetError) {
-            showAlert({ message: `There was an error when requesting reset of component "${component.name}"`, isCritical: true })
-            console.error(resetError)
-        }
-    }, [reset, component.name, showAlert, onChanged])
+    }
 
     return (
         <>
-            {showLog && replica && (
-                <LogModal instanceId={instanceId} componentName={component.name} replica={replica.name} containers={replica.containers ?? []} onClose={() => setShowLog(false)} />
-            )}
-            {confirmReset && (
-                <ConfirmationModal destructive onCancel={() => setConfirmReset(false)} onConfirm={onReset}>
-                    Are you sure you want to reset component &quot;{component.name}&quot;? Its data is replaced with the database the instance was deployed from, and the components
-                    reading it are restarted.
-                </ConfirmationModal>
-            )}
-            {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} stackName={stackName} onStart={() => {}} onComplete={() => {}} />}
-            <span ref={anchor}>
-                <Button
-                    small
-                    secondary
-                    loading={restarting || resetting}
-                    icon={<IconMore24 />}
-                    onClick={() => setOpen((current) => !current)}
-                    dataTest={`component-operations-${component.name}`}
-                />
-            </span>
-            {open && (
-                <Popover onClickOutside={() => setOpen(false)} reference={anchor} placement="bottom-start">
-                    <Menu>
-                        {component.supportedOperations.includes('restart') && <MenuItem dense label="Restart" onClick={onRestart} />}
-                        {component.supportedOperations.includes('reset') && (
-                            <MenuItem
-                                dense
-                                destructive
-                                label="Reset"
-                                onClick={() => {
-                                    setOpen(false)
-                                    setConfirmReset(true)
-                                }}
-                            />
-                        )}
-                        {backsUp && (
-                            <MenuItem
-                                dense
-                                label="Backup"
-                                onClick={() => {
-                                    setOpen(false)
-                                    setShowSaveAs(true)
-                                }}
-                            />
-                        )}
-                        {component.supportedOperations.includes('logs') && replica && (
-                            <MenuItem
-                                dense
-                                label="Logs"
-                                onClick={() => {
-                                    setOpen(false)
-                                    setShowLog(true)
-                                }}
-                            />
-                        )}
-                        {grafanaUrl && (
-                            /* The menu item swallows a plain click on its own link, it only lets a
-                             * modified one through, so the new tab is opened here instead. */
-                            <MenuItem
-                                dense
-                                label="Logs in Grafana"
-                                href={grafanaUrl}
-                                target="_blank"
-                                onClick={() => {
-                                    setOpen(false)
-                                    window.open(grafanaUrl, '_blank', 'noopener,noreferrer')
-                                }}
-                            />
-                        )}
-                        {component.supportedOperations
-                            .filter((operation) => !handledOperations.includes(operation))
-                            .map((operation) => (
-                                <MenuItem dense key={operation} label={operation} disabled />
-                            ))}
-                    </Menu>
-                </Popover>
-            )}
+            {showSaveAs && <SaveAsModal onClose={() => setShowSaveAs(false)} instanceId={instanceId} instanceName={instanceName ?? stackName} groupName={groupName} />}
+            <ActionsMenu
+                label={`Actions for ${replica?.name ?? component.name}`}
+                dataTest={`component-operations-${component.name}`}
+                items={[
+                    /* Only restarting the whole instance asks first: one component restarting takes nothing down for anyone else. */
+                    supports('restart') && { label: 'Restart', onClick: act('restart') },
+                    supports('reset') && {
+                        label: 'Reset',
+                        destructive: true,
+                        confirm: {
+                            title: `Reset ${component.name}?`,
+                            message:
+                                "Replaces its data with the database it was deployed with, so any changes since are lost. Components that read the database restart too. This can't be undone.",
+                            confirmLabel: `Reset ${component.name}`,
+                            destructive: true,
+                        },
+                        onClick: act('reset'),
+                    },
+                    backsUp && { label: 'Back up…', onClick: () => setShowSaveAs(true) },
+                    supports('logs') && replica && { label: 'Logs', onClick: () => onShowLogs(replica) },
+                    !replicaOnly && grafanaUrl && { label: 'Logs in Grafana', onClick: () => void window.open(grafanaUrl, '_blank', 'noopener,noreferrer') },
+                ]}
+            />
         </>
     )
 }

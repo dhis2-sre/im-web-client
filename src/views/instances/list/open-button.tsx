@@ -1,28 +1,11 @@
 import { Button, IconLaunch16 } from '@dhis2/ui'
 import type { FC } from 'react'
-import { useCallback } from 'react'
-import { Deployment } from '../../../types/generated/index.ts'
+import type { Group } from '../../../types/index.ts'
+import { endpointUrl } from '../../../utils/stack-endpoints.ts'
 
-type OpenButtonProps = {
-    deployment: Deployment
-}
-
-export const OpenButton: FC<OpenButtonProps> = ({ deployment }) => {
-    const group = deployment.group
-    const hostname = group.hostname
-    const name = deployment.name
-
-    const onClick = useCallback(
-        (_, event) => {
-            event.stopPropagation()
-            window.open(`https://${hostname}/${name}`)
-        },
-        [hostname, name]
-    )
-
-    return (
-        <Button small secondary icon={<IconLaunch16 />} onClick={onClick}>
-            Open
-        </Button>
-    )
-}
+/* Opens an instance in a new tab at its own address. */
+export const OpenButton: FC<{ group: Group; name: string }> = ({ group, name }) => (
+    <Button small secondary icon={<IconLaunch16 />} onClick={() => window.open(endpointUrl(group, name), '_blank', 'noopener,noreferrer')}>
+        Open
+    </Button>
+)

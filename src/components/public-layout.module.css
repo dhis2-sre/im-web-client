@@ -30,28 +30,3 @@
     width: 35px;
     height: 35px;
 }
-.navlist {
-    display: flex;
-}
-
-.navlist :global(a) {
-    font-weight: 400;
-    font-size: 15px;
-    line-height: 18px;
-    padding: 9px 8px 9px 12px;
-    color: var(--colors-grey800);
-    text-decoration: none;
-    transition: background-color 150ms ease-in-out;
-    display: inline-flex;
-    justify-content: space-between;
-}
-
-.navlist :global(a):hover {
-    color: var(--colors-blue600);
-    text-decoration: underline;
-}
-
-.navlist :global(a.active) {
-    text-decoration: underline;
-    color: var(--colors-blue600);
-}

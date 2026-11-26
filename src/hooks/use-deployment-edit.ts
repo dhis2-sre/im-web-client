@@ -22,7 +22,7 @@ export const useDeploymentEdit = (stackName: string, deploymentId: number, getIn
                 return undefined
             } catch (error) {
                 console.error(error)
-                return { [FORM_ERROR]: refusalMessage(error, 'Could not save the changes') }
+                return { [FORM_ERROR]: refusalMessage(error, "Couldn't save the changes") }
             }
         },
         [executePatch, navigate, deploymentId, stackName, getIncludedParameters]

@@ -1,8 +1,9 @@
 import { createContext } from 'react'
-import type { Stack } from '../types/index.ts'
+import type { StackWithParameterGroups } from '../types/index.ts'
 
 export type StacksContextApi = {
-    stacks: Stack[]
+    /* Typed by hand: the generated Stack lags the API on parameter groups, companions and the per-parameter flags. */
+    stacks: StackWithParameterGroups[]
     loading: boolean
     error: Error | null
 }

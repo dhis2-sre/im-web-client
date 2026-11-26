@@ -1,128 +1,323 @@
-.container {
-    display: block !important;
-    height: auto !important;
-    padding: var(--spacers-dp16);
-}
-
-.header {
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 40px;
-}
-
-.legend {
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 23px;
-    padding-bottom: var(--spacers-dp24);
-}
-
-.fieldset {
-    border: none;
-    gap: var(--spacers-dp16);
-    padding: 0;
-    margin: 0;
-}
-
-.fieldset.main {
+/* The instance and preset form: a column of section cards, then the buttons, no wider than 1200px. */
+.form {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 0;
+    gap: var(--spacers-dp16);
+    max-width: 1200px;
+}
+
+/* A section of the form as a card. It is a fieldset so each section is a named group; the legend floats
+ * so it lays out as the card's header rather than sitting on the border. */
+.card {
+    position: relative;
     margin: 0;
+    padding: 0;
+    min-width: 0;
+    border: 1px solid var(--colors-grey300);
+    border-radius: 4px;
+    background: var(--colors-white);
 }
 
-.fieldset.parameters {
-    display: grid;
-}
-
-.fieldset.parameters.primary {
-    grid-template-columns: 320px 320px 320px;
-}
-
-.fieldset.parameters.secondary {
-    grid-template-columns: repeat(3, 1fr);
-    padding-top: var(--spacers-dp16);
-}
-
-.hr {
-    border: none;
-    border-top: 1px solid var(--colors-grey400);
+.cardHeader {
+    float: left;
     width: 100%;
-    margin: var(--spacers-dp24) 0;
-}
-
-.summary {
-    color: var(--colors-blue700);
-    margin: var(--spacers-dp24) 0 0 0;
-    cursor: pointer;
-    user-select: none;
-}
-
-.submitError {
-    margin-bottom: var(--spacers-dp16);
-}
-
-.presetRow {
     display: flex;
     align-items: center;
-    gap: var(--spacers-dp16);
+    justify-content: space-between;
+    gap: var(--spacers-dp12);
+    padding: var(--spacers-dp12) var(--spacers-dp16);
+    border-bottom: 1px solid var(--colors-grey300);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
 }
 
-.splitButton {
-    display: inline-flex;
-    position: relative;
+.cardActions {
+    position: absolute;
+    top: var(--spacers-dp8);
+    right: var(--spacers-dp16);
 }
 
-.splitButton > button:first-child {
-    border-start-end-radius: 0;
-    border-end-end-radius: 0;
-    border-inline-end: 0;
+.cardBody {
+    clear: both;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp24);
+    padding: var(--spacers-dp24) var(--spacers-dp16);
 }
 
-.splitButton > button:nth-child(2) {
-    border-start-start-radius: 0;
-    border-end-start-radius: 0;
-    padding: 0 var(--spacers-dp12);
+/* Fields three to a row, down to one as the card narrows; every field fills its cell. */
+.grid {
+    container-type: inline-size;
+    display: grid;
+    gap: var(--spacers-dp24) var(--spacers-dp16);
+    grid-template-columns: repeat(auto-fill, minmax(max(220px, calc((100% - 2 * var(--spacers-dp16)) / 3)), 1fr));
 }
 
-.splitMenu {
+.checks {
+    display: grid;
+    gap: var(--spacers-dp12) var(--spacers-dp16);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.subsection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp12);
+}
+
+.subheading {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey800);
+}
+
+/* A section that belongs to a choice made above it, such as the file store's. */
+.inset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp12);
+    padding: var(--spacers-dp16);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 4px;
+    background: var(--colors-grey050);
+}
+
+.insetTitle {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.advanced {
+    padding: 0 var(--spacers-dp16) var(--spacers-dp12);
+}
+
+/* The Advanced toggle as a full-width quiet button inside the card's padding: no fill until hovered, a chevron
+ * that turns down when open, then the title. */
+.advanced > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp4);
+    box-sizing: border-box;
+    min-height: 40px;
+    padding: var(--spacers-dp8) var(--spacers-dp8);
+    border-radius: 4px;
+    list-style: none;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-grey900);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 150ms ease-out;
+}
+
+.advanced > summary::-webkit-details-marker {
+    display: none;
+}
+
+.advanced > summary:hover {
+    background: var(--colors-grey100);
+}
+
+.advanced > summary:focus-visible {
+    outline: 2px solid var(--colors-blue600);
+    outline-offset: -2px;
+}
+
+.advancedChevron {
+    display: flex;
+    color: var(--colors-grey700);
+    transition: transform 150ms ease-out;
+}
+
+.advanced[open] .advancedChevron {
+    transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .advanced > summary,
+    .advancedChevron {
+        transition: none;
+    }
+}
+
+.advancedBody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp24);
+    padding: var(--spacers-dp16) 0 var(--spacers-dp12);
+}
+
+.note {
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
+}
+
+/* Inline code, as chat apps set it: a literal value in a small light box. */
+.code {
+    padding: 1px var(--spacers-dp4);
+    border: 1px solid var(--colors-grey300);
+    border-radius: 3px;
+    background: var(--colors-grey100);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: inherit;
+}
+
+/* Add-ons: a heading on the page, a row of tiles to add them, then a card for each added one. */
+.addOnsHeading {
     display: flex;
     flex-direction: column;
     gap: var(--spacers-dp4);
-    padding-top: var(--spacers-dp4);
+    margin: var(--spacers-dp24) 0 var(--spacers-dp8);
 }
 
-.splitMenu > button {
-    flex: 1;
-}
-
-.presetOption {
-    display: flex;
-    align-items: baseline;
-    gap: var(--spacers-dp8);
-    padding: var(--spacers-dp8) var(--spacers-dp12);
-    font-size: 14px;
+.addOnsHeading h2 {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 600;
     color: var(--colors-grey900);
-    cursor: pointer;
 }
 
-.presetOption:hover {
-    background-color: var(--colors-grey200);
+.addOnsHeading p {
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey700);
 }
 
-.presetOption.active {
-    background-color: var(--colors-teal050);
+.tiles {
+    display: grid;
+    gap: var(--spacers-dp12);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp8);
+    padding: var(--spacers-dp16);
+    border: 1px dashed var(--colors-grey500);
+    border-radius: 4px;
+    background: var(--colors-white);
+}
+
+.tile.added {
+    border-style: solid;
+    border-color: var(--colors-teal600);
+    background: var(--colors-teal050);
+}
+
+.tileName {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--colors-grey900);
+}
+
+.tileDescription {
+    margin: 0 0 var(--spacers-dp4);
+    font-size: var(--text-md);
+    line-height: 1.4;
+    color: var(--colors-grey700);
+}
+
+.tileAction {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacers-dp8);
+    min-height: 28px;
+}
+
+/* An added tile's Remove stays in place but shows only while the tile is hovered or holds focus, and always
+ * where there is no hover. */
+.tileRemove {
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+}
+
+.tile:hover .tileRemove,
+.tile:focus-within .tileRemove {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .tileRemove {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tileRemove {
+        transition: none;
+    }
+}
+
+.addedLabel {
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--colors-teal700);
+}
+
+/* Set apart from the add-ons above it, as the Add-ons heading is from the cards before it. */
+.presetCard {
+    margin-top: var(--spacers-dp24);
+}
+
+/* Buttons at the end of the form, left-aligned like the rest of it. */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacers-dp8);
+}
+
+/* Fill from preset and its status, above the sections. */
+.formToolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacers-dp12);
+}
+
+.fillStatus {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--colors-grey800);
+}
+
+.presetMenu {
+    width: 360px;
+    max-height: 420px;
+    overflow-y: auto;
+    background: var(--colors-white);
+    border-radius: 4px;
+    box-shadow: var(--elevations-e300);
+}
+
+.presetSearch {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: var(--spacers-dp8);
+    background: var(--colors-white);
+    border-bottom: 1px solid var(--colors-grey300);
+}
+
+.presetItem {
+    display: flex;
+    flex-direction: column;
 }
 
 .presetDetails {
+    font-size: var(--text-sm);
     color: var(--colors-grey600);
-}
-
-.bulkIntro {
-    margin: 0 0 var(--spacers-dp16);
-    font-size: 14px;
-    color: var(--colors-grey800);
 }
 
 .bulkFields {
@@ -137,25 +332,24 @@
     min-width: 200px;
 }
 
-.bulkNames {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacers-dp4);
-    margin-bottom: var(--spacers-dp12);
-}
-
-.bulkName,
-.bulkNameTaken {
-    padding: 2px var(--spacers-dp8);
-    border-radius: 3px;
-    font-family: monospace;
-    font-size: 13px;
-    background: var(--colors-grey200);
+.bulkPreview {
+    margin: 0 0 var(--spacers-dp16);
+    font-size: var(--text-md);
     color: var(--colors-grey900);
 }
 
-.bulkNameTaken {
-    background: var(--colors-red050);
-    color: var(--colors-red700);
-    text-decoration: line-through;
+.bulkTotals {
+    color: var(--colors-grey700);
+}
+
+/* Notices stack with a gap between them, and keep the fields below clear; an empty stack takes no room. */
+.bulkNotices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacers-dp8);
+    margin-bottom: var(--spacers-dp16);
+}
+
+.bulkNotices:empty {
+    display: none;
 }

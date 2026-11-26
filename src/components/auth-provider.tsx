@@ -70,7 +70,7 @@ export const AuthProvider: FC = () => {
                 setCurrentUser(userResponse.data)
             } catch (error) {
                 console.error(error)
-                let errorMessage = 'Unknown error'
+                let errorMessage = "Couldn't log in"
                 if (error instanceof AxiosError) {
                     errorMessage = error.response?.data || error.message
                 } else if (error instanceof Error) {

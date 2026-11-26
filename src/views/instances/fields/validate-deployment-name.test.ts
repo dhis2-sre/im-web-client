@@ -1,4 +1,4 @@
-import { createDeploymentNameValidator } from './validate-deployment-name.ts'
+import { allowOwnName, createDeploymentNameValidator } from './validate-deployment-name.ts'
 
 describe('createDeploymentNameValidator', () => {
     test('reports a badly formed name without asking the server', () => {
@@ -45,5 +45,15 @@ describe('createDeploymentNameValidator', () => {
         const validate = createDeploymentNameValidator(fetchAvailability, 0)
 
         await expect(validate('abc', { groupName: 'group' })).resolves.toBeUndefined()
+    })
+})
+
+describe('allowOwnName', () => {
+    test('lets a preset keep its own name in its own group', async () => {
+        const taken = jest.fn().mockResolvedValue('Taken')
+        const validate = allowOwnName(taken, { name: 'p', group: 'g' })
+        expect(await validate('p', { groupName: 'g' })).toBeUndefined()
+        expect(await validate('p', { groupName: 'h' })).toBe('Taken')
+        expect(await validate('q', { groupName: 'g' })).toBe('Taken')
     })
 })

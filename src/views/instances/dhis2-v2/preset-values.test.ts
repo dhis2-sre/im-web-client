@@ -31,7 +31,7 @@ describe('presetFormValues', () => {
             'dhis2-v2': { IMAGE_TAG: '2.40.0', DATABASE_PASSWORD: 'default', STORAGE_TYPE: 'filesystem', FLYWAY_REPAIR: 'false' },
         }
 
-        expect(presetFormValues(preset, 'dhis2-v2', initialValues)).toEqual({
+        expect(presetFormValues(preset, { mainStackName: 'dhis2-v2', initialValues })).toEqual({
             'name': 'sierra-leone',
             'ttl': 7200,
             'groupName': 'play',
@@ -40,5 +40,13 @@ describe('presetFormValues', () => {
             'dhis2-v2': { IMAGE_TAG: '2.41.0', DATABASE_PASSWORD: 'default', STORAGE_TYPE: 'filesystem', FLYWAY_REPAIR: 'false' },
             'pgadmin': { PGADMIN_USERNAME: 'admin@dhis2.org' },
         })
+    })
+
+    it('blanks masked values when asked', () => {
+        const values = presetFormValues(preset, { mainStackName: 'dhis2-v2', initialValues: { 'dhis2-v2': { DATABASE_PASSWORD: 'dhis' } }, blankMasked: true })
+        expect(values['dhis2-v2'].DATABASE_PASSWORD).toBe('')
+    })
+    it('keeps the form ttl when the preset has none', () => {
+        expect(presetFormValues({ ...preset, ttl: 0 }, { mainStackName: 'dhis2-v2', initialValues: { ttl: 3600 } }).ttl).toBe(3600)
     })
 })

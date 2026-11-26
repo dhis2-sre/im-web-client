@@ -1,0 +1,25 @@
+/* Where a name is smaller than a page title, its container sets a smaller size. */
+.dot {
+    position: relative;
+    flex: none;
+    align-self: center;
+    width: var(--status-dot-size, 10px);
+    height: var(--status-dot-size, 10px);
+    border-radius: 50%;
+}
+
+.positive {
+    background: var(--colors-green600);
+}
+
+.negative {
+    background: var(--colors-red600);
+}
+
+.neutral {
+    background: var(--colors-grey500);
+}
+
+.progress {
+    background: var(--colors-blue600);
+}

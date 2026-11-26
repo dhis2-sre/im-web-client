@@ -16,7 +16,7 @@ export const InstancePlay = () => (
             <h2>Log in with:</h2>
             <ul>
                 <li>
-                    <strong>User:</strong> admin
+                    <strong>Username:</strong> admin
                 </li>
                 <li>
                     <strong>Password:</strong> district
